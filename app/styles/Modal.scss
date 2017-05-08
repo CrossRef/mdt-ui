@@ -1,0 +1,54 @@
+.openModal {
+    overflow: hidden;
+}
+.ReactModal__Overlay--after-open {
+    background-color: rgba(0, 0, 0, 0.5) !important;
+    overflow-y: scroll;
+    .ReactModal__Content--after-open {
+        border: 0 !important;
+        padding: 0 !important;
+        margin: auto !important;
+        max-width: 860px;
+        position: relative;
+        .modal {
+            width: 100%;
+            .titlebar {
+                background: #4F5757;
+                min-height: 96px;
+                width: 100%;
+                .titlebarinner {
+                    color: #FFFFFF;
+                    display: table;
+                    float: none;
+                    height: 100%;
+                    margin: 0 auto;
+                    width: 90%;
+                    .title {
+                        display: table-cell;
+                        vertical-align: middle;
+                        width: 50%;
+                    }
+                    .titleclose {
+                        display: table-cell;
+                        text-align: right;
+                        vertical-align: middle;
+                        width: 50%;
+                        a {
+                            img {
+                                cursor: pointer;
+                                width: 32px;
+                            }
+                        }
+                    }
+                }
+            }
+            .modalbody {
+                width: 100%;
+                .modalboddyinner {
+                    margin: 20px auto;
+                    width: 90%;
+                }
+            }
+        }
+    }
+}

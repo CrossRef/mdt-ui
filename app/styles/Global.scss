@@ -1,0 +1,103 @@
+.button-anchor {
+  background: #3eb1c8;
+  color: #fff;
+  padding: 8px;
+  border: 0px none transparent;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background-color 0.2s linear;
+
+  &:hover {
+    background-color: #56b9d1;
+  }
+}
+
+input[type=button], input[type=submit] {
+  &.button-anchor {
+    padding: 16px;
+  }
+}
+
+input, select {
+  padding: 5px 16px;
+  border: 1px solid black;
+}
+
+.left-indent-16 {
+  padding-left: 16px;
+}
+
+.flex {
+  display: flex;
+}
+
+.text-left {
+  text-align: left;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.pull-left {
+  float: left;
+}
+
+.pull-right {
+  float: right;
+}
+
+.overflow-hack {
+  overflow: hidden;
+}
+
+.clear-both {
+  clear: both;
+}
+
+label {
+  input[type=checkbox] {
+    visibility: hidden;
+    display: block;
+    height: 0;
+    width: 0;
+    position: absolute;
+    overflow: hidden;
+
+    & + span {
+      display: flex;
+      width: 14px;
+      height: 14px;
+      margin: 4px auto;
+      border: 1px solid #9f9f9f;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      cursor: pointer;
+    }
+    &:hover + span:before, &:checked + span:before {
+      content: ' ';
+      position: absolute;
+      display: block;
+      background: url('/images/App/Asset_Icons_Grey_Check 2.svg');
+      width: 15px;
+      height: 15px;
+      left: -1px;
+      top: -1px;
+    }
+
+    &:checked + span {
+      background: #3eb1c8;
+      border: 1px solid black;
+
+      &:before {
+        background: url('/images/App/Asset_Icons_White_Check 2.svg');
+      }
+    }
+  }
+}
+
+.empty-message {
+  padding: 35px 0;
+  text-align: center;
+}

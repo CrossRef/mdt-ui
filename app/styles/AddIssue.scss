@@ -1,0 +1,79 @@
+@import 'mixins.scss';
+@import 'switch.min.css';
+@import 'AddArticle.scss';
+
+.longModal {
+    overflow: hidden;
+}
+
+.issueInnerBody {
+    margin: 0 auto !important;
+    width: 100% !important;
+}
+
+.issueModalContentStyle {
+    position: relative;
+}
+
+.addIssueCard {
+    .addIssue {
+        background: #FFFFFF;
+        cursor: pointer;
+        border: 0;
+        color: #4F5858;
+        padding: 10px 0;
+        width: 100%;
+    }
+}
+
+.addIssues {
+    width: 100%;
+    @extend .articleInnerForm;
+    .body {
+        .row {
+            width: 100%;
+            .fieldHolder {
+                padding: 0 0 0 40px;
+                .fieldinnerholder {
+                    .requrefieldholder {
+                        .requiredholder {
+                            width: 20px;
+                        }
+                    }
+                }
+            }
+            .errorHolder {
+                height: 100%;
+            }
+        }
+    }
+    .topbar {
+        background: #FFFFFF;
+        color: #4F5858;
+        padding: 0 !important;
+        .addholder {
+            a {
+                background: #FFFFFF;
+                border: 1px solid #4F5858;
+            }
+        }
+    }
+}
+
+.optionalissueiinfo {
+    .innerCardHolder {
+        background: #FFFFFF;
+        border: 1px solid #EDEFF1;
+        margin: 12px;
+
+        width: 80%;
+    }
+    .subItemRow {
+        margin: 0;
+    }
+    .row {
+        .fieldHolder {
+            width: 100% !important;
+        }
+    }
+}

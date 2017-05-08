@@ -1,0 +1,91 @@
+.titlebarinner {
+    position: relative;
+    top: 20px;
+    .title {
+        width: 100% !important;
+        .innerTitleHolder {
+            display: table-cell;
+            height: 100%;
+            padding: 10px 0;
+            width: 730px;
+            .innterTitleHolderIcon {
+                float: left;
+                height: 100%;
+                padding: 0 10px 0 0;
+                img {
+                    height: 32px;
+                    position: relative;
+                    top: 0px;
+                }
+            }
+            .innerTitleHolderText {
+                width: 100%;
+            }
+        }
+    }
+}
+.ReviewArticleCard {
+    margin: 0px 0 40px 0;
+    position: relative;
+    text-align: right;
+    .modalContainer {
+        margin: 0 auto;
+        width: 960px;
+    }
+}
+
+.reviewArticle {
+    display: table;
+    width: 100%;
+    .firstBorder, .secondBorder, .reviewContent {
+        display: table-cell;
+    }
+    .firstBorder, .secondBorder {
+
+    }
+    .firstBorder {
+        padding: 0 0 0 10px;
+        height: 100%;
+        width: 18px;
+        vertical-align: bottom;
+        .innerBorder {
+            background: #EAEAEA;
+            height: 97%;
+            width: 6px;
+        }
+    }
+    .secondBorder {
+        padding: 0 0 0 10px;
+        height: 100%;
+        width: 14px;
+        vertical-align: bottom;
+        .innerBorder {
+            background: #EAEAEA;
+            height: 80%;
+            width: 4px;
+        }
+    }
+    .reviewContent {
+        padding: 0 32px 0 16px;
+        vertical-align: top;
+        width: 95%;
+        h4 {
+            margin: 0 0 16px 0;
+        }
+    }
+}
+
+.modalboddyinner {
+    margin: 20px 32px 20px 0 !important;
+    width: 100% !important;
+}
+
+.addToCart {
+    float: right;
+    width: 160px;
+    height: 32px;
+    color: #FFFFFF;
+    background: #3AAFC6;
+    border: 0px;
+    margin: 0 32px 0 0;
+}

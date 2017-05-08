@@ -1,0 +1,5 @@
+[
+    {'value':'abstract_only', 'name':'Abstract'},
+    {'value':'full_text', 'name':'Full Text'},
+    {'value':'bibliographic_record', 'name':'Bibliographic Record'}
+]

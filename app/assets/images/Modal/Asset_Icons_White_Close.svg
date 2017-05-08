@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <title>Asset_Icons_White</title>
+    <defs>
+        <style>.cls-1{fill:#ffffff;}</style>
+    </defs>
+    <g id="Close">
+        <polygon class="cls-1" points="61 6.87 57.13 3 32 28.13 6.87 3 3 6.87 28.13 32 3 57.13 6.87 61 32 35.87 57.13 61 61 57.13 35.87 32 61 6.87"/>
+    </g>
+</svg>

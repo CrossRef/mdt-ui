@@ -1,0 +1,71 @@
+.stateTracker {
+	padding: 5px;
+	background-color: #ffffe2;
+	position: fixed;
+	right:0px;
+	bottom: 0px;
+	border: 1px dotted;
+	border-radius: 10px;
+	max-width: 450px;
+	max-height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+	z-index: 10;
+}
+
+.stateTracker li {
+	white-space: nowrap;
+	margin: 0;
+	padding-left: 10px;
+}
+
+.stateTracker ul {
+	list-style-position: inside;
+	list-style-type: circle;
+	margin: 0;
+	padding-left:10px;
+	padding-bottom: 0;
+	padding-top: 0;
+}
+.stateTracker button:focus {
+	outline: none !important;
+}
+
+.stateTracker button {
+	font-weight: bold;
+	margin-left:-2px;
+	padding: 0 0 0 10px;
+	text-decoration: underline;
+	background-color: Transparent;
+	border: none;
+	font-size: 1.1em;
+	cursor: pointer;
+}
+
+.stateTracker span {
+	margin-left: -20px;
+}
+
+.arrayList {
+	margin-left: 5px !important;
+}
+
+.hiddenList {
+	display: none;
+}
+
+.expandButton {
+	float: left;
+	padding: 0 !important;
+	margin: 0 !important;
+	text-decoration: none !important;
+	border-radius: 8px !important;
+	background-color: white !important;
+	border: 1px solid blue !important;
+	font-size: .9em !important
+}
+
+.logButton {
+	float: right;
+	text-decoration: none !important;
+}

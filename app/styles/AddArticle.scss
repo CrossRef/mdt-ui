@@ -1,0 +1,667 @@
+@import 'mixins.scss';
+@import 'switch.min.css';
+
+.height16 {
+  height: 16px;
+}
+
+.height32 {
+  height: 32px;
+}
+
+.height64 {
+  height: 64px;
+}
+
+input.height16, textarea.height16, select.height16 {
+  height: 18px;
+}
+
+input.height32, textarea.height32, select.height32 {
+  height: 34px;
+}
+
+input.height64, textarea.height64, select.height64 {
+  height: 66px;
+}
+
+.noAddable {
+  padding: 30px 0 0px 0;
+}
+
+.errorHolder {
+  .toolTipHolder {
+    a.tooltips {
+      position: relative;
+      display: inline;
+      .toolmsgholder {
+        position: absolute;
+        width: 200px;
+        color: #FFFFFF;
+        background: #EE6068;
+        text-align: center;
+        padding: 10px;
+        border-radius: 6px;
+        .errormsgholder{
+          display: inline-table;
+          width: 100%;
+          height: 100%;
+          .errormsginnerholder {
+            display: table-cell;
+            vertical-align: middle;
+            width: 100%;
+            height: 100%;
+            div {
+              display: block;
+              padding: 0 0 15px;
+              text: {
+                align: left;
+              }
+              width: 100%;
+            }
+            img {
+              width: 35px;
+            }
+          }
+        }
+        &:after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          right: 100%;
+          margin-top: -8px;
+          width: 0; height: 0;
+          border-right: 8px solid #EE6068;
+          border-top: 8px solid transparent;
+          border-bottom: 8px solid transparent;
+        }
+      }
+      &:hover.tooltips {
+        span {
+          visibility: visible;
+          opacity: 0.8;
+          left: 100%;
+          top: 50%;
+          margin-top: -15px;
+          margin-left: 15px;
+          z-index: 999;
+        }
+      }
+    }
+  }
+}
+
+.fullError {
+   position:absolute;
+   height:1000px;
+   right: 0;
+}
+
+.fieldError {
+  background: #FFE9E8;
+  border: 1px solid #EE6068 !important;
+}
+
+.helpers {
+  .toolTipHolder {
+    a.tooltips {
+      .toolmsgholder {
+        color: #646464;
+        background: #FFD164;
+        &:after {
+          border-right: 8px solid #FFD164;
+        }
+      }
+    }
+  }
+}
+
+.showOptionalTitle {
+  display: block;
+}
+
+.dateselectholder {
+  margin: 0 5px 0 0;
+  width: 85px !important;
+  float: left;
+  .datepickselects {
+    width: 85px !important;
+    float: left;
+    padding: 0 10px;
+  }
+}
+
+.addArticles {
+  margin: 40px 0;
+  width: 100%;
+  .addarticlecard {
+    margin: 0 auto;
+    width: 960px;
+    .addArticleForm {
+      width: 100%;
+    }
+  }
+}
+
+.articleInnerForm{
+  background: #EAEAEA;
+  border: 1px solid #EAEAEA;
+  width: 100%;
+  .topbar {
+    background: #616B6B;
+    color: #FFFFFF;
+          min-height: 50px;
+          padding: 10px 0 0;
+    width: 100%;
+    .titleholder {
+      display: table;
+      height: 100%;
+      margin: 0 auto;
+      text-align: left;
+      width: 90%;
+      .titleinnerholder {
+        display: table-cell;
+        height: 100%;
+        vertical-align: middle;
+        width: 100%;
+        .titleIconHolder {
+          float: left;
+          margin: 0 20px 0 0;
+          width: 30px;
+        }
+        .articletitle {
+          float: left;
+                width: 90%;
+          vertical-align: middle;
+        }
+      }
+    }
+    .subinnerholder {
+      float: left;
+      padding: 15px 0 0 0;
+      span {
+        cursor: pointer;
+      }
+      .arrowHolder {
+        img {
+          margin: 0 20px 0 0;
+          transform: rotate(90deg);
+          width: 20px;
+        }
+      }
+      .openArrowHolder {
+        img {
+          transform: rotate(180deg);
+        }
+      }
+    }
+    .notclickableholder {
+      float: left;
+      padding: 15px 0 0 0;
+      span {
+        cursor: pointer;
+      }
+      .arrowHolder {
+        img {
+          margin: 0 20px 0 0;
+          transform: rotate(90deg);
+          width: 20px;
+        }
+      }
+      .openArrowHolder {
+        img {
+          transform: rotate(180deg);
+        }
+      }
+    }
+    .addholder {
+      float: right;
+      padding: 15px 0 0 0;
+      a {
+        background: #F9F9F9;
+        color: #646464;
+        cursor: pointer;
+        display: block;
+        padding: 4px 20px;
+        position: relative;
+        top: -3px;
+      }
+    }
+  }
+  .body {
+    width: 100%;
+    .row {
+      clear: both;
+      display: inline-block;
+      padding: 0 0 30px;
+      position: relative;
+      width: 90%;
+      .subItemHeader {
+        background: #FFFFFF;
+        padding: 15px 0 15px 70px;
+        text-align: left;
+      }
+      .subItemTitle {
+        float: left;
+        span {
+          cursor: pointer;
+        }
+        .arrowHolder {
+          img {
+            fill: #616B6B;
+            margin: 0 20px 0 0;
+            transform: rotate(90deg);
+            width: 20px;
+          }
+        }
+        .openArrowHolder {
+          img {
+            transform: rotate(180deg);
+          }
+        }
+      }
+      .subItemButton {
+        float: right;
+        padding: 15px 70px 15px 0px;
+        a {
+          cursor: pointer;
+        }
+      }
+      .toggleButton {
+        cursor: pointer;
+        text-align: left;
+        padding: 0 0 0 30px;
+        .arrowHolder {
+          img {
+            margin: 0 20px 0 0;
+            transform: rotate(90deg);
+            width: 20px;
+          }
+        }
+        .openArrowHolder {
+          img {
+            transform: rotate(180deg);
+          }
+        }
+      }
+      .hiddenFields {
+        display: none;
+        position: relative;
+        top: 10px;
+        .fieldHolder {
+          .fieldinnerholder {
+            .labelholder {
+              font: {
+                weight: bold;
+              }
+              padding: 10px 0 0;
+            }
+          }
+        }
+      }
+      .fieldHolder {
+        width: 80%;
+        float: left;
+        .fieldinnerholder {
+          float: left;
+          padding: 0 10px 0 0;
+          .labelholder {
+            width: 100%;
+            float: left;
+            font: {
+              weight: bold;
+            }
+            .labelinnerholder {
+              float: left;
+              width: 100%;
+              .label {
+                float: left;
+                left: 34px;
+                padding: 0 0 10px 0;
+                position: relative;
+                text-align: left;
+                width: 80%;
+              }
+              .switchHolder {
+                .switch {
+                  background: #616161;
+                  border-radius: 8px;
+                  color: #FFFFFF;
+                  height: 26px;
+                  position: relative;
+                  width: 60px;
+                  .switch-toggle {
+                    background: #DADADA;
+                    border: 1px solid #DADADA;
+                    box-shadow: none;
+                    height: 20px;
+                    left: 4px;
+                    position: absolute;
+                    top: 20px;
+                    width: 20px;
+                  }
+                  &.on {
+                    background: #616161;
+                    .switch-toggle {
+                      background: #3AAFC6;
+                      border: 1px solid #3AAFC6;
+                      left: 36px;
+                    }
+                  }
+                  &.on:before {
+                    position: relative;
+                    top: 3px;
+                    left: 5px;
+                    content: "Yes";
+                  }
+                }
+                .switch:before {
+                  position: relative;
+                  top: 3px;
+                  left: 28px;
+                  content: "No";
+                }
+              }
+            }
+          }
+            .requrefieldholder {
+              float: left;
+              width: 100%;
+              .requiredholder {
+                background: #3AAFC6;
+                border: 1px solid #3AAFC6;
+                float: left;
+                width: 30px;
+                .required {
+                  color: #FFFFFF;
+                  font: {
+                    size: 20px;
+                  }
+                  padding: 0 6px;
+                  span {
+                    position: relative;
+                    top: 7px;
+                  }
+                }
+              }
+              .norequire {
+                background: none;
+                border: 0px;
+              }
+              .status {
+                float: left;
+                left: 6px;
+                position: relative;
+                top: 7px;
+              }
+
+              .react-autosuggest__container {
+                float: left;
+                position:relative;
+                height: 32px;
+                width: 90%;
+                input {
+                  border:1px solid #EDEFF1;
+                  height: 32px;
+                }
+
+              .react-autosuggest__suggestions-container {
+                display: none;
+              }
+
+              .react-autosuggest__suggestions-container--open {
+                display: block;
+                position: absolute;
+                top: 32px;
+                width: 500px;
+                border: 1px solid #aaa;
+                background-color: #fff;
+                font-family: Helvetica, sans-serif;
+                font-weight: 500;
+                font-size: 14px;
+                border-bottom-left-radius: 4px;
+                border-bottom-right-radius: 4px;
+                z-index: 2;
+                max-height: 300px;
+                text-align: left;
+                overflow-y: scroll;
+                overflow-x: hidden;
+              }
+
+              .react-autosuggest__suggestions-list {
+                margin: 0;
+                padding: 0;
+                list-style-type: none;
+                height: 100%;
+              }
+
+              .react-autosuggest__suggestion {
+                cursor: pointer;
+                padding: 10px 20px;
+              }
+
+              .react-autosuggest__suggestion--highlighted {
+                background-color: #ddd;
+              }
+            }
+            .field {
+              float: left;
+              width: 95%;
+              input, select, textarea{
+                border:1px solid #EDEFF1;
+                width: 100%
+              }
+              textarea {
+                border: 1px solid #EDEFF1;
+                margin: 0;
+                padding: 5px 16px;
+                resize: none;
+                vertical-align: bottom;
+              }
+              .switchOuterHolder {
+                width: 100%;
+                .switchInnerHolder {
+                  width: 100%;
+                  .switchLicense{
+                    .switchLabel {
+                      text-align: right;
+                      float: left;
+                      width: 140px;
+                      span {
+                        position: relative;
+                        top: 5px;
+                      }
+                    }
+                    .switch {
+                      background: #616161;
+                      border-radius: 8px;
+                      color: #FFFFFF;
+                      height: 26px;
+                      position: relative;
+                      width: 60px;
+                      .switch-toggle {
+                        background: #DADADA;
+                        border: 1px solid #DADADA;
+                        box-shadow: none;
+                        height: 20px;
+                        left: 4px;
+                        position: absolute;
+                        top: 2px;
+                        width: 20px;
+                      }
+                      &.on {
+                        background: #444444;
+                        .switch-toggle {
+                          background: #3AAFC6;
+                          border: 1px solid #3AAFC6;
+                          left: 36px;
+                        }
+                      }
+                      &.on:before {
+                        position: absolute;
+                        top: 3px;
+                        left: 5px;
+                        content: "Yes";
+                      }
+                    }
+                    .switch:before {
+                      position: absolute;
+                      top: 3px;
+                      left: 28px;
+                      content: "No";
+                    }
+                  }
+                }
+              }
+              .grantSection {
+                .grantTitle {
+                  font: {
+                    weight: bold;
+                  }
+                  padding: 0 0 10px 0;
+                  text-align: left;
+                }
+                .grantRemove {
+                  a {
+                    float: right;
+                  }
+                }
+              }
+            }
+          }
+          .dateselectrequire {
+            position: relative;
+            top: 17px;
+          }
+        }
+        .fulllength {
+          width: 100%;
+        }
+        .halflength {
+          width: 50%;
+          .requrefieldholder {
+            .field {
+              width: 90%;
+            }
+          }
+        }
+        .addGrant {
+          a {
+            background: #FFFFFF;
+            border: 1px solid #6B7272;
+            display: block;
+            font: {
+              weight: bold;
+            }
+            padding: 10px 0;
+            width: 70%;
+          }
+        }
+      }
+      .errorHolder {
+        float: right;
+        width: 20%;
+        .switchOuterHolder {
+          width: 100%;
+          .switchInnerHolder {
+            width: 100%;
+            .switchLicense{
+              .switchLabel {
+                text-align: right;
+                float: left;
+                font: {
+                  size: 14px;
+                  weight: bold;
+                }
+                span {
+                  position: relative;
+                  top: 5px;
+                }
+              }
+              .switch {
+                background: #616161;
+                border-radius: 8px;
+                color: #FFFFFF;
+                height: 26px;
+                position: relative;
+                width: 60px;
+                .switch-toggle {
+                  background: #DADADA;
+                  border: 1px solid #DADADA;
+                  box-shadow: none;
+                  height: 20px;
+                  left: 4px;
+                  position: absolute;
+                  top: 2px;
+                  width: 20px;
+                }
+                &.on {
+                  background: #444444;
+                  .switch-toggle {
+                    background: #3AAFC6;
+                    border: 1px solid #3AAFC6;
+                    left: 36px;
+                  }
+                }
+                &.on:before {
+                  position: absolute;
+                  top: 3px;
+                  left: 5px;
+                  content: "On";
+                }
+              }
+              .switch:before {
+                position: absolute;
+                top: 3px;
+                left: 28px;
+                content: "Off";
+              }
+            }
+          }
+        }
+      }
+    }
+    .subItemRow {
+      background: #FFFFFF;
+      margin: 0 0 10px 0;
+      padding: 5px 0;
+      width: 100%;
+    }
+    .infohelper {
+      padding: 40px 0 0;
+      .fieldinnerholder {
+        .labelholder {
+          .labelinnerholder {
+            .label {
+              font: {
+                size: 10px;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  .saveButtonHolder {
+    background: #616B6B;
+    display: block;
+    float: left;
+    padding: 20px 60px 20px 0;
+    width: 100%;
+    .saveButton {
+      background: #FFFFFF;
+      border: 1px solid #6B7272;
+      clear:both;
+      cursor: pointer;
+      display: block;
+      float: right;
+      font-weight: bold;
+      padding: 10px 30px;
+    }
+  }
+}
+
+*::-ms-backdrop, .titleIconHolder {
+  position: relative;
+  top: -50px;
+}

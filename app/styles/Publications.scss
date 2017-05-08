@@ -1,0 +1,102 @@
+.publications {
+  .management-bar {
+    width: 968px;
+    margin: 0 auto;
+    padding: 32px 24px 0 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    .publication-search-container {
+      position: relative;
+
+      input {
+        height: 32px;
+        width: 464px;
+        padding-left: 28px;
+        position: relative;
+      }
+
+      .publication-search-results {
+        position: absolute;
+        top: 31px;
+        left: 0;
+        width: 464px;
+        height: 370px;
+        text-align: left;
+        background: white;
+        border: 1px solid black;
+        overflow: auto;
+        box-shadow: 0 0 2px rgba(0,0,0,.5);
+        z-index: 1;
+
+        .publication-search-result {
+          height: 32px;
+          line-height: 32px;
+          padding: 0 20px 0 28px;
+          width: 100%;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+
+          &:hover {
+            background: #f1f1f1;
+          }
+        }
+      }
+    }
+
+    .addPublicationCard {
+      .addPublication {
+        cursor: pointer;
+        background: #3eb1c8;
+        border:1px solid #3eb1c8;
+        color: #FFFFFF;
+        padding: 8px;
+        width: 130px;
+        height: 40px;
+        width: 176px;
+      }
+    }
+  }
+  .content {
+    width: 968px;
+    margin: 0 auto;
+
+    .publication-card {
+      color: black;
+
+      .card {
+        position:relative;
+        width: 288px;
+        height: 208px;
+        float: left;
+        margin: 16px;
+        padding: 16px;
+        text-align: left;
+        font-size: 12px;
+
+        .publication-name {
+          font-size: 14px;
+          font-family: "HelveticaNeueETW01-65Md";
+        }
+
+        .publication-edit {
+          position: absolute;
+          right: 15px;
+          bottom: 10px;
+          background-color: Transparent;
+          background-repeat:no-repeat;
+          border: none;
+          cursor:pointer;
+          overflow: hidden;
+          outline:none;
+          font-size:14px;
+          font-family: "HelveticaNeueETW01-65Md";
+          color: #3eb1cB;
+
+        }
+      }
+    }
+  }
+}

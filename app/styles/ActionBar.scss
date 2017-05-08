@@ -1,0 +1,27 @@
+@import 'mixins.scss';
+@import 'switch.min.css';
+
+.actions {
+    cursor: pointer;
+}
+.menuHolder {
+    color: #4F5858;
+    display: none;
+    position: relative;
+    ul {
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        position: absolute;
+        width: 100%;
+        li {
+            border: 1px solid #4F5858;
+            margin: 0;
+            padding: 0;
+        }
+    }
+}
+
+.menu-on {
+    display: block;
+}

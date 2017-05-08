@@ -1,0 +1,38 @@
+@import 'mixins.scss';
+
+html, body {
+  font-family: "HelveticaNeueETW01-55Rg";
+  font-size: 14px;
+  color: #000;
+  font-weight: 400;
+}
+
+.app {
+  min-width: 960px;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  @include flex-direction(column);
+  @include display-flex;
+}
+
+body, #root, .app {
+  min-height: 100vh;
+  @include display-flex;
+  @include flex-direction(column);
+}
+
+.app-contents {
+  -webkit-box-flex: 1;
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+  -webkit-flex: 1 0 auto;
+  @include display-flex;
+  @include flex-direction(column);
+}
+
+* {
+  box-sizing: border-box;
+}

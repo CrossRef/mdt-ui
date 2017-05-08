@@ -1,0 +1,105 @@
+
+.addPublicationCard {
+    position: relative;
+    right: 20px;
+    top: 10px;
+}
+.addPublication {
+    cursor: pointer;
+    background: #3eb1c8;
+    border:1px solid #3eb1c8;
+    color: #FFFFFF;
+    padding: 8px;
+    width: 130px;
+}
+
+.addPublications {
+    display: table;
+    width: 100%;
+    .required {
+        background: #3AAFC6;
+        color: #FFFFFF;
+        font: {
+            size: 20px;
+        }
+        text-align: center;
+        span {
+            vertical-align: sub;
+        }
+    }
+    input, select {
+        padding: 6px 16px;
+    }
+    .fieldRowHolder {
+        display: table-row;
+        width: 100%;
+        .fieldinput {
+            display: table-cell;
+            width: 50%;
+            .left-indent-36 {
+                padding: 15px 0 15px 36px;
+            }
+            .inputholder {
+                width: 100%;
+                .inputinnerholder {
+                    display: inline-table;
+                    width: 100%;
+                    .required, .notrequired, input, select {
+                        display: table-cell;
+                        vertical-align: middle;
+                    }
+                    .required, .notrequired {
+                        width: 5%;
+                    }
+                    input, select {
+                        width: 95%;
+                    }
+                    .invalid {
+                        border: 1px solid #ef3340;
+                        background-color: #ef3340;
+                        color: #ffe3e3;
+                        margin: 0 0 0 5%;
+                        padding: 10px;
+                        width: 90%;
+                    }
+                }
+            }
+            .button-anchor {
+                border:1px solid #3eb1c8;
+                float: right;
+                padding: 8px;
+                width: 130px;
+            }
+            .button-white-cancel {
+                background: #e5e5e5;
+                border: 1px solid #434343;
+                color: #434343;
+                float: left;
+                padding: 8px;
+                text: {
+                    align: center;
+                }
+            }
+            &.invalid {
+                input:not([type=button]):not([type=submit]) {
+                    border: 1px solid #ef3340;
+                    background-color: #ffe3e3!important;
+                }
+                .invalid {
+                    border: 1px solid #ef3340;
+                    background-color: #ef3340;
+                    color: #ffe3e3;
+                    margin: 0 0 0 5%;
+                    padding: 10px;
+                    width: 90%;
+                }
+            }
+        }
+    }
+    .buttonholder {
+        height: 300px;
+        .fieldinput {
+            vertical-align: bottom;
+        }
+    }
+}
