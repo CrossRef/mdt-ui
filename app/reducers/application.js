@@ -12,5 +12,5 @@ export default handleActions({
     }
   }
 }, {
-  auth: localStorage.getItem('auth') || null
+  auth: localStorage.getItem('auth') || null,
 })

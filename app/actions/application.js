@@ -1,17 +1,14 @@
 import { createAction } from 'redux-actions'
 import { browserHistory } from 'react-router'
-import client from '../client'
 
+import xmlParse from '../utilities/xmldoc'
+import client from '../client'
 import fetch from '../utilities/fetch'
+import { publicationXml } from '../utilities/xmlGenerator'
 
 export const SET_AUTH_BEARER = createAction('SET_AUTH_BEARER')
 
-
-
-
 // ------------------------ REFACTORED ---------------------
-
-
 
 // Action Creators, useless unless dispatched
 export function controlModal(modalObj) {
@@ -26,11 +23,92 @@ export function addDOIs(doi) {
 	return { type: 'DOI_ADD', doi }
 }
 
+export function editForm(keyVal) {
+    return { type: 'REDUXFORM_ADD', keyVal}
+}
 
+export function cartUpdate(article) {
+	return { type: 'CART_UPDATE', cart: article }
+}
+
+export function returnItem(publication) {
+	return { type: 'GET_ITEM', publication: publication}
+}
+
+export function clearCart() {
+	return { type: 'CLEAR_UPDATE' }
+}
+
+export function removeFromCart(doi, cart) {
+	return { type: 'REMOVE_FROM_CART', action: {removeDoi: doi, cart: cart}}
+}
 
 // Async Action Creators
-export function getPublications (DOIs, callback) {
+
+export function authenticate () {
+	return function (dispatch) {
+    fetch(`http://mdt.crossref.org/mdt/v1/work`, {headers: 'poop'})
+      .then((response) => {
+    		if(response.status === 401 ) {
+    			console.error('Unauthorized, token has expired');
+          browserHistory.push('/');
+				}
+    		//do something
+			})
+			.catch(response => {
+				console.error('Error in authentication: ', response)
+			})
+  }
+}
+
+export function deposit (cartArray, callback, error = (reason) => console.error(reason)) {
+  return function(dispatch) {
+    fetch(`http://mdt.crossref.org/mdt/v1/deposit`, {
+      method:'post',
+      headers: client.headers,
+      body: JSON.stringify({
+        message: cartArray
+      })
+    })
+      .then(result => result.json())
+      .then(result => {
+        let resultArray = result.message;
+        resultArray = resultArray.map((item) => {
+          item.result = xmlParse(item.result)
+          return item
+        });
+        console.log('DEPOSIT RESULT', resultArray);
+        if(callback) callback(resultArray)
+      })
+      .catch(reason => error(reason))
+
+  }
+}
+
+export function submitArticle (publication, articleDoi, callback, error = (reason) => console.error('ERROR in submitReduxForm', reason)) {
+  return function(dispatch) {
+
+    fetch(`http://mdt.crossref.org/mdt/v1/work`, {
+        method: 'post',
+        headers: client.headers,
+        body: JSON.stringify(publication)
+      }
+    ).then(() =>
+      fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${articleDoi}`, { headers: client.headers })
+        .then(article => article.json())
+        .then((article) => {
+
+          if(callback) callback();
+        })
+        .catch(reason => error(reason))
+    ).catch(reason => error(reason))
+
+  }
+}
+
+export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
 	return function(dispatch) {
+		if(!Array.isArray(DOIs)) DOIs = [DOIs];
 		Promise.all(
 			DOIs.map(
 				(doi) =>
@@ -41,18 +119,34 @@ export function getPublications (DOIs, callback) {
 		)
 		.then((publications) => {
 			dispatch(storePublications(publications));
-			if(callback) { callback() }
+			if(callback) callback(publications)
 		})
 		.catch((reason) => {
-			console.error('ERROR: getPublications ', reason)
+			error(reason)
 		})
 	}
 }
 
-export function submitPublication (form, callback, error = reason => console.error(reason)) {
+export function getItem (doi) {
 	return function(dispatch) {
-		fetch(`http://mdt.crossref.org/mdt/v1/work`, { 
-			method:'post', 
+		if(doi){
+			return Promise.resolve(
+				fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
+				.then(publication => publication.json())
+			).then((publication) => {
+				dispatch(returnItem(publication))
+				return publication
+			})
+		}
+	}
+}
+
+
+
+export function submitPublication (form, callback, error = reason => console.error('ERROR in submitPublication', reason)) {
+	return function(dispatch) {
+		fetch(`http://mdt.crossref.org/mdt/v1/work`, {
+			method:'post',
 			headers: client.headers,
 			body: JSON.stringify({
 				message: {
@@ -61,7 +155,7 @@ export function submitPublication (form, callback, error = reason => console.err
 					'type': 'Publication',
 					'mdt-version': form['mdt-version'] || '0',
 					'status': 'draft',
-					'content': '<Journal xmlns="http://www.crossref.org/xschema/1.1"><journal_metadata language="' + form.language + '"><full_title>' + form.title + '</full_title><abbrev_title>' + form.abbreviation + '</abbrev_title><issn media_type="print"></issn><issn media_type="electronic">' + form.electISSN + '</issn><doi_data><doi>'+form.DOI+'</doi><resource>'+form.url+'</resource></doi_data></journal_metadata><archive_locations><archive name="' + form.archivelocation + '"/></archive_locations></Journal>',
+					'content': publicationXml(form),
 					'contains': []
 				}
 			})
@@ -69,6 +163,7 @@ export function submitPublication (form, callback, error = reason => console.err
 			fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${form.DOI}`, { headers: client.headers })
 			.then(publication => publication.json())
 			.then(publication => {
+				dispatch(storePublications(publication));
 				if(callback) callback(publication)
 			})
 			.catch( reason => {
@@ -80,3 +175,13 @@ export function submitPublication (form, callback, error = reason => console.err
 		})
 	}
 }
+
+
+//Experimental ReduxRelay
+export function testReduxRelay (form, callback, error = (reason) => console.error('ERROR in submitReduxForm', reason)) {
+  return function(dispatch) {
+  	if (callback) callback();
+  }
+}
+
+

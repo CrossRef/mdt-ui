@@ -8,17 +8,20 @@ function isValidDOI (doi) {
 }
 
 function dupCheck (doi) {
-  if (doi.length > 0) {
-    if (isValidDOI(doi)) {
-      return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
-      .then((data) => {return data.status === 200}))
+  if(doi) {
+    if (doi.length > 0) {
+      if (isValidDOI(doi)) {
+        return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
+        .then((data) => {return data.status === 200}))
+      } else {
+        return (false, false)
+      }
     } else {
-      return (false, false)
+      return false
     }
   } else {
     return false
   }
-
 }
 
 const checkDupeDOI = function (doi, callback) {

@@ -1,22 +1,27 @@
-.openModal {
+.ReactModal__Body--open {
     overflow: hidden;
+    margin-right: 15px; //necessary because overflow hidden removes scroll bar which shifts everything to the right. might be different for nonChrome browsers
 }
+
 .ReactModal__Overlay--after-open {
     background-color: rgba(0, 0, 0, 0.5) !important;
     overflow-y: scroll;
+
     .ReactModal__Content--after-open {
+        position: relative;
         border: 0 !important;
         padding: 0 !important;
         margin: auto !important;
         max-width: 860px;
-        position: relative;
+
         .modal {
-            width: 100%;
             .titlebar {
                 background: #4F5757;
-                min-height: 96px;
+                min-height: 70px;
                 width: 100%;
                 .titlebarinner {
+                    position: relative;
+                    top: 20px;
                     color: #FFFFFF;
                     display: table;
                     float: none;
@@ -26,7 +31,7 @@
                     .title {
                         display: table-cell;
                         vertical-align: middle;
-                        width: 50%;
+                        width: 100%;
                     }
                     .titleclose {
                         display: table-cell;
@@ -45,10 +50,24 @@
             .modalbody {
                 width: 100%;
                 .modalboddyinner {
-                    margin: 20px auto;
-                    width: 90%;
+                    margin: auto auto 20px auto;
+                    width: 100%;
                 }
             }
         }
     }
+
+    .defaultModal {
+        position: relative;
+        top: 40px;
+        left: auto;
+        right: auto;
+        bottom: 40px;
+        border: 1px solid rgb(204, 204, 204);
+        background: rgb(255, 255, 255);
+        overflow: auto; border-radius: 4px;
+        outline: none; padding: 20px;
+    }
+
 }
+

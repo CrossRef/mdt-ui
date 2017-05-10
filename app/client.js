@@ -17,6 +17,10 @@ let client = reduxApi({
         type: 'SET_AUTH_BEARER',
         payload: `${data.token_type} ${data.access_token}`
       })
+      dispatch({
+        type: 'CROSSMARK',
+        payload: false
+      })
       dispatch(client.actions.getCRState())
     }]
   },
@@ -37,8 +41,9 @@ let client = reduxApi({
       const scrubbedData = {...data}; // Use scrubbedData to remove modal component of data being pulled from server, in case it got saved.
       delete scrubbedData.modal;
       delete scrubbedData.publications;
+      delete scrubbedData.crossmarkAuth;
 
-      scrubbedData.dois = [...scrubbedData.dois, ...scrubbedData.application.DOIs];
+      scrubbedData.dois = [...(scrubbedData.dois || []), ...(scrubbedData.application.DOIs || [])];
       scrubbedData.dois = removeDuplicates(scrubbedData.dois);
 
       if (scrubbedData && !_.isEmpty(scrubbedData)) {

@@ -1,0 +1,80 @@
+@import 'toastr.css';
+
+.depositCartHolder {
+    position: relative;
+    .topnav {
+        left: -80px;
+        position: absolute !important;
+        top: 85px;
+        .toast-success {
+            box-shadow: none !important;
+            webkit-box-shadow: none !important;
+            background: none !important;
+            padding: 15px 0 0 0 !important;
+            background-image: none !important;
+            opacity: 0.98 !important;
+            .toast-title {
+                .toastTitle {
+                    position: relative;
+                    .arrow {
+                        background-image: url(images/Toast/Triangle.svg);
+                        background-repeat: no-repeat;
+                        background-size: 40px 20px;
+                        position: absolute;
+                        top: -16px;
+                        left: 136px;
+                        width: 40px;
+                        height: 22px;
+                        z-index: 9999999;
+                    }
+                }
+            }
+
+            .toast-close-button {
+                display: none;
+            }
+
+            .toast-message {
+                background: #3EB1C8;
+                padding: 10px;
+                position: relative;
+                top: 4px;
+                .toastMessage {
+                    width: 100%;
+                    .iconHolder {
+                        display: table-cell;
+                        vertical-align: middle;
+                        width: 20%;
+                        img {
+                            display: block;
+                            padding: 10px;
+                            width: 100%;
+                        }
+                    }
+                    .message {
+                        display: table-cell;
+                        line-height: initial;
+                        text-align: left;
+                        vertical-align: middle;
+                        width: 80%;
+                    }
+                }
+            }
+
+        }
+    }
+    .remove-message {
+        .toast-success {
+            .toast-title {
+                .toastTitle {
+                    .arrow {
+                        background-image: url(images/Toast/Triangle_Red.svg);
+                    }
+                }
+            }
+            .toast-message {
+                background: #EE6068;
+            }
+        }
+    }
+}

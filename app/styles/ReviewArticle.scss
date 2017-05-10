@@ -1,33 +1,41 @@
-.titlebarinner {
-    position: relative;
-    top: 20px;
-    .title {
-        width: 100% !important;
-        .innerTitleHolder {
-            display: table-cell;
-            height: 100%;
-            padding: 10px 0;
-            width: 730px;
-            .innterTitleHolderIcon {
-                float: left;
-                height: 100%;
-                padding: 0 10px 0 0;
-                img {
-                    height: 32px;
-                    position: relative;
-                    top: 0px;
+.reviewModal {
+    .modal {
+        .titlebar {
+            .titlebarinner {
+                .title {
+                    .innerTitleHolder {
+                        display: table-cell;
+                        height: 100%;
+                        width: 730px;
+                        .innterTitleHolderIcon {
+                            float: left;
+                            height: 100%;
+                            padding: 0 10px 0 0;
+                            img {
+                                height: 32px;
+                                position: relative;
+                                top: 0px;
+                            }
+                        }
+                        .innerTitleHolderText {
+                            width: 100%;
+                        }
+                    }
                 }
             }
-            .innerTitleHolderText {
-                width: 100%;
+        }
+        .modalbody {
+            .modalboddyinner {
+                margin: 20px 32px 20px 0 !important;
             }
         }
     }
 }
+
 .ReviewArticleCard {
     margin: 0px 0 40px 0;
     position: relative;
-    text-align: right;
+    //text-align: right;
     .modalContainer {
         margin: 0 auto;
         width: 960px;
@@ -75,10 +83,6 @@
     }
 }
 
-.modalboddyinner {
-    margin: 20px 32px 20px 0 !important;
-    width: 100% !important;
-}
 
 .addToCart {
     float: right;

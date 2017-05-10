@@ -2,17 +2,20 @@
 @import 'switch.min.css';
 @import 'AddArticle.scss';
 
-.longModal {
-    overflow: hidden;
-}
 
-.issueInnerBody {
-    margin: 0 auto !important;
-    width: 100% !important;
-}
+.issueModalContentStyle {} //old className before refactoring
 
-.issueModalContentStyle {
-    position: relative;
+.addIssueModal {
+    .modal {
+        .titlebar {
+            .titlebarinner {
+                .title {}
+            }
+        }
+        .modalbody {
+            .modalboddyinner {}
+        }
+    }
 }
 
 .addIssueCard {
@@ -24,6 +27,15 @@
         padding: 10px 0;
         width: 100%;
     }
+}
+
+.addIssue {
+    background: #FFFFFF;
+    cursor: pointer;
+    border: 0;
+    color: #4F5858;
+    padding: 10px 0;
+    width: 100%;
 }
 
 .addIssues {
@@ -76,4 +88,10 @@
             width: 100% !important;
         }
     }
+}
+
+.button-left {
+    color: -webkit-link;
+    cursor: pointer;
+    text-decoration: underline;
 }

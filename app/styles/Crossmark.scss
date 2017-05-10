@@ -1,0 +1,46 @@
+.addholder {
+  a.tooltips {
+    position: relative;
+    display: inline;
+  }
+  a.tooltips div {
+
+    position: absolute;
+    width: 220px;
+    color: #FFFFFF;
+    background: #616B6B;
+    height: 244px;
+    line-height: 30px;
+    text-align: left;
+    visibility: hidden;
+    border-radius: 0px;
+    padding: 20px 0 0 20px;
+  }
+  a.tooltips div:after {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 65%;
+    margin-left: -8px;
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid #616B6B;
+    border-right: 8px solid transparent;
+    border-left: 8px solid transparent;
+  }
+
+  a.tooltips div {
+    visibility: visible;
+    opacity: 1;
+    top: 55px;
+    right: -25%;
+    //margin-left: -20px;
+    z-index: 999;
+    .crossmark {
+      padding: 0;
+      margin: 0;
+      background-color: #616B6B !important;
+      color: white;
+    }
+  }
+}

@@ -150,8 +150,8 @@ input.height64, textarea.height64, select.height64 {
   .topbar {
     background: #616B6B;
     color: #FFFFFF;
-          min-height: 50px;
-          padding: 10px 0 0;
+    min-height: 67px;
+    padding: 10px 0 0;
     width: 100%;
     .titleholder {
       display: table;
@@ -166,13 +166,14 @@ input.height64, textarea.height64, select.height64 {
         width: 100%;
         .titleIconHolder {
           float: left;
-          margin: 0 20px 0 0;
+          margin: 7px 20px 0 0;
           width: 30px;
         }
         .articletitle {
           float: left;
-                width: 90%;
+          width: 90%;
           vertical-align: middle;
+          margin-top: 10px;
         }
       }
     }
@@ -545,6 +546,15 @@ input.height64, textarea.height64, select.height64 {
             }
           }
         }
+        .textAlignSelect {
+          margin-top: 17px
+        }
+        .dateAlignSelect {
+          margin-top: 34px
+        }
+        .floatRight{
+          float: right
+        }
         .addGrant {
           a {
             background: #FFFFFF;
@@ -664,4 +674,12 @@ input.height64, textarea.height64, select.height64 {
 *::-ms-backdrop, .titleIconHolder {
   position: relative;
   top: -50px;
+}
+
+.reviewArticleButtonDiv {
+  text-align: right;
+  width: 960px;
+  margin-right: auto;
+  margin-left: auto;
+  margin-bottom: 40px
 }

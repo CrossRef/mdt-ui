@@ -1,0 +1,53 @@
+@import 'mixins.scss';
+@import 'switch.min.css';
+
+.depositReviewItem {
+    .itemTitle {
+        background: #4F5757;
+        color: #FFF;
+        padding: 22px 0 42px 20px;
+        .titleinnholder {
+            cursor: pointer;
+            float: left;
+            .arrowHolder {
+                img {
+                    margin: 0 20px 0 0;
+                    transform: rotate(90deg);
+                    width: 20px;
+                }
+            }
+            .openArrowHolder {
+                img {
+                    transform: rotate(180deg);
+                }
+            }
+        }
+        .addholder {
+            float: right;
+            padding: 0 40px 0 0;
+            a {
+                cursor: pointer;
+                color: black;
+                background: #FFF;
+                border: 1px solid #4f5858;
+                display: inline-block;
+                width: 96px;
+                height: 24px;
+                line-height: 1.7;
+                font-size: 13px;
+                text-decoration: none;
+                text-align: center;
+            }
+        }
+    }
+    .showItemInfo {
+        display: block;
+        .reviewContent {
+            position: relative;
+            top: 20px;
+        }
+    }
+    .hideItemInfo {
+        display: none;
+    }
+}

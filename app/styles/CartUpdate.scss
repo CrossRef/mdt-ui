@@ -1,0 +1,28 @@
+@import 'mixins.scss';
+@import 'switch.min.css';
+
+.depositCartHolder {
+    position: relative;
+}
+
+.cartUpdate{
+    display: none;
+    position: absolute;
+    .messageHolder {
+    }
+}
+
+.showCartUpdateMessage {
+    display: inline-block;
+    top: 50px;
+    left: (158px/2);
+}
+
+.cartItemCount {
+    background: #3EB1C8;
+    border-radius: 10px;
+    color: #FFF;
+    padding: 10px;
+    position: relative;
+    left: 10px;
+}

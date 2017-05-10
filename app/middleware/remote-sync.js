@@ -1,4 +1,4 @@
-import fetch from '../utilities/fetch'
+//import fetch from '../utilities/fetch'
 import client from '../client'
 
 import { REHYDRATE } from 'redux-persist/constants'
@@ -10,6 +10,13 @@ var blacklistActions = [
   'SET_AUTH_BEARER', // Setting a new auth token shouldn't over-write the existing state
   'PUBLICATIONS',
   'MODAL',
+  'CART_UPDATE',
+  'GET_CART',
+  'CLEAR_CART',
+  'GET_ITEM',
+  'REMOVE_FROM_CART',
+  'REDUXFORM_ADD',
+  `CROSSMARK`
 ]
 
 const BREAKER_ACTION = 'SET_STATE'
@@ -40,10 +47,18 @@ export default store => next => action => {
 
         for (var property in reduxState) {
           if (reduxState.hasOwnProperty(property) && !reduxState[property].hasOwnProperty('sync')) {
-            if(property !== 'modal' && property !== 'publications') postingState[property] = reduxState[property]
+            if( //scrub data being synced to server
+              property !== 'modal' &&
+              property !== 'publications' &&
+              property !== 'reduxForm'
+            )
+              postingState[property] = reduxState[property]
           }
         }
-
+        //Scrub dois array
+        postingState.dois = postingState.dois.filter( element => {
+          return element ? true : false
+        });
         postingState.dois = removeDuplicates(postingState.dois);
 
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)

@@ -1,7 +1,10 @@
 let store = null
 
-const objectSearch = function(object, search) {
+const objectSearch = function(object, search, returnVal) {
     var r = undefined
+    if (returnVal) {
+        r = returnVal
+    }
     Object.keys(object).some(function (k) {
         if (object[k]) {
             if (k === search) {

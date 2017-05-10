@@ -29,3 +29,5 @@ wrappedFetch.registerStore = function (storeRef) {
 }
 
 export default wrappedFetch
+
+//export default fetch;

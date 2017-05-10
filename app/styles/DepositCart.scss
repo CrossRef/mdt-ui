@@ -1,0 +1,350 @@
+@import 'mixins.scss';
+@import 'switch.min.css';
+@import 'AddArticle.scss';
+
+.deposittitle {
+    background: #596565;
+    width: 50px;
+}
+
+.waitMessage {
+    text-align: center;
+    position:fixed;
+    width: 400px;
+    height: 100px;
+    left: 34%;
+    top: 46%;
+    img {
+        height: 100px;
+        animation: spin 2s linear infinite;
+    }
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.result {
+    margin-top: 40px
+}
+
+.resultDiv {
+    margin-top:50px;
+    margin-bottom:100px;
+    .resultTopbar {
+        border: 1px solid #dbdbdb;
+        text-align: center;
+        height: 96px;
+        background-color: #f2f2f2;
+        padding-top: 20px;
+        h3 { margin:0; padding: 0; }
+        p{ margin:0; padding:0; font-size:.9em }
+    }
+    .resultIndicatorBar {
+        border: 1px solid #dbdbdb;
+        height: 144px;
+        .leftIndicator {
+            float: left;
+            margin-top: 15px;
+            margin-left: 96px;
+            .leftImage {
+                width: 112px;
+            }
+            .leftMessage {
+                margin-left: 35px;
+                float: right;
+                width: 272px;
+            }
+        }
+        .rightIndicator {
+            float: right;
+            margin-top: 15px;
+            .rightImage {
+                width: 112px;
+            }
+            .rightMessage {
+                margin-left: 35px;
+                float:right;
+                width: 272px;
+            }
+        }
+
+    }
+    .titleStatusBar {
+        border: 1px solid #dbdbdb;
+        height: 32px;
+        background-color: rgb(89, 101, 101);
+        color: white;
+        padding-top: 7px;
+        .leftTitle {
+            float: left;
+            margin-left: 70px;
+        }
+        .rightStatus {
+            float:right;
+            margin-right: 345px;
+        }
+    }
+    .resultCard {
+        border: 1px solid #dbdbdb;
+        .publicationTitleBar {
+            height: 48px;
+            background-color: rgb(89, 101, 101);
+            color:white;
+            h3{
+                margin:0;
+                padding:0
+            }
+            padding-left: 70px;
+            padding-top: 13px;
+        }
+        .articleBar {
+            height: 48px;
+            .articleTitle {
+                float:left;
+                margin-left: 70px;
+            }
+            .articleResult {
+                float:right;
+                margin-right: 345px;
+
+            }
+        }
+    }
+
+
+}
+
+
+
+
+.opacity {
+    opacity: .1;
+
+}
+
+.depositPage {
+    margin: 0 auto;
+    text-align: left;
+    width: 960px;
+    .pageTitle {
+        font-size: 26px;
+        text-align: left;
+        margin: 0;
+        color: #4f5858;
+        padding: 35px 0;
+    }
+    .buttonHolder {
+        display: block;
+        padding: 0 0 35px 0;
+        width: 100%;
+        .buttonInnerHolder {
+            width: 100%;
+            display: block;
+            padding: 0 0 35px 0;
+            .ReviewButtonHolder {
+                float: left;
+                a {
+                    cursor: pointer;
+                    color: black;
+                    background: #FFF;
+                    border: 1px solid #4f5858;
+                    display: inline-block;
+                    width: 192px;
+                    height: 48px;
+                    line-height: 48px;
+                    font-size: 16px;
+                    text-decoration: none;
+                    text-align: center;
+                }
+            }
+            .DepositButtonHolder {
+                float: right;
+                a {
+                    cursor: pointer;
+                    display: inline-block;
+                    width: 192px;
+                    height: 48px;
+                    line-height: 48px;
+                    background: #3eb1c8;
+                    color: #fff;
+                    font-size: 16px;
+                    text-decoration: none;
+                    text-align: center;
+                }
+            }
+        }
+    }
+
+
+}
+
+.depositTopBorder{
+    border: 1px solid #E3E6E9;
+    border-bottom: 0px;
+    margin: 0 auto;
+    padding: 15px 0;
+    text-align: left;
+    width: 960px;
+    .item {
+        margin: 0;
+        padding: 0;
+        .stateIcon{
+            width: 10%;
+            .iconHolder {
+                display: inline-block;
+                width: 35%;
+                img {
+                    display: block;
+                    width: 100%;
+                }
+            }
+        }
+        .title {
+            width: 30%;
+        }
+        .status {
+            width: 10%;
+        }
+        .action {
+            width: 10%;
+        }
+        .errorholder {
+            width: 30%;
+        }
+    }
+}
+.depositCartRows {
+    border: 1px solid #E3E6E9;
+    border-top: 0px;
+}
+.depositpage {
+    margin: 0 auto;
+    text-align: left;
+    width: 960px;
+    table {
+        margin: 0;
+        padding: 0;
+        border-spacing: 0;
+        border-collapse: separate;
+    }
+    table, tr {
+        width: 93%;
+        td {
+            height: initial;
+            padding: 10px 0;
+        }
+        td:first-child {
+            padding: 10px 0 10px 10px;
+        }
+        .errorholder {
+            width: 10%;
+        }
+    }
+
+    .itemholder {
+        .item {
+            margin: 0;
+            padding: 0;
+            .stateIcon{
+                width: 10%;
+                .iconHolder {
+                    display: inline-block;
+                    width: 35%;
+                    img {
+                        display: block;
+                        width: 100%;
+                    }
+                }
+            }
+            .title {
+                width: 60%;
+            }
+            .status {
+                width: 10%;
+            }
+            .action {
+                width: 10%;
+                a {
+                    cursor: pointer;
+                }
+            }
+            .errorholder {
+                width: 30%;
+                position: relative;
+                @extend .errorHolder;
+                .fullError {
+                    height: initial;
+                    right: 70px;
+                }
+                .errorHolder {
+                    .toolTipHolder {
+                        .tooltips {
+                            .toolmsgholder {
+                                top: -70px;
+                                width: 187px;
+                                &:after {
+                                    top: 70px;
+                                }
+                            }
+                        }
+                    }
+                }
+
+            }
+        }
+        .rowError {
+            background: #fff0f0;
+        }
+        .issuerow {
+            background: #E7E7E7;
+        }
+    }
+    .depositpubtitle {
+        background: #596565;
+        color: #FFF;
+        padding: 10px 0 10px 37px;
+    }
+}
+
+.titleHolderTD {
+    padding: 0 !important;
+}
+
+.aboveTitle {
+    width: 50%;
+}
+
+.disabledDeposit {
+    background: #A6D8E5 !important;
+}
+
+.emptycartbutton {
+    background: #FFF !important;
+    color: #000;
+}
+
+.EmptyHolder {
+    display: block;
+    margin: 0 auto;
+    width: 960px;
+    .emptyTitle {
+        width: 100%;
+        display: block;
+        font-size: 28px;
+        color: #000;
+        text-align: center;
+    }
+    .emptyBoxHolder {
+        width: 100%;
+        display: block;
+        text-align: center;
+        img {
+            display: block;
+            width: 96px;
+            height: 96px;
+            margin: 0 auto;
+        }
+    }
+}

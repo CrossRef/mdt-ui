@@ -11,7 +11,7 @@ import fetch from './utilities/fetch'
 import { STContainer, myDecConfig, setConfig } from 'my_decorators'
 
 setConfig({
-	stateTracker: false,
+	stateTracker: true,
 	updateReports: { mount: false, update:false, pass:false, render: false }
 });
 
@@ -19,6 +19,9 @@ const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
 fetch.registerStore(store)
+
+
+
 
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}><div>
