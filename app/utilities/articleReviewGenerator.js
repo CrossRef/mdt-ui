@@ -197,7 +197,7 @@ const articleReviewGenerator = function (publication, article, parsedAlready, fu
                 {
                     (func) ?
                     <div>
-                        <button className='addToCart' onClick={()=>{func}} >Add To Cart</button>
+                        <button className='addToCart' onClick={func} >Add To Cart</button>
                     </div>
                     : ''
                 }
