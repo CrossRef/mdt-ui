@@ -31,10 +31,6 @@ export function cartUpdate(article) {
 	return { type: 'CART_UPDATE', cart: article }
 }
 
-export function returnItem(publication) {
-	return { type: 'GET_ITEM', publication: publication}
-}
-
 export function clearCart() {
 	return { type: 'CLEAR_UPDATE' }
 }
@@ -44,22 +40,6 @@ export function removeFromCart(doi, cart) {
 }
 
 // Async Action Creators
-
-export function authenticate () {
-	return function (dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/work`, {headers: 'poop'})
-      .then((response) => {
-    		if(response.status === 401 ) {
-    			console.error('Unauthorized, token has expired');
-          browserHistory.push('/');
-				}
-    		//do something
-			})
-			.catch(response => {
-				console.error('Error in authentication: ', response)
-			})
-  }
-}
 
 export function deposit (cartArray, callback, error = (reason) => console.error(reason)) {
   return function(dispatch) {
@@ -74,8 +54,9 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
       .then(result => {
         let resultArray = result.message;
         resultArray = resultArray.map((item) => {
-          item.result = xmlParse(item.result)
-          return item
+          const getXML = xmlParse(item.result);
+          if(getXML !== undefined) item.result = getXML;
+          return item;
         });
         console.log('DEPOSIT RESULT', resultArray);
         if(callback) callback(resultArray)
@@ -134,7 +115,6 @@ export function getItem (doi) {
 				fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
 				.then(publication => publication.json())
 			).then((publication) => {
-				dispatch(returnItem(publication))
 				return publication
 			})
 		}
@@ -176,12 +156,5 @@ export function submitPublication (form, callback, error = reason => console.err
 	}
 }
 
-
-//Experimental ReduxRelay
-export function testReduxRelay (form, callback, error = (reason) => console.error('ERROR in submitReduxForm', reason)) {
-  return function(dispatch) {
-  	if (callback) callback();
-  }
-}
 
 

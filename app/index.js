@@ -11,7 +11,7 @@ import fetch from './utilities/fetch'
 import { STContainer, myDecConfig, setConfig } from 'my_decorators'
 
 setConfig({
-	stateTracker: true,
+	stateTracker: false,
 	updateReports: { mount: false, update:false, pass:false, render: false }
 });
 

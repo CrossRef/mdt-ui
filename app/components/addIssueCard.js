@@ -227,12 +227,12 @@ export default class AddIssueCard extends Component {
 
         //only need print year and/or online year, not both
         var hasPrintYear = false, hasOnlineYear = false
-        if ((this.state.issue.printDateYear.length > 0) || (this.state.issue.printOnlineYear.length > 0)) {
-          hasDate = true
+        if ((this.state.issue.printDateYear.length > 0) || (this.state.issue.onlineDateYear.length > 0)) {
+          //hasDate = true
           if ((this.state.issue.printDateYear.length > 0)) {
             hasPrintYear = true
           }
-          if ((this.state.issue.printOnlineYear.length > 0)) {
+          if ((this.state.issue.onlineDateYear.length > 0)) {
             hasOnlineYear = true
           }
         }
@@ -248,10 +248,10 @@ export default class AddIssueCard extends Component {
         }
 
         if (hasPrintYear) { // has print year, don't care if there is a online year
-          errorState.onlineDateYear = {$set: false}
+          errorStates.onlineDateYear = {$set: false}
         }
         if (hasOnlineYear) { // has online year, don't care if there is a print year
-          errorState.printDateYear = {$set: false}
+          errorStates.printDateYear = {$set: false}
         }
 
         errorStates.dupeissuedoi = (this.state.issueDoiDisabled) ? {$set: false} : errorStates.dupeissuedoi
@@ -833,7 +833,7 @@ export default class AddIssueCard extends Component {
                           </div>
                         </div>
                         <div className='requrefieldholder'>
-                          <div className={'requiredholder' + (((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>>
+                          <div className={'requiredholder' + (((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>
                             <div className='required height32'>
                               {((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? <span>*</span> : <span></span>)}
                             </div>

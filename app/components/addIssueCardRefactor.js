@@ -5,6 +5,8 @@ import { browserHistory } from 'react-router'
 import update from 'immutability-helper'
 import _ from 'lodash'
 import Switch from 'react-toggle-switch'
+import { stateTrackerII } from 'my_decorators'
+
 import ModalCard from './modalCard'
 import SubItem from './SubItems/subItem'
 import client from '../client'
@@ -64,7 +66,7 @@ const defaultState = (handle = null) => ({
   }]
 })
 
-
+@stateTrackerII
 export default class AddIssueCard extends Component {
   constructor (props) {
     super(props)
@@ -189,6 +191,18 @@ export default class AddIssueCard extends Component {
     })
 
     return checkDupeDOI([this.state.issue.issueDoi, this.state.issue.volumeDoi], (isDupe , isValid) => {
+
+        var hasPrintYear = false, hasOnlineYear = false
+        if ((this.state.issue.printDateYear.length > 0) || (this.state.issue.onlineDateYear.length > 0)) {
+          //hasDate = true
+          if ((this.state.issue.printDateYear.length > 0)) {
+            hasPrintYear = true
+          }
+          if ((this.state.issue.onlineDateYear.length > 0)) {
+            hasOnlineYear = true
+          }
+        }
+
         //we ONLY care about issueDOI if there is a issue URL
         // of course issue URL is required, so doi is required, kinda
         errorStates = {
@@ -199,6 +213,13 @@ export default class AddIssueCard extends Component {
           dupeissuedoi: {$set: (this.state.issue.issueDoi.length > 0) ? isDupe[0] : false }, // we only care IF there is a DOI
           issuedoi: {$set: ((this.state.issue.issueDoi.length === 0) && (isURL(this.state.issue.issueUrl))) }, // we only care IF there is a DOI
           invalidissuedoi: {$set: ((this.state.issue.issueDoi.length > 0) && (isURL(this.state.issue.issueUrl))) ? !isDOI(this.state.issue.issueDoi) : false } // we only care IF there is a DOI
+        }
+
+        if (hasPrintYear) { // has print year, don't care if there is a online year
+          errorStates.onlineDateYear = {$set: false}
+        }
+        if (hasOnlineYear) { // has online year, don't care if there is a print year
+          errorStates.printDateYear = {$set: false}
         }
 
         errorStates.dupeissuedoi = (this.state.issueDoiDisabled) ? {$set: false} : errorStates.dupeissuedoi
@@ -574,15 +595,15 @@ export default class AddIssueCard extends Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder dateselectrequire'>
+                        <div className={'requiredholder' + (((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>
                           <div className='required height32'>
-                            <span>*</span>
+                            {((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? <span>*</span> : <span></span>)}
                           </div>
                         </div>
                         <div className='field'>
                           <div className='datepickerholder'>
                             <div className='dateselectholder'>
-                              <div>Year (*)</div>
+                              <div>Year {((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
                               <div>{this.makeDateDropDown('issue.printDateYear', 'y', this.state.issue.printDateYear, this.state.errors.printDateYear, 0, this, 'issue')}</div>
                             </div>
                             <div className='dateselectholder'>
@@ -612,15 +633,15 @@ export default class AddIssueCard extends Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder dateselectrequire'>
+                        <div className={'requiredholder' + (((this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>
                           <div className='required height32'>
-                            <span>*</span>
+                            {((this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0 ? <span>*</span> : <span></span>)}
                           </div>
                         </div>
                         <div className='field'>
                           <div className='datepickerholder'>
                             <div className='dateselectholder'>
-                              <div>Year (*)</div>
+                              <div>Year {((this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0 ? '(*)' : '')}</div>
                               <div>{this.makeDateDropDown('issue.onlineDateYear', 'y', this.state.issue.onlineDateYear, this.state.errors.onlineDateYear, 0, this, 'issue')}</div>
                             </div>
                             <div className='dateselectholder'>

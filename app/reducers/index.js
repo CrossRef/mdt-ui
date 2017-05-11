@@ -16,7 +16,6 @@ const combinedReducers = combineReducers({
   reduxForm: reduxFormReducer,
   crossmarkAuth: crossmarkAuthReducer,
   cart: cartReducer,
-  items: getItemReducer
 })
 
 export default (state, action) => {
@@ -165,29 +164,4 @@ function cartReducer (state = [], action) {
   }
 }
 
-
-
-function getItemReducer (state = [], action) {
-  switch (action.type) {
-    case 'GET_ITEM':
-      if(Array.isArray(action.cart)) {
-
-        var inCartItem = _.find(state, (item) => {
-          return item.doi === action.cart[0].doi
-        })
-
-
-        if (!inCartItem) { //only add if doi does not exist
-          return [...state, ...action.cart]
-        } else {
-          return [...state]
-        }
-      } else {
-        return [...state, action.cart]
-      }
-      return [...state, action.cart]
-    default:
-      return state
-  }
-}
 

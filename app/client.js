@@ -19,7 +19,7 @@ let client = reduxApi({
       })
       dispatch({
         type: 'CROSSMARK',
-        payload: false
+        payload: true
       })
       dispatch(client.actions.getCRState())
     }]

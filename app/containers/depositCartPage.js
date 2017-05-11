@@ -24,8 +24,8 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxCartUpdate: cartUpdate,
-  reduxGetItem: getItem,
   reduxRemoveFromCart: removeFromCart,
+  asyncGetItem: getItem,
   asyncDeposit: deposit
 }, dispatch)
 
@@ -36,8 +36,8 @@ export default class DepositCartPage extends Component {
   static propTypes = {
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-    reduxGetItem: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
+    asyncGetItem: is.func.isRequired,
     asyncDeposit: is.func.isRequired,
     cart: is.array.isRequired,
     publications: is.object.isRequired
@@ -71,7 +71,7 @@ export default class DepositCartPage extends Component {
         if (!doi) {
           doi = item.article.doi
         }
-        promises.push(this.props.reduxGetItem(doi).then((data)=>{return data}))
+        promises.push(this.props.asyncGetItem(doi).then((data)=>{return data}))
       })
 
       Promise.all(promises).then((fullData) => {
@@ -104,7 +104,7 @@ export default class DepositCartPage extends Component {
         //need to get publication meta data as well
         var promises = []
         for(var i = 0; i < mergedCart.length; i++) {
-          promises.push(this.props.reduxGetItem(mergedCart[i].doi).then((data)=>{
+          promises.push(this.props.asyncGetItem(mergedCart[i].doi).then((data)=>{
             return data
           }))
         }
@@ -112,6 +112,7 @@ export default class DepositCartPage extends Component {
           for(var i = 0; i < publicationData.length; i++) {
             mergedCart[i].content = publicationData[i].message.content
           }
+
           _this.setState({
             fullCart: update(this.state.fullCart, {$set: mergedCart })
           })
@@ -175,17 +176,34 @@ export default class DepositCartPage extends Component {
   }
 
   render () {
-    const resultCount = {success: 0, failed: 0};
+    const resultCount = {Success: 0, Failure: 0};
     const resultData = {};
     if(this.state.depositResult) {
       this.state.depositResult.forEach((result, index)=>{
-        const pubDoi = result.result.doi_batch_diagnostic.record_diagnostic[0].doi;
-        const pubTitle = this.props.publications[pubDoi].message.title.title;
-        const articleTitle = this.props.cart[index].title.title;
-        let articleStatus = result.result.doi_batch_diagnostic.record_diagnostic[1]['-status'];
-        if (articleStatus = 'success') resultCount.success = resultCount.success + 1;
+        let pubDoi, pubTitle, articleTitle, articleStatus;
+        let error = {};
+        const articleInfo = this.props.cart.find((cartItem)=>{
+          return cartItem.doi === result['DOI:']
+        });
+        pubDoi = articleInfo.pubDoi;
+        pubTitle = this.props.publications[pubDoi].message.title.title;
+        articleTitle = articleInfo.title.title;
+        if(typeof result.result === 'string') {
+          articleStatus = 'Failure';
+          error.errorMessage = result.result;
+        } else if (typeof result.result === 'object') {
+          articleStatus = result.result.doi_batch_diagnostic.record_diagnostic[1]['-status'];
+          if(articleStatus === 'Failure') {
+            error.errorMessage = result.result.doi_batch_diagnostic.record_diagnostic[1].msg;
+          }
+        } else {
+          articleStatus = 'Failure';
+          error.errorMessage = 'Unknown Error';
+        }
 
-        resultData[pubTitle] = [...(resultData[pubTitle] || []), {title: articleTitle, status:articleStatus}]
+        resultCount[articleStatus]++;
+
+        resultData[pubTitle] = [...(resultData[pubTitle] || []), {title: articleTitle, status:articleStatus, ...error}]
 
       }); console.log(resultData)
     }
@@ -217,13 +235,9 @@ export default class DepositCartPage extends Component {
           </div>
         }
 
-        {this.state.status === 'processing' &&
-          <WaitMessage/>
-        }
+        { this.state.status === 'processing' && <WaitMessage/> }
 
-        {this.state.status === 'result' &&
-          <DepositResult resultCount={resultCount} resultData={resultData} />
-        }
+        { this.state.status === 'result' && <DepositResult resultCount={resultCount} resultData={resultData} /> }
       </div>
     )
   }

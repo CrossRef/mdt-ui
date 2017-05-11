@@ -9,7 +9,7 @@ import Filter from './filter'
 import ActionBar from './actionBar'
 import TitleBar from './titleBar'
 
-
+@stateTrackerII
 export default class Publication extends Component {
 
   static propTypes = {
@@ -29,29 +29,30 @@ export default class Publication extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      toDepostiCartItems: []
+      toDepositCartItems: []
     }
   }
 
   handleAddToList (item) {
-    var toDepostiCartItems = this.state.toDepostiCartItems
-    toDepostiCartItems.push(item)
+    var toDepositCartItems = this.state.toDepositCartItems
+    item.article.pubDoi = this.props.publication.message.doi;
+    toDepositCartItems.push(item)
     this.setState({
-      toDepostiCartItems: update(this.state.toDepostiCartItems, {$set: toDepostiCartItems })
+      toDepositCartItems: update(this.state.toDepositCartItems, {$set: toDepositCartItems })
     })
   }
 
   handleRemoveFromList(item) {
-    var toDepostiCartItems = this.state.toDepostiCartItems
-    toDepostiCartItems.splice(toDepostiCartItems.indexOf(item),1)
+    var toDepositCartItems = this.state.toDepositCartItems
+    toDepositCartItems.splice(toDepositCartItems.indexOf(item),1)
     this.setState({
-      toDepostiCartItems: update(this.state.toDepostiCartItems, {$set: toDepostiCartItems })
+      toDepositCartItems: update(this.state.toDepositCartItems, {$set: toDepositCartItems })
     })
   }
 
   handleAddCart = () => {
-    for(var i=0; i<this.state.toDepostiCartItems.length; i++){
-      this.props.reduxCartUpdate([this.state.toDepostiCartItems[i].article])
+    for(var i=0; i<this.state.toDepositCartItems.length; i++){
+      this.props.reduxCartUpdate([this.state.toDepositCartItems[i].article])
     }
   }
 

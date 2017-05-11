@@ -319,10 +319,10 @@ export default class AddPublicationCard extends Component {
           <div className='fieldRowHolder buttonholder'>
             <div className='fieldinput' />
             <div className='fieldinput'>
-              <input
+              <button
                 onClick={this.closeModal}
                 className='button-anchor button-white-cancel'
-              />
+              >Close</button>
               <input
                 type='submit'
                 className='button-anchor'

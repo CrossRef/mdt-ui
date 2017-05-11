@@ -136,7 +136,6 @@ export default class AddArticleCard extends Component {
         this.setState({doiDisabled: true})
 
         const parsedArticle = xmldoc(publication.message.contains[0].content)
-
         this.setState({version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1)})
 
         // article loading
@@ -593,6 +592,7 @@ export default class AddArticleCard extends Component {
       <select
         className={'height32 datepickselects' + ((validation) ? ' fieldError': '')}
         name={name}
+        ref={name}
         onChange={(e) => {
             if(handler==='article') {
               this.handleChange(e)
@@ -668,6 +668,7 @@ export default class AddArticleCard extends Component {
   }
 
   handleLicense (index, License) {
+    console.log(License.refs);
     var license = {}
     for(var i in License.refs){
       if(License.refs[i]){
@@ -969,7 +970,7 @@ export default class AddArticleCard extends Component {
         const journalIssue = `` // TODO: Issue information
 
         const journalArticle = journalArticleXml(this);
-        const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1" xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd"><journal>${journalArticle}</journal></crossref>`
+        const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
 
         const title = JSesc(this.state.article.title)
 
@@ -981,6 +982,8 @@ export default class AddArticleCard extends Component {
           'status': 'draft',
           'content': journal.replace(/(\r\n|\n|\r)/gm,'')
         }
+
+        publication.message.contains = [newRecord];
 
         this.props.asyncSubmitArticle(publication, this.state.article.doi, () => {
           browserHistory.push(`/publications/${encodeURIComponent(publication.message.doi)}`)
@@ -1009,13 +1012,13 @@ export default class AddArticleCard extends Component {
     })
 
     return checkDupeDOI(this.state.article.doi, (isDupe , isValid) => {
-        var hasPrintYear = false, hasOnlineYear = false
-        if ((this.state.issue.printDateYear.length > 0) || (this.state.issue.printOnlineYear.length > 0)) {
-          hasDate = true
-          if ((this.state.issue.printDateYear.length > 0)) {
+        var hasPrintYear = false, hasOnlineYear = false;
+        if ((this.state.article.printDateYear.length > 0) || (this.state.article.onlineDateYear.length > 0)) {
+          //hasDate = true
+          if ((this.state.article.printDateYear.length > 0)) {
             hasPrintYear = true
           }
-          if ((this.state.issue.printOnlineYear.length > 0)) {
+          if ((this.state.article.onlineDateYear.length > 0)) {
             hasOnlineYear = true
           }
         }
@@ -1030,6 +1033,13 @@ export default class AddArticleCard extends Component {
           dupedoi: {$set: this.state.doiDisabled ? false : isDupe },
           invaliddoi: {$set: ((this.state.article.doi.length > 0) && (isValid ? isValid : !this.isValidDOI()))},
           licenseStartDate: {$set: false }
+        }
+
+        if (hasPrintYear) { // has print year, don't care if there is a online year
+          errorStates.onlineDateYear = {$set: false}
+        }
+        if (hasOnlineYear) { // has online year, don't care if there is a print year
+          errorStates.printDateYear = {$set: false}
         }
 
         // if addInfo license to read to ON, license StartDates are required

@@ -39,11 +39,29 @@
 }
 
 .addIssues {
+    border: 0 !important;
     width: 100%;
     @extend .articleInnerForm;
+    .saveButtonHolder {
+        background: #EAEAEA !important;
+        float: none !important;
+        padding: 20px 60px 70px 0 !important;
+        .saveButton {
+            width: 192px;
+            height: 48px;
+            line-height: 18px;
+            background: #3eb1c8;
+            color: #000000;
+            font-size: 16px;
+            padding-bottom: 10px;
+        }
+    }
+    .articleInnerForm {
+        border: 0 !important;
+    }
     .body {
         .row {
-            width: 100%;
+            width: 100% !important;
             .fieldHolder {
                 padding: 0 0 0 40px;
                 .fieldinnerholder {
@@ -60,13 +78,13 @@
         }
     }
     .topbar {
-        background: #FFFFFF;
-        color: #4F5858;
+        background: #FFFFFF !important;
+        color: #4F5858 !important;
         padding: 0 !important;
         .addholder {
             a {
-                background: #FFFFFF;
-                border: 1px solid #4F5858;
+                background: #FFFFFF !important;
+                border: 1px solid #4F5858 !important;
             }
         }
     }

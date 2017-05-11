@@ -99,6 +99,9 @@
             padding-left: 70px;
             padding-top: 13px;
         }
+        .errorBorder {
+            border: 1px solid red;
+        }
         .articleBar {
             height: 48px;
             .articleTitle {
@@ -107,7 +110,83 @@
             }
             .articleResult {
                 float:right;
-                margin-right: 345px;
+                p {
+                  margin-right: 215px;
+                  float:left;
+                }
+                .emptyBox {
+                  position: relative;
+                  width: 128px;
+                  height: 48px;
+                  float:right;
+                  visibility:hidden
+                }
+                .errorBox {
+                  position: relative;
+                  background-color: #ee6068;
+                  width: 128px;
+                  height: 48px;
+                  float:right;
+                  visibility:visible;
+                  ul {
+                    padding:0;
+                    margin:0;
+                    list-style: none;
+                    li {
+                      width:128px;
+                      height: 44px;
+                      text-align: center;
+                      img {
+                        margin-top:6px;
+                        height: 33px;
+                      }
+                      a.tooltips {
+                        position: relative !important;
+                        display: inline;
+                      }
+                      a.tooltips div {
+                        font-size: .8em;
+                        position: absolute;
+                        width: 400px;
+                        color: #FFFFFF;
+                        background: #616B6B;
+                        height: 144px;
+                        line-height: 30px;
+                        text-align: left;
+                        visibility: hidden;
+                        border-radius: 0px;
+                        padding: 10px 0 0 17px;
+                        visibility: visible;
+                        opacity: 1;
+                        bottom: 63px;
+                        margin-left: -300px;
+                        z-index: 999;
+                        background-color: #ee6068 !important;
+                        border: 1px solid black;
+                        img {
+                          height:30px;
+                          float: left
+                        }
+                        p {
+                          clear:both;
+                          margin:0;
+                        }
+                      }
+                      a.tooltips div:after {
+                        content: '';
+                        position: absolute;
+                        top: 100%;
+                        left: 90%;
+                        margin-left: -8px;
+                        width: 0;
+                        border-top: 8px solid #ee6068;
+                        border-right: 12px solid transparent;
+                        border-left: 12px solid transparent;
+                      }
+                    }
+                  }
+
+                }
 
             }
         }
