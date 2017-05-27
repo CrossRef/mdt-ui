@@ -1,18 +1,27 @@
 import React, { Component } from 'react'
+import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
-import AddIssueCard from '../addIssueCard'
+
+import AddIssueCardRefactor from '../addIssueCardRefactor'
 import xmldoc from '../../utilities/xmldoc'
 import objectSearch from '../../utilities/objectSearch'
 import update from 'immutability-helper'
 
 export default class Issue extends Component {
   static propTypes = {
-    handleAddCart: is.func.isRequired,
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,
-    fetchIssue: is.func.isRequired
+    fetchIssue: is.func.isRequired,
+    reduxControlModal: is.func.isRequired,
+    publication: is.object.isRequired,
+    publicationDoi: is.string.isRequired,
+    publicationMessage: is.object.isRequired,
+    doi: is.object.isRequired,
+    reduxCartUpdate: is.func.isRequired,
+    ownerPrefix: is.string.isRequired,
+    selections: is.array.isRequired,
   }
 
   constructor (props) {
@@ -36,8 +45,9 @@ export default class Issue extends Component {
     this.props.fetchIssue(doi, (Publication) => {
       const message = Publication.message
       const Issue = message.contains[0]
-      const parsedIssue = xmldoc(Issue.content)
+      const parsedIssue = xmldoc(Issue.content);
       const issueTitle = objectSearch(parsedIssue, 'title') ? objectSearch(parsedIssue, 'title') : ''
+      const issueNumber = objectSearch(parsedIssue, 'issue') ? objectSearch(parsedIssue, 'issue') : ''
       const journal_volume = objectSearch(parsedIssue, 'journal_volume')
       var theVolume = ''
       if (journal_volume) {
@@ -47,6 +57,7 @@ export default class Issue extends Component {
       this.setState({
         issue: update(this.state.issue, {$set: {
           title: issueTitle,
+          issue: issueNumber,
           volumetitle: theVolume
         }})
       })
@@ -55,9 +66,17 @@ export default class Issue extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.doi !== this.props.doi) {
+    if(!this.props.selections.length)
+    if ((nextProps.doi !== this.props.doi) || (this.props.triggerModal !== nextProps.triggerModal)){
       const { doi } = nextProps.doi
       this.getTitles(doi)
+
+      if (nextProps.triggerModal) { //its a doi
+        if (nextProps.triggerModal === doi) {
+          this.modalOpen();
+        }
+      }
+
     }
   }
 
@@ -66,34 +85,51 @@ export default class Issue extends Component {
     this.getTitles(doi)
   }
 
+  modalOpen = (e) => {
+    if(e && e.preventDefault) e.preventDefault();
+    this.props.reduxControlModal({
+      showModal: true,
+      title: 'Edit Issue/Volume',
+      style: 'addIssueModal',
+      Component: AddIssueCardRefactor,
+      props: {
+        mode: 'edit',
+        issue: this.props.doi,
+        publication: this.props.publication,
+        publicationMessage: this.props.publicationMessage,
+        doiMessage: this.props.publicationDoi,
+        handle: this.props.handle,
+        fetchIssue: this.props.fetchIssue,
+        postIssue: this.props.postIssue,
+        reduxCartUpdate: this.props.reduxCartUpdate,
+        handleAddCart: this.props.handleAddCart,
+        handleAddToList: this.props.handleAddToList,
+        triggerModal: this.props.triggerModal,
+        ownerPrefix: this.props.ownerPrefix
+      }
+    })
+  }
 
   render () {
-    const { doiMessage, handle, fetchIssue, postIssue, publicationMessage, publicationDoi, publication } = this.props
-    let { status, type, date } = this.props.doi
+    const { doiMessage, handle, fetchIssue, publicationMessage, publicationDoi, publication } = this.props
+    let { status, type, date, doi } = this.props.doi
     date = moment(date || undefined).format('MMM Do YYYY')
     //title needs to be either issue title + volume title or either one
-    const title = (this.state.issue.title ? 'Issue ' + this.state.issue.title : '') + (this.state.issue.volumetitle ? (' Volume ' + this.state.issue.volumetitle) : '')
+    const issueTitle = this.state.issue.title || this.state.issue.issue || '';
+    const title = (this.state.issue.title || this.state.issue.issue ? 'Issue ' + issueTitle : '') + (this.state.issue.volumetitle ? (' Volume ' + this.state.issue.volumetitle) : '')
+    const url = doi && `http://dx.doi.org/${doi}`
+
+    const checked = !this.props.selections.length ? {checked:false} : {};
 
     return (<tr className='issue'>
-      <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox.bind(this)} /><span>&nbsp;</span></label></td>
+      <td className='checkbox'></td>
       <td className='title'>
-        <AddIssueCard
-          listtitle={title}
-          mode={'edit'}
-          issue={this.props.doi}
-          publication={this.props.publication}
-          publicationMessage={publicationMessage}
-          doiMessage={publicationDoi}
-          handle={handle}
-          fetchIssue={fetchIssue}
-          postIssue={postIssue}
-          triggerModal={this.props.triggerModal}
-          />
+        <a onClick={this.modalOpen} href="">{title}</a>
       </td>
       <td className='date'>{date}</td>
       <td className='type'>{type}</td>
       <td className='status'>{status}</td>
-      <td className='url' />
+      <td className='url'>{url && <a className='issueDOILink' href={url}>{url}</a>}&nbsp;<Link className='issueDoiAddNew' to={`/publications/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi)}/addarticle`}><span>Add Article</span></Link></td>
     </tr>)
   }
 }

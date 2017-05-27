@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+    <title>Asset_Icons_White</title>
+    <defs>
+        <style>.cls-1{fill:#ffffff;}</style>
+    </defs>
+    <g id="Review">
+        <path class="cls-1" d="M32.25,12C15.4,12,3.5,32.5,3.5,32.5S15.4,53,32.25,53,61,32.5,61,32.5,49.1,12,32.25,12Zm0,28.7a9.23,9.23,0,1,1,8.92-9.23A9.08,9.08,0,0,1,32.25,40.7Z"/>
+        <ellipse class="cls-1" cx="32.25" cy="31.48" rx="4.96" ry="5.13"/>
+    </g>
+</svg>

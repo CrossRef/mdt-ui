@@ -2,10 +2,9 @@ import { createStore, applyMiddleware } from 'redux'
 import { browserHistory } from 'react-router'
 
 import thunk from 'redux-thunk'
-import { logger, remoteSync } from '../middleware'
+import remoteSync from '../middleware/remote-sync'
 import { routerMiddleware } from 'react-router-redux'
 import rootReducer from '../reducers'
-import client from '../client'
 
 export default function configure () {
   const create = window.devToolsExtension
@@ -20,11 +19,6 @@ export default function configure () {
   )(create)
 
   const store = createStoreWithMiddleware(rootReducer)
-
-  if (client.isLoggedIn()) {
-    console.log('Reloading state from backend')
-    store.dispatch(client.actions.getCRState())
-  }
 
   return store
 }

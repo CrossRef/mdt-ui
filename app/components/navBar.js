@@ -12,30 +12,32 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 export default class PublicationNav extends Component {
   static propTypes = {
     cart: is.array.isRequired,
-    reduxControlModal: is.func.isRequired
+    reduxControlModal: is.func.isRequired,
+    reduxLogout: is.func.isRequired
   }
 
   constructor (props) {
     super(props)
     this.state = {
-      type: 'add'
+      type: 'add',
+      profileMenu: false
     }
   }
 
-  componentDidUpdate(prevProps) { //need to update this to do cause REACTJS to rerender
-    if (this.props.cart !== prevProps.cart) {
-      if(this.props.cart.length > prevProps.cart.length) {
+  componentWillUpdate(nextProps) { //need to update this to do cause REACTJS to rerender
+    if (this.props.cart !== nextProps.cart) {
+      if(this.props.cart.length < nextProps.cart.length) {
         var type = 'add'
       }
-      if(this.props.cart.length < prevProps.cart.length) {
+      if(this.props.cart.length > nextProps.cart.length) {
         type = 'remove'
       }
 
-      if (this.props.cart.length > 0) {
-        if (this.props.cart[this.props.cart.length - 1].article) {
-          this.addAlert(type, this.props.cart[this.props.cart.length - 1].article)
+      if ((nextProps.cart.length > 0) && (this.props.cart.length !== nextProps.cart.length)){
+        if (nextProps.cart[nextProps.cart.length - 1].article) {
+          this.addAlert(type, nextProps.cart[nextProps.cart.length - 1].article)
         } else {
-          this.addAlert(type, this.props.cart[this.props.cart.length - 1])
+          this.addAlert(type, nextProps.cart[nextProps.cart.length - 1])
         }
       }
     }
@@ -67,13 +69,23 @@ export default class PublicationNav extends Component {
     })
   }
 
+  openProfileMenu () {
+    this.setState({
+      profileMenu: !this.state.profileMenu
+    })
+  }
+
+  logout () {
+    this.props.reduxLogout()
+  }
+
   render () {
     return (
       <div className='publications-nav'>
         <div className='publications-nav-contents'>
           <div className='links'>
             <Link to='/publications'>Publications</Link>
-            <a href='#'>Deposit History</a>
+            <Link to='/deposit-history'>Deposit History</Link>
             <Link className='depositCartHolder' to='/cart'>
               Deposit Cart
               <span className='cartItemCount'>{this.props.cart.length}</span>
@@ -85,7 +97,12 @@ export default class PublicationNav extends Component {
               </Link>
           </div>
           <div className='user'>
-            Testing
+            <div className='userProfileMenuHolder'>
+              <span className='profileMenuTrigger tooltips' onClick={() => {this.openProfileMenu()}}>{localStorage.user} <img className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')} src='/images/AddArticle/DarkTriangle.svg' /></span>
+              {this.state.profileMenu && <div className='profileMenu'>
+                <span onClick={()=>{this.logout()}}>Logout</span>
+              </div>}
+            </div>
           </div>
         </div>
       </div>

@@ -3,7 +3,8 @@ import Switch from 'react-toggle-switch'
 import { stateTrackerII } from 'my_decorators'
 
 const Languages = require('../../../utilities/language.json')
-const ArchiveLocations = require('../../../utilities/archiveLocations.json')
+import { ArchiveLocations } from '../../../utilities/archiveLocations'
+
 const PublicationTypes = require('../../../utilities/publicationTypes.json')
 
 

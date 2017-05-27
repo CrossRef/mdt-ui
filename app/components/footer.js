@@ -14,22 +14,22 @@ export default class Footer extends Component {
             <div>USA</div>
           </div>
           <div className='footer-links'>
-            <a href='https://crossref.org/news/' title='News'>News</a><br />
-            <a href='https://crossref.org/blog/' title='Blog'>Blog</a><br />
-            <a href='https://crossref.org/labs/' title='Labs'>Labs</a><br />
-            <a href='https://crossref.org/contact/' title='Contact'>Contact</a><br />
+            <a href='https://crossref.org/news/' target='_blank' title='News'>News</a><br />
+            <a href='https://crossref.org/blog/' target='_blank' title='Blog'>Blog</a><br />
+            <a href='https://crossref.org/labs/' target='_blank' title='Labs'>Labs</a><br />
+            <a href='https://crossref.org/contact/' target='_blank' title='Contact'>Contact</a><br />
           </div>
           <div className='footer-links'>
-            <a href='https://crossref.org/membership/' title='Become a member'>Join</a><br />
-            <a href='https://crossref.org/faqs/' title='FAQs'>FAQs</a><br />
-            <a href='https://crossref.org/dashboard/' title='Dashboard'>Dashboard</a><br />
-            <a href='https://crossref.org/member-obligations/' title='Member obligations'>Member obligations</a><br />
+            <a href='https://crossref.org/membership/' target='_blank' title='Become a member'>Join</a><br />
+            <a href='https://crossref.org/faqs/' target='_blank' title='FAQs'>FAQs</a><br />
+            <a href='https://crossref.org/dashboard/' target='_blank' title='Dashboard'>Dashboard</a><br />
+            <a href='https://crossref.org/member-obligations/' target='_blank' title='Member obligations'>Member obligations</a><br />
           </div>
           <div className='footer-links'>
-            <a href='https://crossref.org/truths/' title='Our truths'>Truths</a><br />
-            <a href='https://crossref.org/annual-report/' title='Annual report'>Annual report</a><br />
-            <a href='https://crossref.org/governance-committees/' title='Committees'>Committees</a><br />
-            <a href='https://crossref.org/board-and-governance/' title='Governance'>Governance</a><br />
+            <a href='https://crossref.org/truths/' target='_blank' title='Our truths'>Truths</a><br />
+            <a href='https://crossref.org/annual-report/' target='_blank' title='Annual report'>Annual report</a><br />
+            <a href='https://crossref.org/governance-committees/' target='_blank' title='Committees'>Committees</a><br />
+            <a href='https://crossref.org/board-and-governance/' target='_blank' title='Governance'>Governance</a><br />
           </div>
         </div>
         <div className='footer-meta'>
@@ -37,10 +37,10 @@ export default class Footer extends Component {
             <div className='text-left'>
               <img src='/images/App/cc.svg' />
               <img src='/images/App/by.svg' />
-             The content of this site is licensed under a <a href='https://creativecommons.org/licenses/by/4.0/' title='Creative Commons'>Creative Commons Attribution 4.0 International License</a>
+             The content of this site is licensed under a <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' title='Creative Commons'>Creative Commons Attribution 4.0 International License</a>
             </div>
             <div className='text-right'>
-              <a href='https://www.crossref.org/privacy/'>Privacy</a>
+              <a target='_blank' href='https://www.crossref.org/privacy/'>Privacy</a>
             </div>
           </div>
         </div>

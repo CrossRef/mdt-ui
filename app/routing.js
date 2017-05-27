@@ -1,6 +1,5 @@
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
-import client from './client'
 
 import App from './containers/app'
 import ArticlesPage from './containers/articlesPage'
@@ -10,15 +9,11 @@ import LoggedInPage from './containers/loggedIn'
 import PublicationsPage from './containers/publicationsPage'
 import PublicationPage from './containers/publicationPage'
 import DepositCartPage from './containers/depositCartPage'
+import DepositHistoryPage from './containers/depositHistoryPage'
 
 export default (store) => {
   const requireAuth = (nextState, replace) => {
-    if (!client.isLoggedIn()) {
-      console.log('Not logged in, kicking back to home page')
-      replace({
-        pathname: '/'
-      })
-    }
+    //not necessary?
   }
 
   return (
@@ -31,7 +26,10 @@ export default (store) => {
       <Route path='articles' component={ArticlesPage} onEnter={requireAuth} />
       <Route path='publications/:pubDoi/addarticle' component={AddArticlesPage} onEnter={requireAuth} />
       <Route path='publications/:pubDoi/addarticle/:articleDoi' component={AddArticlesPage} onEnter={requireAuth} />
+      <Route path='publications/:pubDoi/:issueDoi/addarticle' component={AddArticlesPage} onEnter={requireAuth} />
+      <Route path='publications/:pubDoi/:issueDoi/addarticle/:articleDoi' component={AddArticlesPage} onEnter={requireAuth} />
       <Route path='cart' component={DepositCartPage} onEnter={requireAuth} />
+      <Route path='deposit-history' component={DepositHistoryPage} onEnter={requireAuth} />
     </Route>
   )
 }

@@ -3,8 +3,8 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
+import verifyIssn from 'issn-verify'
 
-import client from '../client'
 import fetch from '../utilities/fetch'
 const languages = require('../utilities/language.json')
 
@@ -15,9 +15,9 @@ export default class AddPublicationCard extends Component {
   static propTypes = {
     reduxControlModal: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
-    crossmarkAuth: is.bool.isRequired,
     reduxAddDOIs: is.func,
     reduxStorePublications: is.func,
+    crossmarkPrefixes: is.array.isRequired,
 
     Journal: is.shape({
       journal_metadata: is.object.isRequired
@@ -38,7 +38,7 @@ export default class AddPublicationCard extends Component {
     if(props.Journal) {
       const data = props.Journal.journal_metadata;
       const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {};
-      let version = Number(props['mdt-version'])+1;
+      let version = props['mdt-version'] ? Number(props['mdt-version'])+1 : '0';
       const doi_data = data.doi_data || {};
       this.state = {
         'mdt-version': version.toString(),
@@ -55,19 +55,19 @@ export default class AddPublicationCard extends Component {
       }
     }
     else if (props.searchResult) {
-      const data = props.searchResult;
+      const result = props.searchResult;
       let pissn, eissn;
-      if(Array.isArray(data.issns)) {
-        data.issns.forEach(issn => {
+      if(Array.isArray(result.issns)) {
+        result.issns.forEach(issn => {
           if(issn.type === 'pissn') pissn = issn.issn;
           if(issn.type === 'eissn') eissn = issn.issn;
         })
       }
       this.state = {
         'mdt-version': '1',
-        title: data.title,
+        title: result.title,
         abbreviation: '',
-        DOI: data.prefix,
+        DOI: result.prefix,
         url: '',
         printISSN: pissn,
         electISSN: eissn,
@@ -92,7 +92,7 @@ export default class AddPublicationCard extends Component {
   }
 
   checkDupeDOI (callback) {
-    return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${this.state.DOI}`, { headers: client.headers })
+    return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${this.state.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
       .then(data => callback(data.status === 200))
     )
   }
@@ -120,6 +120,19 @@ export default class AddPublicationCard extends Component {
     return re.test(this.state.DOI)
   }
 
+  validatePrefix () {
+    return this.props.prefixes.includes(this.state.DOI.split('/')[0]) ? true : false
+  }
+
+  validateISSN () {
+    const issn = this.state.electISSN;
+    if(verifyIssn(issn)) {
+      return true
+    } else {
+      return false
+    }
+  }
+
   validation () {
     var errorCnt = 0
     this.setState({
@@ -129,19 +142,23 @@ export default class AddPublicationCard extends Component {
       showTitleEmptyError: false,
       showISSNError: false,
       showISSNEmptyError: false,
+      showISSNInvalidError: false,
       showDOIError: false,
       showDOIEmptyError: false,
-      showDOIInvalidError: false
+      showDOIInvalidError: false,
+      showDOIPrefixError: false
     })
 
     return this.checkDupeDOI((isDupe) => {
       const errorStates = {
         showTitleEmptyError: (this.state.title.length <= 0),
         showISSNEmptyError: (this.state.electISSN.length <= 0),
+        showISSNInvalidError: !this.validateISSN() && (this.state.electISSN.length > 0),
         showURLEmptyError: (this.state.url.length <= 0),
         showURLError: !this.validateURL() && (this.state.url.length > 0),
         showDOIEmptyError: (this.state.DOI.length <= 0),
         showDOIInvalidError: !this.validateDOI() && (this.state.DOI.length > 0),
+        showDOIPrefixError: ((this.state.DOI.length > 0) && this.validateDOI()) ? !this.validatePrefix() : false,
         showDOIError: isDupe
       }
 
@@ -156,6 +173,7 @@ export default class AddPublicationCard extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+
     if(this.state['mdt-version']) {return this.saveEdit()};
     this.validation().then((errors) => {
       if (!errors) { // false = no errors
@@ -189,6 +207,8 @@ export default class AddPublicationCard extends Component {
     const isSearch = this.props.searchResult ? true : false;
     const isEdit = (this.state['mdt-version'] && !isSearch) ? true : false;
     const disabledInput = isEdit ? {disabled: true} : {};
+
+    const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.includes(this.state.DOI.substring(0,7)) : false;
 
     return (
       <div className='addPublicationCard'>
@@ -252,6 +272,7 @@ export default class AddPublicationCard extends Component {
                 </div>
                 {this.state.showDOIError && <div className='inputinnerholder'><div className='invalid'>Duplicate DOI. Registering a new DOI? This one already exists.</div></div>}
                 {this.state.showDOIInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid DOI. Please check your DOI (10.xxxx/xx...).</div></div>}
+                {this.state.showDOIPrefixError && <div className='inputinnerholder'><div className='invalid'>Invalid DOI Prefix (10.xxxx). Prefix is not registered to your account.</div></div>}
                 {this.state.showDOIEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
               </div>
             </div>
@@ -278,6 +299,7 @@ export default class AddPublicationCard extends Component {
                     onChange={this.inputHandler} />
                 </div>
                 {this.state.showISSNError && <div className='inputinnerholder'><div className='invalid'>Duplicate ISSN. Registering a new ISSN? This one already exists.</div></div>}
+                {this.state.showISSNInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid ISSN. Please check your ISSN.</div></div>}
                 {this.state.showISSNEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
               </div>
             </div>
@@ -302,11 +324,12 @@ export default class AddPublicationCard extends Component {
                 </div>
               </div>
             </div>
-            {this.props.crossmarkAuth &&
+            {crossmark &&
               <div className='fieldinput'>
                 <div className='left-indent-36'>Crossmark Policy Page DOI</div>
                 <div className='inputholder'>
                   <div className='inputinnerholder'>
+                    <div className='notrequired' />
                     <input
                       type='text'
                       name='crossmarkDoi'
@@ -345,4 +368,5 @@ const inactiveErrors = {
   showDOIError: false,
   showDOIEmptyError: false,
   showDOIInvalidError: false,
+  showDOIPrefixError: false
 }

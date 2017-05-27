@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-const Roles = require('../../../utilities/roles.json')
+import { Roles } from '../../../utilities/roles.js'
 
 
 export default class OptionalIssueInformation extends Component {

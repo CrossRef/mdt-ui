@@ -23,7 +23,8 @@
       height: 72px;
 
       a {
-        width: 236px;
+        cursor: pointer;
+        width: 238px;
         height: 64px;
         line-height: 64px;
         display: block;
@@ -45,16 +46,81 @@
             display: block;
             position: absolute;
             left: calc(50% - 25px);
-            bottom: -45px;
+            bottom: -44px;
           }
         }
       }
     }
   }
   .publication-title {
-    padding: 48px 0 0 0;
+    padding: 48px 0 30px 0;
     width: 960px;
     margin: 0 auto;
+
+    h1 {float:left}
+    .recordSearchHolder {
+      width: 100%;
+      margin: 70px 0 0 0;
+      .record-search-container {
+        position: relative;
+        float:right;
+
+        .searchType {
+          height: 32px;
+          width: 96px;
+          -webkit-appearance: none;
+          -webkit-border-radius: 0px;
+          border-right:none;
+          background-color: white;
+        }
+
+        input {
+          height: 32px;
+          width: 400px;
+          padding-left: 28px;
+          position: relative;
+        }
+
+        .record-search-results {
+          position: absolute;
+          top: 31px;
+          left: 96px;
+          width: 400px;
+          height: 370px;
+          text-align: left;
+          background: white;
+          border: 1px solid black;
+          overflow: auto;
+          box-shadow: 0 0 2px rgba(0,0,0,.5);
+          z-index: 1;
+
+          .record-search-result-holder {
+            .add {
+              display:inline-block;
+              line-height: 32px;
+              vertical-align: top;
+              color:deepskyblue;
+              cursor: pointer;
+            }
+            .record-search-result {
+              display:inline-block;
+              height: 32px;
+              line-height: 32px;
+              padding: 0 20px 0 28px;
+              width: 88%;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              white-space: nowrap;
+          }
+
+
+            &:hover {
+              background: #f1f1f1;
+            }
+          }
+        }
+      }
+    }
   }
   .publication-actions {
     padding: 48px 0 32px 0;
@@ -62,8 +128,8 @@
     margin: 0 auto;
 
     .add-record {
+      cursor: pointer;
       color: black;
-      background: #e5e5e5;
       border: 1px solid #4f5858;
       display: inline-block;
       width: 192px;
@@ -78,10 +144,49 @@
     .actions {
       width: 192px;
       height: 48px;
+      border: 1px solid black;
       line-height: 48px;
+      font-size: 16px;
+    }
+    .activeAction {
+      border:none;
       background: #3eb1c8;
       color: #fff;
-      font-size: 16px;
+    }
+    .tooltips {
+      position: relative;
+      div {
+        position: absolute;
+        width: 160px;
+        color: #FFFFFF;
+        background: #616B6B;
+        height: 140px;
+        line-height: 30px;
+        text-align: left;
+        border-radius: 0px;
+        padding: 5px 0 0 15px;
+        visibility: visible;
+        opacity: 1;
+        top: 57px;
+        right: 9%;
+        z-index: 999;
+        p {
+          font-size:.83em;
+          margin-top:10px;
+          margin-bottom:10px;
+        }
+      }
+      div:after {
+        content: '';
+        position: absolute;
+        bottom: 100%;
+        left: 46%;
+        width: 0;
+        height: 0;
+        border-bottom: 8px solid #616B6B;
+        border-right: 8px solid transparent;
+        border-left: 8px solid transparent;
+      }
     }
   }
 
@@ -111,14 +216,18 @@
       }
 
       &.url {
-        width: 200px;
-        max-width: 200px;
+        width: 280px;
+        max-width: 280px;
         text-transform: none;
       }
 
-      &.date, &.type, &.status {
+      &.date, &.type {
         width: 140px;
         max-width: 140px;
+      }
+      &.status {
+        width: 60px;
+        max-width: 60px;
       }
 
       &.checkbox {
@@ -213,4 +322,90 @@
       }
     }
   }
+}
+
+.issueDOILink {
+    width: 110px;
+    text-overflow: ellipsis;
+    display: inline-block;
+    overflow: hidden;
+    width: 60%;
+}
+
+.issueDoiAddNew {
+  border: 1px solid #000;
+  color: #000 !important;
+  display: inline-table;
+  height: 24px;
+  text-decoration: none;
+  width: 96px;
+  span {
+    display: table-cell;
+    height:100%;
+    width:100%;
+    vertical-align: middle;
+    text-align: center;
+  }
+  &:active, &:hover, &:visited {
+    color: #000 !important;
+  }
+}
+
+.actionModal {
+  padding:20px 35px 0 43px;
+  .messageHolder {
+    height: 500px;
+  }
+  .buttonTable {
+    display: table;
+    width: 100%;
+    .tableRow {
+      width: 100%;
+      display: table-row;
+      .leftCell {
+        display: table-cell;
+        width: 50%;
+      }
+      .rightCell {
+        display: table-cell;
+        width: 50%;
+        .leftButton {
+          float: left;
+          cursor: pointer;
+          background: white;
+          border: 1px solid #434343;
+          color: #434343;
+          width: 130px;
+          height: 31px;
+        }
+        .rightButton {
+          float: right;
+          cursor: pointer;
+          background: #ef3340;
+          border: none;
+          color: white;
+          width: 130px;
+          height: 31px;
+        }
+      }
+    }
+  }
+
+  .buttonHolder {
+    margin-bottom: 51px;
+    button{
+      cursor: pointer;
+      float:right;
+      background: white;
+      border: 1px solid #434343;
+      color: #434343;
+      width: 130px;
+      height: 31px;
+    }
+  }
+}
+
+.grayedOut {
+  color: grey;
+  cursor: not-allowed;
 }

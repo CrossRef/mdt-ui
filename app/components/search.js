@@ -15,6 +15,7 @@ export default class Search extends Component {
     asyncSubmitPublication: is.func.isRequired,
     search: is.func.isRequired,
     results: is.array,
+    loading: is.bool.isRequired,
   }
 
   constructor (props) {
@@ -30,41 +31,8 @@ export default class Search extends Component {
 
   onChange = (e, value) => {
     value ? this.setState({ forceClose:false }) : this.setState({ forceClose:true })
-    this.onSearch(value).then(() => this.setState({ loading: false }))
-  }
-
-
-  onSearch (searchingFor, fromChain) {
-    this.setState({
-      searchingFor
-    })
-
-    if (!searchingFor) {
-      return new Promise((resolve) => {
-        resolve()
-      })
-    }
-
-    const chain = this.loading
-    if (chain && !fromChain) {
-      // Follow up once the other request has completed
-      return new Promise((resolve, reject) => {
-        chain.then(() => this.onSearch(searchingFor, true)
-          .then(() => resolve())
-          .catch(reason => reject(reason)))
-          .catch(reason => reject(reason))
-      })
-    }
-
-    this.loading = this.props.search({
-      q: searchingFor
-    })
-
-    this.setState({
-      loading: true
-    })
-
-    return this.loading
+    this.setState({searchingFor: value});
+    this.props.search(value);
   }
 
 
@@ -88,7 +56,7 @@ export default class Search extends Component {
 
 
   render () {
-    const { results, addDOIs } = this.props
+    const { results } = this.props
     const { searchingFor, forceClose } = this.state
 
     return (
@@ -96,6 +64,7 @@ export default class Search extends Component {
         <Autocomplete
           { ...forceClose ? {open:false} : {} }
           value={this.state.searchingFor}
+          inputProps={{ placeholder: 'Search Publication' }}
           items={results}
           getItemValue={(item) => item.title}
           onSelect={this.onSelect}
@@ -105,7 +74,7 @@ export default class Search extends Component {
           )}
           renderMenu={(items, value, style) => (
             <div className='publication-search-results'>
-              {this.state.loading ? (
+              {this.props.loading ? (
                 <div>Loading...</div>
               ) : searchingFor === '' ? (
                 <div />
@@ -114,7 +83,6 @@ export default class Search extends Component {
               ) : items}
             </div>
           )}
-          placeholder='Search Publication'
           className='publication-search'
           />
       </div>

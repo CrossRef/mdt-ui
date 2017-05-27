@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { stateTrackerII } from 'my_decorators'
 
-const Roles = require('../../../utilities/roles.json')
+import { Roles } from '../../../utilities/roles.js'
 
 
 

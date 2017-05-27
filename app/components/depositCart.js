@@ -7,7 +7,6 @@ import update from 'immutability-helper'
 import Switch from 'react-toggle-switch'
 import _ from 'lodash'
 
-import client from '../client'
 import fetch from '../utilities/fetch'
 import checkDupeDOI from '../utilities/dupeDOI'
 import xmldoc from '../utilities/xmldoc'
@@ -16,6 +15,8 @@ import objectSearch from '../utilities/objectSearch'
 import DepositCartItem from './depositCartItem'
 
 
+
+@stateTrackerII
 export default class DepositCart extends Component {
   static propTypes = {
     reduxCartUpdate: is.func.isRequired,
@@ -28,10 +29,8 @@ export default class DepositCart extends Component {
 
   constructor (props) {
     super(props)
-
     this.state = {
       depositerrors: true,
-      fullCart: this.props.fullCart,
       errors: []
     }
   }
@@ -52,7 +51,6 @@ export default class DepositCart extends Component {
   }
 
   render () {
-
 
     var errors = _.orderBy(
         _.filter(this.state.errors, (error) => {

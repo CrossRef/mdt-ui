@@ -2,15 +2,29 @@ import { createAction } from 'redux-actions'
 import { browserHistory } from 'react-router'
 
 import xmlParse from '../utilities/xmldoc'
-import client from '../client'
 import fetch from '../utilities/fetch'
 import { publicationXml } from '../utilities/xmlGenerator'
 
-export const SET_AUTH_BEARER = createAction('SET_AUTH_BEARER')
-
-// ------------------------ REFACTORED ---------------------
+const withQuery = require('with-query')
 
 // Action Creators, useless unless dispatched
+
+export function loginData(data) {
+  return { type: 'LOGIN', data }
+}
+
+export function searchResult(result, value) {
+  return { type: 'SEARCH_RESULT', result, value }
+}
+
+export function searchLoading (status) {
+  return { type: 'SEARCH_STATUS', status}
+}
+
+export function searchValue (value) {
+  return { type: 'SEARCH_VALUE', value}
+}
+
 export function controlModal(modalObj) {
 	return { type: 'MODAL', modalObj }
 }
@@ -27,58 +41,183 @@ export function editForm(keyVal) {
     return { type: 'REDUXFORM_ADD', keyVal}
 }
 
+export function clearForm() {
+  return { type: 'REDUXFORM_CLEAR' }
+}
+
 export function cartUpdate(article) {
 	return { type: 'CART_UPDATE', cart: article }
 }
 
 export function clearCart() {
-	return { type: 'CLEAR_UPDATE' }
+	return { type: 'CLEAR_CART'}
 }
 
-export function removeFromCart(doi, cart) {
-	return { type: 'REMOVE_FROM_CART', action: {removeDoi: doi, cart: cart}}
+export function removeFromCart(doi) {
+	return { type: 'REMOVE_FROM_CART', action: {removeDoi: doi}}
 }
 
 // Async Action Creators
 
-export function deposit (cartArray, callback, error = (reason) => console.error(reason)) {
+export function login (usr, pwd, error = (reason) => console.error('ERROR in login', reason)) {
   return function(dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/deposit`, {
-      method:'post',
-      headers: client.headers,
-      body: JSON.stringify({
-        message: cartArray
-      })
+    fetch(`http://mdt.crossref.org/mdt/v1/login`, {
+      method: 'post',
+      body: JSON.stringify({usr, pwd})
     })
-      .then(result => result.json())
-      .then(result => {
-        let resultArray = result.message;
-        resultArray = resultArray.map((item) => {
-          const getXML = xmlParse(item.result);
-          if(getXML !== undefined) item.result = getXML;
-          return item;
-        });
-        console.log('DEPOSIT RESULT', resultArray);
-        if(callback) callback(resultArray)
-      })
-      .catch(reason => error(reason))
-
+    .then((response)=> {
+      if(response.status !== 200) { dispatch(loginData({error: `${response.status}: ${response.statusText}`})) }
+      else return response.json()
+    })
+    .then((response)=>{
+      if(!response) return;
+      const authBearer = `${response.token_type} ${response.access_token}`;
+      localStorage.setItem('auth', authBearer);
+      const crossmark = response['crossmark-prefixes'];
+      response.error = null;
+      localStorage.setItem('user', usr);
+      dispatch(loginData(response));
+      dispatch(getCRState('login'));
+    })
+    .catch(reason => error(reason))
   }
 }
 
-export function submitArticle (publication, articleDoi, callback, error = (reason) => console.error('ERROR in submitReduxForm', reason)) {
+export function logout () {
+  browserHistory.push(`/`)
+}
+
+export function getCRState (type, error = (reason) => console.error('ERROR in getCRState', reason)) {
+  return function(dispatch) {
+    fetch(`http://mdt.crossref.org/mdt/v1/state`, {
+      method: 'get',
+      headers: {Authorization: localStorage.getItem('auth')}
+    })
+    .then((response)=> response.json() )
+    .then((state)=>{
+      let scrubbedState = {...state};
+      if(type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
+      delete scrubbedState.application;
+//      delete scrubbedState.cart;
+      if(scrubbedState.routing.locationBeforeTransitions.pathname === '/') {
+        scrubbedState.routing.locationBeforeTransitions.pathname = '/publications'
+      }
+      console.warn('Retrieving from remote store: ', scrubbedState);
+      dispatch({
+        type: 'SET_STATE',
+        payload: scrubbedState
+      })
+    })
+    .catch(reason => error(reason))
+  }
+}
+
+
+export function search (query, error = (reason) => console.error('ERROR in search', reason)) {
+  return function (dispatch) {
+    if(!query) return;
+    dispatch(searchValue(query));
+    dispatch(searchLoading(true));
+    fetch(`http://mdt.crossref.org/mdt/v1/search?q=${query}`, {
+      method: 'get',
+      headers: {Authorization: localStorage.getItem('auth')}
+    })
+    .then((response)=> response.json() )
+    .then((result)=>{
+      dispatch(searchResult(result.message, query));
+      dispatch(searchLoading(false));
+    })
+    .catch(reason => error(reason))
+  }
+}
+
+export function searchRecords (query, pubTitle, type, error = (reason) => console.error('ERROR in searchRecords', reason)) {
+  return function (dispatch) {
+    if(!query) return;
+    dispatch(searchValue(query));
+    dispatch(searchLoading(true));
+    fetch(`http://mdt.crossref.org/mdt/v1/search/works?q=${query}&title=${pubTitle}&type=${type.toLowerCase()}`, {
+      method: 'get',
+      headers: {Authorization: localStorage.getItem('auth')}
+    })
+      .then((response)=> response.json() )
+      .then((result)=>{
+        dispatch(searchResult(result.message, query));
+      })
+      .catch(reason => error(reason))
+  }
+}
+
+
+export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
+  return function(dispatch) {
+    if(!Array.isArray(DOIs)) DOIs = [DOIs];
+    Promise.all(
+      DOIs.map(
+        (doi) =>
+          fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')}})
+            .then(publication => publication.json())
+            .catch(reason => console.error(`ERROR: publication DOI fetch failed `, reason))
+      )
+    )
+      .then((publications) => {
+        dispatch(storePublications(publications));
+        if(callback) callback(publications)
+      })
+      .catch((reason) => {
+        error(reason)
+      })
+  }
+}
+
+
+export function submitPublication (form, callback, error = reason => console.error('ERROR in submitPublication', reason)) {
+  return function(dispatch) {
+    fetch(`http://mdt.crossref.org/mdt/v1/work`, {
+      method:'post',
+      headers: {Authorization: localStorage.getItem('auth')},
+      body: JSON.stringify({
+        message: {
+          'title': {'title': form.title},
+          'doi': form.DOI,
+          'owner-prefix': form.DOI.split('/')[0],
+          'type': 'Publication',
+          'mdt-version': form['mdt-version'] || '0',
+          'status': 'draft',
+          'content': publicationXml(form),
+          'contains': []
+        }
+      })
+    }).then(() =>
+      fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${form.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
+        .then(publication => publication.json())
+        .then(publication => {
+          dispatch(storePublications(publication));
+          if(callback) callback(publication)
+        })
+        .catch( reason => {
+          error(reason)
+        })
+    )
+    .catch( reason => {
+      error(reason)
+    })
+  }
+}
+
+
+export function submitArticle (publication, articleDoi, callback, error = (reason) => console.error('ERROR in submitArticle', reason)) {
   return function(dispatch) {
 
     fetch(`http://mdt.crossref.org/mdt/v1/work`, {
         method: 'post',
-        headers: client.headers,
+        headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
       }
     ).then(() =>
-      fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${articleDoi}`, { headers: client.headers })
+      fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${articleDoi}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then(article => article.json())
         .then((article) => {
-
           if(callback) callback();
         })
         .catch(reason => error(reason))
@@ -87,74 +226,98 @@ export function submitArticle (publication, articleDoi, callback, error = (reaso
   }
 }
 
-export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
-	return function(dispatch) {
-		if(!Array.isArray(DOIs)) DOIs = [DOIs];
-		Promise.all(
-			DOIs.map(
-				(doi) =>
-					fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
-					.then(publication => publication.json())
-					.catch(reason => console.error(`ERROR: publication DOI fetch failed `, reason))
-			)
-		)
-		.then((publications) => {
-			dispatch(storePublications(publications));
-			if(callback) callback(publications)
-		})
-		.catch((reason) => {
-			error(reason)
-		})
-	}
+
+export function submitIssue (publication, callback, error = (reason) => console.error('ERROR in submitIssue', reason)) {
+  return function(dispatch) {
+    fetch(`http://mdt.crossref.org/mdt/v1/work`, {
+        method: 'post',
+        headers: {Authorization: localStorage.getItem('auth')},
+        body: JSON.stringify(publication)
+      }
+    ).then(() => {
+      if(callback) callback();
+    })
+    .catch((reason) => error(reason))
+  }
 }
+
+
+export function deposit (cartArray, callback, error = (reason) => console.error(reason)) {
+  return function(dispatch) {
+    fetch(`http://mdt.crossref.org/mdt/v1/deposit`, {
+      method:'post',
+      headers: {Authorization: localStorage.getItem('auth')},
+      body: JSON.stringify({
+        message: cartArray
+      })
+    })
+    .then(result => result.json())
+    .then(result => {
+      let resultArray = result.message;
+      resultArray = resultArray.map((item) => {
+        const getXML = xmlParse(item.result);
+        if(getXML !== undefined) item.result = getXML;
+        return item;
+      });
+      console.log('DEPOSIT RESULT', resultArray);
+      if(callback) callback(resultArray)
+    })
+    .catch(reason => error(reason))
+  }
+}
+
 
 export function getItem (doi) {
 	return function(dispatch) {
 		if(doi){
 			return Promise.resolve(
-				fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
-				.then(publication => publication.json())
-			).then((publication) => {
-				return publication
-			})
+				fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+				.then(response => {
+				  if(response.status !== 200) {
+				    console.error(`${response.status}: ${response.statusText}`, response);
+				    throw `${response.status}: ${response.statusText}`
+				  }
+				  return response.json()
+				})
+			)
 		}
 	}
 }
 
-
-
-export function submitPublication (form, callback, error = reason => console.error('ERROR in submitPublication', reason)) {
+export function getDepositHistory (params, callback, error = (reason) => console.error(reason)) {
 	return function(dispatch) {
-		fetch(`http://mdt.crossref.org/mdt/v1/work`, {
-			method:'post',
-			headers: client.headers,
-			body: JSON.stringify({
-				message: {
-					'title': {'title': form.title},
-					'doi': form.DOI,
-					'type': 'Publication',
-					'mdt-version': form['mdt-version'] || '0',
-					'status': 'draft',
-					'content': publicationXml(form),
-					'contains': []
-				}
-			})
-		}).then(() =>
-			fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${form.DOI}`, { headers: client.headers })
-			.then(publication => publication.json())
-			.then(publication => {
-				dispatch(storePublications(publication));
-				if(callback) callback(publication)
-			})
-			.catch( reason => {
-				error(reason)
-			})
-		)
-		.catch( reason => {
-			error(reason)
-		})
+    return Promise.resolve(
+      fetch(withQuery('http://mdt.crossref.org/mdt/v1/history', params),
+      {
+        headers: {Authorization: localStorage.getItem('auth')}
+      }
+    ).then(depositHistory => depositHistory.json())
+    ).then((depositHistory) => {
+      if(callback) callback(depositHistory)
+      return depositHistory
+    })
+    .catch(reason => error(reason))
 	}
 }
+
+export function deleteRecord (doi, pubDoi, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
+  return function(dispatch) {
+    fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, {
+      method: 'delete',
+      headers: {Authorization: localStorage.getItem('auth')}
+    })
+      .then(response => {
+        if(response.status === 200) {
+          dispatch(getPublications(pubDoi));
+          if(callback) callback();
+        } else throw `delete ${response.url} failed: ${response.status || 'Unknown status'} - ${response.statusText || 'Unknown statusText' }`
+      })
+      .catch(reason => error(reason))
+  }
+}
+
+
+
 
 
 

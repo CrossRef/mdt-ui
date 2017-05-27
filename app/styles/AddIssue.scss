@@ -47,7 +47,7 @@
         float: none !important;
         padding: 20px 60px 70px 0 !important;
         .saveButton {
-            width: 192px;
+            width: 220px;
             height: 48px;
             line-height: 18px;
             background: #3eb1c8;
@@ -95,8 +95,19 @@
         background: #FFFFFF;
         border: 1px solid #EDEFF1;
         margin: 12px;
-
         width: 80%;
+        .addFields {
+            background-color: #f3f3f3;
+            border: solid 1px black;
+            box-shadow:none;
+            margin-bottom:25px;
+            margin-top:1px;
+            margin-right:530px;
+            left:-20px;
+            width:100px;
+            height: 25px;
+
+        }
     }
     .subItemRow {
         margin: 0;

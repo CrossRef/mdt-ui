@@ -4,7 +4,7 @@ import { stateTrackerII } from 'my_decorators'
 const AppliesTo = require('../../../utilities/appliesTo.json')
 
 
-@stateTrackerII
+
 export default class License extends Component {
   constructor (props) {
     super(props)

@@ -83,11 +83,12 @@
         }
         .rightStatus {
             float:right;
-            margin-right: 345px;
+            margin-right: 340px;
         }
     }
     .resultCard {
-        border: 1px solid #dbdbdb;
+        border-left: 1px solid #dbdbdb;
+        border-right: 1px solid #dbdbdb;
         .publicationTitleBar {
             height: 48px;
             background-color: rgb(89, 101, 101);
@@ -102,6 +103,12 @@
         .errorBorder {
             border: 1px solid red;
         }
+        .normalBorder {
+            border-bottom: 1px solid grey;
+        }
+        .issueBar {
+          background-color: #dddddd;
+        }
         .articleBar {
             height: 48px;
             .articleTitle {
@@ -111,7 +118,7 @@
             .articleResult {
                 float:right;
                 p {
-                  margin-right: 215px;
+                  margin-right: 210px;
                   float:left;
                 }
                 .emptyBox {
@@ -119,13 +126,18 @@
                   width: 128px;
                   height: 48px;
                   float:right;
-                  visibility:hidden
+                  padding-top: 14px;
+                  a {
+                    margin-left: -170px;
+                    background: transparent;
+                    background-color: transparent;
+                  }
                 }
                 .errorBox {
                   position: relative;
                   background-color: #ee6068;
                   width: 128px;
-                  height: 48px;
+                  height: 46px;
                   float:right;
                   visibility:visible;
                   ul {
@@ -150,12 +162,12 @@
                         width: 400px;
                         color: #FFFFFF;
                         background: #616B6B;
-                        height: 144px;
+                        height: auto;
                         line-height: 30px;
                         text-align: left;
                         visibility: hidden;
                         border-radius: 0px;
-                        padding: 10px 0 0 17px;
+                        padding: 10px 0 10px 17px;
                         visibility: visible;
                         opacity: 1;
                         bottom: 63px;
@@ -426,4 +438,7 @@
             margin: 0 auto;
         }
     }
+}
+.articleUnderIssue {
+    padding: 10px 0 0 30px !important;
 }

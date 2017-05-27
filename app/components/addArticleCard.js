@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
 import update from 'immutability-helper'
@@ -6,7 +7,6 @@ import Switch from 'react-toggle-switch'
 import _ from 'lodash'
 import { stateTrackerII } from 'my_decorators'
 
-import client from '../client'
 import fetch from '../utilities/fetch'
 import checkDupeDOI from '../utilities/dupeDOI'
 import xmldoc from '../utilities/xmldoc'
@@ -14,32 +14,37 @@ import objectSearch from '../utilities/objectSearch'
 import ReviewArticleRefactor from './reviewArticleRefactor'
 import SubItem from './SubItems/subItem'
 import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField } from './addArticleCardComponents'
-import { journalArticleXml } from '../utilities/xmlGenerator'
+import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
 import JSesc from '../utilities/jsesc'
+import $ from 'jquery'
+import { deParseCrossmark } from '../utilities/crossmarkHelpers'
 
-@stateTrackerII
 export default class AddArticleCard extends Component {
 
   static propTypes = {
-    cartUpdate: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
     reduxEditForm: is.func.isRequired,
     asyncSubmitArticle: is.func.isRequired,
-    crossmarkAuth: is.bool.isRequired,
     reduxForm: is.object.isRequired,
     mode: is.string.isRequired,
+    duplicateFrom: is.string,
     publication: is.shape({
       message: is.object
     }).isRequired,
     publicationMetaData: is.shape({
       Journal: is.object
-    })
+    }),
+    ownerPrefix: is.string.isRequired,
+    crossmarkPrefixes: is.array.isRequired
   }
 
   constructor (props) {
     super(props)
 
     this.state = {
+      crossmark: false,
+      showCards: {},
       showOptionalTitleData: false,
       showContributor: false,
       showFunding: false,
@@ -59,11 +64,23 @@ export default class AddArticleCard extends Component {
         dupedoi: false,
         invaliddoi: false,
         invalidurl: false,
-        licenseStartDate: false
+        licenseStartDate: false,
+
+      },
+      crossmarkErrors: {
+        peer_0_href:false,
+        copyright_0_href:false,
+        supp_0_href:false,
+        other_0_href:false,
+        update_0_DOI_Invalid:false,
+        update_0_DOI_Missing:false,
+        update_0_year:false,
+        clinical_0_registry:false,
+        clinical_0_trialNumber:false
       },
       article: {
         title: '',
-        doi: '',
+        doi: props.ownerPrefix + '/',
         subtitle: '',
         originallanguagetitle: '',
         originallanguagetitlesubtitle: '',
@@ -130,26 +147,54 @@ export default class AddArticleCard extends Component {
   }
 
   async componentWillReceiveProps (nextProps) {
+    if(nextProps.reduxForm !== this.props.reduxForm) {
+      return;
+    }
+
+    if(nextProps.crossmarkPrefixes.length && !this.state.crossmark) {
+      const thisPrefix = nextProps.publication.message.doi.split('/')[0];
+      if(nextProps.crossmarkPrefixes.includes(thisPrefix)) this.setState({crossmark: true})
+    }
     const { publication } = nextProps
     if ((publication.message) && (nextProps.mode === 'edit')) {
       if (publication.message.contains.length > 0) { // its an edit of article, else its new, also checks if its empty before doing any xml conversion
         this.setState({doiDisabled: true})
 
         const parsedArticle = xmldoc(publication.message.contains[0].content)
+
+        if(parsedArticle.crossref) {
+          if(parsedArticle.crossref.journal.journal_article.crossmark) {
+            const {reduxForm, showCards} = deParseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark);
+            if(reduxForm && showCards) {
+              this.props.reduxEditForm(reduxForm);
+              this.setState({showCards});
+            }
+          }
+        }
+
+
+
+
         this.setState({version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1)})
 
         // article loading
-        const publication_date = objectSearch(parsedArticle, 'publication_date')
+        let publication_date = objectSearch(parsedArticle, 'publication_date');
+
+        if(!Array.isArray(publication_date)) publication_date = [publication_date];
 
         const onlinePubDate = _.find(publication_date, (pubDate) => {
-          if (pubDate['-media_type'] === 'online') {
-            return pubDate
+          if (pubDate) {
+            if (pubDate['-media_type'] === 'online') {
+              return pubDate
+            }
           }
         })
 
         const printPubDate = _.find(publication_date, (pubDate) => {
-          if (pubDate['-media_type'] === 'print') {
-            return pubDate
+          if (pubDate) {
+            if (pubDate['-media_type'] === 'print') {
+              return pubDate
+            }
           }
         })
 
@@ -228,11 +273,11 @@ export default class AddArticleCard extends Component {
 
         var article = {
           title:title,
-          doi: doi,
+          doi: nextProps.duplicateFrom ? nextProps.ownerPrefix + '/' : doi,
           subtitle: subtitle,
           originallanguagetitle: originallanguagetitle,
           originallanguagetitlesubtitle: originallanguagetitlesubtitle,
-          url: url,
+          url: nextProps.duplicateFrom ? '' : url,
           printDateYear: printDateYear,
           printDateMonth: printDateMonth,
           printDateDay: printDateDay,
@@ -616,7 +661,7 @@ export default class AddArticleCard extends Component {
     })
   }
 
-  toggleFields () {
+  toggleFields = () => {
     this.setState({
       showOptionalTitleData: !this.state.showOptionalTitleData
     })
@@ -668,7 +713,6 @@ export default class AddArticleCard extends Component {
   }
 
   handleLicense (index, License) {
-    console.log(License.refs);
     var license = {}
     for(var i in License.refs){
       if(License.refs[i]){
@@ -801,7 +845,8 @@ export default class AddArticleCard extends Component {
 
   isValidDOI () {
     var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
-    return re.test(this.state.article.doi)
+    if(re.test(this.state.article.doi) && this.state.article.doi.split('/')[0] === this.props.ownerPrefix) return true
+     else return false
   }
 
   validateURL () {
@@ -954,12 +999,13 @@ export default class AddArticleCard extends Component {
 
 
   onSubmit = (e) => {
+    e.preventDefault();
 
-    e.preventDefault()
+    const crossmarkPrefix = localStorage.getItem('crossmark');
+    const crossmark = crossmarkPrefix ? crossmarkXml(this.props.reduxForm, crossmarkPrefix) : undefined;
 
     this.validation((valid) => { // need it to be a callback because setting state does not happen right away
       if (!valid) {
-
         const props = this.props
         var publication = this.props.publication
 
@@ -969,26 +1015,57 @@ export default class AddArticleCard extends Component {
 
         const journalIssue = `` // TODO: Issue information
 
-        const journalArticle = journalArticleXml(this);
+        const journalArticle = journalArticleXml(this, crossmark);
         const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
 
         const title = JSesc(this.state.article.title)
 
+        var version = this.state.version
+
+        if (props.mode === 'edit') {
+          version = String(parseInt(this.state.version) + 1)
+        }
+
         var newRecord = {
           'title': {'title': title},
           'doi': this.state.article.doi,
+          'owner-prefix': this.state.article.doi.split('/')[0],
           'type': 'article',
-          'mdt-version': this.state.version,
+          'mdt-version': version,
           'status': 'draft',
           'content': journal.replace(/(\r\n|\n|\r)/gm,'')
         }
 
-        publication.message.contains = [newRecord];
+        // check if its part of a issue, the issue props will tell us
+        var savePub
 
-        this.props.asyncSubmitArticle(publication, this.state.article.doi, () => {
-          browserHistory.push(`/publications/${encodeURIComponent(publication.message.doi)}`)
+        if (this.props.issue) { //this is just an issue doi OR undefined
+          // if its an issue, we need to put this newRecord under the issue, NOT the publicaton
+          // need to use the issuePublication, the publication has been mutated to allow reading of the article
+          var issuePublication = this.props.issuePublication
+          var theIssue = _.find(issuePublication.message.contains, (item) => {
+            if ((item.type === 'issue') && (item.doi === this.props.issue)) {
+              return item;
+            }
+          })
+
+          theIssue.contains = [newRecord];
+          issuePublication.message.contains = [theIssue]
+
+          savePub = issuePublication
+        } else { // not issue, so just put directly under the publication
+          publication.message.contains = [newRecord];
+          savePub = publication
+        }
+
+        this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
+
+          this.props.reduxCartUpdate([newRecord]);
+
+          this.setState({version: version})
+
+          //browserHistory.push(`/publications/${encodeURIComponent(publication.message.doi)}`)
         });
-
       }
     })
 
@@ -1071,15 +1148,55 @@ export default class AddArticleCard extends Component {
             }
         }
 
+        const crossmarkErrors = {};
+        if(this.state.crossmark) {
+          const reduxForm = this.props.reduxForm;
+
+          for (var formField in reduxForm) {
+            const [ card, i, field ] = formField.split('_');
+            const value = reduxForm[formField];
+
+            if(field === 'href') {
+              var re = /^(ftp|http|https):\/\/[^ "]+$/
+              crossmarkErrors[formField] = !value ? false : !re.test(value)
+            }
+
+            if(card === 'update') {
+              if(field === 'type' && value !== '') {
+                crossmarkErrors[`update_${i}_DOI_Missing`] = !reduxForm[`update_${i}_DOI`] ? true : false;
+                crossmarkErrors[`update_${i}_year`] = !reduxForm[`update_${i}_year`] ? true : false;
+              }
+
+              if(field === 'DOI') {
+                var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
+                crossmarkErrors[`${formField}_Invalid`] = !re.test(reduxForm[formField])
+              }
+            }
+
+            if(card === 'clinical' && value !== '') {
+              crossmarkErrors[`clinical_${i}_registry`] = !reduxForm[`clinical_${i}_registry`] ? true : false;
+              crossmarkErrors[`clinical_${i}_trialNumber`] = !reduxForm[`clinical_${i}_trialNumber`] ? true : false;
+            }
+          };
+        }
 
         this.setState({
-          errors: update(this.state.errors, errorStates)
+          errors: update(this.state.errors, errorStates),
+          crossmarkErrors: crossmarkErrors
         }, ()=>{
+          var errors = ['doi', 'title']
+
           for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
               if (this.state.errors[key]) {
                 this.setState({error: true})
-                return callback(this.state.errors[key]) // there is a true, return the true, means there is an error
+                return (errors.indexOf(key) > -1) ? callback(this.state.errors[key]) : callback(false)
               }
+          }
+          for(var key in this.state.crossmarkErrors) {
+            if(this.state.crossmarkErrors[key]) {
+              this.setState({error: true})
+              return callback(this.state.crossmarkErrors[key])
+            }
           }
           return callback(false) // iterated the entire object, no true, returning a false, no error
         })
@@ -1104,13 +1221,26 @@ export default class AddArticleCard extends Component {
             reviewData: this.state,
             publication: this.props.publication,
             publicationMetaData: this.props.publicationMetaData,
-            cartUpdate: this.props.cartUpdate
+            cartUpdate: this.props.reduxCartUpdate
         }
     })
   }
 
   boundSetState = (...args) => { this.setState(...args) }
 
+  back = () => {
+    var publication = this.props.publication
+    browserHistory.push(`/publications/${encodeURIComponent(publication.message.doi)}`)
+  }
+
+  componentDidUpdate() {
+    var firstError = $(".fieldError").first()
+    if (firstError.length > 0) {
+      $('.fullError').find('.tooltips').css({
+        'top': ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9)) - ($('.switchLicense').first().position().top + 15) - ($('.switchLicense').first().offset().top + 15))) + 25
+      })
+    }
+  }
 
   render () {
     const error = (this.props.addArticle || {}).error
@@ -1119,12 +1249,13 @@ export default class AddArticleCard extends Component {
     return (
       <div>
         <div className="reviewArticleButtonDiv">
-          <button onClick={this.openReviewArticleModal} className="addPublication">Review</button>
+          <button onClick={this.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src='/images/AddArticle/DarkTriangle.svg' /><span>Back</span></button>
+          <button onClick={this.openReviewArticleModal} className="addPublication reviewbutton">Review</button>
         </div>
 
         <div className={'addarticlecard' + (error ? ' invalid' : '')}>
 
-          <form className='addArticleForm' onSubmit={this.onSubmit.bind(this)}>
+          <form className='addArticleForm' onSubmit={this.onSubmit}>
 
             <div className='articleInnerForm'>
 
@@ -1137,7 +1268,7 @@ export default class AddArticleCard extends Component {
                 <div className='row'>
                   <ArticleTitleField handleChange={this.handleChange} title={this.state.article.title} errors={this.state.errors}/>
                   {(!this.state.error && this.state.showHelper) && <InfoBubble/> }
-                  {(this.state.error) && <ErrorBubble errors={this.state.errors}/> }
+                  {(this.state.error) && <ErrorBubble errors={this.state.errors} crossmarkErrors={this.state.crossmarkErrors}/> }
                 </div>
 
                 <div className='row'>
@@ -1438,13 +1569,16 @@ export default class AddArticleCard extends Component {
                 showSection={this.state.showAdditionalInformation}
                 makeDateDropDown={this.makeDateDropDown.bind(this)}
               />
-              {this.props.crossmarkAuth &&
+              {this.state.crossmark &&
                 <SubItem
                   title={'Crossmark'}
-                  makeDateDropDown={this.makeDateDropDown}/>
+                  showCards={this.state.showCards}
+                  makeDateDropDown={this.makeDateDropDown}
+                  crossmarkErrors={this.state.crossmarkErrors}
+                />
               }
               <div className='saveButtonHolder'>
-                <button type='submit' className='saveButton'>Save</button>
+                <button type='submit' className='saveButton'>Add To Deposit Cart</button>
               </div>
             </div>
           </form>

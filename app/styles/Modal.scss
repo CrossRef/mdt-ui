@@ -1,6 +1,5 @@
 .ReactModal__Body--open {
     overflow: hidden;
-    margin-right: 15px; //necessary because overflow hidden removes scroll bar which shifts everything to the right. might be different for nonChrome browsers
 }
 
 .ReactModal__Overlay--after-open {
@@ -65,8 +64,29 @@
         bottom: 40px;
         border: 1px solid rgb(204, 204, 204);
         background: rgb(255, 255, 255);
+        overflow: auto;
+        outline: none;
+        padding: 20px;
+    }
+
+    .errorModal {
+        position: relative;
+        top: 300px;
+        width:400px;
+        left: auto;
+        right: auto;
+        bottom: 40px;
+        border: 1px solid rgb(204, 204, 204);
         overflow: auto; border-radius: 4px;
         outline: none; padding: 20px;
+        .modal {
+            .titlebar {
+                background: #ff4f52;
+            }
+            .modalbody{
+                display: none;
+            }
+        }
     }
 
 }

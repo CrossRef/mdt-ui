@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import _ from 'lodash'
 
 const Languages = require('./language.json')
-const ArchiveLocations = require('./archiveLocations.json')
+import { ArchiveLocations } from './archiveLocations'
 const PublicationTypes = require('./publicationTypes.json')
 const AppliesTo = require('./appliesTo.json')
 const IdentifierTypes = require('./identifierTypes.json')
@@ -20,18 +20,34 @@ const parseXMLIssue = function (xml) {
     const issueUrl = objectSearch(parsedIssue, 'resource') ? objectSearch(parsedIssue, 'resource') : ''
     const special_numbering = objectSearch(parsedIssue, 'special_numbering') ? objectSearch(parsedIssue, 'special_numbering') : ''
     const publication_date = objectSearch(parsedIssue, 'publication_date')
+    var onlinePubDate = undefined
+    var printPubDate = undefined
 
-    const onlinePubDate = _.find(publication_date, (pubDate) => {
-    if (pubDate['-media_type'] === 'online') {
-        return pubDate
-    }
-    })
+    if (publication_date) {
+        if (Array.isArray(publication_date)) {
+            onlinePubDate = _.find(publication_date, (pubDate) => {
+                if (pubDate) {
+                    if (pubDate['-media_type'] === 'online') {
+                        return pubDate
+                    }
+                }
+            })
 
-    const printPubDate = _.find(publication_date, (pubDate) => {
-    if (pubDate['-media_type'] === 'print') {
-        return pubDate
+            printPubDate = _.find(publication_date, (pubDate) => {
+                if (pubDate) {
+                    if (pubDate['-media_type'] === 'print') {
+                        return pubDate
+                    }
+                }
+            })
+        } else {
+            if(publication_date['-media_type'] === 'print') {
+                printPubDate = publication_date
+            } else if(publication_date['-media_type'] === 'online') {
+                onlinePubDate = publication_date
+            }
+        }
     }
-    })
 
     var printDateYear = ''
     var printDateMonth = ''

@@ -1,8 +1,6 @@
-let store = null
-
 const objectSearch = function(object, search, returnVal) {
     var r = undefined
-    if (returnVal) {
+    if ((returnVal) || (returnVal === '')){
         r = returnVal
     }
     Object.keys(object).some(function (k) {
@@ -20,13 +18,4 @@ const objectSearch = function(object, search, returnVal) {
     return r;
 }
 
-
-const wrappedObjectSearch = function (object, search) {
-    return objectSearch(object, search)
-}
-
-wrappedObjectSearch.registerStore = function (storeRef) {
-  store = storeRef
-}
-
-export default wrappedObjectSearch
+export default objectSearch

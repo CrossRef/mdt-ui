@@ -1,5 +1,4 @@
 import fetch from './fetch'
-import client from '../client'
 import _ from 'lodash'
 
 function isValidDOI (doi) {
@@ -11,7 +10,7 @@ function dupCheck (doi) {
   if(doi) {
     if (doi.length > 0) {
       if (isValidDOI(doi)) {
-        return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
+        return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then((data) => {return data.status === 200}))
       } else {
         return (false, false)

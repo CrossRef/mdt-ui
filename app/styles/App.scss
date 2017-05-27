@@ -1,6 +1,9 @@
 @import 'mixins.scss';
 
 .app {
+  input, select, textarea {
+    font-family: "HelveticaNeueETW01-55Rg" !important;
+  }
   .app-contents {
     text-align: center;
 
@@ -16,7 +19,8 @@
           min-height: 63px;
           height: 63px;
           img {
-            margin: 10px 40px 8px 16px;
+//            margin: 10px 40px 8px 16px;
+            height: 54px;
           }
 
           .header-logo-name {
@@ -171,4 +175,11 @@
       }
     }
   }
+}
+
+.second-logo-img {
+  position: relative;
+  height: 70px !important;
+  top: -14px;
+  left: -22px;
 }

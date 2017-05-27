@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 
 import ReduxTextInput from './reduxTextInput'
 import ReduxSelectInput from './reduxSelectInput'
+import dateOptions from '../../../utilities/date'
+import { registryDois } from '../../../utilities/crossmarkHelpers'
 
 
 export class Blank extends Component {
@@ -21,6 +23,24 @@ export class Blank extends Component {
 }
 
 export class PublicationHistory extends Component {
+  state={ number: this.props.number || 0 }
+
+  renderFields = () => {
+    let fieldArray = [];
+    let i = 0;
+    while (i <= this.state.number) {
+      fieldArray.push(
+        <div key={i} className='row'>
+          <div className='fieldHolder'>
+            <Selector title='' name={`pubHist_${i}_label`} style="dateAlignSelect" options={['', 'Received', 'Accepted', 'Published Online', 'Published Print']}/>
+            <Date title="Date" name={`pubHist_${i}`}/>
+          </div>
+          <div className='errorHolder'></div>
+        </div>
+      ); i++
+    } return fieldArray
+  }
+
   render() {
     return(
       <div className='optionalissueiinfo'>
@@ -36,21 +56,9 @@ export class PublicationHistory extends Component {
             </div>
           </div>
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='' name="pubHistSelect1" style="dateAlignSelect"/>
-              <Date title="Date" name="pubHistDate1"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          {this.renderFields()}
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='' name="pubHistSelect2" style="dateAlignSelect"/>
-              <Date title="Date" name="pubHistDate2"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
         </div>
       </div>
     )
@@ -58,6 +66,35 @@ export class PublicationHistory extends Component {
 }
 
 export class PeerReview extends Component {
+  state={ number: this.props.number || 0 }
+
+  renderFields = () => {
+    const errors = this.props.errors || {};
+
+    let fieldArray = [];
+    let i = 0;
+    while (i <= this.state.number) {
+      fieldArray.push(
+        <div key={i}>
+          <div className='row'>
+            <div className='fieldHolder'>
+              <Selector title='' name={`peer_${i}_label`} style="textAlignSelect" options={['', 'Peer reviewed', 'Review Process']}/>
+              <TextInput title='Description' name={`peer_${i}_explanation`}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+
+          <div className='row'>
+          <div className='fieldHolder'>
+            <TextInput title='URL' name={`peer_${i}_href`} style="floatRight" error={errors[`peer_${i}_href`]}/>
+          </div>
+          <div className='errorHolder'></div>
+          </div>
+        </div>
+      ); i++
+    } return fieldArray
+  }
+
   render() {
     return(
       <div className='optionalissueiinfo'>
@@ -73,35 +110,9 @@ export class PeerReview extends Component {
             </div>
           </div>
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='' name="peerReviewSelect1" style="textAlignSelect"/>
-              <TextInput title='Description' name="peerReviewDescription1" />
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          {this.renderFields()}
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='URL' name="peerReviewUrl1" style="floatRight"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
-
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='' name="peerReviewSelect2" style="textAlignSelect"/>
-              <TextInput title='Description' name="peerReviewDescription2"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
-
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='URL' name="peerReviewUrl1" style="floatRight"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
         </div>
       </div>
     )
@@ -109,6 +120,35 @@ export class PeerReview extends Component {
 }
 
 export class Copyright extends Component {
+  state={ number: this.props.number || 0 }
+
+  renderFields = () => {
+    const errors = this.props.errors || {};
+
+    let fieldArray = [];
+    let i = 0;
+    while (i <= this.state.number) {
+      fieldArray.push(
+        <div key={i}>
+          <div className='row'>
+            <div className='fieldHolder'>
+              <Selector title='' name={`copyright_${i}_label`} style="textAlignSelect" options={['', 'Copyright Statement', 'Licensing Information']}/>
+              <TextInput title='Description' name={`copyright_${i}_explanation`}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+
+          <div className='row'>
+          <div className='fieldHolder'>
+            <TextInput title='URL' name={`copyright_${i}_href`} style="floatRight" error={errors[`copyright_${i}_href`]}/>
+          </div>
+          <div className='errorHolder'></div>
+          </div>
+        </div>
+      ); i++
+    } return fieldArray
+  }
+
   render() {
     return(
       <div className='optionalissueiinfo'>
@@ -124,35 +164,9 @@ export class Copyright extends Component {
             </div>
           </div>
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='' name="peerReviewSelect1" style="textAlignSelect"/>
-              <TextInput title='Description' name="copyrightDescription1" />
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          {this.renderFields()}
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='URL' name="copyrightUrl1" style="floatRight"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
-
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='' name="copyrightSelect2" style="textAlignSelect"/>
-              <TextInput title='Description' name="copyrightDescription2"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
-
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='URL' name="copyrightUrl2" style="floatRight"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
         </div>
       </div>
     )
@@ -160,6 +174,26 @@ export class Copyright extends Component {
 }
 
 export class SupplementaryMaterial extends Component {
+  state={ number: this.props.number || 0 }
+
+  renderFields = () => {
+    const errors = this.props.errors || {};
+
+    let fieldArray = [];
+    let i = 0;
+    while (i <= this.state.number) {
+      fieldArray.push(
+        <div key={i} className='row'>
+          <div className='fieldHolder'>
+            <TextInput title='Description' name={`supp_${i}_explanation`}/>
+            <TextInput title='URL' name={`supp_${i}_href`} error={errors[`supp_${i}_href`]}/>
+          </div>
+          <div className='errorHolder'></div>
+        </div>
+      ); i++
+    } return fieldArray
+  }
+
   render() {
     return(
       <div className='optionalissueiinfo'>
@@ -175,13 +209,9 @@ export class SupplementaryMaterial extends Component {
             </div>
           </div>
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='Description' name="peerReviewDescription1" />
-              <TextInput title='URL' name="peerReviewUrl1" />
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          {this.renderFields()}
+
+          <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
         </div>
       </div>
     )
@@ -189,6 +219,35 @@ export class SupplementaryMaterial extends Component {
 }
 
 export class Other extends Component {
+  state={ number: this.props.number || 0 }
+
+  renderFields = () => {
+    const errors = this.props.errors || {};
+
+    let fieldArray = [];
+    let i = 0;
+    while (i <= this.state.number) {
+      fieldArray.push(
+        <div key={i}>
+          <div className='row'>
+            <div className='fieldHolder'>
+              <TextInput title={`Label ${i+1}`} name={`other_${i}_label`}/>
+              <TextInput title='Description' name={`other_${i}_explanation`}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+
+          <div className='row'>
+            <div className='fieldHolder'>
+              <TextInput title='URL' name={`other_${i}_href`} style="floatRight" error={errors[`other_${i}_href`]}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+        </div>
+      ); i++
+    } return fieldArray
+  }
+
   render() {
     return(
       <div className='optionalissueiinfo'>
@@ -204,20 +263,9 @@ export class Other extends Component {
             </div>
           </div>
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='Label 1' name="otherLabel1" />
-              <TextInput title='URL' name="otherDescription1" />
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          {this.renderFields()}
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='URL' name="otherUrl1" style="floatRight"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
         </div>
       </div>
     )
@@ -225,6 +273,40 @@ export class Other extends Component {
 }
 
 export class StatusUpdate extends Component {
+  state={ number: this.props.number || 0 }
+
+  requireHandler = (i, e) => {
+    if(e.target.value) this.setState({[`require_${i}`]: true});
+    else if (e.target.value === '') this.setState({[`require_${i}`]: false});
+  }
+
+  renderFields = () => {
+    const errors = this.props.errors || {};
+
+    let fieldArray = [];
+    let i = 0;
+    while (i <= this.state.number) {
+      fieldArray.push(
+        <div key={i}>
+          <div className='row'>
+            <div className='fieldHolder'>
+              <Selector handler={this.requireHandler.bind(null, i)} title='Update Type (Required)' name={`update_${i}_type`} style="textAlignSelect" options={['','Addendum','Clarification','Correction','Corrigendum','Erratum','Expression Of Concern','New Edition','New Version','Partial Retraction','Removal','Retraction','Withdrawal']}/>
+              <Date title="Update Date" name={`update_${i}`} required={this.state[`require_${i}`]} error={errors[`update_${i}_year`]}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+
+          <div className='row'>
+            <div className='fieldHolder'>
+              <TextInput title='DOI for Update' name={`update_${i}_DOI`} required={this.state[`require_${i}`]} error={errors[`update_${i}_DOI_Invalid`] || errors[`update_${i}_DOI_Missing`]}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+        </div>
+      ); i++
+    } return fieldArray
+  }
+
   render() {
     return(
       <div className='optionalissueiinfo'>
@@ -240,20 +322,9 @@ export class StatusUpdate extends Component {
             </div>
           </div>
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='Update Type (Required)' name="statusUpdateSelect1" style="textAlignSelect"/>
-              <Date title="Update Date" name="statusUpdateDate1"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          {this.renderFields()}
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <TextInput title='DOI for Update (Required)' name="statusUpdateInput1"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
         </div>
       </div>
     )
@@ -261,6 +332,39 @@ export class StatusUpdate extends Component {
 }
 
 export class ClinicalTrials extends Component {
+  state={ number: this.props.number || 0 }
+
+  renderFields = () => {
+    const errors = this.props.errors || {};
+
+    let fieldArray = [];
+    let i = 0;
+    while (i <= this.state.number) {
+      fieldArray.push(
+        <div key={i}>
+          <div className='row'>
+            <div className='fieldHolder'>
+              <Selector
+                title='Clinical trial registry (Required)'
+                name={`clinical_${i}_registry`} required={true}
+                error={errors[`clinical_${i}_registry`]}
+                options={['', ...Object.keys(registryDois)]}/>
+              <TextInput title="Registered trial number (Required)" name={`clinical_${i}_trialNumber`} required={true} error={errors[`clinical_${i}_trialNumber`]}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+
+          <div className='row'>
+            <div className='fieldHolder'>
+              <Selector title='Relationship of publication to trial' name={`clinical_${i}_type`} options={['', 'Pre-Results', 'Results', 'Post-Results']}/>
+            </div>
+            <div className='errorHolder'></div>
+          </div>
+        </div>
+      ); i++
+    } return fieldArray
+  }
+
   render() {
     return(
       <div className='optionalissueiinfo'>
@@ -276,20 +380,9 @@ export class ClinicalTrials extends Component {
             </div>
           </div>
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='Clinical trial registry (Required)' name="clinicalTrialsSelect1" />
-              <TextInput title="Registered trial number (Required)" name="Registered trial number (Required)"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          {this.renderFields()}
 
-          <div className='row'>
-            <div className='fieldHolder'>
-              <Selector title='Relationship of publication to trial' name="clinicalTrialsSelect2"/>
-            </div>
-            <div className='errorHolder'></div>
-          </div>
+          <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
         </div>
       </div>
     )
@@ -299,7 +392,7 @@ export class ClinicalTrials extends Component {
 
 
 
-const TextInput = ({title, name, style}) =>
+const TextInput = ({title, name, number, style, required, error}) =>
   <div className={`fieldinnerholder halflength ${style}`}>
     <div className='labelholder'>
       <div className='labelinnerholder'>
@@ -307,20 +400,20 @@ const TextInput = ({title, name, style}) =>
       </div>
     </div>
     <div className='requrefieldholder'>
-      <div className='requiredholder norequire'>
+      <div className={`requiredholder ${!required ? 'norequire' : ''}`}>
         <div className='required height32'>
+          {required && <span>*</span>}
         </div>
       </div>
       <div className='field'>
         <ReduxTextInput
-          name={name} className="height32"
-        />
+          name={name} className={`height32${error ? ' fieldError' : ''}`}/>
       </div>
     </div>
   </div>
 
 
-const Selector = ({ title, name, style, options=['', 1,2,3] }) =>
+const Selector = ({ title, name, number, style, handler, required, error, options=['', 1,2,3]}) =>
   <div className={`fieldinnerholder halflength ${style}`}>
     <div className='labelholder'>
       <div className='labelinnerholder'>
@@ -328,51 +421,65 @@ const Selector = ({ title, name, style, options=['', 1,2,3] }) =>
       </div>
     </div>
     <div className='requrefieldholder'>
-      <div className='requiredholder norequire'>
+      <div className={`requiredholder ${!required ? 'norequire' : ''}`}>
         <div className='required height32'>
+          {required && <span>*</span>}
         </div>
       </div>
       <div className='field'>
         <ReduxSelectInput
-          name={name} className="height32" options={options}/>
+          handler={handler} name={name} className={`height32${error ? ' fieldError' : ''}`} options={options}/>
       </div>
     </div>
   </div>
 
 
 
-const Date = ({title, name}) =>
-  <div className='fieldinnerholder halflength'>
-    <div className='labelholder'>
-      <div className='labelinnerholder'>
-        <div className='label'>{title}</div>
-      </div>
-    </div>
-    <div className='requrefieldholder'>
-      <div className='requiredholder norequire'>
-        <div className='required height32'>
-        </div>
-      </div>
-      <div className='field'>
-        <div className='datepickerholder'>
-          <div className='dateselectholder'>
-            <div>Year</div>
-            <ReduxSelectInput
-              name={`${name}Year`} className="height32 datepickselects" options={['', '2017', '2016', '2015']}/>
-          </div>
-          <div className='dateselectholder'>
-            <div>Month</div>
-            <ReduxSelectInput
-              name={`${name}Month`} className="height32 datepickselects" options={['', 'January', 'February', 'March']}/>
-          </div>
-          <div className='dateselectholder'>
-            <div>Day</div>
-            <ReduxSelectInput
-              name={`${name}Day`} className="height32 datepickselects" options={['', 1,2,3,4]}/>
-          </div>
-          <div>
+class Date extends Component {
+  state = { month: '' }
+
+  render() {
+    const { title, name, number, required, error } = this.props;
+    return (
+      <div className='fieldinnerholder halflength'>
+        <div className='labelholder'>
+          <div className='labelinnerholder'>
+            <div className='label'>{title}</div>
           </div>
         </div>
+        <div className='requrefieldholder'>
+          <div className={`requiredholder adjustDateRequire ${!required ? 'norequire' : ''}`}>
+            <div className='required height32'>{required && <span>*</span>}</div>
+          </div>
+          <div className='field'>
+            <div className='datepickerholder'>
+              <div className='dateselectholder'>
+                <div>Year</div>
+                <ReduxSelectInput
+                  name={`${name}_year`}
+                  className={`height32 datepickselects ${error ? 'fieldError' : ''}`}
+                  options={dateOptions.years}/>
+              </div>
+              <div className='dateselectholder'>
+                <div>Month</div>
+                <ReduxSelectInput
+                  name={`${name}_month`}
+                  className={`height32 datepickselects ${error ? 'fieldError' : ''}`}
+                  handler={(e)=>this.setState({month:e.target.value})}
+                  options={dateOptions.months}/>
+              </div>
+              <div className='dateselectholder'>
+                <div>Day</div>
+                <ReduxSelectInput
+                  name={`${name}_day`}
+                  className={`height32 datepickselects ${error ? 'fieldError' : ''}`}
+                  options={dateOptions[this.state.month]}/>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-    </div>
-  </div>
+    )
+  }
+
+}

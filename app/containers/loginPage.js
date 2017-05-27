@@ -6,8 +6,7 @@ import { stateTrackerII } from 'my_decorators'
 
 
 import LoginCard from '../components/loginCard'
-import { SET_AUTH_BEARER, authenticate } from '../actions/application'
-import client from '../client'
+import { SET_AUTH_BEARER, login } from '../actions/application'
 
 
 
@@ -16,16 +15,7 @@ const mapStateToProps = (state) => ({
 })
 
 const mapDispatchToProps = (dispatch) => ({
-  authenticate: (...args) => dispatch(authenticate(...args)),
-  actions: bindActionCreators({
-      login: (usr, pwd) => client.actions.login.sync({}, {
-        body: JSON.stringify({ usr, pwd })
-      }),
-      loginReset: () => {
-        client.actions.login.reset()
-        dispatch(SET_AUTH_BEARER())
-      }
-    }, dispatch)
+  asyncLogin: (...args) => dispatch(login(...args)),
 })
 
 
@@ -37,20 +27,17 @@ export default class LoginPage extends Component {
   }
 
   componentDidMount () {
-    if (client.isLoggedIn()) {
-      this.props.actions.loginReset({})
-    }
+    localStorage.setItem('auth', '');
   }
 
   render () {
-    const { actions, loginState } = this.props
+    const { actions, loginState, asyncLogin } = this.props
     const { login } = actions || {}
 
     return (
       <div className='login'>
         <LoginCard
-          authenticate={this.props.authenticate}
-          onLogin={login}
+          onLogin={asyncLogin}
           loginState={loginState} />
       </div>
     )

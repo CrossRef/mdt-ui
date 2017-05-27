@@ -3,9 +3,9 @@ import is from 'prop-types'
 import _ from 'lodash'
 import { stateTrackerII } from 'my_decorators'
 import { browserHistory } from 'react-router'
-import ModalCard from './modalCard'
+
 const Languages = require('../utilities/language.json')
-const ArchiveLocations = require('../utilities/archiveLocations.json')
+import { ArchiveLocations } from '../utilities/archiveLocations'
 const PublicationTypes = require('../utilities/publicationTypes.json')
 const AppliesTo = require('../utilities/appliesTo.json')
 const IdentifierTypes = require('../utilities/identifierTypes.json')
@@ -42,17 +42,25 @@ export default class DepositCartItemsReview extends Component {
   }
 
   gotoPage () {
-    const { item, publication } = this.props
+    const { item, publication, issue } = this.props
     if (item.type.toLowerCase() === 'article') {
       this.props.reduxControlModal({showModal: false})
-      browserHistory.push(`/publications/${encodeURIComponent(publication.doi)}/addarticle/${encodeURIComponent(item.doi)}`)
+      if (issue) {
+        browserHistory.push(`/publications/${encodeURIComponent(publication.doi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(item.doi)}`)
+      } else {
+        browserHistory.push(`/publications/${encodeURIComponent(publication.doi)}/addarticle/${encodeURIComponent(item.doi)}`)
+      }
     } else if (item.type.toLowerCase() === 'issue') {
-      this.props.reduxControlModal({showModal: false})
+      this.props.reduxControlModal({
+        showModal: false
+      })
+      //Change this to open modal with correct issue DOI
       browserHistory.push(`/publications/${encodeURIComponent(publication.doi)}?modal=${encodeURIComponent(item.doi)}`)
     }
   }
 
   parseIssue (item, publication) {
+    //need to get issue content, to tell if there is validation needs to be corrected
     return (
       <div>
         {issueReviewGenerator(publication,item.content)}

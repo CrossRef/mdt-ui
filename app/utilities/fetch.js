@@ -1,33 +1,18 @@
 import fetch from 'isomorphic-fetch'
-import { push } from 'react-router-redux'
+import { browserHistory } from 'react-router'
 
-let store = null
 
 const wrappedFetch = function () {
   return fetch.apply(fetch, arguments).then((response) => {
     if (response.status === 401) {
-      store.dispatch({
-        type: 'SET_AUTH_BEARER',
-        payload: ''
-      })
-      store.dispatch(push('/'))
-
-      const err = new Error(response.statusText)
-      // We'll likely need the status code
-      err.statusCode = response.status
-      console.error('Authorization token expired')
-
-      throw err
+      console.log([response.status, arguments, response]);
+      if(browserHistory.getCurrentLocation().pathname !== '/') {
+        browserHistory.push('/');
+        console.error('Authorization failed, kicking back to HomePage')
+      }
     }
-
     return response
   })
 }
 
-wrappedFetch.registerStore = function (storeRef) {
-  store = storeRef
-}
-
 export default wrappedFetch
-
-//export default fetch;

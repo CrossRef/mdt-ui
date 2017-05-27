@@ -3,9 +3,8 @@ import is from 'prop-types'
 import _ from 'lodash'
 import { stateTrackerII } from 'my_decorators'
 
-import ModalCard from './modalCard'
 const Languages = require('../utilities/language.json')
-const ArchiveLocations = require('../utilities/archiveLocations.json')
+import { ArchiveLocations } from '../utilities/archiveLocations'
 const PublicationTypes = require('../utilities/publicationTypes.json')
 const AppliesTo = require('../utilities/appliesTo.json')
 const IdentifierTypes = require('../utilities/identifierTypes.json')

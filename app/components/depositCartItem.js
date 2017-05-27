@@ -16,7 +16,6 @@ import DepositCartItemCard from './depositCartItemCard'
 import { controlModal, getPublications, cartUpdate, getItem } from '../actions/application'
 import xmldoc from '../utilities/xmldoc'
 
-let errorState = []
 
 export default class DepositCartItem extends Component {
   static propTypes = {
@@ -30,7 +29,7 @@ export default class DepositCartItem extends Component {
     toggleDeposit: is.func.isRequired,
     errorIndex: is.number.isRequired,
     errorPubIndex:  is.number.isRequired,
-    errorPubDoi: is.string.isRequired
+    errorPubDoi: is.string.isRequired,
   };
 
   constructor (props) {
@@ -55,11 +54,12 @@ export default class DepositCartItem extends Component {
 
   displayItem () {
     var row = []
+    var counter = 0
     for(var i = 0; i < this.props.cartItem.contains.length; i++){
       row.push(
           <DepositCartItemCard
-            key={i}
-            index={i}
+            key={counter}
+            index={counter}
             pubIndex={this.props.index}
             pubDoi={this.props.cartItem.doi}
             reduxCartUpdate={this.props.reduxCartUpdate}
@@ -69,9 +69,33 @@ export default class DepositCartItem extends Component {
             publication={this.state.publication}
             cartItem={this.props.cartItem.contains[i]}
             updateError={this.props.updateError}
-            showError={(i===this.props.errorIndex && this.props.cartItem.doi === this.props.errorPubDoi && this.props.index === this.props.errorPubIndex) ? true : false}
+            showError={(counter===this.props.errorIndex && this.props.cartItem.doi === this.props.errorPubDoi && this.props.index === this.props.errorPubIndex) ? true : false}
         />
       )
+      if (this.props.cartItem.contains[i].contains) {
+        for(var j = 0; j < this.props.cartItem.contains[i].contains.length; j++){
+          counter++
+          row.push(
+            <DepositCartItemCard
+              className='issueArticle'
+              key={counter}
+              index={counter}
+              underIssue={true}
+              pubIndex={this.props.index}
+              pubDoi={this.props.cartItem.doi}
+              reduxCartUpdate={this.props.reduxCartUpdate}
+              reduxCart={this.props.reduxCart}
+              reduxControlModal={this.props.reduxControlModal}
+              reduxRemoveFromCart={this.props.reduxRemoveFromCart}
+              publication={this.state.publication}
+              cartItem={this.props.cartItem.contains[i].contains[j]}
+              updateError={this.props.updateError}
+              showError={(counter===this.props.errorIndex && this.props.cartItem.doi === this.props.errorPubDoi && this.props.index === this.props.errorPubIndex) ? true : false}
+            />
+          )
+        }
+      }
+      counter++
     }
 
     return (

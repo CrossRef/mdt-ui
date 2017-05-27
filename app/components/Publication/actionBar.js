@@ -11,24 +11,24 @@ export default class ActionBar extends Component {
 
   static propTypes ={
     reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
     handle: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object.isRequired,
-    handleAddCart: is.func.isRequired
+    handleAddCart: is.func.isRequired,
+    deleteSelections: is.func.isRequired,
+    postIssue: is.func.isRequired,
+    ownerPrefix: is.string.isRequired,
+    selections: is.array.isRequired
   }
 
 
   constructor (props) {
     super(props)
     this.state = {
-      actionMenuOpen: false
+      actionMenuOpen: false,
+      addRecordMenuOpen: false
     }
-  }
-
-  toggleMenu = () => {
-    this.setState({
-      actionMenuOpen : !this.state.actionMenuOpen
-    })
   }
 
   openAddIssueModal = () => {
@@ -40,27 +40,46 @@ export default class ActionBar extends Component {
       props: {
         handle: this.props.handle,
         publication: this.props.publication,
-        reduxControlModal: this.props.reduxControlModal
+        reduxControlModal: this.props.reduxControlModal,
+	      reduxCartUpdate: this.props.reduxCartUpdate,
+        postIssue: this.props.postIssue,
+        ownerPrefix: this.props.ownerPrefix
       }
     })
   }
 
-  addToCart = () => {
-    this.props.handleAddCart()
+  onlyIssueSelected = () => {
+    const selections = this.props.selections;
+    if(!selections.length) return false;
+    const types = selections.map((selection) => {
+      return selection.article.type
+    });
+    return !types.includes('article')
   }
 
 
   render () {
-    const { doi, publication, handle } = this.props
+    const onlyIssue = this.onlyIssueSelected();
+    const { doi, publication, handle, handleAddCart, deleteSelections, duplicateSelection } = this.props
     return (<div className='publication-actions'>
-      <Link className='pull-left add-record' to={`/publications/${encodeURIComponent(doi)}/addarticle`}>Add Record</Link>
+      <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
+        Add Record
+        {this.state.addRecordMenuOpen && <div>
+          <p onClick={()=>browserHistory.push(`/publications/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
+          <p onClick={this.openAddIssueModal}>New Issue</p>
+          <p>New Volume</p>
+        </div>}
+      </div>
       <div className='pull-right'>
-        <div className='actions' onClick={this.toggleMenu}>Action</div>
-        <div className={'menuHolder' + (this.state.actionMenuOpen ? ' menu-on': '')}>
-          <ul className='actions-menu'>
-            <li><button onClick={this.openAddIssueModal} className="addIssue" >Create New Issue/Volume</button></li>
-            <li><button onClick={this.addToCart} className="addIssue" >Add to Deposit Cart</button></li>
-          </ul>
+        <div className={`actions tooltips ${this.props.selections.length ? 'activeAction' : ''}`}
+          onClick={this.props.selections.length ? () => this.setState({ actionMenuOpen : !this.state.actionMenuOpen, addRecordMenuOpen: false }) : null}
+        >
+          Action
+          {this.state.actionMenuOpen && <div>
+            <p className={onlyIssue ? 'grayedOut' : ''} onClick={onlyIssue ? null : handleAddCart}>Add to Cart</p>
+            <p onClick={duplicateSelection}>Duplicate</p>
+            <p onClick={deleteSelections}>Remove</p>
+          </div>}
         </div>
       </div>
       <div className='clear-both' />

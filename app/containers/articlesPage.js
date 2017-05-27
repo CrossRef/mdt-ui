@@ -5,9 +5,6 @@ import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import { stateTrackerII } from 'my_decorators'
 
-import client from '../client'
-
-
 
 const mapDispatchToProps = dispatch => ({})
 

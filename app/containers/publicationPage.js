@@ -5,21 +5,25 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 
-import { getPublications, controlModal, cartUpdate, clearCart } from '../actions/application'
-import client from '../client'
+import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, getItem } from '../actions/application'
 import fetch from '../utilities/fetch'
 import Publication from '../components/Publication/publication'
 
+
 const mapStateToProps = (state, props) => ({
-  publication: state.publications[props.routeParams.doi],
-  cart: state.cart
+  publication: state.publications[props.routeParams.doi] || state.publications[props.routeParams.doi.toLowerCase()],
+  cart: state.cart,
+  search: state.search
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   asyncGetPublications: getPublications,
+  asyncDeleteRecord: deleteRecord,
   reduxCartUpdate: cartUpdate,
-  reduxClearCart: clearCart
+  reduxClearCart: clearCart,
+  asyncSearchRecords: searchRecords,
+  asyncGetItem: getItem,
 }, dispatch)
 
 
@@ -29,6 +33,10 @@ export default class PublicationPage extends Component {
   static propTypes = {
     reduxControlModal: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
+    asyncSearchRecords: is.func.isRequired,
+    asyncGetItem: is.func.isRequired,
+    search: is.object.isRequired,
+    asyncDeleteRecord: is.func.isRequired,
     routeParams: is.shape({
       doi: is.string.isRequired
     }).isRequired,
@@ -44,49 +52,44 @@ export default class PublicationPage extends Component {
   }
 
   fetchIssue (doi, callback) {
-    return fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
+    return fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
     .then(doi => doi.json())
     .then((doi) => {
       return callback(doi)
     })
     .catch((reason) => {
-      console.warn('Kicking back to login screen:', reason)
-      browserHistory.push('/')
-    })
-  }
-
-  fetchDOI = (doi) => {
-    fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: client.headers })
-    .then(doi => doi.json())
-    .then((doi) => {
-      console.log('What do I need to fetch here for?')
-    })
-    .catch((reason) => {
-      console.error('ERROR: Publication component fetch DOI ', reason)
+      console.warn('ERROR in publicationPage fetchIssue()', reason)
     })
   }
 
   postIssue (publication, callback) {
     return fetch(`http://mdt.crossref.org/mdt/v1/work`, { // using isomorphic-fetch directly here, React is NOT passing the action everytime
         method: 'post',
-        headers: client.headers,
+        headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
       }
-    ).then(() => {
-      return callback()
+    ).then((response) => {
+      console.log(response);
+      if(callback) return callback()
     })
     .catch((reason) => {
-      console.warn('Kicking back to login screen:', reason)
-      browserHistory.push('/')
+      console.error('ERROR in publicationPage postIssue()', reason)
     })
   }
 
   render () {
     const doi = this.props.routeParams.doi;
+
     return (
       <div>
         {this.props.publication ?
           <Publication
+            ownerPrefix={doi.split('/')[0]}
+            asyncDeleteRecord={this.props.asyncDeleteRecord}
+            asyncSearchRecords={this.props.asyncSearchRecords}
+            search={this.props.search}
+            asyncGetItem={this.props.asyncGetItem}
+            cart={this.props.cart}
             publication={this.props.publication}
             handle={this.props.asyncGetPublications}
             reduxControlModal={this.props.reduxControlModal}

@@ -7,7 +7,6 @@ import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
 import { controlModal, cartUpdate, getItem, removeFromCart, deposit } from '../actions/application'
-import client from '../client'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import DepositCart from '../components/depositCart'
@@ -53,20 +52,23 @@ export default class DepositCartPage extends Component {
     }
   }
 
-  toggleDeposit (showDeposit) {
+  toggleDeposit = (showDeposit) => {
     if (!showDeposit) {
       var falseCnt = this.state.falseCnt
       this.setState({
-        falseCnt: falseCnt + 1
+        falseCnt: falseCnt + 1,
+        showDeposit: false
       })
     }
   }
 
   getFullCart (cart = this.props.cart) {
+
     var promises = [];
     var _this = this;
     if(cart.length > 0) {
       _.each(cart, (item) => {
+
         var doi = item.doi
         if (!doi) {
           doi = item.article.doi
@@ -87,9 +89,27 @@ export default class DepositCartPage extends Component {
           })
         }
 
-        mergedCart = _.uniqBy(mergedCart, function (cartItem) {
+
+        mergedCart = _.uniqBy(mergedCart, function (cartItem) { // merging publications
           return cartItem.doi;
         });
+
+
+        function mergeByDoi(arr) {
+          return _(arr)
+            .groupBy(function(item) { // group the items using the lower case
+              return item.doi;
+            })
+            .map(function(group) { // map each group
+              return _.mergeWith.apply(_, [{}].concat(group, function(obj, src) { // merge all items, and if a property is an array concat the content
+                if (Array.isArray(obj)) {
+                  return obj.concat(src);
+                }
+              }))
+            })
+            .values() // get the values from the groupBy object
+            .value();
+        }
 
         for(var i = 0; i < mergedCart.length; i++) {
           for(var j = 0; j < fullData.length; j++) {
@@ -101,20 +121,38 @@ export default class DepositCartPage extends Component {
           }
         }
 
+        for(var k = 0; k < mergedCart.length; k++){
+          var result = mergeByDoi(mergedCart[k].contains)
+          mergedCart[k].contains = result
+        }
+
         //need to get publication meta data as well
         var promises = []
+
         for(var i = 0; i < mergedCart.length; i++) {
-          promises.push(this.props.asyncGetItem(mergedCart[i].doi).then((data)=>{
+          promises.push(this.props.asyncGetItem(mergedCart[i].doi).then((data)=>{ // this gets publication content
             return data
           }))
         }
         Promise.all(promises).then((publicationData) => {
+          var issuePromises = []
           for(var i = 0; i < publicationData.length; i++) {
             mergedCart[i].content = publicationData[i].message.content
+            for(let item of mergedCart[i].contains) {
+              if (item.type === 'issue') {
+                issuePromises.push(this.props.asyncGetItem(item.doi).then((data)=>{ // this gets publication content
+                  item.content = data.message.contains[0].content
+                  return;
+                }))
+              }
+            }
           }
 
-          _this.setState({
-            fullCart: update(this.state.fullCart, {$set: mergedCart })
+          //this gets the issues
+          Promise.all(issuePromises).then(() => {
+            _this.setState({
+              fullCart: update(this.state.fullCart, {$set: mergedCart })
+            })
           })
         })
       })
@@ -122,6 +160,7 @@ export default class DepositCartPage extends Component {
   }
 
   componentWillReceiveProps(nextProps, nextState) {
+    if(nextProps.location !== this.props.location) this.setState({status:'cart'});
     if (this.props.cart !== nextProps.cart) {
       this.getFullCart(nextProps.cart)
     }
@@ -130,7 +169,6 @@ export default class DepositCartPage extends Component {
       this.setState({
         showDeposit: false
       })
-
     }
   }
 
@@ -160,13 +198,11 @@ export default class DepositCartPage extends Component {
   }
 
   deposit = () => {
-    if(!this.state.showDeposit) return;
+    if(!this.state.showDeposit || this.state.status === 'processing') return;
 
     const toDeposit = this.props.cart.map((item) => {
       return { 'doi': item.doi, 'version': item['mdt-version'] }
     });
-
-    console.log(toDeposit);
 
     this.setState({status:`processing`})
 
@@ -175,38 +211,57 @@ export default class DepositCartPage extends Component {
     });
   }
 
-  render () {
+  processDepositResult = () => {
     const resultCount = {Success: 0, Failure: 0};
     const resultData = {};
-    if(this.state.depositResult) {
-      this.state.depositResult.forEach((result, index)=>{
-        let pubDoi, pubTitle, articleTitle, articleStatus;
-        let error = {};
-        const articleInfo = this.props.cart.find((cartItem)=>{
-          return cartItem.doi === result['DOI:']
-        });
-        pubDoi = articleInfo.pubDoi;
-        pubTitle = this.props.publications[pubDoi].message.title.title;
-        articleTitle = articleInfo.title.title;
-        if(typeof result.result === 'string') {
-          articleStatus = 'Failure';
-          error.errorMessage = result.result;
-        } else if (typeof result.result === 'object') {
-          articleStatus = result.result.doi_batch_diagnostic.record_diagnostic[1]['-status'];
-          if(articleStatus === 'Failure') {
-            error.errorMessage = result.result.doi_batch_diagnostic.record_diagnostic[1].msg;
-          }
-        } else {
-          articleStatus = 'Failure';
-          error.errorMessage = 'Unknown Error';
+
+    this.state.depositResult.forEach((result, index)=>{
+      let pubDoi, pubTitle, resultTitle, resultStatus, resultType;
+      let error = {};
+      const articleInfo = this.props.cart.find((cartItem)=>{
+        return cartItem.doi === result['DOI:']
+      });
+
+      pubDoi = articleInfo.pubDoi;
+      resultType = articleInfo.type;
+      pubTitle = this.props.publications[pubDoi].message.title.title;
+      resultTitle = articleInfo.title.title;
+
+      if(typeof result.result === 'string') {
+        resultStatus = 'Failure';
+        error.errorMessage = result.result;
+      } else if (typeof result.result === 'object') {
+        const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic;
+        resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status'];
+        if(resultStatus === 'Failure') {
+          error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg;
         }
+      } else {
+        resultStatus = 'Failure';
+        error.errorMessage = 'Unknown Error';
+      }
 
-        resultCount[articleStatus]++;
+      // resultStatus = 'Success';
+      // error = {};
 
-        resultData[pubTitle] = [...(resultData[pubTitle] || []), {title: articleTitle, status:articleStatus, ...error}]
+      resultCount[resultStatus]++;
 
-      }); console.log(resultData)
-    }
+      resultData[pubTitle] = [...(resultData[pubTitle] || []), {
+        title: resultTitle,
+        status:resultStatus,
+        type:resultType,
+        doi: result['DOI:'],
+        pubDoi: pubDoi,
+        ...error
+      }];
+
+    }); console.log(resultData);
+
+    return {resultData, resultCount}
+  }
+
+  render () {
+    const {resultData, resultCount} = this.state.depositResult ? this.processDepositResult() : {};
 
     return (
       <div className='depositPage'>
@@ -228,7 +283,7 @@ export default class DepositCartPage extends Component {
                   reduxCart={this.props.cart}
                   reduxRemoveFromCart={this.props.reduxRemoveFromCart}
                   fullCart={this.state.fullCart}
-                  toggleDeposit={this.toggleDeposit.bind(this)}
+                  toggleDeposit={this.toggleDeposit}
                 />
               : <EmptyCart/>
             }
@@ -261,8 +316,7 @@ const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {
           <div className={`DepositButtonHolder ${status === 'result' ? 'result' : ''}`}>
             <a
               onClick={deposit}
-              className={(!showDeposit ? 'disabledDeposit' : '') + (cart.length <= 0 ? ' emptycartbutton': '')}
-              disabled={!showDeposit}>
+              className={((!showDeposit || status === 'processing') ? 'disabledDeposit' : '') + (cart.length <= 0 ? ' emptycartbutton': '')}>
               {(cart.length > 0 && status !== 'processing') ? 'Deposit' : 'Processing...'}
             </a>
           </div>

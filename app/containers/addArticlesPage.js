@@ -5,8 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link, browserHistory } from 'react-router'
 import { stateTrackerII } from 'my_decorators'
 
-import client from '../client'
-import { controlModal, getPublications, testReduxRelay, editForm, submitArticle, cartUpdate } from '../actions/application'
+import { controlModal, getPublications, editForm, clearForm, submitArticle, cartUpdate } from '../actions/application'
 import xmldoc from '../utilities/xmldoc'
 import AddArticleCard from '../components/addArticleCard'
 
@@ -15,18 +14,18 @@ import AddArticleCard from '../components/addArticleCard'
 const mapStateToProps = (state, props) => {
   return ({
     publication: state.publications[props.routeParams.doi],
-    crossmarkAuth: state.crossmarkAuth,
-    reduxForm: state.reduxForm
+    reduxForm: state.reduxForm,
+    crossmarkPrefixes: state.login['crossmark-prefixes']
   })
 }
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxEditForm: editForm,
+  reduxClearForm: clearForm,
   asyncGetPublications: getPublications,
   asyncSubmitArticle: submitArticle,
-  reduxCartUpdate: cartUpdate,
-  testReduxRelay: testReduxRelay
+  reduxCartUpdate: cartUpdate
 }, dispatch)
 
 
@@ -36,16 +35,22 @@ export default class AddArticlesPage extends Component {
   static propTypes = {
     reduxControlModal: is.func.isRequired,
     reduxEditForm: is.func.isRequired,
+    reduxClearForm: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
     asyncSubmitArticle: is.func.isRequired,
-    crossmarkAuth: is.bool.isRequired,
     routeParams: is.shape({
       pubDoi: is.string.isRequired,
       articleDoi: is.string
     }).isRequired,
+    location: is.shape({
+      state: is.shape({
+        duplicateFrom: is.string
+      })
+    }).isRequired,
     reduxForm: is.object.isRequired,
     publication: is.object,
+    crossmarkPrefixes: is.array.isRequired
   }
 
   constructor (props) {
@@ -53,40 +58,69 @@ export default class AddArticlesPage extends Component {
     this.state = {
       publication: {},
       publicationMetaData: {},
+      issuePublication: undefined,
       mode: 'add'
     }
   }
 
   componentDidMount () {
-    const { pubDoi, articleDoi } = this.props.routeParams;
+    const { pubDoi, articleDoi, issueDoi } = this.props.routeParams;
+
     const dois = [articleDoi || pubDoi];
-    if(articleDoi) dois.push(pubDoi);
+
+    if(issueDoi) dois.push(issueDoi)
+    if(articleDoi) dois.push(pubDoi)
+
     this.props.asyncGetPublications( dois, (publications) => {
       this.setState({
-        mode: articleDoi ? 'edit' : 'add',
-        publication: publications[0],
-        publicationMetaData: publications[1] ? xmldoc(publications[1].message.content) : {}
+        issuePublication: publications[0]
       })
+
+      var publMeta = publications[1] ? publications[1].message.content : undefined
+      var article = publications[0]
+      if (issueDoi) {
+        publMeta = publications[2] ? publications[2].message.content : undefined
+        //doing logic here so we don't have to change the addArticles page any further
+        var unwrappedPub = publications[1]
+
+        unwrappedPub.message.contains = [publications[0].message.contains[0].contains[0]]
+
+        article = unwrappedPub
+      }
+
+      this.setState({
+        mode: articleDoi ? 'edit' : 'add',
+        publication: article,
+        publicationMetaData: publMeta ? xmldoc(publMeta) : {}
+      })
+
     })
   }
 
-  render () {
+  componentWillUnmount () {
+    this.props.reduxClearForm();
+  }
 
+  render () {
     const { publication, mode, publicationMetaData } = this.state
-    const { doi } = this.props.routeParams
+    const { pubDoi, doi, issueDoi } = this.props.routeParams
+    const ownerPrefix = this.props.publication ? this.props.publication.message['owner-prefix'] : pubDoi.split('/')[0];
     return (
       <div className='addArticles'>
         <AddArticleCard
           reduxControlModal = {this.props.reduxControlModal}
           reduxEditForm={this.props.reduxEditForm}
-          cartUpdate={this.props.reduxCartUpdate}
+          reduxCartUpdate={this.props.reduxCartUpdate}
           asyncSubmitArticle={this.props.asyncSubmitArticle}
-          crossmarkAuth={this.props.crossmarkAuth}
           reduxForm={this.props.reduxForm}
+          ownerPrefix={ownerPrefix}
           publication = { publication }
           publicationMetaData = { publicationMetaData }
+          issuePublication = {this.state.issuePublication}
           mode = { mode }
-          testReduxRelay={this.props.testReduxRelay}
+          issue = { issueDoi }
+          duplicateFrom = { this.props.location.state ? this.props.location.state.duplicateFrom : '' }
+          crossmarkPrefixes = { this.props.crossmarkPrefixes }
         />
       </div>
     )

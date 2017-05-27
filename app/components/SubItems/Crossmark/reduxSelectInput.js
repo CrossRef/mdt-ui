@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import is from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
@@ -20,8 +21,16 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 @connect(mapStateToProps, mapDispatchToProps)
 export default class ReduxSelectInput extends Component {
 
-  handler = (e) => {
+  static propTypes = {
+    name: is.string.isRequired,
+    className: is.string,
+    options: is.array.isRequired,
+    reduxValue: is.string,
+    handler:is.func
+  }
 
+  handler = (e) => {
+    if(this.props.handler) this.props.handler(e);
     this.props.reduxEditForm({
       [e.target.name]:e.target.value
     })

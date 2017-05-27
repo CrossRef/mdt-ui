@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 
 import Contributor from './Contributor'
@@ -7,25 +8,32 @@ import License from './License'
 import RelatedItems from './RelatedItems'
 import AdditionalInformation from './AdditionalInformation'
 import OptionalIssueInformation from './OptionalIssueInformation'
-import { Crossmark, CrossmarkAddButton } from './Crossmark/crossmark'
+import { CrossmarkCards, CrossmarkAddButton } from './Crossmark/crossmark'
 
 
 
 export default class SubtItem extends Component {
+
+  static propTypes = {
+    showCards: is.object
+  }
+
+
   constructor (props) {
     super(props)
     const { incomingData } = this.props
     this.state = {
       showSection: false,
       incomingData: incomingData,
-      crossmarkAddList: false,
+      crossmarkButtons: false,
       crossmarkCards: {}
     }
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-        incomingData: nextProps.incomingData
+        incomingData: nextProps.incomingData,
+        crossmarkCards: nextProps.showCards
     })
   }
 
@@ -37,7 +45,7 @@ export default class SubtItem extends Component {
 
   toggleCrossmarkAddList = () => {
     this.setState({
-      crossmarkAddList: !this.state.crossmarkAddList
+      crossmarkButtons: !this.state.crossmarkButtons
     })
   }
 
@@ -109,19 +117,14 @@ export default class SubtItem extends Component {
               handler={handler}
               index={i}/>
             break
-          case 'Crossmark':
-            card = <Crossmark
-              key={i}
-              makeDateDropDown={makeDateDropDown}/>
-            break
         }
         return (card)
       })
 
     } else if (title==='Crossmark') {
       Nodes =
-        <Crossmark
-          makeDateDropDown={makeDateDropDown} removeCrossmarkCard={this.removeCrossmarkCard} crossmarkCards={this.state.crossmarkCards}/>
+        <CrossmarkCards
+          makeDateDropDown={makeDateDropDown} removeCrossmarkCard={this.removeCrossmarkCard} crossmarkCards={this.state.crossmarkCards} errors={this.props.crossmarkErrors}/>
 
     } else {
        Nodes = <AdditionalInformation
@@ -153,7 +156,7 @@ export default class SubtItem extends Component {
                 toggle={this.toggle}
                 toggleAdd={this.toggleCrossmarkAddList}
                 showSection={this.state.showSection}
-                addList={this.state.crossmarkAddList}
+                addList={this.state.crossmarkButtons}
                 addCrossmarkCard={this.addCrossmarkCard}
               />}
           </div>

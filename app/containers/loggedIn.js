@@ -3,8 +3,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 
-import client from '../client'
-
 
 
 export class LoggedInPage extends Component {
@@ -25,11 +23,8 @@ function mapStateToProps (state) {
 }
 
 function mapDispatchToProps (dispatch) {
-  return {
-    actions: bindActionCreators({
-      login: client.actions.login.sync
-    }, dispatch)
-  }
+  return
+
 }
 
 export default connect(

@@ -1,22 +1,22 @@
-//import fetch from '../utilities/fetch'
-import client from '../client'
+import fetch from '../utilities/fetch'
+//import { REHYDRATE } from 'redux-persist/constants'
 
-import { REHYDRATE } from 'redux-persist/constants'
+
 
 var blacklistActions = [
   'crossref/POST_REHYDRATE', // This is a meta action for restoring from localStorage
-  REHYDRATE, // This is a meta action for restoring from localStorage
+//  REHYDRATE, // This is a meta action for restoring from localStorage
   'SET_STATE', // We don't want to sync back what we just got
   'SET_AUTH_BEARER', // Setting a new auth token shouldn't over-write the existing state
   'PUBLICATIONS',
   'MODAL',
-  'CART_UPDATE',
   'GET_CART',
-  'CLEAR_CART',
   'GET_ITEM',
-  'REMOVE_FROM_CART',
   'REDUXFORM_ADD',
-  `CROSSMARK`
+  'SEARCH_RESULT',
+  'SEARCH_STATUS',
+  'SEARCH_VALUE',
+  'LOGIN'
 ]
 
 const BREAKER_ACTION = 'SET_STATE'
@@ -28,7 +28,8 @@ export default store => next => action => {
 
   if (action) {
 
-    let actionType = action.type
+    let actionType = action.type;
+    const authHeader = localStorage.getItem('auth');
 
     if (!breakerActionSeen && actionType === BREAKER_ACTION) {
       breakerActionSeen = true
@@ -41,7 +42,7 @@ export default store => next => action => {
       if (!breakerActionSeen) {
         pendingAction = actionType
         console.log(`Pending ${actionType}`)
-      } else if (!isEmpty(client.headers) && client.headers.Authorization) {
+      } else if (authHeader) {
         var reduxState = store.getState()
         var postingState = {}
 
@@ -49,8 +50,8 @@ export default store => next => action => {
           if (reduxState.hasOwnProperty(property) && !reduxState[property].hasOwnProperty('sync')) {
             if( //scrub data being synced to server
               property !== 'modal' &&
-              property !== 'publications' &&
-              property !== 'reduxForm'
+              property !== 'reduxForm' &&
+              property !== 'search'
             )
               postingState[property] = reduxState[property]
           }
@@ -64,7 +65,7 @@ export default store => next => action => {
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
         fetch('http://mdt.crossref.org/mdt/v1/state', {
           method: 'POST',
-          headers: client.headers,
+          headers: {Authorization: authHeader},
           body: JSON.stringify(postingState)
         })
 

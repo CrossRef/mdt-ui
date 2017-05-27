@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import _ from 'lodash'
 
 const Languages = require('./language.json')
-const ArchiveLocations = require('./archiveLocations.json')
+import { ArchiveLocations } from './archiveLocations'
 const PublicationTypes = require('./publicationTypes.json')
 const AppliesTo = require('./appliesTo.json')
 const IdentifierTypes = require('./identifierTypes.json')

@@ -12,7 +12,6 @@ Publications.propTypes = {
 
 export default function Publications (props) {
   const { dois } = props;
-  console.log(`Showing ${dois.length} DOIs`)
   return (
     <div className='content'>
       <div className='tools' />

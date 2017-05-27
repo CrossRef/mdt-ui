@@ -6,19 +6,24 @@ import update from 'immutability-helper'
 import _ from 'lodash'
 import Switch from 'react-toggle-switch'
 import { stateTrackerII } from 'my_decorators'
+import $ from 'jquery'
 
-import ModalCard from './modalCard'
+import makeDateDropDown from  '../utilities/makeDateDropDown'
 import SubItem from './SubItems/subItem'
-import client from '../client'
 import fetch from '../utilities/fetch'
 import checkDupeDOI from '../utilities/dupeDOI'
 import isDOI from '../utilities/isDOI'
 import isURL from '../utilities/isURL'
-const ArchiveLocations = require('../utilities/archiveLocations.json')
+import xmldoc from '../utilities/xmldoc'
+import JSesc from '../utilities/jsesc'
+import objectSearch from '../utilities/objectSearch'
+import { getContributor } from '../utilities/getSubItems'
+import { displayArchiveLocations } from '../utilities/archiveLocations'
+import { getIssueXml } from '../utilities/xmlGenerator'
 
 
-const defaultState = (handle = null) => ({
-  handler: handle,
+
+const defaultState = {
   showIssueDoiReq: false,
   showHelper: false,
   on: false,
@@ -64,24 +69,19 @@ const defaultState = (handle = null) => ({
     alternativeName: '',
     role: ''
   }]
-})
+}
 
-@stateTrackerII
 export default class AddIssueCard extends Component {
   constructor (props) {
-    super(props)
-    const {handle} = this.props
-    this.state = defaultState(handle)
-  }
-
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      handler: nextProps.handle
-    })
+    super(props);
+    this.state = defaultState;
+    this.state.issue.issueDoi = props.ownerPrefix + '/'
   }
 
   componentDidMount () {
-    const child = this.refs.child
+    if(this.props.mode === 'edit') {
+      this.modalShown()
+    }
   }
 
   optionalIssueInfoHandler (index, OptIssueInfo) {
@@ -119,59 +119,21 @@ export default class AddIssueCard extends Component {
     })
   }
 
-  displayArchiveLocations () {
-      var locations = [
-        <option key='-1'></option>,
-        ...ArchiveLocations.map((location, i) => (<option key={i} value={location.value}>{location.name}</option>))
-      ]
+  handler (e) {
+    const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
 
-      return (
-          <select
-            ref='issue.archiveLocation'
-            className='height32'
-            defaultValue={this.state.issue.archiveLocation}
-            >
-              {locations}
-          </select>
-      )
-  }
-
-  makeDateDropDown (ref, type, preset, validation, index, item) {
-    var s = [<option key='-1'></option>], start = 0, end = 0
-    if (type === 'y') {
-      start = 2017
-      end = 1980
-    } else if (type === 'd') {
-      start = 1
-      end = 31
-    } else if (type === 'm') {
-      start = 1
-      end = 12
+    if (name === 'issueUrl') {
+      (e.currentTarget.value.trim().length > 0) ? this.setState({showIssueDoiReq:true}) : this.setState({showIssueDoiReq:false})
     }
 
-    if (type === 'y') {
-      for(var i = start; i >= end; i--){
-        s.push(<option key={i} value={i}>{i}</option>)
-      }
-    } else {
-      for(var i = start; i <= end; i++){
-        s.push(<option key={i} value={i}>{i}</option>)
-      }
-    }
-
-    return (
-      <select
-        className={'height32 datepickselects' + ((validation) ? ' fieldError': '')}
-        ref={ref}
-        defaultValue={preset}
-        >
-        {s}
-      </select>
-    )
+    this.setState({
+      issue: update(this.state.issue, {[name]: {$set: e.currentTarget.value ? e.currentTarget.value : '' }})
+    })
   }
 
   validation (callback) {
     var errorStates = {
+      issueTitle: {$set: false},
       issueUrl: {$set: false },
       printDateYear: {$set: false },
       onlineDateYear: {$set: false },
@@ -203,16 +165,20 @@ export default class AddIssueCard extends Component {
           }
         }
 
-        //we ONLY care about issueDOI if there is a issue URL
-        // of course issue URL is required, so doi is required, kinda
+        const validateOwnerPrefix = () => {
+          if(isDOI(this.state.issue.issueDoi) && this.state.issue.issueDoi.split('/')[0] === this.props.ownerPrefix) return true;
+          else return false
+        }
+
         errorStates = {
+          issueTitle: {$set: (this.state.issue.issueTitle.length === 0) },
           issueUrl: {$set: (this.state.issue.issueUrl.length === 0) },
           printDateYear: {$set: (this.state.issue.printDateYear.length === 0) },
           onlineDateYear: {$set: (this.state.issue.onlineDateYear.length === 0) },
           invalidissueurl: {$set: !isURL(this.state.issue.issueUrl) },
           dupeissuedoi: {$set: (this.state.issue.issueDoi.length > 0) ? isDupe[0] : false }, // we only care IF there is a DOI
           issuedoi: {$set: ((this.state.issue.issueDoi.length === 0) && (isURL(this.state.issue.issueUrl))) }, // we only care IF there is a DOI
-          invalidissuedoi: {$set: ((this.state.issue.issueDoi.length > 0) && (isURL(this.state.issue.issueUrl))) ? !isDOI(this.state.issue.issueDoi) : false } // we only care IF there is a DOI
+          invalidissuedoi: {$set: ((this.state.issue.issueDoi.length > 0) && (isURL(this.state.issue.issueUrl))) ? !validateOwnerPrefix() : false } // we only care IF there is a DOI
         }
 
         if (hasPrintYear) { // has print year, don't care if there is a online year
@@ -224,10 +190,10 @@ export default class AddIssueCard extends Component {
 
         errorStates.dupeissuedoi = (this.state.issueDoiDisabled) ? {$set: false} : errorStates.dupeissuedoi
 
-        if ((this.state.issue.volume.length > 0) || (this.state.issue.volumeDoi.length > 0) || (this.state.issue.volumeUrl.length > 0)) {
-          errorStates.dupevolumedoi = {$set: (this.state.issue.volumeDoi.length > 0) ? isDupe[1] : false }, // we only care IF there is a DOI
-          errorStates.invalidvolumedoi = {$set: ((this.state.issue.volumeDoi.length > 0) && (!isDOI(this.state.issue.volumeDoi))) }, // we only care IF there is a DOI
-          errorStates.invalidvolumeurl = {$set: (this.state.issue.volumeUrl.length > 0) ? !isURL(this.state.issue.volumeUrl) : false  }
+        if (((this.state.issue.volume ? this.state.issue.volume : '').length > 0) || ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) || ((this.state.issue.volumeUrl ? this.state.issue.volumeUrl : '').length > 0)) {
+          errorStates.dupevolumedoi = {$set: ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) ? (isDupe[1] ? isDupe[1] : false) : false }, // we only care IF there is a DOI
+          errorStates.invalidvolumedoi = {$set: (((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) && (!isDOI(this.state.issue.volumeDoi))) }, // we only care IF there is a DOI
+          errorStates.invalidvolumeurl = {$set: ((this.state.issue.volumeUrl ? this.state.issue.volumeUrl: '').length > 0) ? !isURL(this.state.issue.volumeUrl) : false  }
 
           errorStates.dupevolumedoi = (this.state.volumeDoiDisabled) ? {$set: false} : errorStates.dupevolumedoi
         }
@@ -235,10 +201,12 @@ export default class AddIssueCard extends Component {
         this.setState({
           errors: update(this.state.errors, errorStates)
         }, ()=>{
+          var errors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issueTitle']
+
           for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
-              if (this.state.errors[key]) {
+              if (this.state.errors[key]) { // only return there is error and prevent from saving if there is no title + doi
                 this.setState({error: true})
-                return callback(this.state.errors[key]) // there is a true, return the true, means there is an error
+                return (errors.indexOf(key) > -1) ? callback(this.state.errors[key]) : callback(false)
               }
           }
           return callback(false) // iterated the entire object, no true, returning a false, no error
@@ -246,165 +214,222 @@ export default class AddIssueCard extends Component {
     })
   }
 
-  getSubmitSubItems (items) {
-    return _.filter(items, (item) => {
-      for(var key in item) { // checking all the properties of errors to see if there is a true
-        if(item[key]){
-          try {
-            if (item[key].trim().length > 0) {
-              return item
-            }
-          } catch (e) {
-            if (item[key].length > 0) {
-              return item
-            }
-          }
-
-        }
-      }
-    })
-  }
-
-  getContributor () {
-      var contributors = this.getSubmitSubItems(this.state.optionalIssueInfo).map((contributor, i) => {
-          // cause the type "ROLE" is shared name
-          var attributes = [
-            (contributor.firstName && (contributor.firstName.trim().length>0)) ? `<given_name>${contributor.firstName}</given_name>` : undefined,
-            (contributor.lastName && (contributor.lastName.trim().length>0)) ? `<surname>${contributor.lastName}</surname>` : undefined,
-            (contributor.suffix && (contributor.suffix.trim().length>0)) ? `<suffix>${contributor.suffix}</suffix>` : undefined,
-            (contributor.affiliation && (contributor.affiliation.trim().length>0)) ? `<affiliation>${contributor.affiliation}</affiliation>` : undefined,
-            (contributor.orcid && (contributor.orcid.trim().length>0)) ? `<ORCID>${contributor.orcid}</ORCID>` : undefined
-          ]
-
-          attributes = _.filter(attributes, (attribute) => { // filter all the undefined
-            for(var key in attribute) { // checking all the properties of errors to see if there is a true
-                if (attribute[key]) {
-                  return attribute
-                }
-            }
-          })
-
-          var person = `<person_name sequence="${(i===0) ? 'first' : 'additional'}" contributor_role="${(contributor.role && (contributor.role.trim().length>0)) ? contributor.role : false}">${attributes.join('')}</person_name>`
-
-        return person
-      })
-
-      return contributors.length > 0 ? `<contributors>${contributors.join('')}</contributors>` : ``
-  }
-
-  getIssueXML () {
-    // the title
-    const titles = this.state.issue.issueTitle.trim().length > 0 ? `<titles><title>${this.state.issue.issueTitle.trim()}</title></titles>` : ``
-
-    // special numbering
-    const specialNumbering = this.state.issue.specialIssueNumber.trim().length > 0 ? `<special_numbering>${this.state.issue.specialIssueNumber.trim()}</special_numbering>` : ``
-
-    // special numbering
-    const issue = this.state.issue.issue.trim().length > 0 ? `<issue>${this.state.issue.issue.trim()}</issue>` : ``
-
-    // the online date
-    var publicationOnlineDate = ''
-    if (this.state.issue.onlineDateYear.length > 0 || this.state.issue.onlineDateDay.length > 0 || this.state.issue.onlineDateMonth.length > 0) {
-      publicationOnlineDate += (this.state.issue.onlineDateYear.length > 0 ? `<year>${this.state.issue.onlineDateYear}</year>` : ``)
-      publicationOnlineDate += (this.state.issue.onlineDateMonth.length > 0 ? `<month>${this.state.issue.onlineDateMonth}</month>` : ``)
-      publicationOnlineDate += (this.state.issue.onlineDateDay.length > 0 ? `<day>${this.state.issue.onlineDateDay}</day>` : ``)
-
-      publicationOnlineDate = `<publication_date media_type="online">${publicationOnlineDate}</publication_date>`
-    }
-
-    // the print date
-    var publicationPrintDate = ''
-    if (this.state.issue.printDateYear.length > 0 || this.state.issue.printDateDay.length > 0 || this.state.issue.printDateMonth.length > 0) {
-      publicationPrintDate += (this.state.issue.printDateYear.length > 0 ? `<year>${this.state.issue.printDateYear}</year>` : ``)
-      publicationPrintDate += (this.state.issue.printDateMonth.length > 0 ? `<month>${this.state.issue.printDateMonth}</month>` : ``)
-      publicationPrintDate += (this.state.issue.printDateDay.length > 0 ? `<day>${this.state.issue.printDateDay}</day>` : ``)
-
-      publicationPrintDate = `<publication_date media_type="print">${publicationPrintDate}</publication_date>`
-    }
-
-    //doi_data
-    var doiData = ''
-    if (this.state.issue.issueDoi.trim().length > 0 || this.state.issue.issueUrl.trim().length > 0 ) {
-      doiData += (this.state.issue.issueDoi.trim().length > 0 ? `<doi>${this.state.issue.issueDoi}</doi>` : ``)
-      doiData += (this.state.issue.issueUrl.trim().length > 0 ? `<resource>${this.state.issue.issueUrl}</resource>` : ``)
-      doiData = `<doi_data>${doiData}</doi_data>`
-    }
-
-    // volume
-    var volume = ''
-    if (this.state.issue.volumeDoi.trim().length > 0 || this.state.issue.volumeUrl.trim().length > 0 || this.state.issue.volume.trim().length > 0) {
-      volume += (this.state.issue.volume.trim().length > 0 ? `<volume>${this.state.issue.volume}</volume>` : ``)
-
-      var volumeDoiData = ''
-      if (this.state.issue.volumeDoi.trim().length > 0 || this.state.issue.volumeUrl.trim().length > 0 ) {
-        volumeDoiData += (this.state.issue.volumeDoi.trim().length > 0 ? `<doi>${this.state.issue.volumeDoi}</doi>` : ``)
-        volumeDoiData += (this.state.issue.volumeUrl.trim().length > 0 ? `<resource>${this.state.issue.volumeUrl}</resource>` : ``)
-        volumeDoiData = `<doi_data>${volumeDoiData}</doi_data>`
-      }
-
-      volume = `<journal_volume>${volume}${volumeDoiData}</journal_volume>`
-    }
-
-    // archive locations
-    var archiveLocation = ''
-    if (this.state.issue.archiveLocation.trim().length > 0) {
-      archiveLocation = `<archive_locations><archive name="${this.state.issue.archiveLocation}"/></archive_locations>`
-    }
-
-    return `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1" xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd"><journal_issue>${this.getContributor()}${titles}${issue}${specialNumbering}${publicationOnlineDate}${publicationPrintDate}${volume}${archiveLocation}${doiData}</journal_issue></crossref>`
-
-  }
 
   onSubmit (e) {
     e.preventDefault()
-    //let gather the modal window refs
-    var issueData = {}
-    for(var i in this.refs){
-      if(i.indexOf('issue.') > -1) {
-        issueData[i.substr(i.indexOf('.')+1, i.length-1)] = this.refs[i].value
-      }
-    }
 
-    this.setState({
-      issue: issueData
-    }, () => {
-      this.validation((valid) => { // need it to be a callback because setting state does not happen right away
-        if (!valid) {
-          const props = this.props
-          var publication = this.props.publication
-          const state = this.state
+    this.validation((valid) => { // need it to be a callback because setting state does not happen right away
+      if (!valid) {
+        const props = this.props
+        var publication = props.publication
+        const state = this.state
 
-          const issueXML = (this.getIssueXML())
+        const issueXML = getIssueXml(this.state)
 
-          var newRecord = {
-            'title': {'title': this.state.issue.issueTitle},
-            'doi': this.state.issue.issueDoi,
-            'type': 'issue',
-            'mdt-version': this.state.version,
-            'status': 'draft',
-            'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
-          }
+        var version = this.state.version
 
-          publication.message.contains = [newRecord]
-
-          fetch(`http://mdt.crossref.org/mdt/v1/work`, { // using isomorphic-fetch directly here, React is NOT passing the action everytime
-              method: 'post',
-              headers: client.headers,
-              body: JSON.stringify(publication)
-            }
-          ).then(() => {
-            this.state.handler(publication.message.doi)
-            this.closeModal()
-          })
+        if (props.mode === 'edit') {
+          version = String(parseInt(this.state.version) + 1)
         }
-      })
+
+        const title = JSesc(this.state.issue.issueTitle)
+
+        const newRecord = {
+          'title': {'title': title},
+          'doi': this.state.issue.issueDoi,
+          'owner-prefix': this.state.issue.issueDoi.split('/')[0],
+          'type': 'issue',
+          'mdt-version': version,
+          'status': 'draft',
+          'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
+        }
+
+        publication.message.contains = [newRecord]
+
+        this.props.postIssue(publication, () => {
+          this.props.handle(publication.message.doi)
+          this.setState({version: version})
+          if (!this.state.error) {
+            this.closeModal()
+          }
+        })
+      }
     })
   }
 
   closeModal () {
-    this.setState(defaultState())
+    this.setState(defaultState);
     this.props.reduxControlModal({showModal:false})
   }
+
+  modalShown () {
+    const { doi } = this.props.issue
+    // if doi is not required, then how is UI suppose to find a issue?
+    this.props.fetchIssue(doi, (Publication) => {
+      const message = Publication.message
+      const Issue = message.contains[0]
+      const version = Issue['mdt-version']
+
+      const parsedIssue = xmldoc(Issue.content)
+      const issueTitle = objectSearch(parsedIssue, 'title') ? objectSearch(parsedIssue, 'title') : ''
+      const issue = objectSearch(parsedIssue, 'issue') ? objectSearch(parsedIssue, 'issue') : ''
+      const issueDoi = objectSearch(parsedIssue, 'doi') ? objectSearch(parsedIssue, 'doi') : ''
+      const issueUrl = objectSearch(parsedIssue, 'resource') ? objectSearch(parsedIssue, 'resource') : ''
+      const special_numbering = objectSearch(parsedIssue, 'special_numbering') ? objectSearch(parsedIssue, 'special_numbering') : ''
+      let publication_date = objectSearch(parsedIssue, 'publication_date');
+
+      if(!Array.isArray(publication_date)) publication_date = [publication_date]; //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
+
+      const onlinePubDate = _.find(publication_date, (pubDate) => {
+        if (pubDate) {
+          if (pubDate['-media_type'] === 'online') {
+            return pubDate
+          }
+        }
+      })
+
+      const printPubDate = _.find(publication_date, (pubDate) => {
+        if (pubDate) {
+          if (pubDate['-media_type'] === 'print') {
+            return pubDate
+          }
+        }
+      })
+      var printDateYear = ''
+      var printDateMonth = ''
+      var printDateDay = ''
+      if (printPubDate) {
+        printDateYear = printPubDate['year'] ? printPubDate['year'] : ''
+        printDateMonth = printPubDate['month'] ? printPubDate['month'] : ''
+        printDateDay = printPubDate['day'] ? printPubDate['day'] : ''
+      }
+
+      var onlineDateYear = ''
+      var onlineDateMonth = ''
+      var onlineDateDay = ''
+      if (onlinePubDate) {
+        onlineDateYear = onlinePubDate['year'] ? onlinePubDate['year'] : ''
+        onlineDateMonth = onlinePubDate['month'] ? onlinePubDate['month'] : ''
+        onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : ''
+      }
+
+      const archiveLocations = objectSearch(parsedIssue, 'archive_locations')
+      var archive = ''
+      if (archiveLocations) {
+        archive = archiveLocations.archive['-name']
+      }
+
+      const journal_volume = objectSearch(parsedIssue, 'journal_volume')
+      if (journal_volume) {
+        var theVolume = objectSearch(journal_volume, 'volume') ? objectSearch(journal_volume, 'volume') : ''
+        var volumeDoiData = objectSearch(journal_volume, 'doi_data') ? objectSearch(journal_volume, 'doi_data') : ''
+        var volumeDoi = objectSearch(volumeDoiData, 'doi') ? objectSearch(volumeDoiData, 'doi') : ''
+        var volumeUrl = objectSearch(volumeDoiData, 'resource') ? objectSearch(volumeDoiData, 'resource') : ''
+
+      }
+
+      const setIssue = {
+        issue: issue,
+        issueTitle: issueTitle,
+        issueDoi: this.props.duplicate ? this.props.ownerPrefix + '/' : issueDoi,
+        issueUrl: this.props.duplicate ?  '' : issueUrl,
+        printDateYear: printDateYear,
+        printDateMonth: printDateMonth,
+        printDateDay: printDateDay,
+        onlineDateYear: onlineDateYear,
+        onlineDateMonth: onlineDateMonth,
+        onlineDateDay: onlineDateDay,
+        archiveLocation: archive,
+        specialIssueNumber: special_numbering,
+        volume: theVolume,
+        volumeDoi: volumeDoi,
+        volumeUrl: volumeUrl
+      }
+
+      // contributor loading
+      const contributors = objectSearch(parsedIssue, 'contributors')
+      var contributee = []
+      // contributors are divied into 2 types
+      // person_name and organization
+      var person_name = undefined
+      if (contributors) {
+        person_name = objectSearch(contributors, 'person_name')
+
+        if (person_name) { // if exist
+          if (!Array.isArray(person_name)) {
+            // there is ONE funder
+            contributee.push(
+              {
+                firstName: person_name.given_name ? person_name.given_name : '',
+                lastName: person_name.surname ? person_name.surname : '',
+                suffix: person_name.suffix ? person_name.suffix : '',
+                affiliation: person_name.affiliation ? person_name.affiliation : '',
+                orcid: person_name.ORCID ? person_name.ORCID : '',
+                alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
+                role: person_name['-contributor_role'] ? person_name['-contributor_role'] : ''
+              }
+            )
+          } else { // its an array
+            _.each(person_name, (person) => {
+              contributee.push(
+                {
+                  firstName: person.given_name ? person.given_name : '',
+                  lastName: person.surname ? person.surname : '',
+                  suffix: person.suffix ? person.suffix : '',
+                  affiliation: person.affiliation ? person.affiliation : '',
+                  orcid: person.ORCID ? person.ORCID : '',
+                  alternativeName: person['alt-name'] ? person['alt-name'] : '',
+                  role: person['-contributor_role'] ? person['-contributor_role'] : ''
+                }
+              )
+            })
+          }
+        }
+      }
+
+      if (contributee.length <= 0) {
+        contributee.push(
+          {
+            firstName: '',
+            lastName: '',
+            suffix: '',
+            affiliation: '',
+            orcid: '',
+            role: '',
+            alternativeName: ''
+          }
+        )
+      }
+
+      var issueDoiDisabled = false
+      if (issueDoi) {
+        issueDoiDisabled = (issueDoi.length > 0 && this.props.issue.status !== 'draft') ? true : false
+      }
+
+      var volumeDoiDisabled = false
+      if (volumeDoi) {
+        volumeDoiDisabled = (volumeDoi.length > 0 && this.props.issue.status !== 'draft') ? true : false
+      }
+
+      this.setState({
+        version: version,
+        issueDoiDisabled: issueDoiDisabled,
+        volumeDoiDisabled: volumeDoiDisabled,
+        issue:  update(this.state.issue, {$set: setIssue }),
+        optionalIssueInfo: update(this.state.optionalIssueInfo, {$set: contributee })
+      })
+    })
+  }
+
+  componentDidUpdate() {
+    var firstError = $(".fieldError").first()
+    if (firstError.length > 0) {
+      $('.fullError').find('.tooltips').css({
+        'top': ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .5)) - ($('.switchLicense').first().position().top + 15) - ($('.switchLicense').first().offset().top + 15))) + 15
+      })
+    }
+  }
+
 
   render () {
     return (
@@ -451,8 +476,9 @@ export default class AddIssueCard extends Component {
                           <input
                               className='height32'
                               type='text'
-                              ref='issue.issue'
-                              defaultValue={this.state.issue.issue}
+                              name='issue.issue'
+                              onChange={this.handler.bind(this)}
+                              value={this.state.issue.issue}
                           />
                         </div>
                       </div>
@@ -465,16 +491,18 @@ export default class AddIssueCard extends Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder norequire'>
+                        <div className='requiredholder'>
                           <div className='required height32'>
+                            <span>*</span>
                           </div>
                         </div>
                         <div className='field'>
                           <input
                               className='height32'
                               type='text'
-                              defaultValue={this.state.issue.issueTitle}
-                              ref='issue.issueTitle'
+                              onChange={this.handler.bind(this)}
+                              value={this.state.issue.issueTitle}
+                              name='issue.issueTitle'
                           />
                         </div>
                       </div>
@@ -505,6 +533,7 @@ export default class AddIssueCard extends Component {
                               <div className='errormsginnerholder'>
                                 <div><img src='/images/AddArticle/Asset_Icons_White_Help.svg' /></div>
                                 {(
+                                  this.state.errors.issueTitle ||
                                   this.state.errors.issuedoi ||
                                   this.state.errors.issueUrl ||
                                   this.state.errors.printDateYear ||
@@ -513,7 +542,7 @@ export default class AddIssueCard extends Component {
                                   <div><b>Required.</b><br />Please provide required informaton.</div>
                                 }
                                 {(this.state.errors.invalidissuedoi || this.state.errors.invalidvolumedoi) &&
-                                  <div><b>Invalid DOI.</b><br />Please check your DOI (10.xxxx/xx...).</div>
+                                  <div><b>Invalid DOI.</b><br />Please check your DOI (10.xxxx/xx...). Record prefix (10.xxxx) must match publication prefix.</div>
                                 }
                                 {(this.state.errors.invalidissueurl) &&
                                   <div><b>Invalid URL.</b><br />Please check your URL.</div>
@@ -550,8 +579,10 @@ export default class AddIssueCard extends Component {
                           <input
                               className={'height32' + ((this.state.errors.dupedoi || this.state.errors.invaliddoi) ? ' fieldError': '')}
                               type='text'
-                              ref='issue.issueDoi'
-                              defaultValue={this.state.issue.issueDoi}
+                              name='issue.issueDoi'
+                              onChange={this.handler.bind(this)}
+                              value={this.state.issue.issueDoi}
+                              disabled={this.state.issueDoiDisabled && !this.props.duplicate}
                           />
                         </div>
                       </div>
@@ -573,12 +604,9 @@ export default class AddIssueCard extends Component {
                           <input
                               className={'height32' + ((this.state.errors.issueUrl || this.state.errors.invalidissueurl) ? ' fieldError': '')}
                               type='text'
-                              ref='issue.issueUrl'
-                              defaultValue={this.state.issue.issueUrl}
-                              onChange={(input) => {
-                                  input.currentTarget.value.length > 0 ? this.setState({showIssueDoiReq:true}) : this.setState({showIssueDoiReq:false})
-                                }
-                              }
+                              name='issue.issueUrl'
+                              value={this.state.issue.issueUrl}
+                              onChange={this.handler.bind(this)}
                           />
                         </div>
                       </div>
@@ -604,18 +632,18 @@ export default class AddIssueCard extends Component {
                           <div className='datepickerholder'>
                             <div className='dateselectholder'>
                               <div>Year {((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
-                              <div>{this.makeDateDropDown('issue.printDateYear', 'y', this.state.issue.printDateYear, this.state.errors.printDateYear, 0, this, 'issue')}</div>
+                              <div>{makeDateDropDown(this.handler.bind(this), 'issue.printDateYear', 'y', this.state.issue.printDateYear, this.state.errors.printDateYear, 0, this, 'issue')}</div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Month</div>
                               <div>
-                                {this.makeDateDropDown('issue.printDateMonth', 'm', this.state.issue.printDateMonth, false, 0, this, 'issue')}
+                                {makeDateDropDown(this.handler.bind(this), 'issue.printDateMonth', 'm', this.state.issue.printDateMonth, false, 0, this, 'issue')}
                               </div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Day</div>
                               <div>
-                                {this.makeDateDropDown('issue.printDateDay', 'd', this.state.issue.printDateDay, false, 0, this, 'issue')}
+                                {makeDateDropDown(this.handler.bind(this), 'issue.printDateDay', 'd', this.state.issue.printDateDay, false, 0, this, 'issue')}
                               </div>
                             </div>
                             <div>
@@ -642,18 +670,18 @@ export default class AddIssueCard extends Component {
                           <div className='datepickerholder'>
                             <div className='dateselectholder'>
                               <div>Year {((this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0 ? '(*)' : '')}</div>
-                              <div>{this.makeDateDropDown('issue.onlineDateYear', 'y', this.state.issue.onlineDateYear, this.state.errors.onlineDateYear, 0, this, 'issue')}</div>
+                              <div>{makeDateDropDown(this.handler.bind(this), 'issue.onlineDateYear', 'y', this.state.issue.onlineDateYear, this.state.errors.onlineDateYear, 0, this, 'issue')}</div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Month</div>
                               <div>
-                                {this.makeDateDropDown('issue.onlineDateMonth', 'm', this.state.issue.onlineDateMonth, false, 0, this, 'issue')}
+                                {makeDateDropDown(this.handler.bind(this), 'issue.onlineDateMonth', 'm', this.state.issue.onlineDateMonth, false, 0, this, 'issue')}
                               </div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Day</div>
                               <div>
-                                {this.makeDateDropDown('issue.onlineDateDay', 'd', this.state.issue.onlineDateDay, false, 0, this, 'issue')}
+                                {makeDateDropDown(this.handler.bind(this), 'issue.onlineDateDay', 'd', this.state.issue.onlineDateDay, false, 0, this, 'issue')}
                               </div>
                             </div>
                             <div>
@@ -679,7 +707,7 @@ export default class AddIssueCard extends Component {
                           </div>
                         </div>
                         <div className='field'>
-                          {this.displayArchiveLocations()}
+                          {displayArchiveLocations(this.handler.bind(this), this.state.issue.archiveLocation)}
                         </div>
                       </div>
                     </div>
@@ -699,8 +727,9 @@ export default class AddIssueCard extends Component {
                           <input
                               className='height32'
                               type='text'
-                              ref='issue.specialIssueNumber'
-                              defaultValue={this.state.issue.specialIssueNumber}
+                              name='issue.specialIssueNumber'
+                              onChange={this.handler.bind(this)}
+                              value={this.state.issue.specialIssueNumber}
                           />
                         </div>
                       </div>
@@ -728,8 +757,9 @@ export default class AddIssueCard extends Component {
                           <input
                               className='height32'
                               type='text'
-                              ref='issue.volume'
-                              defaultValue={this.state.issue.volume}
+                              name='issue.volume'
+                              onChange={this.handler.bind(this)}
+                              value={this.state.issue.volume}
                           />
                         </div>
                       </div>
@@ -754,10 +784,12 @@ export default class AddIssueCard extends Component {
                         </div>
                         <div className='field'>
                           <input
-                              className={'height32' + ((this.state.errors.dupedoi || this.state.errors.invalidvolumedoi) ? ' fieldError': '')}
+                              className={'height32' + ((this.state.errors.dupedoi || this.state.errors.invaliddoi || this.state.errors.invalidvolumedoi) ? ' fieldError': '')}
                               type='text'
-                              ref='issue.volumeDoi'
-                              defaultValue={this.state.issue.volumeDoi}
+                              name='issue.volumeDoi'
+                              onChange={this.handler.bind(this)}
+                              value={this.state.issue.volumeDoi}
+                              disabled={this.state.volumeDoiDisabled}
                           />
                         </div>
                       </div>
@@ -778,8 +810,9 @@ export default class AddIssueCard extends Component {
                           <input
                               className={'height32' + ((this.state.errors.volumeUrl || this.state.errors.invalidvolumeurl) ? ' fieldError': '')}
                               type='text'
-                              ref='issue.volumeUrl'
-                              defaultValue={this.state.issue.volumeUrl}
+                              name='issue.volumeUrl'
+                              onChange={this.handler.bind(this)}
+                              value={this.state.issue.volumeUrl}
                           />
                         </div>
                       </div>
@@ -797,7 +830,7 @@ export default class AddIssueCard extends Component {
                 remove={this.removeOptionalIssueInfo.bind(this)}
               />
               <div className='saveButtonHolder'>
-                <button type='submit' className='saveButton'>Save</button>
+                <button type='submit' className='saveButton'>Submit</button>
               </div>
             </div>
           </form>
@@ -806,3 +839,4 @@ export default class AddIssueCard extends Component {
     )
   }
 }
+

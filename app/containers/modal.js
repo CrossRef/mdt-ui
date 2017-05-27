@@ -11,7 +11,6 @@ import Modal from '../components/modal'
 
 const mapStateToProps = state => ({
   modalState: state.modal,
-  crossmarkAuth: state.crossmarkAuth
 })
 
 const mapDispatchToProps = dispatch => ({
@@ -23,7 +22,6 @@ const mapDispatchToProps = dispatch => ({
 export default class ModalContainer extends Component {
 
   static propTypes = {
-    crossmarkAuth: is.bool.isRequired,
     modalState: is.object.isRequired,
     reduxControlModal: is.func.isRequired
   }

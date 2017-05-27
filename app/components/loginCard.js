@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { stateTrackerII } from 'my_decorators'
 
 
+
 export default class LoginCard extends Component {
   constructor (props) {
     super(props)
@@ -20,15 +21,9 @@ export default class LoginCard extends Component {
     )
   }
 
-  handleUsernameChange (e) {
+  inputHandler = (e) => {
     this.setState({
-      username: e.target.value
-    })
-  }
-
-  handlePasswordChange (e) {
-    this.setState({
-      password: e.target.value
+      [e.target.name]: e.target.value
     })
   }
 
@@ -44,7 +39,7 @@ export default class LoginCard extends Component {
               type='text'
               name='username'
               value={this.state.username}
-              onChange={this.handleUsernameChange.bind(this)} />
+              onChange={this.inputHandler} />
           </label>
           <label>
             <span className='left-indent-16'>Password</span>
@@ -52,11 +47,11 @@ export default class LoginCard extends Component {
               type='password'
               name='password'
               value={this.state.password}
-              onChange={this.handlePasswordChange.bind(this)} />
+              onChange={this.inputHandler} />
           </label>
           <input
             type='submit'
-            className='button-anchor'
+            className='button-anchor loginButton'
             value='Log In' />
           {error && <div className='invalid-credentials'>Please enter a correct username and password.</div>}
           <div className='forgot-password'>

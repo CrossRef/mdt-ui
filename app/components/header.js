@@ -9,23 +9,24 @@ import PublicationsNav from './navBar'
 export default class Header extends Component {
   static propTypes = {
     cart : is.array.isRequired,
-    reduxControlModal : is.func.isRequired
+    reduxControlModal : is.func.isRequired,
+    reduxLogout: is.func.isRequired
   };
 
   render () {
     const isOnHome = this.props.path === '/'
     var showPublicationsNav = false
-    if(String(this.props.path).startsWith('/publications') || String(this.props.path).startsWith('/cart')) {
+    if(String(this.props.path).startsWith('/publications') || String(this.props.path).startsWith('/cart') || String(this.props.path).startsWith('/deposit-history')) {
       showPublicationsNav = true
     }
 
     return (
       <div className={'header' + (isOnHome ? ' large' : '')}>
         <div className='header-contents'>
-          <img src='/images/App/Crossref_Logo_Stacked_RGB.svg' />
-          <div className='header-logo-name'>Metadata Deposit Tool</div>
+          <img src='/images/App/crossref-content-registration-logo-200.svg' />
+          <img className='second-logo-img' src='/images/App/crossref-depositor-logo-200.svg' />
         </div>
-        { (showPublicationsNav) && <PublicationsNav cart={this.props.cart} reduxControlModal={this.props.reduxControlModal} /> }
+        { (showPublicationsNav) && <PublicationsNav cart={this.props.cart} reduxControlModal={this.props.reduxControlModal} reduxLogout={this.props.reduxLogout} /> }
       </div>
     )
   }

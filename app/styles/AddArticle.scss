@@ -67,7 +67,7 @@ input.height64, textarea.height64, select.height64 {
         &:after {
           content: '';
           position: absolute;
-          top: 50%;
+          top: 30px;
           right: 100%;
           margin-top: -8px;
           width: 0; height: 0;
@@ -682,4 +682,52 @@ input.height64, textarea.height64, select.height64 {
   margin-right: auto;
   margin-left: auto;
   margin-bottom: 40px
+}
+
+.backbutton, .reviewbutton {
+  background: #fff !important;
+  color: black !important;
+  border: 1px solid #4f5858 !important;
+  height: 40px !important;
+}
+
+.backbutton {
+  width: 112px !important;
+  .backbuttonarrow {
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    right: 20px;
+    top: 2px;
+    -webkit-transform: rotate(270deg);
+    -moz-transform: rotate(270deg);
+    -o-transform: rotate(270deg);
+    -ms-transform: rotate(270deg);
+    transform: rotate(270deg);
+  }
+  span {
+    padding: 0;
+    margin: 0;
+    position: relative;
+    right: 5px;
+  }
+}
+
+.reviewbutton {
+  width: 144px !important;
+}
+
+.OptionalTitleFields {
+  .fieldHolder {
+    padding: 20px 0 !important;
+  }
+  .first {
+    padding: 20px 0 20px !important;
+  }
+}
+
+.AddNewGrantNumberButton {
+  cursor: pointer;
 }

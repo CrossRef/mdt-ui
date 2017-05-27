@@ -10,11 +10,16 @@ import ArticlesContainer from './articlesContainer'
 
 export default class Listing extends Component {
   static propTypes = {
-    handleAddCart: is.func.isRequired,
+    filterBy: is.string.isRequired,
+    reduxControlModal: is.func.isRequired,
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,
     fetchIssue: is.func.isRequired,
     postIssue: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
+    ownerPrefix: is.string.isRequired,
+    selections: is.array.isRequired,
+    publication: is.object
   }
 
   render () {
@@ -22,6 +27,62 @@ export default class Listing extends Component {
     const publicationMessage = this.props.publicationMessage
     const publication = this.props.publication
     const contains = this.props.publicationMessage.contains || []
+    var itemlist = _.flatten(contains.map((child, i) => {
+      if (child) {
+        switch (child.type.toLowerCase()) {
+          case 'issue':
+            return [
+              <Issue doi={child} key={i}
+                ownerPrefix={this.props.ownerPrefix}
+                reduxControlModal={this.props.reduxControlModal}
+                publication={publication}
+                publicationDoi={publicationDoi}
+                publicationMessage={publicationMessage}
+                reduxCartUpdate={this.props.reduxCartUpdate}
+                handleRemoveFromList={this.props.handleRemoveFromList}
+                handleAddToList={this.props.handleAddToList}
+                fetchIssue={this.props.fetchIssue}
+                triggerModal={this.props.triggerModal}
+                postIssue={this.props.postIssue}
+                handle={this.props.handle}
+                selections={this.props.selections}
+              />,
+              <ArticlesContainer
+                filterBy={this.props.filterBy}
+                doi={child}
+                publication={publication}
+                publicationDoi={publicationDoi}
+                publicationMessage={publicationMessage}
+                key={`${i}-articles`}
+                reduxCartUpdate={this.props.reduxCartUpdate}
+                handleRemoveFromList={this.props.handleRemoveFromList}
+                handleAddToList={this.props.handleAddToList}
+                handle={this.props.handle}
+                selections={this.props.selections}
+              />
+            ]
+          case 'article':
+            return <Article
+              doi={child}
+              key={i}
+              publication={publication}
+              publicationDoi={publicationDoi}
+              publicationMessage={publicationMessage}
+              handleRemoveFromList={this.props.handleRemoveFromList}
+              handleAddToList={this.props.handleAddToList}
+              handle={this.props.handle}
+              selections={this.props.selections}
+            />
+        }
+      }
+    }))
+
+    if (this.props.filterBy !== 'all') {
+      itemlist = _.filter(itemlist, (item) => {
+        return item.props.doi.status.toLowerCase() === this.props.filterBy
+      })
+    }
+
     return (
       <table className='publication-children-listing'>
         <thead>
@@ -36,50 +97,7 @@ export default class Listing extends Component {
         </thead>
         <tbody>
           {
-            _.flatten(contains.map((child, i) => {
-              if (child) {
-                switch (child.type.toLowerCase()) {
-                  case 'issue':
-                    return [
-                      <Issue doi={child} key={i}
-                        publication={publication}
-                        publicationDoi={publicationDoi}
-                        publicationMessage={publicationMessage}
-                        handleAddCart={this.props.handleAddCart}
-                        handleRemoveFromList={this.props.handleRemoveFromList}
-                        handleAddToList={this.props.handleAddToList}
-                        fetchIssue={this.props.fetchIssue}
-                        triggerModal={this.props.triggerModal}
-                        postIssue={this.props.postIssue}
-                        handle={this.props.handle}
-                      />,
-                      <ArticlesContainer
-                        doi={child}
-                        publication={publication}
-                        publicationDoi={publicationDoi}
-                        publicationMessage={publicationMessage}
-                        key={`${i}-articles`}
-                        handleAddCart={this.props.handleAddCart}
-                        handleRemoveFromList={this.props.handleRemoveFromList}
-                        handleAddToList={this.props.handleAddToList}
-                        handle={this.props.handle}
-                      />
-                    ]
-                  case 'article':
-                    return <Article
-                      doi={child}
-                      key={i}
-                      publication={publication}
-                      publicationDoi={publicationDoi}
-                      publicationMessage={publicationMessage}
-                      handleAddCart={this.props.handleAddCart}
-                      handleRemoveFromList={this.props.handleRemoveFromList}
-                      handleAddToList={this.props.handleAddToList}
-                      handle={this.props.handle}
-                    />
-                }
-              }
-            }))
+              itemlist
           }
         </tbody>
       </table>

@@ -26,7 +26,7 @@ export default class DepositCartItemCard extends Component {
     index: is.number.isRequired,
     pubDoi: is.string.isRequired,
     pubIndex: is.number.isRequired,
-    showError: is.bool.isRequired
+    showError: is.bool.isRequired,
   };
 
   constructor (props) {
@@ -61,138 +61,32 @@ export default class DepositCartItemCard extends Component {
         doivolumePrefix: false,
         volumeUrl: false,
         volumeInvalidUrl: false,
-        freetoreadLicenseStartDate: false
+        freetoreadLicenseStartDate: false,
+        hasDate: false
       },
       errorStr: ''
     }
   }
 
-  getLicenses (parsedArticle) {
-    // license loading
-    const licences = objectSearch(parsedArticle, 'ai:license_ref')
-    var lic = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    if (licences) {
-        if (!Array.isArray(licences)) {
-        const licAcceptedDate = licences['-start_date'].split('-')
-        lic.push({
-            acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-            acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-            acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-            appliesto: licences['-applies_to'] ? licences['-applies_to'] : '',
-            licenseurl: licences['#text'] ? licences['#text'] : ''
-            })
-        } else {
-        for(var i = 0; i < licences.length; i++) {
-            const licAcceptedDate = licences[i]['-start_date'].split('-')
-            lic.push({
-                acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-                acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-                acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-                appliesto: licences[i]['-applies_to'] ? licences[i]['-applies_to'] : '',
-                licenseurl: licences[i]['#text'] ? licences[i]['#text'] : ''
-            })
-        }
-        }
+  componentDidMount () {
+    const { cartItem } = this.props
+    const cartType = cartItem.type
+    const parsed = xmldoc(cartItem.content)
+    var errorMsg = ''
+    if(cartType.toLowerCase() === 'article') {
+      this.validateArticle (parsed)
+    } else if(cartType.toLowerCase() === 'issue') {
+      this.validateIssue (parsed)
     }
-    return lic
   }
 
-  getContributors (parsedArticle) {
-    // contributor loading
-    var contributors = objectSearch(parsedArticle, 'contributors')
-    var contributee = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    var person_name = undefined
-    var organization = undefined
-    if (contributors) {
-        person_name = objectSearch(contributors, 'person_name')
-        organization = objectSearch(contributors, 'organization')
-
-        if (person_name) { // if exist
-            if (!Array.isArray(person_name)) {
-                // there is ONE funder
-                contributee.push(
-                {
-                    firstName: person_name.given_name ? person_name.given_name : '',
-                    lastName: person_name.surname ? person_name.surname : '',
-                    suffix: person_name.suffix ? person_name.suffix : '',
-                    affiliation: person_name.affiliation ? person_name.affiliation : '',
-                    orcid: person_name.ORCID ? person_name.ORCID : '',
-                    role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
-                    groupAuthorName: '',
-                    groupAuthorRole: ''
-                }
-                )
-            } else { // its an array
-                _.each(person_name, (person) => {
-                contributee.push(
-                    {
-                    firstName: person.given_name ? person.given_name : '',
-                    lastName: person.surname ? person.surname : '',
-                    suffix: person.suffix ? person.suffix : '',
-                    affiliation: person.affiliation ? person.affiliation : '',
-                    orcid: person.ORCID ? person.ORCID : '',
-                    role: person['-contributor_role'] ? person['-contributor_role'] : '',
-                    groupAuthorName: '',
-                    groupAuthorRole: ''
-                    }
-                )
-                })
-            }
-        }
+  componentDidUpdate(nextProps, nextState) {
+    if (this.state.errorStr !== nextState.errorStr) {
+      if (this.state.errorStr.length > 0){
+        this.props.updateError(nextProps.index, nextProps.pubDoi, nextProps.pubIndex)
+      }
     }
-    return contributee
   }
-
-     settingState (errorStates, callback) {
-        this.setState({
-            errors: update(this.state.errors, errorStates)
-        }, ()=>{
-            var allErrors = ''
-            for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
-                if (this.state.errors[key]) {
-                    this.props.updateError()
-                    var errorMsg = ''
-                    switch (key) {
-                        case 'lastPage' : errorMsg = '<b>Required.</b> Please provide a first page if last page value exists.<br />'; break;
-                        case 'contributorLname' : errorMsg = '<b>Required.</b> Please provide last name with first name.<br />'; break;
-                        case 'validLicenseUrl' : errorMsg = '<b>Invalid URL.</b> Please check your URL is correct.<br />'; break;
-                        case 'articleTitle' : errorMsg = '<b>Required.</b> Please provide required article title.</br>'; break;
-                        case 'printDate' :  errorMsg = '<b>Required.</b> Please provide either a print or online date.</br>'; break;
-                        case 'onlineDate' : errorMsg = '<b>Required.</b> Please provide either a print or online date.</br>'; break;
-                        case 'articleUrl' : errorMsg = '<b>Required.</b> Please provide required article title.</br>'; break;
-                        case 'invalidArticleUrl' : errorMsg = '<b>Invalid URL.</b> Please check your URL is correct.</br>'; break;
-                        case 'doiPrefix' : errorMsg = '<b>Invalid DOI.</b> DOI prefix needs to match journal DOI prefix.</br>'; break;
-                        case 'doi' : errorMsg = '<b>Required.</b> Please provide required article title.</br>'; break;
-                        case 'dupeDoi' : errorMsg = '<b>Duplicate DOI.</b> Registering a new DOI? This one already exists.</br>'; break;
-                        case 'invalidDoi' : errorMsg = '<b>Invalid DOI.</b> Please check your DOI (10.xxxx/xx...).</br>'; break;
-                        case 'issueUrl' : errorMsg = '<b>Required.</b> Please provide required article title.</br>'; break;
-                        case 'issueInvalidUrl' : errorMsg = '<b>Invalid URL.</b> Please check your URL is correct.</br>'; break;
-                        case 'issuePrintDate' : errorMsg = '<b>Required.</b> Please provide either a print or online date.</br>'; break;
-                        case 'issueOnlineDate' : errorMsg = '<b>Required.</b> Please provide either a print or online date.</br>'; break;
-                        case 'issueDoi' : errorMsg = '<b>Required.</b> Please provide required article title.</br>'; break;
-                        case 'dupeIssueDoi' : errorMsg = '<b>Duplicate DOI.</b> Registering a new DOI? This one already exists.</br>'; break;
-                        case 'invalidIssueDoi' : errorMsg = '<b>Invalid DOI.</b> Please check your DOI (10.xxxx/xx...).</br>'; break;
-                        case 'doiIssuePrefix' : errorMsg = '<b>Invalid DOI.</b> DOI prefix needs to match journal DOI prefix.</br>'; break;
-                        case 'volumeDoi' : errorMsg = '<b>Required.</b> Please provide required article title.</br>'; break;
-                        case 'dupevolumeDoi' : errorMsg = '<b>Duplicate DOI.</b> Registering a new DOI? This one already exists.</br>'; break;
-                        case 'invalidvolumeDoi' : errorMsg = '<b>Invalid DOI.</b> Please check your DOI (10.xxxx/xx...).</br>'; break;
-                        case 'doivolumePrefix' : errorMsg = '<b>Invalid DOI.</b> DOI prefix needs to match journal DOI prefix.</br>'; break;
-                        case 'volumeUrl' : errorMsg = '<b>Required.</b> Please provide required article title.</br>'; break;
-                        case 'volumeInvalidUrl' : errorMsg = '<b>Invalid URL.</b> Please check your URL is correct.</br>'; break;
-                        case 'freetoreadLicenseStartDate' :  errorMsg = '<b>Required.</b> Please provide Start date if content is Free to Read.</br>'; break;
-                    }
-                    allErrors += errorMsg
-                }
-            }
-
-            this.setState({errorStr: allErrors})
-            if (callback) callback(<div>{allErrors}</div>) // there is a true, return the true, means there is an error
-        })
-    }
 
 
   validateArticle (parsedArticle, callback) {
@@ -223,11 +117,12 @@ export default class DepositCartItemCard extends Component {
         doivolumePrefix: {$set: false},
         volumeUrl: {$set: false},
         volumeInvalidUrl: {$set: false},
-        freetoreadLicenseStartDate: {$set: false}
+        freetoreadLicenseStartDate: {$set: false},
+        hasDate: {$set: false}
     }
 
-    var contributors = this.getContributors(parsedArticle)
-    var licenses = this.getLicenses(parsedArticle)
+    var contributors = getContributors(parsedArticle)
+    var licenses = getLicenses(parsedArticle)
 
     const freeToRead = objectSearch(parsedArticle, 'ai:free_to_read')
 
@@ -250,38 +145,39 @@ export default class DepositCartItemCard extends Component {
         errorStates.lastPage = {$set: (firstPage.length <= 0) }
     }
 
-    const publication_date = objectSearch(parsedArticle, 'publication_date', [])
+    let publication_date = objectSearch(parsedArticle, 'publication_date', []);
+    if(!Array.isArray(publication_date)) publication_date = [publication_date];
     const onlinePubDate = _.find(publication_date, (pubDate) => {
-        if (pubDate['-media_type'] === 'online') {
-            return pubDate
+        if (pubDate) {
+            if (pubDate['-media_type'] === 'online') {
+                return pubDate
+            }
         }
-        return ''
+        return []
     })
 
     const printPubDate = _.find(publication_date, (pubDate) => {
-        if (pubDate['-media_type'] === 'print') {
-            return pubDate
+        if (pubDate) {
+            if (pubDate['-media_type'] === 'print') {
+                return pubDate
+            }
         }
-        return ''
+        return []
     })
 
-    errorStates.printDate = {$set: (printPubDate.length <= 0) }
-    errorStates.onlineDate = {$set: (onlinePubDate.length <= 0) }
+    errorStates.printDate = {$set: printPubDate ? true : false }
+    errorStates.onlineDate = {$set: onlinePubDate ? true : false }
 
-    var hasPrintYear = false, hasOnlineYear = false
-    if ((printPubDate.length > 0) || (onlinePubDate.length > 0)) {
-            hasDate = true
-        if ((printPubDate.length > 0)) {
-            errorStates.printDate = {$set: false }
-        }
-        if ((onlinePubDate.length > 0)) {
-            errorStates.onlineDate = {$set: false }
-        }
+    var hasPrintYear = false, hasOnlineYear = false, hasDate = false
+    if (printPubDate || onlinePubDate) {
+        hasDate = true
     }
+
+    errorStates.hasDate = {$set: !hasDate }
 
     var doiData = objectSearch(parsedArticle, 'doi_data', {doi: '', resource: ''})
     const doi = doiData.doi
-    const url = doiData.resource
+    const url = doiData.resource ? doiData.resource : ''
     errorStates.doi = {$set: (doi.length <= 0) }
     errorStates.articleUrl = {$set: (url.length <= 0) }
     errorStates.invalidArticleUrl = {$set: (url.length > 0) && (!isURL(url))}
@@ -296,8 +192,9 @@ export default class DepositCartItemCard extends Component {
     })
 
     _.each(licenses, (license) => {
-        if(!isURL(license.licenseurl)) {
-            errorStates.validLicenseUrl = {$set: !isURL(license.licenseurl) }
+        var lUrl = license.licenseurl ? license.licenseurl : ''
+        if(!isURL(lUrl)) {
+            errorStates.validLicenseUrl = {$set: !isURL(lUrl) }
             return;
         }
     })
@@ -329,10 +226,10 @@ export default class DepositCartItemCard extends Component {
             isDupe = true // hard coding it to true because there is discussion on checking DOI on level 1 or level 2
 
             errorStates.dupeDoi = {$set: !isDupe }
-            this.settingState(errorStates)
+            this.settingState(errorStates, undefined, 'article')
         })
     } else {
-        this.settingState(errorStates)
+        this.settingState(errorStates, undefined, 'article')
     }
 
   }
@@ -365,7 +262,8 @@ export default class DepositCartItemCard extends Component {
         doivolumePrefix: {$set: false},
         volumeUrl: {$set: false},
         volumeInvalidUrl: {$set: false},
-        freetoreadLicenseStartDate: {$set: false}
+        freetoreadLicenseStartDate: {$set: false},
+        hasDate: {$set: false}
     }
     var checkDoi = []
     const resource = objectSearch(parsedIssue, 'resource', '')
@@ -374,34 +272,35 @@ export default class DepositCartItemCard extends Component {
         errorStates.issueInvalidUrl = {$set: !isURL(resource) }
     }
 
-    const publication_date = objectSearch(parsedIssue, 'publication_date', [])
+    let publication_date = objectSearch(parsedIssue, 'publication_date', []);
+    if(!Array.isArray(publication_date)) publication_date = [publication_date];
     const onlinePubDate = _.find(publication_date, (pubDate) => {
-        if (pubDate['-media_type'] === 'online') {
-            return pubDate
+        if (pubDate) {
+            if (pubDate['-media_type'] === 'online') {
+                return pubDate
+            }
         }
-        return ''
+        return []
     })
 
     const printPubDate = _.find(publication_date, (pubDate) => {
-        if (pubDate['-media_type'] === 'print') {
-            return pubDate
+        if (pubDate) {
+            if (pubDate['-media_type'] === 'print') {
+                return pubDate
+            }
         }
-        return ''
+        return []
     })
 
-    errorStates.issuePrintDate = {$set: (printPubDate.length <= 0) }
-    errorStates.issueOnlineDate = {$set: (onlinePubDate.length <= 0) }
+    errorStates.issuePrintDate = {$set: printPubDate ? false : true }
+    errorStates.issueOnlineDate = {$set: onlinePubDate ? false : true }
 
-    var hasPrintYear = false, hasOnlineYear = false
-    if ((printPubDate.length > 0) || (onlinePubDate.length > 0)) {
-            hasDate = true
-        if ((printPubDate.length > 0)) {
-            errorStates.issuePrintDate = {$set: false }
-        }
-        if ((onlinePubDate.length > 0)) {
-            errorStates.issueOnlineDate = {$set: false }
-        }
+    var hasPrintYear = false, hasOnlineYear = false, hasDate = false
+    if (printPubDate || onlinePubDate) {
+        hasDate = true
     }
+
+    errorStates.hasDate = {$set: !hasDate }
 
     var doiData = objectSearch(parsedIssue, 'doi_data', {doi: '', resource: ''})
     const doi = doiData.doi
@@ -424,30 +323,32 @@ export default class DepositCartItemCard extends Component {
     if (VolumeDoiData) {
         // if exist
         var volumeDoiData = objectSearch(VolumeDoiData, 'doi_data', {doi: '', resource: ''})
-        const volumeDoi = volumeDoiData.doi
-        const volumeUrl = volumeDoiData.resource
+        if (volumeDoiData) {
+            const volumeDoi = volumeDoiData.doi
+            const volumeUrl = volumeDoiData.resource
 
-        if (volumeDoi.length > 0) {
-            // check for valid and prefix
-            errorStates.invalidvolumeDoi = {$set: !isDOI(volumeDoi) }
-            if(isDOI(volumeDoi)) {
-                checkDoi.push(volumeDoi)
+            if (volumeDoi.length > 0) {
+                // check for valid and prefix
                 errorStates.invalidvolumeDoi = {$set: !isDOI(volumeDoi) }
-                const volumearticlePrefix = volumeDoi.substring(0,volumeDoi.indexOf('/'))
-                if ((pubPrefix !== volumearticlePrefix) && (volumeDoi.length > 0)) {
-                    errorStates.doivolumePrefix = {$set: true }
+                if(isDOI(volumeDoi)) {
+                    checkDoi.push(volumeDoi)
+                    errorStates.invalidvolumeDoi = {$set: !isDOI(volumeDoi) }
+                    const volumearticlePrefix = volumeDoi.substring(0,volumeDoi.indexOf('/'))
+                    if ((pubPrefix !== volumearticlePrefix) && (volumeDoi.length > 0)) {
+                        errorStates.doivolumePrefix = {$set: true }
+                    }
+                }
+
+                // if a DOI is given, need to validate volume url
+                if (volumeUrl.length <= 0) {
+                    errorStates.volumeUrl = {$set: true}
+                } else {
+                    errorStates.volumeInvalidUrl = {$set: !isURL(volumeUrl)}
                 }
             }
-
-            // if a DOI is given, need to validate volume url
-            if (volumeUrl.length <= 0) {
-                errorStates.volumeUrl = {$set: true}
-            } else {
-                errorStates.volumeInvalidUrl = {$set: !isURL(volumeUrl)}
-            }
         }
-
     }
+
 
     if (checkDoi.length > 0) { // if any of these 2 was errored, we want to show that error first
         checkDupeDOI(checkDoi, (isDupe) => {
@@ -460,16 +361,65 @@ export default class DepositCartItemCard extends Component {
             if (checkDoi.length > 1) {
                 errorStates.dupevolumeDoi = {$set: !isDupe[1] }
             }
-            this.settingState(errorStates)
+
+            this.settingState(errorStates, undefined, 'issue')
         })
     } else {
-        this.settingState(errorStates)
+        this.settingState(errorStates, undefined, 'issue')
     }
 
   }
 
+  settingState (errorStates, callback, type) {
+    this.setState({
+      errors: update(this.state.errors, errorStates)
+    }, ()=>{
+      var allErrors = ''
+      for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
+        if (this.state.errors[key]) {
+          //this.props.updateError()
+          var errorMsg = ''
+          switch (key) {
+            case 'hasDate' : errorMsg = '<p><b>Required.</b> Please provide either a print or online date.</p>'; break;
+            case 'lastPage' : errorMsg = '<p><b>Required.</b> Please provide a first page if last page value exists.</p>'; break;
+            case 'contributorLname' : errorMsg = '<p><b>Required.</b> Please provide last name with first name.</p>'; break;
+            case 'validLicenseUrl' : errorMsg = '<p><b>Invalid URL.</b> Please check your URL is correct.</p>'; break;
+            case 'articleTitle' : errorMsg = '<p><b>Required.</b> Please provide required article title.</p>'; break;
+            case 'articleUrl' : errorMsg = '<p><b>Required.</b> Please provide required article URL.</p>'; break;
+            case 'invalidArticleUrl' : errorMsg = '<p><b>Invalid URL.</b> Please check your URL is correct.</p>'; break;
+            case 'doiPrefix' : errorMsg = '<p><b>Invalid DOI.</b> DOI prefix needs to match journal DOI prefix.</p>'; break;
+            case 'doi' : errorMsg = '<p><b>Required.</b> Please provide required article title.</p>'; break;
+            case 'dupeDoi' : errorMsg = '<p><b>Duplicate DOI.</b> Registering a new DOI? This one already exists.</p>'; break;
+            case 'invalidDoi' : errorMsg = '<p><b>Invalid DOI.</b> Please check your DOI (10.xxxx/xx...).</p>'; break;
+            case 'issueUrl' : errorMsg = '<p><b>Required.</b> Please provide required article title.</p>'; break;
+            case 'issueInvalidUrl' : errorMsg = '<p><b>Invalid URL.</b> Please check your URL is correct.</p>'; break;
+            case 'issueDoi' : errorMsg = '<p><b>Required.</b> Please provide required article title.</p>'; break;
+            case 'dupeIssueDoi' : errorMsg = '<p><b>Duplicate DOI.</b> Registering a new DOI? This one already exists.</p>'; break;
+            case 'invalidIssueDoi' : errorMsg = '<p><b>Invalid DOI.</b> Please check your DOI (10.xxxx/xx...).</p>'; break;
+            case 'doiIssuePrefix' : errorMsg = '<p><b>Invalid DOI.</b> DOI prefix needs to match journal DOI prefix.</p>'; break;
+            case 'volumeDoi' : errorMsg = '<p><b>Required.</b> Please provide required article title.</p>'; break;
+            case 'dupevolumeDoi' : errorMsg = '<p><b>Duplicate DOI.</b> Registering a new DOI? This one already exists.</p>'; break;
+            case 'invalidvolumeDoi' : errorMsg = '<p><b>Invalid DOI.</b> Please check your DOI (10.xxxx/xx...).</p>'; break;
+            case 'doivolumePrefix' : errorMsg = '<p><b>Invalid DOI.</b> DOI prefix needs to match journal DOI prefix.</p>'; break;
+            case 'volumeUrl' : errorMsg = '<p><b>Required.</b> Please provide required article title.</p>'; break;
+            case 'volumeInvalidUrl' : errorMsg = '<p><b>Invalid URL.</b> Please check your URL is correct.</p>'; break;
+            case 'freetoreadLicenseStartDate' :  errorMsg = '<p><b>Required.</b> Please provide Start date if content is Free to Read.</p>'; break;
+          }
+          if(this.state.errors.hasDate && (['printDate','onlineDate','issuePrintDate','issueOnlineDate'].indexOf(key)>0)){
+            allErrors += errorMsg
+            }else if (['printDate','onlineDate','issuePrintDate','issueOnlineDate'].indexOf(key)<=-1){
+            allErrors += errorMsg
+          }
+        }
+      }
+      this.setState({errorStr: allErrors})
+      if (callback) callback(<div>{allErrors}</div>) // there is a true, return the true, means there is an error
+    })
+  }
+
+
   remove () {
-      this.props.reduxRemoveFromCart(this.props.cartItem.doi, this.props.reduxCart)
+      this.props.reduxRemoveFromCart(this.props.cartItem.doi)
   }
 
   displayError () {
@@ -493,25 +443,23 @@ export default class DepositCartItemCard extends Component {
 
   displayItem () {
     const { cartItem } = this.props
-    const parsedArticle = xmldoc(cartItem.content)
+    const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
     const cartType = cartItem.type
     const status = cartItem.status
-    const titles = objectSearch(parsedArticle, 'titles', '')
-    const title = titles.title.trim()
-
+    const title = cartItem.title.title.trim()
     return (
       <tr className='item'>
         <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
             {(this.state.errorStr.length > 0) ? <div className='iconHolder'><img src='/images/Deposit/Asset_Icons_Red_Caution.png' /></div> : ''}
         </td>
-        <td className={'title' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
+        <td className={'title' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + ((this.props.underIssue) ? ' articleUnderIssue' : '')}>
             {title}
         </td>
         <td className={'status' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
             {status}
         </td>
         <td className={'action' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
-            <a onClick={() => {this.remove()}}>remove</a>
+            {(cartType !== 'issue') && <a onClick={() => {this.remove()}}>remove</a>}
         </td>
         <td className='errorholder'>
             {
@@ -533,12 +481,14 @@ export default class DepositCartItemCard extends Component {
   componentDidMount () {
     const { cartItem } = this.props
     const cartType = cartItem.type
-    const parsed = xmldoc(cartItem.content)
+    const parsed = cartItem.content ? xmldoc(cartItem.content) : undefined
     var errorMsg = ''
-    if(cartType.toLowerCase() === 'article') {
-        this.validateArticle (parsed)
-    } else if(cartType.toLowerCase() === 'issue') {
-        this.validateIssue (parsed)
+    if (parsed) {
+        if(cartType.toLowerCase() === 'article') {
+            this.validateArticle (parsed)
+        } else if(cartType.toLowerCase() === 'issue') {
+            this.validateIssue (parsed)
+        }
     }
   }
 
@@ -547,4 +497,87 @@ export default class DepositCartItemCard extends Component {
        this.displayItem()
     )
   }
+}
+
+
+
+
+function getLicenses (parsedArticle) {
+  // license loading
+  const licences = objectSearch(parsedArticle, 'ai:license_ref')
+  var lic = []
+  // contributors are divied into 2 types
+  // person_name and organization
+  if (licences) {
+    if (!Array.isArray(licences)) {
+      const licAcceptedDate = licences['-start_date'].split('-')
+      lic.push({
+        acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
+        acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
+        acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
+        appliesto: licences['-applies_to'] ? licences['-applies_to'] : '',
+        licenseurl: licences['#text'] ? licences['#text'] : ''
+      })
+    } else {
+      for(var i = 0; i < licences.length; i++) {
+        const licAcceptedDate = licences[i]['-start_date'].split('-')
+        lic.push({
+          acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
+          acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
+          acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
+          appliesto: licences[i]['-applies_to'] ? licences[i]['-applies_to'] : '',
+          licenseurl: licences[i]['#text'] ? licences[i]['#text'] : ''
+        })
+      }
+    }
+  }
+  return lic
+}
+
+function getContributors (parsedArticle) {
+  // contributor loading
+  var contributors = objectSearch(parsedArticle, 'contributors')
+  var contributee = []
+  // contributors are divied into 2 types
+  // person_name and organization
+  var person_name = undefined
+  var organization = undefined
+  if (contributors) {
+    person_name = objectSearch(contributors, 'person_name')
+    organization = objectSearch(contributors, 'organization')
+
+    if (person_name) { // if exist
+      if (!Array.isArray(person_name)) {
+        // there is ONE funder
+        contributee.push(
+          {
+            firstName: person_name.given_name ? person_name.given_name : '',
+            lastName: person_name.surname ? person_name.surname : '',
+            suffix: person_name.suffix ? person_name.suffix : '',
+            affiliation: person_name.affiliation ? person_name.affiliation : '',
+            orcid: person_name.ORCID ? person_name.ORCID : '',
+            role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
+            groupAuthorName: '',
+            groupAuthorRole: ''
+          }
+        )
+      } else { // its an array
+        _.each(person_name, (person) => {
+          contributee.push(
+            {
+              firstName: person.given_name ? person.given_name : '',
+              lastName: person.surname ? person.surname : '',
+              suffix: person.suffix ? person.suffix : '',
+              affiliation: person.affiliation ? person.affiliation : '',
+              orcid: person.ORCID ? person.ORCID : '',
+              role: person['-contributor_role'] ? person['-contributor_role'] : '',
+              groupAuthorName: '',
+              groupAuthorRole: ''
+            }
+          )
+        })
+      }
+    }
+  }
+  return contributee
 }

@@ -110,7 +110,7 @@ export default class Funding extends Component {
                     value={grantNumber}
                 />
                 {i > 0 &&
-                    <div className='grantRemove'><a onClick={() => this.state.removeGrant(this.state.index, i, this)}>remove</a></div>
+                    <div className='grantRemove'><a onClick={() => this.state.removeGrant(this.state.index, i, this)}>Remove</a></div>
                 }
             </div>
         ))
@@ -216,7 +216,7 @@ export default class Funding extends Component {
                                         </div>
                                     </div>
                                     <div className='field'>
-                                        <a onClick={() => {this.state.addGrant(this.state.index, this)}}>Add New Grant Number</a>
+                                        <a className='AddNewGrantNumberButton' onClick={() => {this.state.addGrant(this.state.index, this)}}>Add New Grant Number</a>
                                     </div>
                                 </div>
                             </div>

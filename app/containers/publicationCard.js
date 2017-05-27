@@ -12,7 +12,8 @@ import AddPublicationCard from '../components/addPublicationCard'
 
 
 const mapStateToProps = (state, props) => ({
-  publication: state.publications[props.doi]
+  publication: state.publications[props.doi] || state.publications[props.doi.toLowerCase()],
+  crossmarkPrefixes: state.login['crossmark-prefixes']
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -29,6 +30,7 @@ export default class PublicationCardContainer extends Component {
     asyncSubmitPublication: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object,
+    crossmarkPrefixes: is.array.isRequired
   }
 
   constructor() {
@@ -47,12 +49,13 @@ export default class PublicationCardContainer extends Component {
     };
 
     this.props.reduxControlModal({
-      showModal:true, 
+      showModal:true,
       title:'Edit Journal Record',
       Component: AddPublicationCard,
       props:{
-        ...savedMetaData, 
-        asyncSubmitPublication: this.props.asyncSubmitPublication
+        ...savedMetaData,
+        asyncSubmitPublication: this.props.asyncSubmitPublication,
+        crossmarkPrefixes: this.props.crossmarkPrefixes
       }
     })
   }
@@ -75,20 +78,19 @@ export default class PublicationCardContainer extends Component {
       backgroundSize: 'contain'
     };
     const whiteText = this.state.mouseOver ? { color: 'white' } : null;
-    
     return (
       <Link to={this.state.overEdit ? null : `/publications/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
-        <div className='card' 
-          style={style} 
-          onMouseOver={()=> this.setState({mouseOver:true})} 
+        <div className='card'
+          style={style}
+          onMouseOver={()=> this.setState({mouseOver:true})}
           onMouseLeave={()=> this.setState({mouseOver:false})}
         >
           <div style={whiteText} className='publication-type'>{type}</div>
           <div style={whiteText} className='publication-name'>{title}</div>
-          {this.state.mouseOver && <button 
+          {this.state.mouseOver && <button
             onMouseOver={()=> this.setState({overEdit:true})}
             onMouseLeave={()=> this.setState({overEdit:false})}
-            onClick={this.openEditPublicationModal} 
+            onClick={this.openEditPublicationModal}
             className='publication-edit'
             >Edit
           </button>}

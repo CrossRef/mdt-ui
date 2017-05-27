@@ -5,15 +5,12 @@ import { bindActionCreators } from 'redux'
 import ReactModal from 'react-modal'
 import { updateReporterII } from 'my_decorators'
 
-import client from '../client'
-
 
 
 export default class Modal extends React.Component {
 
   static propTypes = {
     reduxControlModal: is.func.isRequired,
-    crossmarkAuth: is.bool.isRequired,
     modalState: is.shape({
       showModal: is.bool.isRequired,
       title: is.oneOfType([
@@ -32,7 +29,7 @@ export default class Modal extends React.Component {
   }
 
   render() {
-    const { modalState, reduxControlModal, crossmarkAuth } = this.props;
+    const { modalState, reduxControlModal } = this.props;
     const Component = modalState.Component;
     return (
       <div className='modalContainer'>
@@ -54,7 +51,7 @@ export default class Modal extends React.Component {
             </div>
             <div className='modalbody'>
               <div className='modalboddyinner'>
-                <Component {...modalState.props} reduxControlModal={reduxControlModal} crossmarkAuth={crossmarkAuth}/>
+                <Component {...modalState.props} reduxControlModal={reduxControlModal} close={() => reduxControlModal({showModal:false})}/>
               </div>
             </div>
           </div>

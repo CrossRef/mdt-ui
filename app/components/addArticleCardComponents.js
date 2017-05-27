@@ -45,22 +45,23 @@ export class InfoHelperRow extends Component {
 export const InfoBubble = () =>
   <ClassWrapper classNames={['errorHolder talltooltip helpers', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder']}>
     <div className='errormsginnerholder'>
-      <img src='/images/AddArticle/Asset_Icons_White_Help.svg' />
-      Please provide a Title that fully describes your Article
+      <div><img src='/images/AddArticle/Asset_Icons_Grey_Help.svg' /></div>
+      <div>Please provide a Title that fully describes your Article</div>
     </div>
   </ClassWrapper>
 
 
-export const ErrorBubble = ({errors}) =>
+export const ErrorBubble = ({errors, crossmarkErrors}) =>
   <ClassWrapper classNames={['errorHolder talltooltip fullError', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder', 'errormsginnerholder']}>
-    <div><img src='/images/AddArticle/Asset_Icons_White_Help.svg' /></div>
+    <div><img src='/images/AddArticle/Asset_Icons_Grey_Caution.svg' /></div>
     {(
       errors.doi ||
       errors.url ||
       errors.title ||
       errors.printDateYear ||
       errors.onlineDateYear ||
-      errors.licenseStartDate
+      errors.licenseStartDate ||
+      crossmarkErrors.update_0_DOI_Missing || crossmarkErrors.update_0_year || crossmarkErrors.clinical_0_registry || crossmarkErrors.clinical_0_trialNumber
     ) &&
     <div><b>Required.</b><br />Please provide required informaton.</div>
     }
@@ -68,10 +69,25 @@ export const ErrorBubble = ({errors}) =>
     <div><b>Invalid URL.</b><br />Please check your URL.</div>
     }
     {(errors.invaliddoi) &&
-    <div><b>Invalid DOI.</b><br />Please check your DOI (10.xxxx/xx...).</div>
+    <div><b>Invalid DOI.</b><br/>Please check your DOI (10.xxxx/xx...). Record prefix (10.xxxx) must match publication prefix.</div>
     }
     {(errors.dupedoi) &&
     <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>
+    }
+    {(crossmarkErrors.peer_0_href) &&
+    <div><b>Invalid URL.</b><br />Please check your Crossmark Peer Review URL.</div>
+    }
+    {(crossmarkErrors.copyright_0_href) &&
+    <div><b>Invalid URL.</b><br />Please check your Crossmark Copyright / Licensing URL.</div>
+    }
+    {(crossmarkErrors.supp_0_href) &&
+    <div><b>Invalid URL.</b><br />Please check your Crossmark Supplamentary Material URL.</div>
+    }
+    {(crossmarkErrors.other_0_href) &&
+    <div><b>Invalid URL.</b><br />Please check your Crossmark Other URL.</div>
+    }
+    {(crossmarkErrors.update_0_DOI_Invalid) &&
+    <div><b>Invalid DOI.</b><br />Please check your Crossmark Status Update DOI (10.xxxx/xx...).</div>
     }
   </ClassWrapper>
 
@@ -106,7 +122,7 @@ export class ArticleTitleField extends Component {
 export class OptionalTitleData extends Component {
   render() {
     return(
-      <div>
+      <div className='OptionalTitleFields'>
         <div className='toggleButton' onClick={this.props.toggleFields}>
             <span className={'arrowHolder' + (this.props.show ? ' openArrowHolder' : '')}>
               <img src="/images/AddArticle/DarkTriangle.svg" />
@@ -114,7 +130,7 @@ export class OptionalTitleData extends Component {
           <span>Optional Title Data</span>
         </div>
         <div className={'hiddenFields' + (this.props.show ? 'showOptionalTitle':'')}>
-          <div className='fieldHolder'>
+          <div className='fieldHolder first'>
             <div className='fieldinnerholder fulllength'>
               <div className='labelholder'>
                 <div className='labelinnerholder'>

@@ -34,14 +34,14 @@ export const CrossmarkAddButton = ({showSection, toggle, addList, toggleAdd, add
 
 
 
-export const Crossmark = ({ makeDateDropDown, removeCrossmarkCard, crossmarkCards }) => {
+export const CrossmarkCards = ({ makeDateDropDown, removeCrossmarkCard, crossmarkCards, errors }) => {
   const crossmarkCardKeys = Object.keys(crossmarkCards);
   return (
     <div>
       {!crossmarkCardKeys.length && <Blank/>}
-      {crossmarkCardKeys.map((value, index) => {
-        const Card = crossmarkCardSelector[value];
-        return crossmarkCards[value] ? <Card key={`${value}-${index}`} remove={()=>removeCrossmarkCard(value)}/> : null
+      {crossmarkCardKeys.map((cardName, index) => {
+        const Card = crossmarkCardSelector[cardName];
+        return crossmarkCards[cardName] ? <Card key={`${cardName}-${index}`} number={crossmarkCards[cardName] - 1} remove={()=>removeCrossmarkCard(cardName)} errors={errors}/> : null
       })}
     </div>
   )

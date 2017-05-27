@@ -2,44 +2,24 @@ import React, { Component } from 'react'
 import _ from 'lodash'
 
 const Languages = require('./language.json')
-const ArchiveLocations = require('./archiveLocations.json')
+import { ArchiveLocations } from './archiveLocations'
 const PublicationTypes = require('./publicationTypes.json')
 const AppliesTo = require('./appliesTo.json')
 const IdentifierTypes = require('./identifierTypes.json')
 import objectSearch from './objectSearch'
 import parseXMLArticle from './parseXMLArticle'
+import { getSubmitSubItems } from './getSubItems'
 import xmldoc from './xmldoc'
 
-const articleReviewGenerator = function (publication, article, parsedAlready, func) {
-    console.log(publication)
+const articleReviewGenerator = (publication, article, parsedAlready, func) => {
     var publicationMetaData = publication
     if (publication.content) {
         publicationMetaData = xmldoc(publication.content)
     }
 
-    console.log(article)
     var reviewData = article
     if (!parsedAlready) {
         reviewData = parseXMLArticle(article)
-    }
-
-    const getSubmitSubItems = (items) => {
-        return _.filter(items, (item) => {
-        for(var key in item) { // checking all the properties of errors to see if there is a true
-            if(item[key]){
-            try {
-                if (item[key].trim().length > 0) {
-                return item
-                }
-            } catch (e) {
-                if (item[key].length > 0) {
-                return item
-                }
-            }
-
-            }
-        }
-        })
     }
 
     const getFunding = () => {
@@ -183,7 +163,7 @@ const articleReviewGenerator = function (publication, article, parsedAlready, fu
         const title = reviewData.article.title.length > 0 ? reviewData.article.title + '.' : ''
 
         const doi = reviewData.article.doi.length > 0 ? ' DOI: ' + reviewData.article.doi + '. ' : ''
-        const url = reviewData.article.url.length > 0 ? ' ' + reviewData.article.url + ' ' : ''
+        const url = reviewData.article.url ? ' ' + reviewData.article.url + ' ' : ''
         const locationId = reviewData.article.locationId.length > 0 ? ' ' + reviewData.article.locationId  : ''
 
         const generalHeading = contributors + onlineDate + title + pubAbbrTitle + locationId + getPages() + doi + url
@@ -296,5 +276,4 @@ const articleReviewGenerator = function (publication, article, parsedAlready, fu
             </div>
         )
 }
-
 export default articleReviewGenerator
