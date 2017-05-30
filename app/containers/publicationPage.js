@@ -69,7 +69,6 @@ export default class PublicationPage extends Component {
         body: JSON.stringify(publication)
       }
     ).then((response) => {
-      console.log(response);
       if(callback) return callback()
     })
     .catch((reason) => {

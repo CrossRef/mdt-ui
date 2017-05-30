@@ -251,7 +251,11 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
         message: cartArray
       })
     })
-    .then(result => result.json())
+    .then(result => {
+      console.log(result);
+      if(result.status > 202) throw `Error ${result.status}: ${result.statusText}`;
+      return result.json()
+    })
     .then(result => {
       let resultArray = result.message;
       resultArray = resultArray.map((item) => {

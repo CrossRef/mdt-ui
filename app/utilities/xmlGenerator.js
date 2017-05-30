@@ -126,7 +126,8 @@ export const journalArticleXml = (component, crossmark) => {
       `<titles>`,
         `${article.title.length > 0 ? `<title>` + article.title.trim() + `</title>` : ``}`,
         `${article.subtitle.length > 0 ? `<subtitle>` + article.subtitle.trim() + `</subtitle>` : ``}`,
-        `${article.originallanguagetitle.length > 0 ? `<original_language_title>` + article.originallanguagetitle.trim() + `</original_language_title>` : ``}`,
+        `${article.originallanguagetitle.length > 0 ? 
+          `<original_language_title>` + article.originallanguagetitle.trim() + `</original_language_title>` : ``}`,
         `${article.originallanguagetitlesubtitle.length > 0 ? `<subtitle>` + article.originallanguagetitlesubtitle.trim() + `</subtitle>` : ``}`,
       `</titles>`,
 
@@ -134,7 +135,8 @@ export const journalArticleXml = (component, crossmark) => {
 
       `${(component.getContributorXML().length > 0) ? component.getContributorXML() : ``}`,
 
-      `${(article.abstract.trim().length > 0) ? `<jats:abstract xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"><jats:p>${article.abstract.trim()}</jats:p></jats:abstract>` : ''}`,
+      `${(article.abstract.trim().length > 0) ? 
+        `<jats:abstract xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"><jats:p>${article.abstract.trim()}</jats:p></jats:abstract>` : ''}`,
 
       article.onlineDateYear.length > 0 ? [
         `<publication_date media_type="online">`,

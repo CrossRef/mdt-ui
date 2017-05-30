@@ -32,7 +32,7 @@ export default class Issue extends Component {
   }
 
 
-  toggleCheckBox (e) {
+  toggleCheckBox = (e) => {
     const { doi } = this.props
     if(e.currentTarget.checked) {
       this.props.handleAddToList({ article: doi })
@@ -122,14 +122,14 @@ export default class Issue extends Component {
     const checked = !this.props.selections.length ? {checked:false} : {};
 
     return (<tr className='issue'>
-      <td className='checkbox'></td>
+      <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox} {...checked} /><span>&nbsp;</span></label></td>
       <td className='title'>
         <a onClick={this.modalOpen} href="">{title}</a>
       </td>
       <td className='date'>{date}</td>
       <td className='type'>{type}</td>
       <td className='status'>{status}</td>
-      <td className='url'>{url && <a className='issueDOILink' href={url}>{url}</a>}&nbsp;<Link className='issueDoiAddNew' to={`/publications/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi)}/addarticle`}><span>Add Article</span></Link></td>
+      <td className='url'>{url && <a className='issueDOILink' target='_blank' href={url}>{url}</a>}&nbsp;<Link className='issueDoiAddNew' to={`/publications/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi)}/addarticle`}><span>Add Article</span></Link></td>
     </tr>)
   }
 }

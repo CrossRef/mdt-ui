@@ -11,13 +11,13 @@ export default class DepositResult extends Component{
   }
 
   render() {
-    const { resultCount, resultData } = this.props;
+    const { resultCount, resultData, depositId } = this.props;
     return (
       <div>
         <div className='resultDiv'>
           <div className="resultTopbar">
             <h3>Your deposit has been processed</h3>
-            <h3>Deposit ID ......</h3>
+            <h3>Deposit ID {depositId}</h3>
             <p>{moment().format(`MM/DD/YYYY hh:mm A`)}</p>
           </div>
           <div className="resultIndicatorBar">

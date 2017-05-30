@@ -67,7 +67,7 @@ export default class AddPublicationCard extends Component {
         'mdt-version': '1',
         title: result.title,
         abbreviation: '',
-        DOI: result.prefix,
+        DOI: result.doi || result['owner-prefix'] || result.prefix,
         url: '',
         printISSN: pissn,
         electISSN: eissn,

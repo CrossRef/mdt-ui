@@ -85,7 +85,7 @@ export default class DepositCartItemsReview extends Component {
                 <span className={'arrowHolder' + (this.state.showInfoSection ? ' openArrowHolder' : '')}>
                     <img src="/images/AddArticle/Triangle.svg" />
                 </span>
-                <span>{item.title.title}</span>
+                <span>{item.title.title || `Issue ${item.title.issue || 'NA'}, Volume ${item.title.volume || 'NA'}`}</span>
               </div>
                 <div className='addholder'>
                     <a onClick={()=>{this.gotoPage()}}>Edit</a>

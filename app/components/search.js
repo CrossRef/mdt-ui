@@ -16,6 +16,7 @@ export default class Search extends Component {
     search: is.func.isRequired,
     results: is.array,
     loading: is.bool.isRequired,
+    crossmarkPrefixes: is.array.isRequired
   }
 
   constructor (props) {
@@ -48,7 +49,8 @@ export default class Search extends Component {
         props: {
           searchResult: item,
           asyncSubmitPublication: this.props.asyncSubmitPublication,
-          reduxAddDOIs: this.props.reduxAddDOIs
+          reduxAddDOIs: this.props.reduxAddDOIs,
+          crossmarkPrefixes: this.props.crossmarkPrefixes
         }
       })
     }

@@ -442,11 +442,11 @@ export default class DepositCartItemCard extends Component {
   }
 
   displayItem () {
-    const { cartItem } = this.props
+    const { cartItem } = this.props;
     const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
     const cartType = cartItem.type
     const status = cartItem.status
-    const title = cartItem.title.title.trim()
+    const title = cartItem.title.title ? cartItem.title.title.trim() : `Issue ${cartItem.title.issue || NA}, Volume ${cartItem.title.volume || 'NA'}`
     return (
       <tr className='item'>
         <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>

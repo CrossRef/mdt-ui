@@ -50,6 +50,7 @@ export default class Search extends Component {
 
     this.props.asyncGetItem(item.doi)
     .then((result) => {
+      //return console.log(result);
 
       //clean up returned publication metadata
       result.message.doi = publication.message.doi;
@@ -70,10 +71,10 @@ export default class Search extends Component {
       //Is article with issue
       } else if (result.message.contains[0].contains[0].type === item.type) {
 
-        //Seperate article
+        //Separate article
         const savedArticle = result.message.contains[0].contains[0];
         savedArticle['owner-prefix'] = ownerPrefix;
-        savedArticle['mdt-version'] = '0';//Prepare publication metadata
+        savedArticle['mdt-version'] = '0';
 
         //Prepare issue metadata
         const issue = result.message.contains[0];

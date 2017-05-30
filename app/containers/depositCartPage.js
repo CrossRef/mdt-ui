@@ -206,14 +206,27 @@ export default class DepositCartPage extends Component {
 
     this.setState({status:`processing`})
 
+    const errorHandler = (error) => {
+      this.setState({status: 'cart'});
+      this.props.reduxControlModal({
+        showModal: true,
+        title: 'Server Response - ' + error,
+        style: 'errorModal',
+        Component: ()=>null
+      })
+    }
+
     this.props.asyncDeposit(toDeposit, (resultArray) => {
       this.setState({status:'result', depositResult:resultArray})
-    });
+    }, errorHandler);
+
+
   }
 
   processDepositResult = () => {
     const resultCount = {Success: 0, Failure: 0};
     const resultData = {};
+    let depositId = [];
 
     this.state.depositResult.forEach((result, index)=>{
       let pubDoi, pubTitle, resultTitle, resultStatus, resultType;
@@ -221,7 +234,6 @@ export default class DepositCartPage extends Component {
       const articleInfo = this.props.cart.find((cartItem)=>{
         return cartItem.doi === result['DOI:']
       });
-
       pubDoi = articleInfo.pubDoi;
       resultType = articleInfo.type;
       pubTitle = this.props.publications[pubDoi].message.title.title;
@@ -231,6 +243,7 @@ export default class DepositCartPage extends Component {
         resultStatus = 'Failure';
         error.errorMessage = result.result;
       } else if (typeof result.result === 'object') {
+        depositId.push(result.result.doi_batch_diagnostic.submission_id);
         const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic;
         resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status'];
         if(resultStatus === 'Failure') {
@@ -240,9 +253,6 @@ export default class DepositCartPage extends Component {
         resultStatus = 'Failure';
         error.errorMessage = 'Unknown Error';
       }
-
-      // resultStatus = 'Success';
-      // error = {};
 
       resultCount[resultStatus]++;
 
@@ -255,13 +265,15 @@ export default class DepositCartPage extends Component {
         ...error
       }];
 
-    }); console.log(resultData);
+    });
 
-    return {resultData, resultCount}
+    depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0];
+
+    return {resultData, resultCount, depositId}
   }
 
   render () {
-    const {resultData, resultCount} = this.state.depositResult ? this.processDepositResult() : {};
+    const {resultData, resultCount, depositId} = (this.state.status === 'result' && this.state.depositResult) ? this.processDepositResult() : {};
 
     return (
       <div className='depositPage'>
@@ -292,7 +304,7 @@ export default class DepositCartPage extends Component {
 
         { this.state.status === 'processing' && <WaitMessage/> }
 
-        { this.state.status === 'result' && <DepositResult resultCount={resultCount} resultData={resultData} /> }
+        { this.state.status === 'result' && <DepositResult resultCount={resultCount} resultData={resultData} depositId={depositId}/> }
       </div>
     )
   }

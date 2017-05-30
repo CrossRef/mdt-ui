@@ -152,8 +152,8 @@ export default class AddArticleCard extends Component {
     }
 
     if(nextProps.crossmarkPrefixes.length && !this.state.crossmark) {
-      const thisPrefix = nextProps.publication.message.doi.split('/')[0];
-      if(nextProps.crossmarkPrefixes.includes(thisPrefix)) this.setState({crossmark: true})
+      const thisPrefix = nextProps.publication.message ? nextProps.publication.message.doi.split('/')[0] : null;
+      if(thisPrefix && nextProps.crossmarkPrefixes.includes(thisPrefix)) this.setState({crossmark: true})
     }
     const { publication } = nextProps
     if ((publication.message) && (nextProps.mode === 'edit')) {
@@ -1060,6 +1060,7 @@ export default class AddArticleCard extends Component {
 
         this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
 
+          newRecord.pubDoi = this.props.publication.message.doi;
           this.props.reduxCartUpdate([newRecord]);
 
           this.setState({version: version})

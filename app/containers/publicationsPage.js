@@ -68,11 +68,17 @@ export default class PublicationsPage extends Component {
 
   render () {
     const { searchResults, search, loading, DOIs, reduxAddDOIs, reduxControlModal , asyncSubmitPublication} = this.props;
-
     return (
       <div className='publications'>
         <div className='management-bar'>
-          <Search search={search} results={searchResults} loading={loading} reduxAddDOIs={reduxAddDOIs} reduxControlModal={reduxControlModal} asyncSubmitPublication={asyncSubmitPublication}/>
+          <Search
+            search={search}
+            results={searchResults}
+            loading={loading}
+            reduxAddDOIs={reduxAddDOIs}
+            reduxControlModal={reduxControlModal}
+            asyncSubmitPublication={asyncSubmitPublication}
+            crossmarkPrefixes={this.props.crossmarkPrefixes}/>
           <button
             className='addPublication'
             onClick={this.openAddPublicationModal}

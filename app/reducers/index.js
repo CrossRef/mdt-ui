@@ -29,9 +29,7 @@ export default (state, action) => {
 }
 
 
-function loginReducer (state = {
-  'crossmark-prefixes': []
-}, action) {
+function loginReducer (state = {'crossmark-prefixes': [], prefixes: []}, action) {
   switch (action.type) {
     case 'LOGIN':
       return {...state, ...action.data}
@@ -124,7 +122,7 @@ function publicationsReducer (state = {}, action) {
             if(!eachPublication || !eachPublication.message || !eachPublication.message.doi) return console.warn(`Had trouble retrieving data for a Publication`, eachPublication || 'Empty Array Value');
             const normalizedRecords = {};
 
-            if(eachPublication.message.contains.length) {
+            if((eachPublication.message.contains || []).length) {
               eachPublication.message.contains.forEach(eachRecord => {
                 if (!eachRecord || !eachRecord.doi) return console.warn(`Had trouble retrieving data for a Record`, eachRecord || 'Empty Array Value');
                 normalizedRecords[eachRecord.doi] = eachRecord;

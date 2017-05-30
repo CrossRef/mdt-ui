@@ -33,7 +33,7 @@ export default class SubtItem extends Component {
   componentWillReceiveProps(nextProps) {
     this.setState({
         incomingData: nextProps.incomingData,
-        crossmarkCards: nextProps.showCards
+        crossmarkCards: Object.keys(this.state.crossmarkCards).length ? this.state.crossmarkCards : (nextProps.showCards || emptyObject)
     })
   }
 
@@ -169,3 +169,5 @@ export default class SubtItem extends Component {
     )
   }
 }
+
+const emptyObject = {};
