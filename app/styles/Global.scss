@@ -20,7 +20,8 @@ input[type=button], input[type=submit] {
 
 input, select {
   padding: 5px 16px;
-  border: 1px solid black;
+  border: 0px solid black;
+  outline: 1px solid black; outline-offset:-1px
 }
 
 .left-indent-16 {
