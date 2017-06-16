@@ -28,6 +28,7 @@ export default class ArticleContainer extends Component {
               articles.map((article, i) => <Article
                 doi={article}
                 key={i}
+                fetchIssue={this.props.fetchIssue}
                 handleAddCart={this.props.handleAddCart}
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}

@@ -50,6 +50,7 @@ export default class Listing extends Component {
               <ArticlesContainer
                 filterBy={this.props.filterBy}
                 doi={child}
+                fetchIssue={this.props.fetchIssue}
                 publication={publication}
                 publicationDoi={publicationDoi}
                 publicationMessage={publicationMessage}
@@ -65,6 +66,7 @@ export default class Listing extends Component {
             return <Article
               doi={child}
               key={i}
+              fetchIssue={this.props.fetchIssue}
               publication={publication}
               publicationDoi={publicationDoi}
               publicationMessage={publicationMessage}

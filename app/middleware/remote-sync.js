@@ -1,11 +1,7 @@
 import fetch from '../utilities/fetch'
-//import { REHYDRATE } from 'redux-persist/constants'
-
 
 
 var blacklistActions = [
-  'crossref/POST_REHYDRATE', // This is a meta action for restoring from localStorage
-//  REHYDRATE, // This is a meta action for restoring from localStorage
   'SET_STATE', // We don't want to sync back what we just got
   'SET_AUTH_BEARER', // Setting a new auth token shouldn't over-write the existing state
   'PUBLICATIONS',
@@ -13,6 +9,7 @@ var blacklistActions = [
   'GET_CART',
   'GET_ITEM',
   'REDUXFORM_ADD',
+  'REDUXFORM_CLEAR',
   'SEARCH_RESULT',
   'SEARCH_STATUS',
   'SEARCH_VALUE',

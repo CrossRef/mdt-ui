@@ -16,7 +16,6 @@ const mapStateToProps = state => ({
   searchResults: state.search.result,
   loading: state.search.loading,
   crossmarkPrefixes: state.login['crossmark-prefixes'],
-  loading: state.search.loading,
   prefixes: state.login.prefixes
 })
 
@@ -25,7 +24,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxAddDOIs: addDOIs,
   asyncGetPublications: getPublications,
   asyncSubmitPublication: submitPublication,
-  search: search,
+  asyncSearch: search,
   cartUpdate: cartUpdate
 }, dispatch)
 
@@ -40,7 +39,7 @@ export default class PublicationsPage extends Component {
     reduxAddDOIs: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
-    search: is.func.isRequired,
+    asyncSearch: is.func.isRequired,
     cartUpdate: is.func.isRequired,
     crossmarkPrefixes: is.array.isRequired,
     prefixes: is.array.isRequired
@@ -67,12 +66,12 @@ export default class PublicationsPage extends Component {
   })
 
   render () {
-    const { searchResults, search, loading, DOIs, reduxAddDOIs, reduxControlModal , asyncSubmitPublication} = this.props;
+    const { searchResults, asyncSearch, loading, DOIs, reduxAddDOIs, reduxControlModal , asyncSubmitPublication} = this.props;
     return (
       <div className='publications'>
         <div className='management-bar'>
           <Search
-            search={search}
+            asyncSearch={asyncSearch}
             results={searchResults}
             loading={loading}
             reduxAddDOIs={reduxAddDOIs}

@@ -30,19 +30,6 @@
         box-shadow: 0 0 2px rgba(0,0,0,.5);
         z-index: 1;
 
-        .publication-search-result {
-          height: 32px;
-          line-height: 32px;
-          padding: 0 20px 0 28px;
-          width: 100%;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-
-          &:hover {
-            background: #f1f1f1;
-          }
-        }
       }
     }
 

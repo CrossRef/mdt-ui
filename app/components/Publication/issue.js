@@ -4,7 +4,7 @@ import moment from 'moment'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 
-import AddIssueCardRefactor from '../addIssueCardRefactor'
+import AddIssueCard from '../addIssueCard'
 import xmldoc from '../../utilities/xmldoc'
 import objectSearch from '../../utilities/objectSearch'
 import update from 'immutability-helper'
@@ -91,7 +91,7 @@ export default class Issue extends Component {
       showModal: true,
       title: 'Edit Issue/Volume',
       style: 'addIssueModal',
-      Component: AddIssueCardRefactor,
+      Component: AddIssueCard,
       props: {
         mode: 'edit',
         issue: this.props.doi,
@@ -116,7 +116,7 @@ export default class Issue extends Component {
     date = moment(date || undefined).format('MMM Do YYYY')
     //title needs to be either issue title + volume title or either one
     const issueTitle = this.state.issue.title || this.state.issue.issue || '';
-    const title = (this.state.issue.title || this.state.issue.issue ? 'Issue ' + issueTitle : '') + (this.state.issue.volumetitle ? (' Volume ' + this.state.issue.volumetitle) : '')
+    const title = (this.state.issue.volumetitle ? ('Volume ' + this.state.issue.volumetitle) : '') + (this.state.issue.title || this.state.issue.issue ? ' Issue ' + issueTitle : '')
     const url = doi && `http://dx.doi.org/${doi}`
 
     const checked = !this.props.selections.length ? {checked:false} : {};

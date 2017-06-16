@@ -1,4 +1,7 @@
+import _ from 'lodash'
+
 import { getContributor } from './getSubItems'
+
 
 export const crossmarkXml = (form, crossmarkPrefix) => {
 
@@ -82,7 +85,7 @@ export const crossmarkXml = (form, crossmarkPrefix) => {
 
   return [
     `<crossmark>`,
-      `<crossmark_policy>${crossmarkPrefix}/something</crossmark_policy>`,
+      `<crossmark_policy>${crossmarkPrefix}/something</crossmark_policy>`, //TODO Needs to be looked at
 
       `<crossmark_domains><crossmark_domain><domain>psychoceramics.labs.crossref.org</domain></crossmark_domain></crossmark_domains>`, //TEMPORARY, Crossref team said they will be removing this requirement
 
@@ -126,16 +129,16 @@ export const journalArticleXml = (component, crossmark) => {
       `<titles>`,
         `${article.title.length > 0 ? `<title>` + article.title.trim() + `</title>` : ``}`,
         `${article.subtitle.length > 0 ? `<subtitle>` + article.subtitle.trim() + `</subtitle>` : ``}`,
-        `${article.originallanguagetitle.length > 0 ? 
+        `${article.originallanguagetitle.length > 0 ?
           `<original_language_title>` + article.originallanguagetitle.trim() + `</original_language_title>` : ``}`,
         `${article.originallanguagetitlesubtitle.length > 0 ? `<subtitle>` + article.originallanguagetitlesubtitle.trim() + `</subtitle>` : ``}`,
       `</titles>`,
 
-      `${component.getAcceptanceDateXML()}`,
+      `${getAcceptanceDateXML()}`,
 
-      `${(component.getContributorXML().length > 0) ? component.getContributorXML() : ``}`,
+      `${(getContributorXML().length > 0) ? getContributorXML() : ``}`,
 
-      `${(article.abstract.trim().length > 0) ? 
+      `${(article.abstract.trim().length > 0) ?
         `<jats:abstract xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"><jats:p>${article.abstract.trim()}</jats:p></jats:abstract>` : ''}`,
 
       article.onlineDateYear.length > 0 ? [
@@ -154,15 +157,15 @@ export const journalArticleXml = (component, crossmark) => {
         `</publication_date>`
       ].join('') : '',
 
-      `${(component.getPagesXML().length > 0) ? component.getPagesXML() : ``}`,
+      `${(getPagesXML().length > 0) ? getPagesXML() : ``}`,
 
-      `${(component.getPublisherItems().length > 0) ? component.getPublisherItems() : ``}`,
+      `${(getPublisherItems().length > 0) ? getPublisherItems() : ``}`,
 
-      `${(component.getFunderXML().length > 0) ? component.getFunderXML() : ``}`,
+      `${(getFunderXML().length > 0) ? getFunderXML() : ``}`,
 
-      `${(component.getLicenseXML().length > 0) ? component.getLicenseXML() : ``}`,
+      `${(getLicenseXML().length > 0) ? getLicenseXML() : ``}`,
 
-      `${(component.getRelatedItemsXML().length > 0) ? component.getRelatedItemsXML() : ``}`,
+      `${(getRelatedItemsXML().length > 0) ? getRelatedItemsXML() : ``}`,
 
       state.addInfo.archiveLocation.trim().length > 0 ?
         `<archive_locations><archive name="${state.addInfo.archiveLocation}"/></archive_locations>` : '',
@@ -172,12 +175,157 @@ export const journalArticleXml = (component, crossmark) => {
       `<doi_data>`,
         `<doi>${article.doi}</doi>`,
         `<resource>${article.url}</resource>`,
-        `${(component.getCollectionXML().length > 0) ? component.getCollectionXML() : ``}`,
+        `${(getCollectionXML().length > 0) ? getCollectionXML() : ``}`,
       `</doi_data>`,
 
     `</journal_article>`
   ];
   return array.join('')
+
+
+
+
+  function getContributorXML () {
+    var contributors = getSubmitSubItems(state.contributors).map((contributor, i) => {
+      // cause the type "ROLE" is shared name
+      var attributes = [
+        (contributor.firstName && (contributor.firstName.trim().length>0)) ? `<given_name>${contributor.firstName}</given_name>` : undefined,
+        (contributor.lastName && (contributor.lastName.trim().length>0)) ? `<surname>${contributor.lastName}</surname>` : undefined,
+        (contributor.suffix && (contributor.suffix.trim().length>0)) ? `<suffix>${contributor.suffix}</suffix>` : undefined,
+        (contributor.affiliation && (contributor.affiliation.trim().length>0)) ? `<affiliation>${contributor.affiliation}</affiliation>` : undefined,
+        (contributor.orcid && (contributor.orcid.trim().length>0)) ? `<ORCID>${contributor.orcid}</ORCID>` : undefined,
+      ]
+
+      attributes = _.filter(attributes, (attribute) => { // filter all the undefined
+        for(var key in attribute) { // checking all the properties of errors to see if there is a true
+          if (attribute[key]) {
+            return attribute
+          }
+        }
+      })
+
+      var org = ((contributor.groupAuthorName && (contributor.groupAuthorName.trim().length>0)) && (contributor.groupAuthorRole && (contributor.groupAuthorRole.trim().length>0))) ? `<organization sequence="${i===0 ? 'first' : 'additional'}" contributor_role="${contributor.groupAuthorRole}">${contributor.groupAuthorName}</organization>` : undefined
+
+      var person = `<person_name sequence="${i===0 ? 'first' : 'additional'}"${(contributor.role && (contributor.role.trim().length>0)) ? ` contributor_role="${contributor.role}"` : ``}>${attributes.join('')}</person_name>`
+
+      return org ? org : person
+    })
+
+    return contributors.length > 0 ? `<contributors>${contributors.join('')}</contributors>` : ``
+  }
+
+  function getFunderXML () {
+    var funders = getSubmitSubItems(state.funding).map((funder, i) => {
+      var funderName = undefined
+      if (funder.fundername) {
+        funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
+      }
+
+      var funder_identifier = undefined
+      if (funder.funder_identifier) {
+        funder_identifier = funder.funder_identifier.trim().length > 0 ? funder.funder_identifier : undefined
+      }
+
+      var attributes = ``
+      if (funderName || funder_identifier) { //if an of these exist
+        attributes = `<fr:assertion name="funder_name">${funderName}${funder_identifier ? `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>` : ``}</fr:assertion>`
+        var grants = funder.grantNumbers.map((awardNumber, i) => {
+          return `<fr:assertion name="award_number">${awardNumber}</fr:assertion>`
+        });
+
+        var fundgroup = `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>`
+        return fundgroup
+      }
+    })
+
+    funders = _.filter(funders, (funder) => {
+      return typeof funder !== 'undefined'
+    })
+
+    return funders.length > 0 ? `<fr:program xmlns:fr="http://www.crossref.org/fundref.xsd">${funders.join('')}</fr:program>` : ``
+
+  }
+
+  function getLicenseXML () {
+    var licenses = getSubmitSubItems(state.license).map((license, i) => {
+
+      var dayHolder = []
+      if ((license.acceptedDateYear ? license.acceptedDateYear : '').length > 0) {
+        dayHolder.push(license.acceptedDateYear)
+      }
+      if ((license.acceptedDateMonth ? license.acceptedDateMonth : '').length > 0) {
+        dayHolder.push(license.acceptedDateMonth)
+      }
+      if ((license.acceptedDateDay ? license.acceptedDateDay : '').length > 0) {
+        dayHolder.push(license.acceptedDateDay)
+      }
+
+      var attributes = ``
+      if (dayHolder.length > 0) {
+        var freetolicense = ``
+        if (state.addInfo.freetolicense === 'yes') {
+          freetolicense = `<ai:free_to_read start_date="${dayHolder.join('-')}"/>`
+        }
+
+        attributes = `${freetolicense}<ai:license_ref applies_to="${license.appliesto}" start_date="${dayHolder.join('-')}">${license.licenseurl}</ai:license_ref>`
+      }
+      return attributes
+    })
+    return licenses.length > 0 ? `<ai:program xmlns:ai="http://www.crossref.org/AccessIndicators.xsd" name="AccessIndicators">${licenses.join('')}</ai:program>` : ``
+  }
+
+  function getRelatedItemsXML () {
+    var relatedItems = getSubmitSubItems(state.relatedItems).map((relatedItem, i) => {
+      var attributes = `<related_item>${(relatedItem.description.length > 0) ? `<description>${relatedItem.description}</description>` : ``}<inter_work_relation relationship-type="${relatedItem.relationType}" identifier-type="${relatedItem.identifierType}">${relatedItem.relatedItemIdentifier}</inter_work_relation></related_item>`
+
+      return attributes
+    })
+    return relatedItems.length > 0 ? `<program xlmns="http://www.crossref.org/relations.xsd">${relatedItems.join('')}</program>` : ``
+  }
+
+  function getCollectionXML () {
+    // similarity check
+    const similarityCheck = state.addInfo.similarityCheckURL.trim().length > 0 ? `<item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item>` : ``
+    return similarityCheck
+  }
+
+  function getPagesXML () {
+    return ((article.firstPage.trim().length > 0) || (article.lastPage.trim().length > 0)) ? `<pages>${(article.firstPage.trim().length > 0) ? `<first_page>${article.firstPage}</first_page>` : ``}${(article.lastPage.trim().length > 0) ? `<last_page>${article.lastPage}</last_page>` : ``}</pages>`: ``
+  }
+
+  function getPublisherItems () {
+    return (article.locationId.trim().length > 0) ? `<publisher_item><item_number item_number_type="article_number">${article.locationId.trim()}</item_number></publisher_item>` : ``
+  }
+
+  function getAcceptanceDateXML () {
+    var retStr = ``
+    if ((article.acceptedDateYear.length > 0) || (article.acceptedDateMonth.length > 0) || (article.acceptedDateDay.length > 0)) {
+      retStr = retStr + ((article.acceptedDateYear.length > 0) ? `<year>${article.acceptedDateYear}</year>` : ``)
+      retStr = retStr + ((article.acceptedDateMonth.length > 0) ? `<month>${article.acceptedDateMonth}</month>` : ``)
+      retStr = retStr + ((article.acceptedDateDay.length > 0) ? `<day>${article.acceptedDateDay}</day>` : ``)
+      retStr = `<acceptance_date>${retStr}</acceptance_date>`
+    }
+
+    return retStr
+  }
+
+  function getSubmitSubItems (items) {
+    return _.filter(items, (item) => {
+      for(var key in item) { // checking all the properties of errors to see if there is a true
+        if(item[key]){
+          try {
+            if (item[key].trim().length > 0) {
+              return item
+            }
+          } catch (e) {
+            if (item[key].length > 0) {
+              return item
+            }
+          }
+        }
+      }
+    })
+  }
 }
 
 

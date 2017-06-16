@@ -40,6 +40,13 @@ export default class DepositCartReview extends Component {
           for(var k = 0; k < fullCart[i].contains[j].contains.length; k++) { //article + issue/volume layer
             var subitem = fullCart[i].contains[j].contains[k]
             subitem.issueDoi = fullCart[i].contains[j].doi
+            if (subitem.type === 'article') {
+              if (item.type === 'issue') {
+                subitem = _.extend(subitem, {
+                  parentIssue: item
+                })
+              }
+            }
             reviewblocks.push(
               subitem
             )
@@ -49,12 +56,14 @@ export default class DepositCartReview extends Component {
 
       for(var l = 0; l < reviewblocks.length; l++){
         var issue = reviewblocks[l].issueDoi ? reviewblocks[l].issueDoi : undefined
+        var parentIssue = reviewblocks[l].parentIssue ? reviewblocks[l].parentIssue : undefined
         retReviewBlocks.push(
           <DepositCartItemsReview
             key={l}
             index={l}
             item={reviewblocks[l]}
             issue={issue}
+            parentIssue={parentIssue}
             publication={fullCart[i]}
             reduxControlModal={this.props.reduxControlModal}
           />

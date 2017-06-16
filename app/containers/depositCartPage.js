@@ -29,7 +29,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch)
 
 @connect(mapStateToProps, mapDispatchToProps)
-@stateTrackerII
 export default class DepositCartPage extends Component {
 
   static propTypes = {
@@ -323,7 +322,7 @@ const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {
       <div className='buttonHolder'>
         <div className='buttonInnerHolder'>
           <div className='ReviewButtonHolder'>
-            {status !== 'result' ? <a onClick={review}>Review All</a> : <div className='pageTitle'>Deposit Result</div>}
+            {status !== 'result' ? (cart.length > 0 ? <a onClick={review}>Review All</a> : '') : <div className='pageTitle'>Deposit Result</div>}
           </div>
           <div className={`DepositButtonHolder ${status === 'result' ? 'result' : ''}`}>
             <a

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
+import { deParseCrossmark } from './crossmarkHelpers'
 
 const Languages = require('./language.json')
 import { ArchiveLocations } from './archiveLocations'
@@ -12,21 +13,21 @@ import objectSearch from './objectSearch'
 const parseXMLArticle = function (articleXML) {
     var retObj = {}
     const parsedArticle = xmldoc(articleXML)
-
     // article loading
-    const publication_date = objectSearch(parsedArticle, 'publication_date')
+    let publication_date = objectSearch(parsedArticle, 'publication_date');
+    if(publication_date && !Array.isArray(publication_date)) publication_date = [publication_date];
 
-    const onlinePubDate = _.find(publication_date, (pubDate) => {
+    const onlinePubDate = publication_date ? _.find(publication_date, (pubDate) => {
         if (pubDate['-media_type'] === 'online') {
         return pubDate
         }
-    })
+    }) : null;
 
-    const printPubDate = _.find(publication_date, (pubDate) => {
+    const printPubDate = publication_date ? _.find(publication_date, (pubDate) => {
         if (pubDate['-media_type'] === 'print') {
         return pubDate
         }
-    })
+    }) : null;
 
     var printDateYear = ''
     var printDateMonth = ''
@@ -141,11 +142,14 @@ const parseXMLArticle = function (articleXML) {
     }
     const language = objectSearch(parsedArticle, '-language')
 
+    const freeToRead = objectSearch(parsedArticle, 'ai:free_to_read')
+
     const addInfo = {
         archiveLocation: archive,
         language: language ? language : '',
         publicationType: publicationType ? publicationType : '',
-        similarityCheckURL: similarityCheckURL ? similarityCheckURL : ''
+        similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
+        freetolicense: freeToRead ? 'yes' : 'no'
     }
 
     retObj = _.extend(retObj, {
@@ -419,6 +423,15 @@ const parseXMLArticle = function (articleXML) {
     retObj = _.extend(retObj, {
         relatedItems: relItem
     })
+
+    if(parsedArticle.crossref) {
+      if(parsedArticle.crossref.journal.journal_article.crossmark) {
+        const {reduxForm, showCards} = deParseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark);
+        if(reduxForm && showCards) {
+          retObj.crossmark = {reduxForm, showCards};
+        }
+      }
+    }
 
     return retObj
 }

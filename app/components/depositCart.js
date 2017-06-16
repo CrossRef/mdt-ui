@@ -16,7 +16,6 @@ import DepositCartItem from './depositCartItem'
 
 
 
-@stateTrackerII
 export default class DepositCart extends Component {
   static propTypes = {
     reduxCartUpdate: is.func.isRequired,

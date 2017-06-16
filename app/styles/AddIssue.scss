@@ -42,18 +42,30 @@
     border: 0 !important;
     width: 100%;
     @extend .articleInnerForm;
-    .saveButtonHolder {
+    .saveButtonAddIssueHolder {
         background: #EAEAEA !important;
         float: none !important;
         padding: 20px 60px 70px 0 !important;
-        .saveButton {
-            width: 220px;
-            height: 48px;
+        .addIssue {
+            float: right;
+            width: 176px;
+            height: 40px;
             line-height: 18px;
             background: #3eb1c8;
-            color: #000000;
+            color: #FFFFFF;
             font-size: 16px;
             padding-bottom: 10px;
+            position: relative;
+            right: -20px;
+        }
+        .cancelButton {
+            background: #e5e5e5;
+            border: 1px solid #434343;
+            color: #434343;
+            float: right;
+            right: 10px;
+            padding: 8px;
+            text-align: center;
         }
     }
     .articleInnerForm {

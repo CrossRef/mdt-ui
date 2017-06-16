@@ -10,8 +10,8 @@ const PublicationTypes = require('../utilities/publicationTypes.json')
 const AppliesTo = require('../utilities/appliesTo.json')
 const IdentifierTypes = require('../utilities/identifierTypes.json')
 import objectSearch from '../utilities/objectSearch'
-import articleReviewGenerator from '../utilities/articleReviewGenerator'
-import issueReviewGenerator from  '../utilities/issueReviewGenerator'
+import articleReviewGenerator from './articleReviewGenerator'
+import issueReviewGenerator from  './issueReviewGenerator'
 
 export default class DepositCartItemsReview extends Component {
 
@@ -68,16 +68,17 @@ export default class DepositCartItemsReview extends Component {
     )
   }
 
-  parseArticle (item, publication) {
+  parseArticle (item, publication, parentIssue) {
+    console.log(parentIssue)
     return (
       <div>
-        {articleReviewGenerator(publication,item.content)}
+        {articleReviewGenerator(publication, item.content, parentIssue)}
       </div>
     )
   }
 
   render () {
-    const { item, publication } = this.props
+    const { item, publication, parentIssue } = this.props
     return (
         <div className='depositReviewItem'>
             <div className='itemTitle'>
@@ -92,7 +93,7 @@ export default class DepositCartItemsReview extends Component {
                 </div>
             </div>
             <div className={'itemInfo' + (this.state.showInfoSection ? ' showItemInfo' : ' hideItemInfo')}>
-                {(item.type.toLowerCase() === 'article') ? this.parseArticle(item, publication) : this.parseIssue(item, publication)}
+                {(item.type.toLowerCase() === 'article') ? this.parseArticle(item, publication, parentIssue) : this.parseIssue(item, publication)}
             </div>
         </div>
     )

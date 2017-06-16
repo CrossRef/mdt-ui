@@ -7,7 +7,7 @@ import _ from 'lodash'
 const combinedReducers = combineReducers({
   search: searchReducer,
   login: loginReducer,
-  routing,
+  routing: routing,
   modal: modalReducer,
   publications: publicationsReducer,
   dois: doiReducer,
@@ -56,7 +56,6 @@ function searchReducer (state = {loading:false, searchValue: '', result:[]}, act
 
 
 function reduxFormReducer (state = { submit: false }, action) {
-
   switch (action.type) {
     case 'REDUXFORM_ADD':
       return {...state, ...action.keyVal}
@@ -70,7 +69,6 @@ function reduxFormReducer (state = { submit: false }, action) {
 
 
 function doiReducer (state = [], action) {
-
   switch (action.type) {
     case 'DOI_ADD':
       if(!action.doi) return state;
@@ -109,7 +107,6 @@ function modalReducer ( state = {
 
 
 function publicationsReducer (state = {}, action) {
-
   switch (action.type) {
     case 'PUBLICATIONS':
       const publications = action.publications;

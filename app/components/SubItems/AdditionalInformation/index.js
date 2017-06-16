@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import Switch from 'react-toggle-switch'
 import { stateTrackerII } from 'my_decorators'
+import update from 'immutability-helper'
 
 const Languages = require('../../../utilities/language.json')
 import { ArchiveLocations } from '../../../utilities/archiveLocations'
@@ -11,23 +12,13 @@ const PublicationTypes = require('../../../utilities/publicationTypes.json')
 export default class AdditionalInformation extends Component {
   constructor (props) {
     super(props)
-    const {handler, addInfo, makeDateDropDown} = this.props
     this.state = {
-      handler: handler,
-      addInfo: addInfo,
-      makeDateDropDown: makeDateDropDown,
       on: false
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      addInfo: nextProps.addInfo
-    })
-  }
-
   componentWillMount () {
-    if (this.state.addInfo.freetolicense === 'yes') {
+    if (this.props.addInfo.freetolicense === 'yes') {
         this.setState({
             on: true
         })
@@ -43,9 +34,9 @@ export default class AdditionalInformation extends Component {
       return (
           <select
             ref='language'
-            onChange={() => {this.state.handler(this)}}
+            onChange={this.handleAddInfo}
             className='height32'
-            value={this.state.addInfo.language}
+            value={this.props.addInfo.language}
             >
               {languages}
           </select>
@@ -61,9 +52,9 @@ export default class AdditionalInformation extends Component {
       return (
           <select
             ref='archiveLocation'
-            onChange={() => {this.state.handler(this)}}
+            onChange={this.handleAddInfo}
             className='height32'
-            value={this.state.addInfo.archiveLocation}
+            value={this.props.addInfo.archiveLocation}
             >
               {locations}
           </select>
@@ -79,13 +70,25 @@ export default class AdditionalInformation extends Component {
       return (
           <select
             ref='publicationType'
-            onChange={() => {this.state.handler(this)}}
+            onChange={this.handleAddInfo}
             className='height32'
-            value={this.state.addInfo.publicationType}
+            value={this.props.addInfo.publicationType}
             >
               {publicationType}
           </select>
       )
+  }
+
+  handleAddInfo = () => {
+    this.props.handler({
+      addInfo: update(this.props.addInfo, {$set:{
+        archiveLocation: this.refs.archiveLocation.value,
+        language: this.refs.language.value,
+        publicationType: this.refs.publicationType.value,
+        similarityCheckURL: this.refs.similarityCheckURL.value,
+        freetolicense: this.state.on  ? 'yes' : 'no'
+      }})
+    })
   }
 
   render () {
@@ -111,8 +114,8 @@ export default class AdditionalInformation extends Component {
                                         className='height32'
                                         type='text'
                                         ref='similarityCheckURL'
-                                        onChange={() => {this.state.handler(this)}}
-                                        value={this.state.addInfo.similarityCheckURL}
+                                        onChange={this.handleAddInfo}
+                                        value={this.props.addInfo.similarityCheckURL}
                                     />
                                 </div>
                             </div>
@@ -197,9 +200,7 @@ export default class AdditionalInformation extends Component {
                                                 <Switch
                                                     ref='freetolicense'
                                                     onClick={() => {
-                                                        this.setState({on: !this.state.on}, ()=>{
-                                                            this.state.handler(this)
-                                                        })
+                                                        this.setState({on: !this.state.on}, this.handleAddInfo)
                                                     }}
                                                     on={this.state.on}
                                                 />

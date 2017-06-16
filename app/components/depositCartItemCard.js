@@ -419,7 +419,7 @@ export default class DepositCartItemCard extends Component {
 
 
   remove () {
-      this.props.reduxRemoveFromCart(this.props.cartItem.doi)
+    this.props.reduxRemoveFromCart(this.props.cartItem.doi)
   }
 
   displayError () {
@@ -446,7 +446,8 @@ export default class DepositCartItemCard extends Component {
     const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
     const cartType = cartItem.type
     const status = cartItem.status
-    const title = cartItem.title.title ? cartItem.title.title.trim() : `Issue ${cartItem.title.issue || NA}, Volume ${cartItem.title.volume || 'NA'}`
+    console.log(cartItem.title);
+    const title = cartItem.title.title ? cartItem.title.title.trim() : `Issue ${cartItem.title.issue || 'NA'}, Volume ${cartItem.title.volume || 'NA'}`
     return (
       <tr className='item'>
         <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>

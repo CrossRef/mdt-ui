@@ -10,7 +10,7 @@ import { getDepositHistory } from '../actions/application'
 import DepositHistoryItem from '../components/depositHistoryItem'
 import objectSearch from '../utilities/objectSearch'
 import xmldoc from '../utilities/xmldoc'
-import makeDateDropDown from '../utilities/makeDateDropDown'
+import {makeDateDropDown} from '../utilities/date'
 import cleanObj from '../utilities/cleanObj'
 
 
@@ -83,7 +83,7 @@ export default class DepositHistoryPage extends Component {
     })
   }
 
-  handleChange (e, sortFields) {
+  handleChange = (e, sortFields) => {
     if (e.target) {
       const name = e.currentTarget.name
       switch(name) {
@@ -207,18 +207,18 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder'>
                 <div>Year</div>
-                <div>{makeDateDropDown(this.handleChange.bind(this),'startYear','y')}</div>
+                <div>{makeDateDropDown(this.handleChange,'startYear','y')}</div>
               </div>
               <div className='dateselectholder'>
                 <div>Month</div>
                 <div>
-                  {makeDateDropDown(this.handleChange.bind(this),'startMonth','m')}
+                  {makeDateDropDown(this.handleChange,'startMonth','m')}
                 </div>
               </div>
               <div className='dateselectholder'>
                 <div>Day</div>
                 <div>
-                  {makeDateDropDown(this.handleChange.bind(this),'startDate','d')}
+                  {makeDateDropDown(this.handleChange,'startDate','d')}
                 </div>
               </div>
               <div className='dateselectholder dateicon'>
@@ -235,18 +235,18 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder'>
                 <div>Year</div>
-                <div>{makeDateDropDown(this.handleChange.bind(this),'endYear','y')}</div>
+                <div>{makeDateDropDown(this.handleChange,'endYear','y')}</div>
               </div>
               <div className='dateselectholder'>
                 <div>Month</div>
                 <div>
-                  {makeDateDropDown(this.handleChange.bind(this),'endMonth','m')}
+                  {makeDateDropDown(this.handleChange,'endMonth','m')}
                 </div>
               </div>
               <div className='dateselectholder'>
                 <div>Day</div>
                 <div>
-                  {makeDateDropDown(this.handleChange.bind(this),'endDate','d')}
+                  {makeDateDropDown(this.handleChange,'endDate','d')}
                 </div>
               </div>
               <div className='dateselectholder dateicon'>
@@ -262,7 +262,7 @@ export default class DepositHistoryPage extends Component {
             className='doiSearch'
             placeholder='Search by DOI'
             name='pubid'
-            onChange={this.handleChange.bind(this)}
+            onChange={this.handleChange}
           />
         </div>
         <table className='historyData'>

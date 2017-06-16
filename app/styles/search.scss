@@ -1,0 +1,24 @@
+.search-result-holder {
+  .add {
+    display:inline-block;
+    line-height: 32px;
+    vertical-align: top;
+    color:deepskyblue;
+    cursor: pointer;
+  }
+  .search-result {
+    display:inline-block;
+    height: 32px;
+    line-height: 32px;
+    padding: 0 20px 0 28px;
+    width: 88%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+
+  &:hover {
+    background: #f1f1f1;
+  }
+}

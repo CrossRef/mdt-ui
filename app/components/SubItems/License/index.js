@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import update from 'immutability-helper'
 import { stateTrackerII } from 'my_decorators'
 
 const AppliesTo = require('../../../utilities/appliesTo.json')
@@ -8,22 +9,12 @@ const AppliesTo = require('../../../utilities/appliesTo.json')
 export default class License extends Component {
   constructor (props) {
     super(props)
-    const {index, handler, remove, makeDateDropDown, license} = this.props
+    const {index} = this.props
     this.state = {
       showSubItem: index === 0 ? true : false,
-      index: index,
-      handler: handler,
-      remove: remove,
-      makeDateDropDown: makeDateDropDown,
-      license: license
     }
   }
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      index: nextProps.index,
-      license: nextProps.license
-    })
-  }
+
   displayAppliesTo () {
       var appliesTo = [
         <option key='-1'></option>,
@@ -33,9 +24,9 @@ export default class License extends Component {
       return (
           <select
             ref='appliesto'
-            onChange={() => {this.state.handler(this.state.index, this)}}
+            onChange={this.handleLicense}
             className='height32'
-            value={this.state.license.appliesto}
+            value={this.props.license.appliesto}
             >
               {appliesTo}
           </select>
@@ -48,6 +39,20 @@ export default class License extends Component {
       })
   }
 
+  handleLicense = () => {
+    var license = {}
+    for(var i in this.refs){
+      if(this.refs[i]){
+        license[i] = this.refs[i].value
+      }
+    }
+
+    this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
+      license: update(this.props.data, {[this.props.index]: {$set: license }})
+    })
+
+  }
+
   render () {
     return (
         <div>
@@ -56,11 +61,11 @@ export default class License extends Component {
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
                         <img src="/images/AddArticle/DarkTriangle.svg" />
                     </span>
-                    <span>License {this.state.index + 1}</span>
+                    <span>License {this.props.index + 1}</span>
                 </div>
-                {this.state.index > 0 &&
+                {this.props.index > 0 &&
                     <div className='subItemHeader subItemButton'>
-                        <a onClick={() => {this.state.remove(this.state.index)}}>Remove</a>
+                        <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
                     </div>
                 }
             </div>
@@ -85,18 +90,18 @@ export default class License extends Component {
                                         <div className='datepickerholder'>
                                             <div className='dateselectholder'>
                                                 <div>Year {(this.props.freetoread === 'yes' ? '(*)' : '')}</div>
-                                                <div>{this.state.makeDateDropDown('acceptedDateYear', 'y', this.state.license.acceptedDateYear, this.props.errorLicenseStartDate, this.state.index, this, 'license')}</div>
+                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', this.props.license.acceptedDateYear, this.props.errorLicenseStartDate)}</div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Month</div>
                                                 <div>
-                                                {this.state.makeDateDropDown('acceptedDateMonth', 'm', this.state.license.acceptedDateMonth, false, this.state.index, this, 'license')}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', this.props.license.acceptedDateMonth, false)}
                                                 </div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Day</div>
                                                 <div>
-                                                {this.state.makeDateDropDown('acceptedDateDay', 'd', this.state.license.acceptedDateDay, false, this.state.index, this, 'license')}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', this.props.license.acceptedDateDay, false)}
                                                 </div>
                                             </div>
                                             <div>
@@ -128,8 +133,8 @@ export default class License extends Component {
                                             className='height32'
                                             type='text'
                                             ref='licenseurl'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            value={this.state.license.licenseurl}
+                                            onChange={this.handleLicense}
+                                            value={this.props.license.licenseurl}
                                         />
                                     </div>
                                 </div>

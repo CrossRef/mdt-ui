@@ -8,7 +8,6 @@ import { controlModal, getPublications, addDOIs, submitPublication, cartUpdate, 
 import Header from '../components/header'
 import Footer from '../components/footer'
 import Modal from './modal'
-import ReduxRelay from './reduxRelay'
 
 
 const mapStateToProps = (state) => ({

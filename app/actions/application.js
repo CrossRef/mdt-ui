@@ -73,9 +73,8 @@ export function login (usr, pwd, error = (reason) => console.error('ERROR in log
       if(!response) return;
       const authBearer = `${response.token_type} ${response.access_token}`;
       localStorage.setItem('auth', authBearer);
-      const crossmark = response['crossmark-prefixes'];
-      response.error = null;
       localStorage.setItem('user', usr);
+      response.error = null;
       dispatch(loginData(response));
       dispatch(getCRState('login'));
     })
@@ -95,10 +94,12 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
     })
     .then((response)=> response.json() )
     .then((state)=>{
-      let scrubbedState = {...state};
+      let scrubbedState = {...state}; //Scrubbed state is used to clear bad data from remote state. 
+      
       if(type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
-      delete scrubbedState.application;
-//      delete scrubbedState.cart;
+
+      // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it with this line
+      
       if(scrubbedState.routing.locationBeforeTransitions.pathname === '/') {
         scrubbedState.routing.locationBeforeTransitions.pathname = '/publications'
       }
@@ -117,7 +118,7 @@ export function search (query, error = (reason) => console.error('ERROR in searc
   return function (dispatch) {
     if(!query) return;
     dispatch(searchValue(query));
-    dispatch(searchLoading(true));
+    dispatch(searchLoading(true)); //having 2 dispatches seems to give the initial searchValue time to save to store before the return's searchValue is checked
     fetch(`http://mdt.crossref.org/mdt/v1/search?q=${query}`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
@@ -125,7 +126,6 @@ export function search (query, error = (reason) => console.error('ERROR in searc
     .then((response)=> response.json() )
     .then((result)=>{
       dispatch(searchResult(result.message, query));
-      dispatch(searchLoading(false));
     })
     .catch(reason => error(reason))
   }

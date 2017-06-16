@@ -516,7 +516,8 @@ input.height64, textarea.height64, select.height64 {
   background: #fff !important;
   color: black !important;
   border: 1px solid #4f5858 !important;
-  height: 40px !important; }
+  height: 40px !important;
+  margin-right: 20px; }
 
 .backbutton {
   width: 112px !important; }
@@ -550,6 +551,10 @@ input.height64, textarea.height64, select.height64 {
 
 .AddNewGrantNumberButton {
   cursor: pointer; }
+
+.disabledButton {
+  border: 1px solid #A6D8E5 !important;
+  background: #A6D8E5 !important; }
 
 
 @import url(switch.min.css);
@@ -1048,7 +1053,8 @@ input.height64, textarea.height64, select.height64 {
   background: #fff !important;
   color: black !important;
   border: 1px solid #4f5858 !important;
-  height: 40px !important; }
+  height: 40px !important;
+  margin-right: 20px; }
 
 .backbutton {
   width: 112px !important; }
@@ -1083,6 +1089,10 @@ input.height64, textarea.height64, select.height64 {
 .AddNewGrantNumberButton {
   cursor: pointer; }
 
+.disabledButton {
+  border: 1px solid #A6D8E5 !important;
+  background: #A6D8E5 !important; }
+
 .addIssueCard .addIssue {
   background: #FFFFFF;
   cursor: pointer;
@@ -1102,18 +1112,29 @@ input.height64, textarea.height64, select.height64 {
 .addIssues {
   border: 0 !important;
   width: 100%; }
-  .addIssues .saveButtonHolder {
+  .addIssues .saveButtonAddIssueHolder {
     background: #EAEAEA !important;
     float: none !important;
     padding: 20px 60px 70px 0 !important; }
-    .addIssues .saveButtonHolder .saveButton {
-      width: 220px;
-      height: 48px;
+    .addIssues .saveButtonAddIssueHolder .addIssue {
+      float: right;
+      width: 176px;
+      height: 40px;
       line-height: 18px;
       background: #3eb1c8;
-      color: #000000;
+      color: #FFFFFF;
       font-size: 16px;
-      padding-bottom: 10px; }
+      padding-bottom: 10px;
+      position: relative;
+      right: -20px; }
+    .addIssues .saveButtonAddIssueHolder .cancelButton {
+      background: #e5e5e5;
+      border: 1px solid #434343;
+      color: #434343;
+      float: right;
+      right: 10px;
+      padding: 8px;
+      text-align: center; }
   .addIssues .articleInnerForm, .addIssues .addIssues {
     border: 0 !important; }
   .addIssues .body .row {
@@ -1160,7 +1181,7 @@ input.height64, textarea.height64, select.height64 {
   text-decoration: underline; }
 
 
-.app input, .app select, .app textarea {
+.app input, .app select, .app textarea, .app svg, .app img {
   font-family: "HelveticaNeueETW01-55Rg" !important; }
 
 .app .app-contents {
@@ -1858,7 +1879,8 @@ input.height64, textarea.height64, select.height64 {
   background: #fff !important;
   color: black !important;
   border: 1px solid #4f5858 !important;
-  height: 40px !important; }
+  height: 40px !important;
+  margin-right: 20px; }
 
 .backbutton {
   width: 112px !important; }
@@ -1892,6 +1914,10 @@ input.height64, textarea.height64, select.height64 {
 
 .AddNewGrantNumberButton {
   cursor: pointer; }
+
+.disabledButton {
+  border: 1px solid #A6D8E5 !important;
+  background: #A6D8E5 !important; }
 
 .deposittitle {
   background: #596565;
@@ -2789,7 +2815,7 @@ label input[type=checkbox] {
       width: 160px;
       color: #FFFFFF;
       background: #616B6B;
-      height: 140px;
+      height: 100px;
       line-height: 30px;
       text-align: left;
       border-radius: 0px;
@@ -2983,16 +3009,6 @@ label input[type=checkbox] {
       overflow: auto;
       box-shadow: 0 0 2px rgba(0, 0, 0, 0.5);
       z-index: 1; }
-      .publications .management-bar .publication-search-container .publication-search-results .publication-search-result {
-        height: 32px;
-        line-height: 32px;
-        padding: 0 20px 0 28px;
-        width: 100%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap; }
-        .publications .management-bar .publication-search-container .publication-search-results .publication-search-result:hover {
-          background: #f1f1f1; }
   .publications .management-bar .addPublicationCard .addPublication {
     cursor: pointer;
     background: #3eb1c8;
@@ -3342,6 +3358,27 @@ body, #root, .app {
     border-left: 8px solid transparent; }
 
 
+
+
+.search-result-holder .add {
+  display: inline-block;
+  line-height: 32px;
+  vertical-align: top;
+  color: deepskyblue;
+  cursor: pointer; }
+
+.search-result-holder .search-result {
+  display: inline-block;
+  height: 32px;
+  line-height: 32px;
+  padding: 0 20px 0 28px;
+  width: 88%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap; }
+
+.search-result-holder:hover {
+  background: #f1f1f1; }
 
 
 .stateTracker {

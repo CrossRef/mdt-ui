@@ -28,6 +28,7 @@ export default class LoginPage extends Component {
 
   componentDidMount () {
     localStorage.setItem('auth', '');
+    localStorage.removeItem('crossmark') //temporary to remove crossmark from any current user, since we no longer use localstorage for crossmark prefixes
   }
 
   render () {

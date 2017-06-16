@@ -12,7 +12,6 @@ export default function configure () {
     : createStore
 
   const createStoreWithMiddleware = applyMiddleware(
-    //logger,
     thunk,
     routerMiddleware(browserHistory),
     remoteSync

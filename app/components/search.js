@@ -13,7 +13,7 @@ export default class Search extends Component {
     reduxAddDOIs: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
-    search: is.func.isRequired,
+    asyncSearch: is.func.isRequired,
     results: is.array,
     loading: is.bool.isRequired,
     crossmarkPrefixes: is.array.isRequired
@@ -21,10 +21,8 @@ export default class Search extends Component {
 
   constructor (props) {
     super(props)
-    this.loading = false;
     this.state = {
       searchingFor: '',
-      loading: false,
       forceClose: true
     }
   }
@@ -33,12 +31,12 @@ export default class Search extends Component {
   onChange = (e, value) => {
     value ? this.setState({ forceClose:false }) : this.setState({ forceClose:true })
     this.setState({searchingFor: value});
-    this.props.search(value);
+    this.props.asyncSearch(value);
   }
 
 
   onSelect = (value, item) => {
-    this.setState({ searchingFor: '', loading: false, forceClose:true });
+    this.setState({ searchingFor: '', forceClose:true });
     if(item.doi) {
       this.props.reduxAddDOIs(item.doi)
     } else {
@@ -64,7 +62,7 @@ export default class Search extends Component {
     return (
       <div className='publication-search-container'>
         <Autocomplete
-          { ...forceClose ? {open:false} : {} }
+          { ...(forceClose ? {open:false} : {}) }
           value={this.state.searchingFor}
           inputProps={{ placeholder: 'Search Publication' }}
           items={results}
@@ -72,7 +70,11 @@ export default class Search extends Component {
           onSelect={this.onSelect}
           onChange={this.onChange}
           renderItem={(item, isHighlighted) => (
-            <div className='publication-search-result'>{item.title}</div>
+            <div key={item.doi} className='search-result-holder'>
+              <div className='search-result'>{item.title}</div>
+              <div className="add">Add</div>
+            </div>
+
           )}
           renderMenu={(items, value, style) => (
             <div className='publication-search-results'>

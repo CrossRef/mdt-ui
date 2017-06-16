@@ -3,7 +3,7 @@ import is from 'prop-types'
 import { Link, browserHistory } from 'react-router'
 import { stateTrackerII } from 'my_decorators'
 
-import AddIssueCardRefactor from '../addIssueCardRefactor'
+import AddIssueCard from '../addIssueCard'
 
 
 
@@ -36,7 +36,7 @@ export default class ActionBar extends Component {
       showModal: true,
       title: 'Create New Issue/Volume',
       style: 'addIssueModal',
-      Component: AddIssueCardRefactor,
+      Component: AddIssueCard,
       props: {
         handle: this.props.handle,
         publication: this.props.publication,
@@ -66,8 +66,7 @@ export default class ActionBar extends Component {
         Add Record
         {this.state.addRecordMenuOpen && <div>
           <p onClick={()=>browserHistory.push(`/publications/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
-          <p onClick={this.openAddIssueModal}>New Issue</p>
-          <p>New Volume</p>
+          <p onClick={this.openAddIssueModal}>New Volume/Issue</p>
         </div>}
       </div>
       <div className='pull-right'>

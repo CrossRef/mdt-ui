@@ -1,10 +1,11 @@
 import React, { Component } from 'react'
+import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
 import { stateTrackerII } from 'my_decorators'
 
 
 function getSuggestionValue(suggestion) {
-  this.state.handler(this.state.index, this, suggestion.id, suggestion.uri)
+  this.handleFunding(suggestion.uri)
   this.setState({
     funder_identifier: suggestion.uri
   })
@@ -22,30 +23,21 @@ function renderSuggestion(suggestion) {
 export default class Funding extends Component {
   constructor (props) {
     super(props)
-    const {index, handler, remove, grantNumbers, addGrant, removeGrant, grantHandler, funding} = this.props
+    const {index, grantNumbers, funding} = this.props
     this.state = {
       showSubItem: index === 0 ? true : false,
-      index: index,
-      handler: handler,
-      remove: remove,
       suggestions: [],
       value: funding.funderRegistryID.trim().length ? funding.funderRegistryID : '',
       funder_identifier: funding.funder_identifier.trim().length ? funding.funder_identifier : '',
       isLoading: false,
       grantNumbers: grantNumbers.length > 0 ? funding.grantNumbers : [''],
-      addGrant: addGrant,
-      removeGrant: removeGrant,
-      grantHandler: grantHandler,
-      funding: funding
     }
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      index: nextProps.index,
       funder_identifier: nextProps.funding.funder_identifier,
       grantNumbers: nextProps.grantNumbers,
-      funding: nextProps.funding
     })
   }
 
@@ -97,6 +89,40 @@ export default class Funding extends Component {
       })
   }
 
+  addGrant = () => {
+    this.props.handler({
+     funding: update(this.props.data, {[this.props.index]: {grantNumbers: {$push: ['']}}})
+    })
+  }
+
+  removeGrant = (grantIndex) => {
+    this.props.handler({
+      funding: update(this.props.data, {[this.props.index]: {grantNumbers: {$splice: [[grantIndex, 1]]}}})
+    })
+  }
+
+  handleFunding = (uri) => {
+    var funder = {}
+    var grants = []
+    var funder_ident_count = 0
+    for(var i in this.refs){
+      if(i === 'funderRegistryID') {
+        funder[i] = this.state.value
+        funder['funder_identifier'] = uri
+      } else if ((i !== 'funder_identifier') && (i !== 'funderRegistryID') && (i.indexOf('grantNumbers') < 0)){
+        funder[i] = this.refs[i].value
+      } else if (i.indexOf('grantNumber') > -1){
+        grants.push(this.refs[i].value)
+      }
+    }
+
+    funder.grantNumbers = grants
+
+    this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
+      funding: update(this.props.data, {[this.props.index]: {$set: funder }})
+    })
+  }
+
   displayGrants () {
       var renderRet = [
         ...this.state.grantNumbers.map((grantNumber, i) => (
@@ -106,11 +132,11 @@ export default class Funding extends Component {
                     className='height32'
                     type='text'
                     ref={'grantNumbers_'+i}
-                    onChange={() => {this.state.handler(this.state.index, this, this.state.value)}}
+                    onChange={this.handleFunding}
                     value={grantNumber}
                 />
                 {i > 0 &&
-                    <div className='grantRemove'><a onClick={() => this.state.removeGrant(this.state.index, i, this)}>Remove</a></div>
+                    <div className='grantRemove'><a onClick={() => this.removeGrant(i)}>Remove</a></div>
                 }
             </div>
         ))
@@ -134,11 +160,11 @@ export default class Funding extends Component {
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
                         <img src="/images/AddArticle/DarkTriangle.svg" />
                     </span>
-                    <span>Funder {this.state.index + 1}</span>
+                    <span>Funder {this.props.index + 1}</span>
                 </div>
-                {this.state.index > 0 &&
+                {this.props.index > 0 &&
                     <div className='subItemHeader subItemButton'>
-                        <a onClick={() => {this.state.remove(this.state.index)}}>Remove</a>
+                        <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
                     </div>
                 }
             </div>
@@ -150,7 +176,7 @@ export default class Funding extends Component {
                                 <div className='labelholder'>
                                     <div></div>
                                     <div className='labelinnerholder'>
-                                        <div className='label'>Funder Name {this.state.index + 1}</div>
+                                        <div className='label'>Funder Name {this.props.index + 1}</div>
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
@@ -163,8 +189,8 @@ export default class Funding extends Component {
                                             className='height32'
                                             type='text'
                                             ref='fundername'
-                                            onChange={() => {this.state.handler(this.state.index, this, this.state.value)}}
-                                            value={this.state.funding.fundername}
+                                            onChange={this.handleFunding}
+                                            value={this.props.funding.fundername}
                                         />
                                     </div>
                                 </div>
@@ -216,7 +242,7 @@ export default class Funding extends Component {
                                         </div>
                                     </div>
                                     <div className='field'>
-                                        <a className='AddNewGrantNumberButton' onClick={() => {this.state.addGrant(this.state.index, this)}}>Add New Grant Number</a>
+                                        <a className='AddNewGrantNumberButton' onClick={this.addGrant}>Add New Grant Number</a>
                                     </div>
                                 </div>
                             </div>

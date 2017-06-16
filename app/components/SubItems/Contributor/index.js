@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import update from 'immutability-helper'
 import { stateTrackerII } from 'my_decorators'
 
 import { Roles } from '../../../utilities/roles.js'
@@ -8,24 +9,13 @@ import { Roles } from '../../../utilities/roles.js'
 export default class Contributor extends Component {
   constructor (props) {
     super(props)
-    const {index, handler, remove, contributor} = this.props
+    const {index} = this.props
     this.state = {
       showSubItem: index === 0 ? true : false,
-      index: index,
-      handler: handler,
-      remove: remove,
-      contributor: contributor
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      index: nextProps.index,
-      contributor: nextProps.contributor
-    })
-  }
-
-  toggle () {
+  toggle = () => {
       this.setState({
         showSubItem: !this.state.showSubItem
       })
@@ -40,28 +30,41 @@ export default class Contributor extends Component {
       return (
           <select
             ref={ref}
-            onChange={() => {this.state.handler(this.state.index, this)}}
+            onChange={this.handleContributor}
             className='height32'
-            value={this.state.contributor[ref]}
+            value={this.props.contributor[ref]}
             >
               {roles}
           </select>
       )
   }
 
+  handleContributor = () => {
+    var contributor = {}
+    for(var i in this.refs){
+      if(this.refs[i]){
+        contributor[i] = this.refs[i].value
+      }
+    }
+
+    this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
+      contributors: update(this.props.data, {[this.props.index]: {$set: contributor }})
+    })
+  }
+
   render () {
     return (
         <div>
-            <div className='row subItemRow' onClick={this.toggle.bind(this)}>
+            <div className='row subItemRow' onClick={this.toggle}>
                 <div className='subItemHeader subItemTitle'>
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
                         <img src="/images/AddArticle/DarkTriangle.svg" />
                     </span>
-                    <span>Contributor {this.state.index + 1}</span>
+                    <span>Contributor {this.props.index + 1}</span>
                 </div>
-                {this.state.index > 0 &&
+                {this.props.index > 0 &&
                     <div className='subItemHeader subItemButton'>
-                        <a onClick={() => {this.state.remove(this.state.index)}}>Remove</a>
+                        <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
                     </div>
                 }
             </div>
@@ -86,8 +89,8 @@ export default class Contributor extends Component {
                                             className='height32'
                                             type='text'
                                             ref='firstName'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            value={this.state.contributor.firstName}
+                                            onChange={this.handleContributor}
+                                            value={this.props.contributor.firstName}
                                         />
                                     </div>
                                 </div>
@@ -109,8 +112,8 @@ export default class Contributor extends Component {
                                             className='height32'
                                             type='text'
                                             ref='lastName'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            value={this.state.contributor.lastName}
+                                            onChange={this.handleContributor}
+                                            value={this.props.contributor.lastName}
                                         />
                                     </div>
                                 </div>
@@ -138,8 +141,8 @@ export default class Contributor extends Component {
                                             className='height32'
                                             type='text'
                                             ref='suffix'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            value={this.state.contributor.suffix}
+                                            onChange={this.handleContributor}
+                                            value={this.props.contributor.suffix}
                                         />
                                     </div>
                                 </div>
@@ -161,8 +164,8 @@ export default class Contributor extends Component {
                                             className='height32'
                                             type='text'
                                             ref='affiliation'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            value={this.state.contributor.affiliation}
+                                            onChange={this.handleContributor}
+                                            value={this.props.contributor.affiliation}
                                         />
                                     </div>
                                 </div>
@@ -190,8 +193,8 @@ export default class Contributor extends Component {
                                             className='height32'
                                             type='text'
                                             ref='orcid'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            value={this.state.contributor.orcid}
+                                            onChange={this.handleContributor}
+                                            value={this.props.contributor.orcid}
                                         />
                                     </div>
                                 </div>
@@ -239,8 +242,8 @@ export default class Contributor extends Component {
                                             className='height32'
                                             type='text'
                                             ref='groupAuthorName'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            value={this.state.contributor.groupAuthorName}
+                                            onChange={this.handleContributor}
+                                            value={this.props.contributor.groupAuthorName}
                                         />
                                     </div>
                                 </div>

@@ -1,5 +1,6 @@
 
-
+// deparseCrossmark takes a parsed xml JSON object and turns into shallow list of key/value pairs to be saved to reduxForm and read by crossmark components.
+// also prepares a list of cards that need to be shown on article load
 export function deParseCrossmark (data) {
   const reduxForm = {};
   const showCards = {}
@@ -135,6 +136,8 @@ const relationships = {
   'results': 'Results',
   'postResults': 'Post-Results'
 }
+
+export const updateTypes = ['Addendum','Clarification','Correction','Corrigendum','Erratum','Expression Of Concern','New Edition','New Version','Partial Retraction','Removal','Retraction','Withdrawal']
 
 function swap(object){
   var ret = {};

@@ -5,7 +5,7 @@ import Autocomplete from 'react-autocomplete'
 import { stateTrackerII } from 'my_decorators'
 
 import AddPublicationCard from './addPublicationCard'
-import AddIssueCardRefactor from './addIssueCardRefactor'
+import AddIssueCard from './addIssueCard'
 
 
 export default class Search extends Component {
@@ -88,7 +88,7 @@ export default class Search extends Component {
             showModal: true,
             title: 'Issue missing DOI, please add to continue.',
             style: 'addIssueModal',
-            Component: AddIssueCardRefactor,
+            Component: AddIssueCard,
             props: {
               mode: 'edit',
               issue: issue,
@@ -156,7 +156,7 @@ export default class Search extends Component {
           </select>
 
           <Autocomplete
-            { ...forceClose ? {open:false} : {} }
+            { ...(forceClose ? {open:false} : {}) }
             value={this.state.searchingFor}
             items={results}
             getItemValue={(item) => {
@@ -170,8 +170,8 @@ export default class Search extends Component {
                 let display;
                 if(!title && (issue || volume)) display = `Issue ${issue || 'NA'}, Volume ${volume || 'NA'}`;
                 return (
-                  <div key={item.doi} className='record-search-result-holder'>
-                    <div className='record-search-result'>
+                  <div key={item.doi} className='search-result-holder'>
+                    <div className='search-result'>
                       {title || display || item.doi || 'Error retrieving metadata'}
                     </div>
                     <div className="add">Add</div>

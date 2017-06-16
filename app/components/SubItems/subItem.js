@@ -21,10 +21,8 @@ export default class SubtItem extends Component {
 
   constructor (props) {
     super(props)
-    const { incomingData } = this.props
     this.state = {
       showSection: false,
-      incomingData: incomingData,
       crossmarkButtons: false,
       crossmarkCards: {}
     }
@@ -32,7 +30,6 @@ export default class SubtItem extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-        incomingData: nextProps.incomingData,
         crossmarkCards: Object.keys(this.state.crossmarkCards).length ? this.state.crossmarkCards : (nextProps.showCards || emptyObject)
     })
   }
@@ -60,8 +57,7 @@ export default class SubtItem extends Component {
   }
 
   render () {
-    const { remove, handler, title, addHandler, addable, arrowType, makeDateDropDown } = this.props
-    var incomingData = this.state.incomingData
+    const { remove, handler, title, addHandler, addable, arrowType, makeDateDropDown, incomingData } = this.props
     // Map through the todos
     let Nodes;
     if (addable && title !== 'Crossmark') {
@@ -74,6 +70,7 @@ export default class SubtItem extends Component {
               contributor={data}
               remove={remove}
               handler={handler}
+              data={incomingData}
               index={i}/>
             break
           case 'Funding':
@@ -83,6 +80,7 @@ export default class SubtItem extends Component {
               funding={data}
               remove={remove}
               handler={handler}
+              data={incomingData}
               index={i}
               grantNumbers={data.grantNumbers}
               addGrant={addGrant}
@@ -96,6 +94,7 @@ export default class SubtItem extends Component {
                     license={data}
                     remove={remove}
                     handler={handler}
+                    data={incomingData}
                     index={i}
                     freetoread={freetoread}
                     errorLicenseStartDate={errorLicenseStartDate}
@@ -107,6 +106,7 @@ export default class SubtItem extends Component {
               relateditem={data}
               remove={remove}
               handler={handler}
+              data={incomingData}
               index={i}/>
             break
           case 'Optional Issue Information (Contributorship)':
@@ -115,6 +115,7 @@ export default class SubtItem extends Component {
               optionalIssueInfo={data}
               remove={remove}
               handler={handler}
+              data={incomingData}
               index={i}/>
             break
         }
@@ -124,12 +125,12 @@ export default class SubtItem extends Component {
     } else if (title==='Crossmark') {
       Nodes =
         <CrossmarkCards
-          makeDateDropDown={makeDateDropDown} removeCrossmarkCard={this.removeCrossmarkCard} crossmarkCards={this.state.crossmarkCards} errors={this.props.crossmarkErrors}/>
+          removeCrossmarkCard={this.removeCrossmarkCard} crossmarkCards={this.state.crossmarkCards} errors={this.props.crossmarkErrors}/>
 
     } else {
        Nodes = <AdditionalInformation
                       addInfo={incomingData}
-                      makeDateDropDown={makeDateDropDown}
+                      data={incomingData}
                       handler={handler} />
     }
     return (

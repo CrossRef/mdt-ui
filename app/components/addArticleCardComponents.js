@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import Switch from 'react-toggle-switch'
 
-import { ClassWrapper } from '../utilities/helpers'
+import { ClassWrapper } from '../utilities/classwrapper'
 
 
 export const TopBar = ({title}) =>
@@ -266,6 +266,252 @@ export class ArticleUrlField extends Component {
                 value={this.props.url}
               />
             </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+export class DatesRow extends Component {
+  render() {
+    return (
+      <div className='row'>
+        <div className='fieldHolder'>
+          <div className='fieldinnerholder halflength'>
+            <div className='labelholder'>
+              <div className='labelinnerholder'>
+                <div className='label'>Print Date</div>
+              </div>
+            </div>
+            <div className='requrefieldholder'>
+              <div className={'requiredholder' + (((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>
+                <div className='required height32'>
+                  {((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0 ? <span>*</span> : <span></span>)}
+                </div>
+              </div>
+              <div className='field'>
+                <div className='datepickerholder'>
+                  <div className='dateselectholder'>
+                    <div>Year {((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
+                    <div>
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateYear', 'y', this.props.article.printDateYear, this.props.errors.printDateYear)}
+                    </div>
+                  </div>
+                  <div className='dateselectholder'>
+                    <div>Month</div>
+                    <div>
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', this.props.article.printDateMonth, false)}
+                    </div>
+                  </div>
+                  <div className='dateselectholder'>
+                    <div>Day</div>
+                    <div>
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateDay', 'd', this.props.article.printDateDay, false)}
+                    </div>
+                  </div>
+                  <div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+          <div className='fieldinnerholder halflength'>
+            <div className='labelholder'>
+              <div className='labelinnerholder'>
+                <div className='label'>Online Date</div>
+              </div>
+            </div>
+            <div className='requrefieldholder'>
+              <div className={'requiredholder' + (((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>
+                <div className='required height32'>
+                  {((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0 ? <span>*</span> : <span></span>)}
+                </div>
+              </div>
+              <div className='field'>
+                <div className='datepickerholder'>
+                  <div className='dateselectholder'>
+                    <div>Year {((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0 ? '(*)' : '')}</div>
+                    <div>{this.props.makeDateDropDown(this.props.handleChange, 'onlineDateYear', 'y', this.props.article.onlineDateYear, this.props.errors.onlineDateYear)}</div>
+                  </div>
+                  <div className='dateselectholder'>
+                    <div>Month</div>
+                    <div>
+                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', this.props.article.onlineDateMonth, false)}
+                    </div>
+                  </div>
+                  <div className='dateselectholder'>
+                    <div>Day</div>
+                    <div>
+                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateDay', 'd', this.props.article.onlineDateDay, false)}
+                    </div>
+                  </div>
+                  <div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
+  }
+}
+
+export class BottomFields extends Component {
+  render() {
+    return(
+      <div>
+        <div className='row'>
+          <div className='fieldHolder'>
+            <div className='fieldinnerholder halflength'>
+              <div className='labelholder'>
+                <div className='labelinnerholder'>
+                  <div className='label'>Accepted Date</div>
+                </div>
+              </div>
+              <div className='requrefieldholder'>
+                <div className='requiredholder dateselectrequire norequire'>
+                  <div className='required height32'>
+                  </div>
+                </div>
+                <div className='field'>
+                  <div className='datepickerholder'>
+                    <div className='dateselectholder'>
+                      <div>Year</div>
+                      <div>{this.props.makeDateDropDown(this.props.handleChange, 'acceptedDateYear', 'y', this.props.article.acceptedDateYear, false)}</div>
+                    </div>
+                    <div className='dateselectholder'>
+                      <div>Month</div>
+                      <div>
+                        {this.props.makeDateDropDown(this.props.handleChange, 'acceptedDateMonth', 'm', this.props.article.acceptedDateMonth, false)}
+                      </div>
+                    </div>
+                    <div className='dateselectholder'>
+                      <div>Day</div>
+                      <div>
+                        {this.props.makeDateDropDown(this.props.handleChange,'acceptedDateDay', 'd', this.props.article.acceptedDateDay, false)}
+                      </div>
+                    </div>
+                    <div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='errorHolder'>
+          </div>
+        </div>
+
+        <div className='row'>
+          <div className='fieldHolder'>
+            <div className='fieldinnerholder halflength'>
+              <div className='labelholder'>
+                <div className='labelinnerholder'>
+                  <div className='label'>First Page</div>
+                </div>
+              </div>
+              <div className='requrefieldholder'>
+                <div className='requiredholder norequire'>
+                  <div className='required height32'>
+                  </div>
+                </div>
+                <div className='field'>
+                  <input
+                      name="firstPage"
+                      className='height32'
+                      type='text'
+                      onChange={this.props.handleChange}
+                      value={this.props.article.firstPage}
+                  />
+                </div>
+              </div>
+            </div>
+            <div className='fieldinnerholder halflength'>
+              <div className='labelholder'>
+                <div className='labelinnerholder'>
+                  <div className='label'>Last Page</div>
+                </div>
+              </div>
+              <div className='requrefieldholder'>
+                <div className='requiredholder norequire'>
+                  <div className='required height32'>
+                  </div>
+                </div>
+                <div className='field'>
+                  <input
+                    className='height32'
+                    type='text'
+                    name='lastPage'
+                    onChange={this.props.handleChange}
+                    value={this.props.article.lastPage}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='errorHolder'>
+          </div>
+        </div>
+
+        <div className='row'>
+          <div className='fieldHolder'>
+            <div className='fieldinnerholder halflength'>
+              <div className='labelholder'>
+                <div className='labelinnerholder'>
+                  <div className='label'>Article / Electronic Location ID</div>
+                </div>
+              </div>
+              <div className='requrefieldholder'>
+                <div className='requiredholder norequire'>
+                  <div className='required height32'>
+                  </div>
+                </div>
+                <div className='field'>
+                  <input
+                      className='height32'
+                      type='text'
+                      name='locationId'
+                      onChange={this.props.handleChange}
+                      value={this.props.article.locationId}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='errorHolder'>
+          </div>
+        </div>
+
+        <div className='row'>
+          <div className='fieldHolder'>
+            <div className='fieldinnerholder fulllength'>
+              <div className='labelholder'>
+                <div></div>
+                <div className='labelinnerholder'>
+                  <div className='label'>Abstract</div>
+                </div>
+              </div>
+              <div className='requrefieldholder'>
+                <div className='requiredholder norequire'>
+                  <div className='required height64'>
+                  </div>
+                </div>
+                <div className='field'>
+                  <textarea
+                      className='height64'
+                      type='text'
+                      name='abstract'
+                      onChange={this.props.handleChange}
+                      value={this.props.article.abstract}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='errorHolder'>
           </div>
         </div>
       </div>

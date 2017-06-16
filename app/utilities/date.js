@@ -1,5 +1,4 @@
-
-
+import React from 'react'
 
 export default {
   '': ['','01','02','03','04','05','06','07','08','09','10','11','12','13','14','15','16','17','18','19','20','21','22','23','24','25','26','27','28'],
@@ -27,4 +26,41 @@ function yearOptionsFunc () {
     i--
   }
   return optionsArray
+}
+
+
+export function makeDateDropDown (handler, name, type, preset, validation) {
+  var s = [<option key='-1'></option>], start = 0, end = 0
+  if (type === 'y') {
+    start = 2017
+    end = 1980
+  } else if (type === 'd') {
+    start = 1
+    end = 31
+  } else if (type === 'm') {
+    start = 1
+    end = 12
+  }
+
+  if (type === 'y') {
+    for(var i = start; i >= end; i--){
+      s.push(<option key={i} value={i}>{i}</option>)
+    }
+  } else {
+    for(var i = start; i <= end; i++){
+      s.push(<option key={i} value={i}>{i}</option>)
+    }
+  }
+
+  return (
+    <select
+      className={'height32 datepickselects' + ((validation) ? ' fieldError': '')}
+      name={name}
+      ref={name}
+      onChange={handler}
+      value={parseInt(preset)}
+      >
+      {s}
+    </select>
+  )
 }

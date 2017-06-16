@@ -9,7 +9,7 @@ import Listing from './listing'
 import Filter from './filter'
 import ActionBar from './actionBar'
 import TitleBar from './titleBar'
-import AddIssueCardRefactor from '../addIssueCardRefactor'
+import AddIssueCard from '../addIssueCard'
 import objectSearch from '../../utilities/objectSearch'
 
 
@@ -18,12 +18,14 @@ export default class Publication extends Component {
   static propTypes = {
     reduxControlModal: is.func.isRequired,
     asyncDeleteRecord: is.func.isRequired,
+
     publication: is.shape({
       status: is.string.isRequired,
       'message-type': is.string.isRequired,
       'message-version': is.string.isRequired,
       message: is.object.isRequired
     }).isRequired,
+
     handle: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     fetchIssue: is.func.isRequired,
@@ -142,7 +144,7 @@ export default class Publication extends Component {
         showModal: true,
         title: 'Duplicate Issue/Volume',
         style: 'addIssueModal',
-        Component: AddIssueCardRefactor,
+        Component: AddIssueCard,
         props: {
           mode: 'edit',
           issue: this.state.selections[0].article,

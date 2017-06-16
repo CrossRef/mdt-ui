@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link, browserHistory } from 'react-router'
 import { stateTrackerII } from 'my_decorators'
 
-import { controlModal, getPublications, editForm, clearForm, submitArticle, cartUpdate } from '../actions/application'
+import { controlModal, getPublications, editForm, clearForm, submitArticle, cartUpdate, getItem } from '../actions/application'
 import xmldoc from '../utilities/xmldoc'
 import AddArticleCard from '../components/addArticleCard'
 
@@ -15,7 +15,8 @@ const mapStateToProps = (state, props) => {
   return ({
     publication: state.publications[props.routeParams.doi],
     reduxForm: state.reduxForm,
-    crossmarkPrefixes: state.login['crossmark-prefixes']
+    crossmarkPrefixes: state.login['crossmark-prefixes'],
+    reduxCart: state.cart
   })
 }
 
@@ -23,6 +24,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxEditForm: editForm,
   reduxClearForm: clearForm,
+  asyncGetItem: getItem,
   asyncGetPublications: getPublications,
   asyncSubmitArticle: submitArticle,
   reduxCartUpdate: cartUpdate
@@ -39,6 +41,8 @@ export default class AddArticlesPage extends Component {
     reduxCartUpdate: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
     asyncSubmitArticle: is.func.isRequired,
+    asyncGetItem: is.func.isRequired,
+    reduxCart: is.array.isRequired,
     routeParams: is.shape({
       pubDoi: is.string.isRequired,
       articleDoi: is.string
@@ -64,12 +68,13 @@ export default class AddArticlesPage extends Component {
   }
 
   componentDidMount () {
+    const { duplicateFrom } = this.props.location.state || {};
     const { pubDoi, articleDoi, issueDoi } = this.props.routeParams;
 
-    const dois = [articleDoi || pubDoi];
+    const dois = [articleDoi || duplicateFrom || pubDoi];
 
     if(issueDoi) dois.push(issueDoi)
-    if(articleDoi) dois.push(pubDoi)
+    if(articleDoi || duplicateFrom) dois.push(pubDoi)
 
     this.props.asyncGetPublications( dois, (publications) => {
       this.setState({
@@ -89,12 +94,13 @@ export default class AddArticlesPage extends Component {
       }
 
       this.setState({
-        mode: articleDoi ? 'edit' : 'add',
+        mode: (articleDoi || duplicateFrom) ? 'edit' : 'add',
         publication: article,
         publicationMetaData: publMeta ? xmldoc(publMeta) : {}
       })
 
     })
+
   }
 
   componentWillUnmount () {
@@ -112,6 +118,7 @@ export default class AddArticlesPage extends Component {
           reduxEditForm={this.props.reduxEditForm}
           reduxCartUpdate={this.props.reduxCartUpdate}
           asyncSubmitArticle={this.props.asyncSubmitArticle}
+          asyncGetItem={this.props.asyncGetItem}
           reduxForm={this.props.reduxForm}
           ownerPrefix={ownerPrefix}
           publication = { publication }
@@ -121,6 +128,7 @@ export default class AddArticlesPage extends Component {
           issue = { issueDoi }
           duplicateFrom = { this.props.location.state ? this.props.location.state.duplicateFrom : '' }
           crossmarkPrefixes = { this.props.crossmarkPrefixes }
+          reduxCart = {this.props.reduxCart}
         />
       </div>
     )
