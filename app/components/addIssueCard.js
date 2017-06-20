@@ -515,7 +515,7 @@ export default class AddIssueCard extends Component {
                           <div className='toolmsgholder'>
                             <div className='errormsgholder'>
                               <div className='errormsginnerholder'>
-                                <img src='/images/AddArticle/Asset_Icons_White_Help.svg' />
+                                <img src='images/AddArticle/Asset_Icons_White_Help.svg' />
                                 Please provide a Title that fully describes your Issue
                               </div>
                             </div>
@@ -531,7 +531,7 @@ export default class AddIssueCard extends Component {
                           <div className='toolmsgholder'>
                             <div className='errormsgholder'>
                               <div className='errormsginnerholder'>
-                                <div><img src='/images/AddArticle/Asset_Icons_White_Help.svg' /></div>
+                                <div><img src='images/AddArticle/Asset_Icons_White_Help.svg' /></div>
                                 {(
                                   this.state.errors.issue ||
                                   this.state.errors.issuedoi ||

@@ -24,7 +24,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class PublicationCardContainer extends Component {
-  
+
   static propTypes = {
     reduxControlModal: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
@@ -39,7 +39,7 @@ export default class PublicationCardContainer extends Component {
     const background = backgrounds[backgroundIndex];
     this.state = { mouseOver: false, overEdit: false, background }
   }
-  
+
   openEditPublicationModal = () => {
     const publication = this.props.publication;
     if(!publication) return console.error(`${this.props.doi} is not fetching from server`);
@@ -79,7 +79,7 @@ export default class PublicationCardContainer extends Component {
     };
     const whiteText = this.state.mouseOver ? { color: 'white' } : null;
     return (
-      <Link to={this.state.overEdit ? null : `/publications/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
+      <Link to={this.state.overEdit ? null : `/mdt/publications/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
         <div className='card'
           style={style}
           onMouseOver={()=> this.setState({mouseOver:true})}
@@ -101,8 +101,8 @@ export default class PublicationCardContainer extends Component {
 }
 
 const backgrounds = [
-  '/images/Publications/PublicationButtonArtLarge_Publication Art 1.svg',
-  '/images/Publications/PublicationButtonArtLarge_Publication Art 2.svg',
-  '/images/Publications/PublicationButtonArtLarge_Publication Art 3.svg',
+  'images/Publications/PublicationButtonArtLarge_Publication Art 1.svg',
+  'images/Publications/PublicationButtonArtLarge_Publication Art 2.svg',
+  'images/Publications/PublicationButtonArtLarge_Publication Art 3.svg',
 ];
 

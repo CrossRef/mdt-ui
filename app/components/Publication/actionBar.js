@@ -65,7 +65,7 @@ export default class ActionBar extends Component {
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add Record
         {this.state.addRecordMenuOpen && <div>
-          <p onClick={()=>browserHistory.push(`/publications/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
+          <p onClick={()=>browserHistory.push(`/mdt/publications/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
           <p onClick={this.openAddIssueModal}>New Volume/Issue</p>
         </div>}
       </div>

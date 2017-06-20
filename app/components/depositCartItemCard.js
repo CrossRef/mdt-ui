@@ -430,7 +430,7 @@ export default class DepositCartItemCard extends Component {
                 <div className='toolmsgholder'>
                 <div className='errormsgholder'>
                     <div className='errormsginnerholder'>
-                    <div><img src='/images/AddArticle/Asset_Icons_White_Caution.svg' /></div>
+                    <div><img src='images/AddArticle/Asset_Icons_White_Caution.svg' /></div>
                     <div dangerouslySetInnerHTML={{__html: this.state.errorStr}}></div>
                     </div>
                 </div>
@@ -451,7 +451,7 @@ export default class DepositCartItemCard extends Component {
     return (
       <tr className='item'>
         <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
-            {(this.state.errorStr.length > 0) ? <div className='iconHolder'><img src='/images/Deposit/Asset_Icons_Red_Caution.png' /></div> : ''}
+            {(this.state.errorStr.length > 0) ? <div className='iconHolder'><img src='images/Deposit/Asset_Icons_Red_Caution.png' /></div> : ''}
         </td>
         <td className={'title' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + ((this.props.underIssue) ? ' articleUnderIssue' : '')}>
             {title}

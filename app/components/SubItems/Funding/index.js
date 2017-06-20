@@ -158,7 +158,7 @@ export default class Funding extends Component {
             <div className='row subItemRow' onClick={this.toggle.bind(this)}>
                 <div className='subItemHeader subItemTitle'>
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
-                        <img src="/images/AddArticle/DarkTriangle.svg" />
+                        <img src="'images/AddArticle/DarkTriangle.svg" />
                     </span>
                     <span>Funder {this.props.index + 1}</span>
                 </div>
@@ -223,7 +223,7 @@ export default class Funding extends Component {
                                          />
                                         {this.state.isLoading &&
                                             <div className="status">
-                                                <img src='/images/AddArticle/ajax-loader-transparent.gif' />
+                                                <img src='images/AddArticle/ajax-loader-transparent.gif' />
                                             </div>
                                         }
                                     </div>

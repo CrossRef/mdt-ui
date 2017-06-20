@@ -26,7 +26,7 @@ export default class ArticlesPage extends Component {
     return (
       <div className='articles'>
         Articles
-        <b>Click <Link to='/publications'>here</Link> to test State Post BACK to publications.</b>
+        <b>Click <Link to='/mdt/publications'>here</Link> to test State Post BACK to publications.</b>
       </div>
     )
   }

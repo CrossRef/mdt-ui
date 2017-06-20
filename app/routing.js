@@ -15,21 +15,21 @@ export default (store) => {
   const requireAuth = (nextState, replace) => {
     //not necessary?
   }
-
+  let base = "/mdt";
   return (
-    <Route path='/' component={App}>
+    <Route path={base} component={App} basename={'mdt'}>
       <IndexRoute component={LoginPage} />
-      <Route path='loggedin' component={LoggedInPage} onEnter={requireAuth} />
-      <Route path='publications' component={PublicationsPage} onEnter={requireAuth} />
-      <Route path='publications?modal=:doi' component={PublicationsPage} onEnter={requireAuth} />
-      <Route path='publications/:doi' component={PublicationPage} onEnter={requireAuth} />
-      <Route path='articles' component={ArticlesPage} onEnter={requireAuth} />
-      <Route path='publications/:pubDoi/addarticle' component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path='publications/:pubDoi/addarticle/:articleDoi' component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path='publications/:pubDoi/:issueDoi/addarticle' component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path='publications/:pubDoi/:issueDoi/addarticle/:articleDoi' component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path='cart' component={DepositCartPage} onEnter={requireAuth} />
-      <Route path='deposit-history' component={DepositHistoryPage} onEnter={requireAuth} />
+      <Route path={base + '/loggedin'} component={LoggedInPage} onEnter={requireAuth} />
+      <Route path={base + '/publications'} component={PublicationsPage} onEnter={requireAuth} />
+      <Route path={base + '/publications?modal=:doi'} component={PublicationsPage} onEnter={requireAuth} />
+      <Route path={base + '/publications/:doi'} component={PublicationPage} onEnter={requireAuth} />
+      <Route path={base + '/articles'} component={ArticlesPage} onEnter={requireAuth} />
+      <Route path={base + '/publications/:pubDoi/addarticle'} component={AddArticlesPage} onEnter={requireAuth} />
+      <Route path={base + '/publications/:pubDoi/addarticle/:articleDoi'} component={AddArticlesPage} onEnter={requireAuth} />
+      <Route path={base + '/publications/:pubDoi/:issueDoi/addarticle'} component={AddArticlesPage} onEnter={requireAuth} />
+      <Route path={base + '/publications/:pubDoi/:issueDoi/addarticle/:articleDoi'} component={AddArticlesPage} onEnter={requireAuth} />
+      <Route path={base + '/cart'} component={DepositCartPage} onEnter={requireAuth} />
+      <Route path={base + '/deposit-history'} component={DepositHistoryPage} onEnter={requireAuth} />
     </Route>
   )
 }

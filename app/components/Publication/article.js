@@ -36,9 +36,9 @@ export default class Article extends Component {
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox.bind(this)} {...checked} /><span>&nbsp;</span></label></td>
       <td className='title'>
         {issue ?
-          <Link className='pull-left add-record' to={`/publications/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+          <Link className='pull-left add-record' to={`/mdt/publications/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
           :
-          <Link className='pull-left add-record' to={`/publications/${encodeURIComponent(publicationDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+          <Link className='pull-left add-record' to={`/mdt/publications/${encodeURIComponent(publicationDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
         }
       </td>
       <td className='date'>{date}</td>

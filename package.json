@@ -2,6 +2,10 @@
   "name": "react-boilerplate",
   "version": "0.1.0",
   "private": true,
+  "homepage": "/mdt/",
+  "paths": {
+    "public": "/mdt"
+  },
   "devDependencies": {
     "autoprefixer": "6.5.1",
     "auto-reload-brunch": "^2",
@@ -83,7 +87,7 @@
     "react-moment": "^0.2.2",
     "react-paginate": "^4.4.2",
     "react-redux": "^5.0.2",
-    "react-router": "^3.0.2",
+    "react-router": "^3.0.5",
     "react-router-redux": "^4.0.7",
     "react-toastr": "^2.8.2",
     "react-toggle-switch": "^2.1.3",

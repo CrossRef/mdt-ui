@@ -83,7 +83,7 @@ export function login (usr, pwd, error = (reason) => console.error('ERROR in log
 }
 
 export function logout () {
-  browserHistory.push(`/`)
+  browserHistory.push(`/mdt/`)
 }
 
 export function getCRState (type, error = (reason) => console.error('ERROR in getCRState', reason)) {
@@ -94,14 +94,14 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
     })
     .then((response)=> response.json() )
     .then((state)=>{
-      let scrubbedState = {...state}; //Scrubbed state is used to clear bad data from remote state. 
-      
+      let scrubbedState = {...state}; //Scrubbed state is used to clear bad data from remote state.
+
       if(type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
 
       // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it with this line
-      
-      if(scrubbedState.routing.locationBeforeTransitions.pathname === '/') {
-        scrubbedState.routing.locationBeforeTransitions.pathname = '/publications'
+
+      if(scrubbedState.routing.locationBeforeTransitions.pathname === '/mdt/') {
+        scrubbedState.routing.locationBeforeTransitions.pathname = '/mdt/publications'
       }
       console.warn('Retrieving from remote store: ', scrubbedState);
       dispatch({

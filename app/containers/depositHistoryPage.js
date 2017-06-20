@@ -223,7 +223,7 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'><img className='calendarIcon' src='/images/DepositHistory/Asset_Icons_Black_Calandar.svg' /></div>
+                <div className='iconHolder'><img className='calendarIcon' src='images/DepositHistory/Asset_Icons_Black_Calandar.svg' /></div>
               </div>
             </div>
           </div>
@@ -251,7 +251,7 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'><img className='calendarIcon' src='/images/DepositHistory/Asset_Icons_Black_Calandar.svg' /></div>
+                <div className='iconHolder'><img className='calendarIcon' src='images/DepositHistory/Asset_Icons_Black_Calandar.svg' /></div>
               </div>
             </div>
           </div>
@@ -277,7 +277,7 @@ export default class DepositHistoryPage extends Component {
                   <img
                     onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
                     className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src='/images/AddArticle/DarkTriangle.svg' />
+                    src='images/AddArticle/DarkTriangle.svg' />
                 : ''
               }
             </th>
@@ -290,7 +290,7 @@ export default class DepositHistoryPage extends Component {
                   <img
                     onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
                     className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src='/images/AddArticle/DarkTriangle.svg' />
+                    src='images/AddArticle/DarkTriangle.svg' />
                 : ''
               }
             </th>
@@ -303,7 +303,7 @@ export default class DepositHistoryPage extends Component {
                   <img
                     onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
                     className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src='/images/AddArticle/DarkTriangle.svg' />
+                    src='images/AddArticle/DarkTriangle.svg' />
                 : ''
               }
             </th>
@@ -316,7 +316,7 @@ export default class DepositHistoryPage extends Component {
                   <img
                     onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
                     className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src='/images/AddArticle/DarkTriangle.svg' />
+                    src='images/AddArticle/DarkTriangle.svg' />
                 : ''
               }
             </th>
@@ -329,7 +329,7 @@ export default class DepositHistoryPage extends Component {
                   <img
                     onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
                     className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src='/images/AddArticle/DarkTriangle.svg' />
+                    src='images/AddArticle/DarkTriangle.svg' />
                 : ''
               }
             </th>
@@ -338,8 +338,8 @@ export default class DepositHistoryPage extends Component {
             this.listDeposityHistory()
           }
         </table>
-        <ReactPaginate previousLabel={<img className='prev' src='/images/AddArticle/DarkTriangle.svg' />}
-                       nextLabel={<img className='nex' src='/images/AddArticle/DarkTriangle.svg' />}
+        <ReactPaginate previousLabel={<img className='prev' src='images/AddArticle/DarkTriangle.svg' />}
+                       nextLabel={<img className='nex' src='images/AddArticle/DarkTriangle.svg' />}
                        breakLabel={<a href="">...</a>}
                        breakClassName={"break-me"}
                        pageCount={this.state.total > 0 ? (this.state.total/20) : 0}
