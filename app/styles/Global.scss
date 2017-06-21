@@ -80,7 +80,7 @@ label {
       content: ' ';
       position: absolute;
       display: block;
-      background: url('/images/App/Asset_Icons_Grey_Check 2.svg');
+      background: url('images/App/Asset_Icons_Grey_Check 2.svg');
       width: 15px;
       height: 15px;
       left: -1px;
@@ -92,7 +92,7 @@ label {
       border: 1px solid black;
 
       &:before {
-        background: url('/images/App/Asset_Icons_White_Check 2.svg');
+        background: url('images/App/Asset_Icons_White_Check 2.svg');
       }
     }
   }

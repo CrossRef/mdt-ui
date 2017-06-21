@@ -995,7 +995,6 @@ var Article = (_temp = _class = function (_Component) {
           },
           date
         ),
-        '90-t`r',
         _react2.default.createElement(
           'td',
           { className: 'type', __source: {

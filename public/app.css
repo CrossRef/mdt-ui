@@ -2543,7 +2543,7 @@ label input[type=checkbox] {
     content: ' ';
     position: absolute;
     display: block;
-    background: url("/images/App/Asset_Icons_Grey_Check 2.svg");
+    background: url("images/App/Asset_Icons_Grey_Check 2.svg");
     width: 15px;
     height: 15px;
     left: -1px;
@@ -2552,7 +2552,7 @@ label input[type=checkbox] {
     background: #3eb1c8;
     border: 1px solid black; }
     label input[type=checkbox]:checked + span:before {
-      background: url("/images/App/Asset_Icons_White_Check 2.svg"); }
+      background: url("images/App/Asset_Icons_White_Check 2.svg"); }
 
 .empty-message {
   padding: 35px 0;
