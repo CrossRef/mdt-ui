@@ -3,6 +3,7 @@ import { stateTrackerII } from 'my_decorators'
 import is from 'prop-types'
 
 import PublicationsNav from './navBar'
+import { routes } from '../routing'
 
 
 
@@ -14,9 +15,9 @@ export default class Header extends Component {
   };
 
   render () {
-    const isOnHome = this.props.path === '/mdt/'
+    const isOnHome = this.props.path === routes.base
     var showPublicationsNav = false
-    if(String(this.props.path).startsWith('/mdt/publications') || String(this.props.path).startsWith('/mdt/cart') || String(this.props.path).startsWith('/mdt/deposit-history')) {
+    if(String(this.props.path).startsWith(routes.publications) || String(this.props.path).startsWith(routes.depositCart) || String(this.props.path).startsWith(routes.depositHistory)) {
       showPublicationsNav = true
     }
 

@@ -97,8 +97,8 @@ class ErrorBox extends Component {
         <li onClick={this.toggleError}>
           <a className="tooltips">
             {this.state.errorBoxShow &&
-            <div><img src="'images/AddArticle/Asset_Icons_White_Caution.svg"/><p>{this.props.errorMessage}</p></div>}
-            <img src="'images/AddArticle/Asset_Icons_White_Caution.svg"/>
+            <div><img src="images/AddArticle/Asset_Icons_White_Caution.svg"/><p>{this.props.errorMessage}</p></div>}
+            <img src="images/AddArticle/Asset_Icons_White_Caution.svg"/>
           </a>
         </li>
       </ul>

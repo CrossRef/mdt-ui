@@ -139,7 +139,7 @@ export default class SubtItem extends Component {
           <div className='titleholder'>
             <div className={'titleinnholder' + (addable ? ' subinnerholder' : ' notclickableholder')} onClick={this.toggle.bind(this)}>
               <span className={'arrowHolder' + (this.state.showSection ? ' openArrowHolder' : '')}>
-                {(arrowType === 'dark') ? <img src="'images/AddArticle/DarkTriangle.svg" /> : <img src="'images/AddArticle/Triangle.svg" />}
+                {(arrowType === 'dark') ? <img src="images/AddArticle/DarkTriangle.svg" /> : <img src="images/AddArticle/Triangle.svg" />}
               </span>
               <span>{title}{addable}</span>
             </div>

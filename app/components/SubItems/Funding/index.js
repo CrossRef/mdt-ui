@@ -158,7 +158,7 @@ export default class Funding extends Component {
             <div className='row subItemRow' onClick={this.toggle.bind(this)}>
                 <div className='subItemHeader subItemTitle'>
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
-                        <img src="'images/AddArticle/DarkTriangle.svg" />
+                        <img src="images/AddArticle/DarkTriangle.svg" />
                     </span>
                     <span>Funder {this.props.index + 1}</span>
                 </div>

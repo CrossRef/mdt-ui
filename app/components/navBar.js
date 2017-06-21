@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { Link } from 'react-router'
-import { stateTrackerII } from 'my_decorators'
 import { ToastContainer, ToastMessage } from "react-toastr"
 
-import update from 'immutability-helper'
 import pascaleCase from '../utilities/pascaleCase'
+import { routes } from '../routing'
 
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
+
 
 export default class PublicationNav extends Component {
   static propTypes = {
@@ -84,9 +84,9 @@ export default class PublicationNav extends Component {
       <div className='publications-nav'>
         <div className='publications-nav-contents'>
           <div className='links'>
-            <Link to='/mdt/publications'>Publications</Link>
-            <Link to='/mdt/deposit-history'>Deposit History</Link>
-            <Link className='depositCartHolder' to='/mdt/cart'>
+            <Link to={routes.publications}>Publications</Link>
+            <Link to={routes.depositHistory}>Deposit History</Link>
+            <Link className='depositCartHolder' to={routes.depositCart}>
               Deposit Cart
               <span className='cartItemCount'>{this.props.cart.length}</span>
               <ToastContainer

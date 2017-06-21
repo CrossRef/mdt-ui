@@ -2,7 +2,8 @@ import React, { Component } from 'react'
 import moment from 'moment'
 import { Link } from 'react-router'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
+
+import {routes} from '../../routing'
 
 
 export default class Article extends Component {
@@ -36,12 +37,12 @@ export default class Article extends Component {
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox.bind(this)} {...checked} /><span>&nbsp;</span></label></td>
       <td className='title'>
         {issue ?
-          <Link className='pull-left add-record' to={`/mdt/publications/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
           :
-          <Link className='pull-left add-record' to={`/mdt/publications/${encodeURIComponent(publicationDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
         }
       </td>
-      <td className='date'>{date}</td>
+      <td className='date'>{date}</td>90-t`r
       <td className='type'>{type}</td>
       <td className='status'>{status}</td>
       <td className='url'>{url && <a target='_blank' href={url}>{url}</a>}</td>

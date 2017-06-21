@@ -2494,7 +2494,9 @@ input[type=button].button-anchor, input[type=submit].button-anchor {
 
 input, select {
   padding: 5px 16px;
-  border: 1px solid black; }
+  border: 0px solid black;
+  outline: 1px solid black;
+  outline-offset: -1px; }
 
 .left-indent-16 {
   padding-left: 16px; }
@@ -2559,7 +2561,7 @@ label input[type=checkbox] {
 
 .app .app-contents .login {
   flex-grow: 1;
-  background: url("/images/Login/LoginImage-1.png") no-repeat center center;
+  background: url("images/Login/LoginImage-1.png") no-repeat center center;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -2693,7 +2695,7 @@ label input[type=checkbox] {
   color: #4f5858; }
 
 .publication .publication-header {
-  background: url("/images/App/BannerArt_WorksList%20Banner.svg") no-repeat center center;
+  background: url("images/App/BannerArt_WorksList%20Banner.svg") no-repeat center center;
   background-size: cover;
   height: 222px;
   border-bottom: 2px solid #4f5858; }
@@ -2722,7 +2724,7 @@ label input[type=checkbox] {
         position: relative; }
         .publication .publication-header .publication-status-selector a.selected:before {
           content: ' ';
-          background: url(/images/Publications/Triangle.svg);
+          background: url(images/Publications/Triangle.svg);
           width: 50px;
           height: 25px;
           display: block;

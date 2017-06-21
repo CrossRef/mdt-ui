@@ -125,7 +125,7 @@ export class OptionalTitleData extends Component {
       <div className='OptionalTitleFields'>
         <div className='toggleButton' onClick={this.props.toggleFields}>
             <span className={'arrowHolder' + (this.props.show ? ' openArrowHolder' : '')}>
-              <img src="'images/AddArticle/DarkTriangle.svg" />
+              <img src="images/AddArticle/DarkTriangle.svg" />
             </span>
           <span>Optional Title Data</span>
         </div>

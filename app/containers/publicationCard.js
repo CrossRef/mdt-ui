@@ -3,8 +3,9 @@ import is from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 
+
+import {routes} from '../routing'
 import xmlDoc from '../utilities/xmldoc'
 import { controlModal, submitPublication } from '../actions/application'
 import AddPublicationCard from '../components/addPublicationCard'
@@ -79,7 +80,7 @@ export default class PublicationCardContainer extends Component {
     };
     const whiteText = this.state.mouseOver ? { color: 'white' } : null;
     return (
-      <Link to={this.state.overEdit ? null : `/mdt/publications/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
+      <Link to={this.state.overEdit ? null : `${routes.publications}/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
         <div className='card'
           style={style}
           onMouseOver={()=> this.setState({mouseOver:true})}

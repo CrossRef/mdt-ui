@@ -1,27 +1,22 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
 import update from 'immutability-helper'
-import Switch from 'react-toggle-switch'
 import _ from 'lodash'
-import { stateTrackerII } from 'my_decorators'
 
-import fetch from '../utilities/fetch'
 import checkDupeDOI from '../utilities/dupeDOI'
-import xmldoc from '../utilities/xmldoc'
-import objectSearch from '../utilities/objectSearch'
 import ReviewArticle from './reviewArticle'
 import SubItem from './SubItems/subItem'
 import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
 import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
 import JSesc from '../utilities/jsesc'
 import $ from 'jquery'
-import { deParseCrossmark } from '../utilities/crossmarkHelpers'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import { makeDateDropDown } from '../utilities/date'
 import isUrl from '../utilities/isURL'
 import isDOI from '../utilities/isDOI'
+import {routes} from '../routing'
+
 
 const defaultState = {
   inCart: true,
@@ -276,7 +271,7 @@ export default class AddArticleCard extends Component {
 
           this.setState({version: version})
 
-          browserHistory.push(`/mdt/publications/${encodeURIComponent(publication.message.doi)}`)
+          browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
     })
@@ -469,7 +464,7 @@ export default class AddArticleCard extends Component {
 
   back = () => {
     var publication = this.props.publication
-    browserHistory.push(`/mdt/publications/${encodeURIComponent(publication.message.doi)}`)
+    browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
   }
 
 

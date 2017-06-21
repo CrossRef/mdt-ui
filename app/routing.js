@@ -1,3 +1,4 @@
+/* eslint-disable no-multiple-empty-lines,padded-blocks */
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
@@ -11,25 +12,45 @@ import PublicationPage from './containers/publicationPage'
 import DepositCartPage from './containers/depositCartPage'
 import DepositHistoryPage from './containers/depositHistoryPage'
 
-export default (store) => {
-  const requireAuth = (nextState, replace) => {
-    //not necessary?
-  }
-  let base = "/mdt";
+
+// ------------------ Set base url here ------------------
+const base = "/mdt";
+
+
+export const routes = {
+  base: base || '/',
+  loggedInPage: base + '/loggedin',
+  publications: base + '/publications',
+  publicationsModal: base + '/publications?modal=:doi',
+  publication: base + '/publications/:doi',
+  articles: base + '/articles',
+  addArticle: base + '/publications/:pubDoi/addarticle',
+  editArticle: base + '/publications/:pubDoi/addarticle/:articleDoi',
+  addArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle',
+  editArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle/:articleDoi',
+  depositCart: base + '/cart',
+  depositHistory: base + '/deposit-history'
+};
+
+export default () => {
+
   return (
-    <Route path={base} component={App} basename={'mdt'}>
+    <Route path={routes.base} component={App} basename={'mdt'}>
       <IndexRoute component={LoginPage} />
-      <Route path={base + '/loggedin'} component={LoggedInPage} onEnter={requireAuth} />
-      <Route path={base + '/publications'} component={PublicationsPage} onEnter={requireAuth} />
-      <Route path={base + '/publications?modal=:doi'} component={PublicationsPage} onEnter={requireAuth} />
-      <Route path={base + '/publications/:doi'} component={PublicationPage} onEnter={requireAuth} />
-      <Route path={base + '/articles'} component={ArticlesPage} onEnter={requireAuth} />
-      <Route path={base + '/publications/:pubDoi/addarticle'} component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path={base + '/publications/:pubDoi/addarticle/:articleDoi'} component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path={base + '/publications/:pubDoi/:issueDoi/addarticle'} component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path={base + '/publications/:pubDoi/:issueDoi/addarticle/:articleDoi'} component={AddArticlesPage} onEnter={requireAuth} />
-      <Route path={base + '/cart'} component={DepositCartPage} onEnter={requireAuth} />
-      <Route path={base + '/deposit-history'} component={DepositHistoryPage} onEnter={requireAuth} />
+      <Route path={routes.loggedInPage} component={LoggedInPage} />
+      <Route path={routes.publications} component={PublicationsPage} />
+      <Route path={routes.publicationsModal} component={PublicationsPage} />
+      <Route path={routes.publication} component={PublicationPage} />
+      <Route path={routes.articles} component={ArticlesPage} />
+      <Route path={routes.addArticle} component={AddArticlesPage} />
+      <Route path={routes.editArticle} component={AddArticlesPage} />
+      <Route path={routes.addArticleUnderIssue} component={AddArticlesPage} />
+      <Route path={routes.editArticleUnderIssue} component={AddArticlesPage} />
+      <Route path={routes.depositCart} component={DepositCartPage} />
+      <Route path={routes.depositHistory} component={DepositHistoryPage} />
     </Route>
   )
 }
+
+// Is ArticlesPage doing anything? Remove?
+
