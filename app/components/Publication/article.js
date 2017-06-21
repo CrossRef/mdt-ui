@@ -42,7 +42,7 @@ export default class Article extends Component {
           <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
         }
       </td>
-      <td className='date'>{date}</td>90-t`r
+      <td className='date'>{date}</td>
       <td className='type'>{type}</td>
       <td className='status'>{status}</td>
       <td className='url'>{url && <a target='_blank' href={url}>{url}</a>}</td>
