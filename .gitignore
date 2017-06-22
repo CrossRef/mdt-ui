@@ -1,0 +1,13 @@
+node_modules
+public
+.idea
+.DS_Store
+.idea/
+app/.DS_Store
+app/assets/.DS_Store
+app/assets/fonts/.DS_Store
+app/assets/images/.DS_Store
+node_modules/
+public/.DS_Store
+public/fonts/.DS_Store
+public/images/.DS_Store
