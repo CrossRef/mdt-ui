@@ -7,7 +7,6 @@ import update from 'immutability-helper'
 import Switch from 'react-toggle-switch'
 import _ from 'lodash'
 
-import { stateTrackerII } from 'my_decorators'
 import checkDupeDOI from '../utilities/dupeDOI'
 import isDOI from '../utilities/isDOI'
 import isURL from '../utilities/isURL'

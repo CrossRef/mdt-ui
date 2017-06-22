@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 
 import { editForm, authenticate } from '../actions/application'
 

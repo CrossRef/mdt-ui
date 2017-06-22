@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 
 import { controlModal, getPublications, addDOIs, submitPublication, cartUpdate, search } from '../actions/application'
 import Publications from '../components/publications'

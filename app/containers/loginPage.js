@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII } from 'my_decorators'
 
 
 import LoginCard from '../components/loginCard'

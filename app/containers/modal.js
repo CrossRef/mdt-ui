@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 
 import { controlModal } from '../actions/application'
 import Modal from '../components/modal'

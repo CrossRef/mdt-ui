@@ -54123,34 +54123,49 @@ require.register("my_decorators/decorators.js", function(exports, require, modul
   (function() {
     'use strict';
 
-console.log('test version');
-
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-exports.setConfig = setConfig;
-const { STContainer } = require('./stateTracker/STContainer');
-const stateTrackerII = require('./stateTracker/stateTrackerHOC');
-
-let config = {
-	stateTracker: true,
-	updateReports: { mount: false, update: false, pass: false, render: false }
+exports.myDecoratorsConfig = {
+    // default config if any...
 };
-exports.myDecConfig = config;
-function setConfig(configObj) {
-	exports.myDecConfig = _extends({}, config, configObj);
-}
 
-exports.STContainer = STContainer;
+function setConfig (configObj) {
+    exports.myDecoratorsConfig = _extends({}, exports.myDecoratorsConfig, configObj);
+};
+exports.setConfig = setConfig;
 
-exports.stateTrackerII = stateTrackerII;
 
-const { updateReporterPP, updateReporterII } = require('./updateReporterHOC');
-exports.updateReporterPP = updateReporterPP;
-exports.updateReporterII = updateReporterII;
+// ---------------------------- STATETRACKER -----------------------------------
+// -----------------------------------------------------------------------------
+
+setConfig({
+    showStateTracker: true
+})
+
+exports.STContainer = require('./stateTracker/STContainer').STContainer;
+exports.stateTrackerII = require('./stateTracker/stateTrackerHOC');
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+
+
+// ---------------------------- UPDATEREPORTER ---------------------------------
+// ------------------------------------------------------------------------------
+
+setConfig({
+    updateReports: { mount: false, update: false, pass: false, render: false }
+})
+
+exports.updateReporterPP = require('./updateReporterHOC').updateReporterPP;
+exports.updateReporterII = require('./updateReporterHOC').updateReporterII;
+
+// ------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------
   })();
 });
 
@@ -54707,7 +54722,7 @@ var React = require('react');
 var exportInternalState = require('./exportInternalState');
 
 const getConfig = function () {
-	const config = require('../decorators').myDecConfig;
+	const config = require('../decorators').myDecoratorsConfig;
 	return config;
 };
 
@@ -54716,11 +54731,11 @@ module.exports = function (WrappedComponent) {
 		constructor(...args) {
 			var _temp;
 
-			return _temp = super(...args), this.name = WrappedComponent.displayName || WrappedComponent.name, this.stateTracker = getConfig().stateTracker, _temp;
+			return _temp = super(...args), this.name = WrappedComponent.displayName || WrappedComponent.name, this.showStateTracker = getConfig().showStateTracker, _temp;
 		}
 
 		componentDidMount() {
-			if (!this.stateTracker) {
+			if (!this.showStateTracker) {
 				delete this.__proto__.componentWillUnmount;
 				delete this.__proto__.componentDidUpdate;
 			}
@@ -54766,8 +54781,6 @@ require.register("my_decorators/updateReporterHOC.js", function(exports, require
 Object.defineProperty(exports, "__esModule", {
 	value: true
 });
-exports.updateReporterII = updateReporterII;
-exports.updateReporterPP = updateReporterPP;
 
 var _react = require('react');
 
@@ -54776,9 +54789,12 @@ var _react2 = _interopRequireDefault(_react);
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const getConfig = function () {
-	const config = require('./decorators').myDecConfig;
+	const config = require('./decorators').myDecoratorsConfig;
 	return config;
 };
+
+exports.updateReporterII = updateReporterII;
+exports.updateReporterPP = updateReporterPP;
 
 function updateReporterII(WrappedComponent) {
 	var _class, _temp2;

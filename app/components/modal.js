@@ -3,7 +3,6 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import ReactModal from 'react-modal'
-import { updateReporterII } from 'my_decorators'
 
 import {routes} from '../routing'
 

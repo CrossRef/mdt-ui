@@ -3,7 +3,6 @@ import is from 'prop-types'
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII } from 'my_decorators'
 
 import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, getItem } from '../actions/application'
 import fetch from '../utilities/fetch'

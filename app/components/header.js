@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { stateTrackerII } from 'my_decorators'
 import is from 'prop-types'
 
 import PublicationsNav from './navBar'

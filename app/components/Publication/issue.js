@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
 
 import AddIssueCard from '../addIssueCard'
 import xmldoc from '../../utilities/xmldoc'

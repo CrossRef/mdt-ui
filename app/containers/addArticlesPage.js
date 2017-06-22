@@ -3,7 +3,6 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link, browserHistory } from 'react-router'
-import { stateTrackerII } from 'my_decorators'
 
 import { controlModal, getPublications, editForm, clearForm, submitArticle, cartUpdate, getItem } from '../actions/application'
 import xmldoc from '../utilities/xmldoc'

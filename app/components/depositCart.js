@@ -10,7 +10,6 @@ import _ from 'lodash'
 import fetch from '../utilities/fetch'
 import checkDupeDOI from '../utilities/dupeDOI'
 import xmldoc from '../utilities/xmldoc'
-import { stateTrackerII } from 'my_decorators'
 import objectSearch from '../utilities/objectSearch'
 import DepositCartItem from './depositCartItem'
 

@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import { stateTrackerII } from 'my_decorators'
 
 import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial, Blank } from './crossmarkCards'
 

@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { stateTrackerII, updateReporterPP } from 'my_decorators'
 
 import PublicationCard from '../containers/publicationCard'
 

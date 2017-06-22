@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
 
 import Issue from './issue'
 import Article from './article'

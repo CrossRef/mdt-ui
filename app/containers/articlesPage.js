@@ -3,7 +3,6 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
-import { stateTrackerII } from 'my_decorators'
 
 
 const mapDispatchToProps = dispatch => ({})

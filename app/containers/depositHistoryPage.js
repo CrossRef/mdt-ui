@@ -3,7 +3,6 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import update from 'immutability-helper'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 import ReactPaginate from 'react-paginate';
 import { getDepositHistory } from '../actions/application'
