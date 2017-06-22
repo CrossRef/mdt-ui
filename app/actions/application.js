@@ -1,9 +1,9 @@
-import { createAction } from 'redux-actions'
 import { browserHistory } from 'react-router'
 
 import xmlParse from '../utilities/xmldoc'
 import fetch from '../utilities/fetch'
 import { publicationXml } from '../utilities/xmlGenerator'
+import { routes } from '../routing'
 
 const withQuery = require('with-query')
 
@@ -83,7 +83,7 @@ export function login (usr, pwd, error = (reason) => console.error('ERROR in log
 }
 
 export function logout () {
-  browserHistory.push(`/`)
+  browserHistory.push(routes.base)
 }
 
 export function getCRState (type, error = (reason) => console.error('ERROR in getCRState', reason)) {
@@ -94,15 +94,33 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
     })
     .then((response)=> response.json() )
     .then((state)=>{
-      let scrubbedState = {...state}; //Scrubbed state is used to clear bad data from remote state. 
-      
+      let scrubbedState = {...state}; //Scrubbed state is used to clear unnecessary or bad data from remote state.
+
       if(type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
 
-      // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it with this line
-      
-      if(scrubbedState.routing.locationBeforeTransitions.pathname === '/') {
-        scrubbedState.routing.locationBeforeTransitions.pathname = '/publications'
+      // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
+
+
+      const pathname = scrubbedState.routing.locationBeforeTransitions.pathname;
+      const base = routes.base;
+      const matchLength = base.length + 4;
+
+      // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
+
+      let match = (function checkRoutes () {
+        for (var route in routes) {
+          if(pathname.substring(0, matchLength) === routes[route].substring(0, matchLength)) return true
+        }
+        return false
+      })();
+
+
+      // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
+
+      if(!match || pathname === base) {
+        scrubbedState.routing.locationBeforeTransitions.pathname = base === '/' ? '/publications' : base + '/publications'
       }
+
       console.warn('Retrieving from remote store: ', scrubbedState);
       dispatch({
         type: 'SET_STATE',

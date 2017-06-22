@@ -1,16 +1,13 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import update from 'immutability-helper'
-import _ from 'lodash'
 import { browserHistory } from 'react-router'
-import { stateTrackerII } from 'my_decorators'
 
 import Listing from './listing'
 import Filter from './filter'
 import ActionBar from './actionBar'
 import TitleBar from './titleBar'
 import AddIssueCard from '../addIssueCard'
-import objectSearch from '../../utilities/objectSearch'
+import {routes} from  '../../routing'
 
 
 export default class Publication extends Component {
@@ -133,7 +130,7 @@ export default class Publication extends Component {
     })
 
     if(this.state.selections[0].article.type === 'article') browserHistory.push({
-      pathname: `/publications/${encodeURIComponent(this.props.publication.message.doi)}/addarticle`,
+      pathname: `${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}/addarticle`,
       state: {
         duplicateFrom: this.state.selections[0].article.doi
       }

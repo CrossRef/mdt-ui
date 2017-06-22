@@ -3,8 +3,9 @@ import is from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { Link } from 'react-router'
 import { connect } from 'react-redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 
+
+import {routes} from '../routing'
 import xmlDoc from '../utilities/xmldoc'
 import { controlModal, submitPublication } from '../actions/application'
 import AddPublicationCard from '../components/addPublicationCard'
@@ -24,7 +25,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 
 @connect(mapStateToProps, mapDispatchToProps)
 export default class PublicationCardContainer extends Component {
-  
+
   static propTypes = {
     reduxControlModal: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
@@ -35,11 +36,16 @@ export default class PublicationCardContainer extends Component {
 
   constructor() {
     super();
+    const backgrounds = [
+      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 1.svg`,
+      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 2.svg`,
+      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 3.svg`,
+    ]
     const backgroundIndex = (Math.floor(Math.random() * backgrounds.length) % backgrounds.length)
     const background = backgrounds[backgroundIndex];
     this.state = { mouseOver: false, overEdit: false, background }
   }
-  
+
   openEditPublicationModal = () => {
     const publication = this.props.publication;
     if(!publication) return console.error(`${this.props.doi} is not fetching from server`);
@@ -79,7 +85,7 @@ export default class PublicationCardContainer extends Component {
     };
     const whiteText = this.state.mouseOver ? { color: 'white' } : null;
     return (
-      <Link to={this.state.overEdit ? null : `/publications/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
+      <Link to={this.state.overEdit ? null : `${routes.publications}/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
         <div className='card'
           style={style}
           onMouseOver={()=> this.setState({mouseOver:true})}
@@ -100,9 +106,4 @@ export default class PublicationCardContainer extends Component {
   }
 }
 
-const backgrounds = [
-  '/images/Publications/PublicationButtonArtLarge_Publication Art 1.svg',
-  '/images/Publications/PublicationButtonArtLarge_Publication Art 2.svg',
-  '/images/Publications/PublicationButtonArtLarge_Publication Art 3.svg',
-];
 

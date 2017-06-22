@@ -1,13 +1,13 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { Link } from 'react-router'
-import { stateTrackerII } from 'my_decorators'
 import { ToastContainer, ToastMessage } from "react-toastr"
 
-import update from 'immutability-helper'
 import pascaleCase from '../utilities/pascaleCase'
+import { routes } from '../routing'
 
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
+
 
 export default class PublicationNav extends Component {
   static propTypes = {
@@ -48,7 +48,7 @@ export default class PublicationNav extends Component {
     this.setState({type: type})
     this.refs.container.success(
       <div className='toastMessage'>
-        <div className={'iconHolder' + (type === 'remove' ? ' remove-message' : '') }><img src='/images/Toast/Asset_Icons_White_Check.svg' /></div>
+        <div className={'iconHolder' + (type === 'remove' ? ' remove-message' : '') }><img src={`${routes.images}/Toast/Asset_Icons_White_Check.svg`} /></div>
         <div className='message'>{pascaleCase(item.type)} {type === 'add' ? 'Added to Deposit Cart' : 'Removed From Deposit Cart'} ({title})</div>
       </div>,
       <div className='toastTitle'><div className='arrow'></div></div>,
@@ -84,9 +84,9 @@ export default class PublicationNav extends Component {
       <div className='publications-nav'>
         <div className='publications-nav-contents'>
           <div className='links'>
-            <Link to='/publications'>Publications</Link>
-            <Link to='/deposit-history'>Deposit History</Link>
-            <Link className='depositCartHolder' to='/cart'>
+            <Link to={routes.publications}>Publications</Link>
+            <Link to={routes.depositHistory}>Deposit History</Link>
+            <Link className='depositCartHolder' to={routes.depositCart}>
               Deposit Cart
               <span className='cartItemCount'>{this.props.cart.length}</span>
               <ToastContainer
@@ -98,7 +98,7 @@ export default class PublicationNav extends Component {
           </div>
           <div className='user'>
             <div className='userProfileMenuHolder'>
-              <span className='profileMenuTrigger tooltips' onClick={() => {this.openProfileMenu()}}>{localStorage.user} <img className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')} src='/images/AddArticle/DarkTriangle.svg' /></span>
+              <span className='profileMenuTrigger tooltips' onClick={() => {this.openProfileMenu()}}>{localStorage.user} <img className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')} src={`${routes.images}/AddArticle/DarkTriangle.svg`} /></span>
               {this.state.profileMenu && <div className='profileMenu'>
                 <span onClick={()=>{this.logout()}}>Logout</span>
               </div>}

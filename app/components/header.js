@@ -3,6 +3,7 @@ import { stateTrackerII } from 'my_decorators'
 import is from 'prop-types'
 
 import PublicationsNav from './navBar'
+import { routes } from '../routing'
 
 
 
@@ -14,17 +15,17 @@ export default class Header extends Component {
   };
 
   render () {
-    const isOnHome = this.props.path === '/'
+    const isOnHome = this.props.path === routes.base
     var showPublicationsNav = false
-    if(String(this.props.path).startsWith('/publications') || String(this.props.path).startsWith('/cart') || String(this.props.path).startsWith('/deposit-history')) {
+    if(String(this.props.path).startsWith(routes.publications) || String(this.props.path).startsWith(routes.depositCart) || String(this.props.path).startsWith(routes.depositHistory)) {
       showPublicationsNav = true
     }
 
     return (
       <div className={'header' + (isOnHome ? ' large' : '')}>
         <div className='header-contents'>
-          <img src='/images/App/crossref-content-registration-logo-200.svg' />
-          <img className='second-logo-img' src='/images/App/crossref-depositor-logo-200.svg' />
+          <img src={`${routes.images}/App/crossref-content-registration-logo-200.svg`} />
+          <img className='second-logo-img' src={`${routes.images}/App/crossref-depositor-logo-200.svg`} />
         </div>
         { (showPublicationsNav) && <PublicationsNav cart={this.props.cart} reduxControlModal={this.props.reduxControlModal} reduxLogout={this.props.reduxLogout} /> }
       </div>

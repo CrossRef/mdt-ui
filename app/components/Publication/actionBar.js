@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { Link, browserHistory } from 'react-router'
-import { stateTrackerII } from 'my_decorators'
+import { browserHistory } from 'react-router'
 
 import AddIssueCard from '../addIssueCard'
+import {routes} from '../../routing'
 
 
 
@@ -65,7 +65,7 @@ export default class ActionBar extends Component {
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add Record
         {this.state.addRecordMenuOpen && <div>
-          <p onClick={()=>browserHistory.push(`/publications/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
+          <p onClick={()=>browserHistory.push(`${routes.publications}/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
           <p onClick={this.openAddIssueModal}>New Volume/Issue</p>
         </div>}
       </div>

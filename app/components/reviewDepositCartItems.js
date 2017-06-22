@@ -12,6 +12,8 @@ const IdentifierTypes = require('../utilities/identifierTypes.json')
 import objectSearch from '../utilities/objectSearch'
 import articleReviewGenerator from './articleReviewGenerator'
 import issueReviewGenerator from  './issueReviewGenerator'
+import {routes} from '../routing'
+
 
 export default class DepositCartItemsReview extends Component {
 
@@ -46,16 +48,16 @@ export default class DepositCartItemsReview extends Component {
     if (item.type.toLowerCase() === 'article') {
       this.props.reduxControlModal({showModal: false})
       if (issue) {
-        browserHistory.push(`/publications/${encodeURIComponent(publication.doi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(item.doi)}`)
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(item.doi)}`)
       } else {
-        browserHistory.push(`/publications/${encodeURIComponent(publication.doi)}/addarticle/${encodeURIComponent(item.doi)}`)
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/addarticle/${encodeURIComponent(item.doi)}`)
       }
     } else if (item.type.toLowerCase() === 'issue') {
       this.props.reduxControlModal({
         showModal: false
       })
       //Change this to open modal with correct issue DOI
-      browserHistory.push(`/publications/${encodeURIComponent(publication.doi)}?modal=${encodeURIComponent(item.doi)}`)
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}?modal=${encodeURIComponent(item.doi)}`)
     }
   }
 
@@ -84,7 +86,7 @@ export default class DepositCartItemsReview extends Component {
             <div className='itemTitle'>
               <div className='titleinnholder' onClick={() => {this.toggleInfoSection()}}>
                 <span className={'arrowHolder' + (this.state.showInfoSection ? ' openArrowHolder' : '')}>
-                    <img src="/images/AddArticle/Triangle.svg" />
+                    <img src={`${routes.images}/AddArticle/Triangle.svg`} />
                 </span>
                 <span>{item.title.title || `Issue ${item.title.issue || 'NA'}, Volume ${item.title.volume || 'NA'}`}</span>
               </div>

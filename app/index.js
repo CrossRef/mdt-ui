@@ -20,7 +20,7 @@ setConfig({
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
-if(browserHistory.getCurrentLocation().pathname !== '/') {
+if(browserHistory.getCurrentLocation().pathname !== '/mdt/') {
   store.dispatch(getCRState());
 }
 
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecConfig.stateTracker && <STContainer />}
-      <Router history={history}>
+      <Router history={history} basename={'mdt'}>
         {Routing(store)}
       </Router>
     </div>

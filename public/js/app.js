@@ -116,6 +116,7 @@
 
 (function() {
 var global = typeof window === 'undefined' ? this : window;
+var process;
 var __makeRelativeRequire = function(require, mappings, pref) {
   var none = {};
   var tryReq = function(name, pref) {
@@ -192,8 +193,6 @@ exports.getItem = getItem;
 exports.getDepositHistory = getDepositHistory;
 exports.deleteRecord = deleteRecord;
 
-var _reduxActions = require('redux-actions');
-
 var _reactRouter = require('react-router');
 
 var _xmldoc = require('../utilities/xmldoc');
@@ -205,6 +204,8 @@ var _fetch = require('../utilities/fetch');
 var _fetch2 = _interopRequireDefault(_fetch);
 
 var _xmlGenerator = require('../utilities/xmlGenerator');
+
+var _routing = require('../routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -290,7 +291,7 @@ function login(usr, pwd) {
 }
 
 function logout() {
-  _reactRouter.browserHistory.push('/');
+  _reactRouter.browserHistory.push(_routing.routes.base);
 }
 
 function getCRState(type) {
@@ -305,15 +306,32 @@ function getCRState(type) {
     }).then(function (response) {
       return response.json();
     }).then(function (state) {
-      var scrubbedState = (0, _extends3.default)({}, state); //Scrubbed state is used to clear bad data from remote state. 
+      var scrubbedState = (0, _extends3.default)({}, state); //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
       if (type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
 
-      // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it with this line
+      // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
 
-      if (scrubbedState.routing.locationBeforeTransitions.pathname === '/') {
-        scrubbedState.routing.locationBeforeTransitions.pathname = '/publications';
+
+      var pathname = scrubbedState.routing.locationBeforeTransitions.pathname;
+      var base = _routing.routes.base;
+      var matchLength = base.length + 4;
+
+      // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
+
+      var match = function checkRoutes() {
+        for (var route in _routing.routes) {
+          if (pathname.substring(0, matchLength) === _routing.routes[route].substring(0, matchLength)) return true;
+        }
+        return false;
+      }();
+
+      // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
+
+      if (!match || pathname === base) {
+        scrubbedState.routing.locationBeforeTransitions.pathname = base === '/' ? '/publications' : base + '/publications';
       }
+
       console.warn('Retrieving from remote store: ', scrubbedState);
       dispatch({
         type: 'SET_STATE',
@@ -598,11 +616,11 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _reactRouter = require('react-router');
 
-var _my_decorators = require('my_decorators');
-
 var _addIssueCard = require('../addIssueCard');
 
 var _addIssueCard2 = _interopRequireDefault(_addIssueCard);
+
+var _routing = require('../../routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -692,7 +710,7 @@ var ActionBar = (_temp = _class = function (_Component) {
             _react2.default.createElement(
               'p',
               { onClick: function onClick() {
-                  return _reactRouter.browserHistory.push('/publications/' + encodeURIComponent(doi) + '/addarticle');
+                  return _reactRouter.browserHistory.push(_routing.routes.publications + '/' + encodeURIComponent(doi) + '/addarticle');
                 }, __source: {
                   fileName: _jsxFileName,
                   lineNumber: 68
@@ -852,7 +870,7 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _my_decorators = require('my_decorators');
+var _routing = require('../../routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -898,7 +916,7 @@ var Article = (_temp = _class = function (_Component) {
         'tr',
         { className: status, __source: {
             fileName: _jsxFileName,
-            lineNumber: 35
+            lineNumber: 36
           },
           __self: this
         },
@@ -906,7 +924,7 @@ var Article = (_temp = _class = function (_Component) {
           'td',
           { className: 'checkbox', __source: {
               fileName: _jsxFileName,
-              lineNumber: 36
+              lineNumber: 37
             },
             __self: this
           },
@@ -915,14 +933,14 @@ var Article = (_temp = _class = function (_Component) {
             {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 36
+                lineNumber: 37
               },
               __self: this
             },
             _react2.default.createElement('input', (0, _extends3.default)({ type: 'checkbox', onClick: this.toggleCheckBox.bind(this) }, checked, {
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 36
+                lineNumber: 37
               },
               __self: this
             })),
@@ -931,7 +949,7 @@ var Article = (_temp = _class = function (_Component) {
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 36
+                  lineNumber: 37
                 },
                 __self: this
               },
@@ -943,24 +961,24 @@ var Article = (_temp = _class = function (_Component) {
           'td',
           { className: 'title', __source: {
               fileName: _jsxFileName,
-              lineNumber: 37
+              lineNumber: 38
             },
             __self: this
           },
           issue ? _react2.default.createElement(
             _reactRouter.Link,
-            { className: 'pull-left add-record', to: '/publications/' + encodeURIComponent(publicationDoi) + '/' + encodeURIComponent(issue) + '/addarticle/' + encodeURIComponent(doi), __source: {
+            { className: 'pull-left add-record', to: _routing.routes.publications + '/' + encodeURIComponent(publicationDoi) + '/' + encodeURIComponent(issue) + '/addarticle/' + encodeURIComponent(doi), __source: {
                 fileName: _jsxFileName,
-                lineNumber: 39
+                lineNumber: 40
               },
               __self: this
             },
             title
           ) : _react2.default.createElement(
             _reactRouter.Link,
-            { className: 'pull-left add-record', to: '/publications/' + encodeURIComponent(publicationDoi) + '/addarticle/' + encodeURIComponent(doi), __source: {
+            { className: 'pull-left add-record', to: _routing.routes.publications + '/' + encodeURIComponent(publicationDoi) + '/addarticle/' + encodeURIComponent(doi), __source: {
                 fileName: _jsxFileName,
-                lineNumber: 41
+                lineNumber: 42
               },
               __self: this
             },
@@ -971,7 +989,7 @@ var Article = (_temp = _class = function (_Component) {
           'td',
           { className: 'date', __source: {
               fileName: _jsxFileName,
-              lineNumber: 44
+              lineNumber: 45
             },
             __self: this
           },
@@ -981,7 +999,7 @@ var Article = (_temp = _class = function (_Component) {
           'td',
           { className: 'type', __source: {
               fileName: _jsxFileName,
-              lineNumber: 45
+              lineNumber: 46
             },
             __self: this
           },
@@ -991,7 +1009,7 @@ var Article = (_temp = _class = function (_Component) {
           'td',
           { className: 'status', __source: {
               fileName: _jsxFileName,
-              lineNumber: 46
+              lineNumber: 47
             },
             __self: this
           },
@@ -1001,7 +1019,7 @@ var Article = (_temp = _class = function (_Component) {
           'td',
           { className: 'url', __source: {
               fileName: _jsxFileName,
-              lineNumber: 47
+              lineNumber: 48
             },
             __self: this
           },
@@ -1009,7 +1027,7 @@ var Article = (_temp = _class = function (_Component) {
             'a',
             { target: '_blank', href: url, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 47
+                lineNumber: 48
               },
               __self: this
             },
@@ -1684,7 +1702,7 @@ var Issue = (_temp = _class = function (_Component) {
           '\xA0',
           _react2.default.createElement(
             _reactRouter.Link,
-            { className: 'issueDoiAddNew', to: '/publications/' + encodeURIComponent(publicationDoi) + '/' + encodeURIComponent(doi) + '/addarticle', __source: {
+            { className: 'issueDoiAddNew', to: '/mdt/publications/' + encodeURIComponent(publicationDoi) + '/' + encodeURIComponent(doi) + '/addarticle', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 132
               },
@@ -2022,17 +2040,7 @@ var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
 
-var _immutabilityHelper = require('immutability-helper');
-
-var _immutabilityHelper2 = _interopRequireDefault(_immutabilityHelper);
-
-var _lodash = require('lodash');
-
-var _lodash2 = _interopRequireDefault(_lodash);
-
 var _reactRouter = require('react-router');
-
-var _my_decorators = require('my_decorators');
 
 var _listing = require('./listing');
 
@@ -2054,9 +2062,7 @@ var _addIssueCard = require('../addIssueCard');
 
 var _addIssueCard2 = _interopRequireDefault(_addIssueCard);
 
-var _objectSearch = require('../../utilities/objectSearch');
-
-var _objectSearch2 = _interopRequireDefault(_objectSearch);
+var _routing = require('../../routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -2090,7 +2096,7 @@ var Publication = (_temp = _class = function (_Component) {
               'div',
               { className: 'actionModal', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 84
+                  lineNumber: 81
                 },
                 __self: _this2
               },
@@ -2098,7 +2104,7 @@ var Publication = (_temp = _class = function (_Component) {
                 'div',
                 { className: 'messageHolder', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 85
+                    lineNumber: 82
                   },
                   __self: _this2
                 },
@@ -2107,7 +2113,7 @@ var Publication = (_temp = _class = function (_Component) {
                   {
                     __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 86
+                      lineNumber: 83
                     },
                     __self: _this2
                   },
@@ -2118,7 +2124,7 @@ var Publication = (_temp = _class = function (_Component) {
                 'div',
                 { className: 'buttonHolder', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 88
+                    lineNumber: 85
                   },
                   __self: _this2
                 },
@@ -2126,7 +2132,7 @@ var Publication = (_temp = _class = function (_Component) {
                   'button',
                   { onClick: close, __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 89
+                      lineNumber: 86
                     },
                     __self: _this2
                   },
@@ -2172,7 +2178,7 @@ var Publication = (_temp = _class = function (_Component) {
             'div',
             { className: 'actionModal', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 125
+                lineNumber: 122
               },
               __self: _this2
             },
@@ -2180,7 +2186,7 @@ var Publication = (_temp = _class = function (_Component) {
               'div',
               { className: 'messageHolder', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 126
+                  lineNumber: 123
                 },
                 __self: _this2
               },
@@ -2189,7 +2195,7 @@ var Publication = (_temp = _class = function (_Component) {
                 {
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 127
+                    lineNumber: 124
                   },
                   __self: _this2
                 },
@@ -2200,7 +2206,7 @@ var Publication = (_temp = _class = function (_Component) {
               'div',
               { className: 'buttonHolder', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 129
+                  lineNumber: 126
                 },
                 __self: _this2
               },
@@ -2208,7 +2214,7 @@ var Publication = (_temp = _class = function (_Component) {
                 'button',
                 { onClick: close, __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 130
+                    lineNumber: 127
                   },
                   __self: _this2
                 },
@@ -2220,7 +2226,7 @@ var Publication = (_temp = _class = function (_Component) {
       });
 
       if (_this.state.selections[0].article.type === 'article') _reactRouter.browserHistory.push({
-        pathname: '/publications/' + encodeURIComponent(_this.props.publication.message.doi) + '/addarticle',
+        pathname: _routing.routes.publications + '/' + encodeURIComponent(_this.props.publication.message.doi) + '/addarticle',
         state: {
           duplicateFrom: _this.state.selections[0].article.doi
         }
@@ -2299,7 +2305,7 @@ var Publication = (_temp = _class = function (_Component) {
         'div',
         { className: 'publication', __source: {
             fileName: _jsxFileName,
-            lineNumber: 175
+            lineNumber: 172
           },
           __self: this
         },
@@ -2307,7 +2313,7 @@ var Publication = (_temp = _class = function (_Component) {
           handleFilter: this.handleFilter.bind(this),
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 176
+            lineNumber: 173
           },
           __self: this
         }),
@@ -2320,7 +2326,7 @@ var Publication = (_temp = _class = function (_Component) {
           postIssue: this.props.postIssue,
           asyncGetPublications: this.props.handle, __source: {
             fileName: _jsxFileName,
-            lineNumber: 179
+            lineNumber: 176
           },
           __self: this
         }),
@@ -2337,7 +2343,7 @@ var Publication = (_temp = _class = function (_Component) {
           duplicateSelection: this.duplicateSelection,
           postIssue: this.props.postIssue, __source: {
             fileName: _jsxFileName,
-            lineNumber: 188
+            lineNumber: 185
           },
           __self: this
         }),
@@ -2345,7 +2351,7 @@ var Publication = (_temp = _class = function (_Component) {
           'div',
           { className: 'publication-children', __source: {
               fileName: _jsxFileName,
-              lineNumber: 200
+              lineNumber: 197
             },
             __self: this
           },
@@ -2366,14 +2372,14 @@ var Publication = (_temp = _class = function (_Component) {
             selections: this.state.selections,
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 202
+              lineNumber: 199
             },
             __self: this
           }) : _react2.default.createElement(
             'div',
             { className: 'empty-message', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 217
+                lineNumber: 214
               },
               __self: this
             },
@@ -2424,7 +2430,7 @@ function DeleteConfirmModal(_ref3) {
     'div',
     { className: 'actionModal', __source: {
         fileName: _jsxFileName,
-        lineNumber: 235
+        lineNumber: 232
       },
       __self: this
     },
@@ -2432,7 +2438,7 @@ function DeleteConfirmModal(_ref3) {
       'div',
       { className: 'messageHolder', __source: {
           fileName: _jsxFileName,
-          lineNumber: 236
+          lineNumber: 233
         },
         __self: this
       },
@@ -2441,7 +2447,7 @@ function DeleteConfirmModal(_ref3) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 237
+            lineNumber: 234
           },
           __self: this
         },
@@ -2450,14 +2456,14 @@ function DeleteConfirmModal(_ref3) {
       _react2.default.createElement('br', {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 238
+          lineNumber: 235
         },
         __self: this
       }),
       _react2.default.createElement('br', {
         __source: {
           fileName: _jsxFileName,
-          lineNumber: 238
+          lineNumber: 235
         },
         __self: this
       }),
@@ -2466,7 +2472,7 @@ function DeleteConfirmModal(_ref3) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 239
+            lineNumber: 236
           },
           __self: this
         },
@@ -2477,7 +2483,7 @@ function DeleteConfirmModal(_ref3) {
       'div',
       { className: 'buttonTable', __source: {
           fileName: _jsxFileName,
-          lineNumber: 241
+          lineNumber: 238
         },
         __self: this
       },
@@ -2485,13 +2491,13 @@ function DeleteConfirmModal(_ref3) {
         'div',
         { className: 'tableRow', __source: {
             fileName: _jsxFileName,
-            lineNumber: 242
+            lineNumber: 239
           },
           __self: this
         },
         _react2.default.createElement('div', { className: 'leftCell', __source: {
             fileName: _jsxFileName,
-            lineNumber: 243
+            lineNumber: 240
           },
           __self: this
         }),
@@ -2499,7 +2505,7 @@ function DeleteConfirmModal(_ref3) {
           'div',
           { className: 'rightCell', __source: {
               fileName: _jsxFileName,
-              lineNumber: 244
+              lineNumber: 241
             },
             __self: this
           },
@@ -2507,7 +2513,7 @@ function DeleteConfirmModal(_ref3) {
             'button',
             { className: 'leftButton', onClick: close, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 245
+                lineNumber: 242
               },
               __self: this
             },
@@ -2517,7 +2523,7 @@ function DeleteConfirmModal(_ref3) {
             'button',
             { className: 'rightButton', onClick: confirm, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 246
+                lineNumber: 243
               },
               __self: this
             },
@@ -3580,7 +3586,7 @@ var Contributor = function (_Component) {
                                 },
                                 __self: this
                             },
-                            _react2.default.createElement('img', { src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                            _react2.default.createElement('img', { src: 'images/AddArticle/DarkTriangle.svg', __source: {
                                     fileName: _jsxFileName,
                                     lineNumber: 61
                                 },
@@ -6264,7 +6270,7 @@ var Funding = function (_Component) {
                                 },
                                 __self: this
                             },
-                            _react2.default.createElement('img', { src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                            _react2.default.createElement('img', { src: 'images/AddArticle/DarkTriangle.svg', __source: {
                                     fileName: _jsxFileName,
                                     lineNumber: 161
                                 },
@@ -6535,7 +6541,7 @@ var Funding = function (_Component) {
                                                 },
                                                 __self: this
                                             },
-                                            _react2.default.createElement('img', { src: '/images/AddArticle/ajax-loader-transparent.gif', __source: {
+                                            _react2.default.createElement('img', { src: 'images/AddArticle/ajax-loader-transparent.gif', __source: {
                                                     fileName: _jsxFileName,
                                                     lineNumber: 226
                                                 },
@@ -6866,7 +6872,7 @@ var License = function (_Component) {
                                 },
                                 __self: this
                             },
-                            _react2.default.createElement('img', { src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                            _react2.default.createElement('img', { src: 'images/AddArticle/DarkTriangle.svg', __source: {
                                     fileName: _jsxFileName,
                                     lineNumber: 62
                                 },
@@ -8484,7 +8490,7 @@ var RelatedItems = function (_Component) {
                                 },
                                 __self: this
                             },
-                            _react2.default.createElement('img', { src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                            _react2.default.createElement('img', { src: 'images/AddArticle/DarkTriangle.svg', __source: {
                                     fileName: _jsxFileName,
                                     lineNumber: 81
                                 },
@@ -9225,12 +9231,12 @@ var SubtItem = (_temp = _class = function (_Component) {
                   },
                   __self: this
                 },
-                arrowType === 'dark' ? _react2.default.createElement('img', { src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                arrowType === 'dark' ? _react2.default.createElement('img', { src: 'images/AddArticle/DarkTriangle.svg', __source: {
                     fileName: _jsxFileName,
                     lineNumber: 142
                   },
                   __self: this
-                }) : _react2.default.createElement('img', { src: '/images/AddArticle/Triangle.svg', __source: {
+                }) : _react2.default.createElement('img', { src: 'images/AddArticle/Triangle.svg', __source: {
                     fileName: _jsxFileName,
                     lineNumber: 142
                   },
@@ -9361,10 +9367,6 @@ var _react = require('react');
 
 var _react2 = _interopRequireDefault(_react);
 
-var _reactDom = require('react-dom');
-
-var _reactDom2 = _interopRequireDefault(_reactDom);
-
 var _propTypes = require('prop-types');
 
 var _propTypes2 = _interopRequireDefault(_propTypes);
@@ -9375,31 +9377,13 @@ var _immutabilityHelper = require('immutability-helper');
 
 var _immutabilityHelper2 = _interopRequireDefault(_immutabilityHelper);
 
-var _reactToggleSwitch = require('react-toggle-switch');
-
-var _reactToggleSwitch2 = _interopRequireDefault(_reactToggleSwitch);
-
 var _lodash = require('lodash');
 
 var _lodash2 = _interopRequireDefault(_lodash);
 
-var _my_decorators = require('my_decorators');
-
-var _fetch = require('../utilities/fetch');
-
-var _fetch2 = _interopRequireDefault(_fetch);
-
 var _dupeDOI = require('../utilities/dupeDOI');
 
 var _dupeDOI2 = _interopRequireDefault(_dupeDOI);
-
-var _xmldoc = require('../utilities/xmldoc');
-
-var _xmldoc2 = _interopRequireDefault(_xmldoc);
-
-var _objectSearch = require('../utilities/objectSearch');
-
-var _objectSearch2 = _interopRequireDefault(_objectSearch);
 
 var _reviewArticle = require('./reviewArticle');
 
@@ -9421,8 +9405,6 @@ var _jquery = require('jquery');
 
 var _jquery2 = _interopRequireDefault(_jquery);
 
-var _crossmarkHelpers = require('../utilities/crossmarkHelpers');
-
 var _parseXMLArticle = require('../utilities/parseXMLArticle');
 
 var _parseXMLArticle2 = _interopRequireDefault(_parseXMLArticle);
@@ -9436,6 +9418,8 @@ var _isURL2 = _interopRequireDefault(_isURL);
 var _isDOI = require('../utilities/isDOI');
 
 var _isDOI2 = _interopRequireDefault(_isDOI);
+
+var _routing = require('../routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -9777,7 +9761,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 481
+            lineNumber: 476
           },
           __self: this
         },
@@ -9785,7 +9769,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
           'div',
           { className: 'addarticlecard' + (error ? ' invalid' : ''), __source: {
               fileName: _jsxFileName,
-              lineNumber: 483
+              lineNumber: 478
             },
             __self: this
           },
@@ -9793,7 +9777,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
             'form',
             { className: 'addArticleForm', onSubmit: this.onSubmit, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 485
+                lineNumber: 480
               },
               __self: this
             },
@@ -9801,7 +9785,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
               'div',
               { className: 'reviewArticleButtonDiv', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 487
+                  lineNumber: 482
                 },
                 __self: this
               },
@@ -9809,13 +9793,13 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 'button',
                 { type: 'button', onClick: this.back, className: 'addPublication pull-left backbutton', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 488
+                    lineNumber: 483
                   },
                   __self: this
                 },
-                _react2.default.createElement('img', { className: 'backbuttonarrow', src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                _react2.default.createElement('img', { className: 'backbuttonarrow', src: 'images/AddArticle/DarkTriangle.svg', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 488
+                    lineNumber: 483
                   },
                   __self: this
                 }),
@@ -9824,7 +9808,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                   {
                     __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 488
+                      lineNumber: 483
                     },
                     __self: this
                   },
@@ -9835,7 +9819,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 'button',
                 { type: 'button', onClick: this.openReviewArticleModal, className: 'addPublication reviewbutton', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 489
+                    lineNumber: 484
                   },
                   __self: this
                 },
@@ -9845,7 +9829,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 'button',
                 { type: 'submit', className: 'addPublication saveButton', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 490
+                    lineNumber: 485
                   },
                   __self: this
                 },
@@ -9856,13 +9840,13 @@ var AddArticleCard = (_temp = _class = function (_Component) {
               'div',
               { className: 'articleInnerForm', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 494
+                  lineNumber: 489
                 },
                 __self: this
               },
               _react2.default.createElement(_addArticleCardComponents.TopBar, { title: this.state.article.title, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 496
+                  lineNumber: 491
                 },
                 __self: this
               }),
@@ -9870,13 +9854,13 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 'div',
                 { className: 'body', __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 498
+                    lineNumber: 493
                   },
                   __self: this
                 },
                 _react2.default.createElement(_addArticleCardComponents.InfoHelperRow, { setState: this.boundSetState, on: this.state.on, __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 500
+                    lineNumber: 495
                   },
                   __self: this
                 }),
@@ -9884,26 +9868,26 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                   'div',
                   { className: 'row', __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 502
+                      lineNumber: 497
                     },
                     __self: this
                   },
                   _react2.default.createElement(_addArticleCardComponents.ArticleTitleField, { handleChange: this.handleChange, title: this.state.article.title, errors: this.state.errors, __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 503
+                      lineNumber: 498
                     },
                     __self: this
                   }),
                   !this.state.error && this.state.showHelper && _react2.default.createElement(_addArticleCardComponents.InfoBubble, {
                     __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 504
+                      lineNumber: 499
                     },
                     __self: this
                   }),
                   this.state.error && _react2.default.createElement(_addArticleCardComponents.ErrorBubble, { errors: this.state.errors, crossmarkErrors: this.state.crossmarkErrors, __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 505
+                      lineNumber: 500
                     },
                     __self: this
                   })
@@ -9912,7 +9896,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                   'div',
                   { className: 'row', __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 508
+                      lineNumber: 503
                     },
                     __self: this
                   },
@@ -9924,7 +9908,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                     originallanguagetitlesubtitle: this.state.article.originallanguagetitlesubtitle,
                     handleChange: this.handleChange, __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 509
+                      lineNumber: 504
                     },
                     __self: this
                   })
@@ -9933,7 +9917,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                   'div',
                   { className: 'row', __source: {
                       fileName: _jsxFileName,
-                      lineNumber: 518
+                      lineNumber: 513
                     },
                     __self: this
                   },
@@ -9941,19 +9925,19 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                     'div',
                     { className: 'fieldHolder', __source: {
                         fileName: _jsxFileName,
-                        lineNumber: 519
+                        lineNumber: 514
                       },
                       __self: this
                     },
                     _react2.default.createElement(_addArticleCardComponents.ArticleDOIField, { disabled: this.state.doiDisabled, doi: this.state.article.doi, handleChange: this.handleChange, errors: this.state.errors, __source: {
                         fileName: _jsxFileName,
-                        lineNumber: 520
+                        lineNumber: 515
                       },
                       __self: this
                     }),
                     _react2.default.createElement(_addArticleCardComponents.ArticleUrlField, { url: this.state.article.url, handleChange: this.handleChange, errors: this.state.errors, __source: {
                         fileName: _jsxFileName,
-                        lineNumber: 521
+                        lineNumber: 516
                       },
                       __self: this
                     })
@@ -9966,7 +9950,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                   handleChange: this.handleChange,
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 525
+                    lineNumber: 520
                   },
                   __self: this
                 }),
@@ -9976,7 +9960,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                   handleChange: this.handleChange,
                   __source: {
                     fileName: _jsxFileName,
-                    lineNumber: 532
+                    lineNumber: 527
                   },
                   __self: this
                 })
@@ -9991,7 +9975,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 addHandler: this.addSection.bind(this, 'contributors'),
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 540
+                  lineNumber: 535
                 },
                 __self: this
               }),
@@ -10005,7 +9989,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 addHandler: this.addSection.bind(this, 'funding'),
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 549
+                  lineNumber: 544
                 },
                 __self: this
               }),
@@ -10022,7 +10006,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 makeDateDropDown: _date.makeDateDropDown,
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 558
+                  lineNumber: 553
                 },
                 __self: this
               }),
@@ -10036,7 +10020,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 addHandler: this.addSection.bind(this, 'relatedItems'),
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 570
+                  lineNumber: 565
                 },
                 __self: this
               }),
@@ -10048,7 +10032,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 showSection: this.state.showAdditionalInformation,
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 579
+                  lineNumber: 574
                 },
                 __self: this
               }),
@@ -10058,7 +10042,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
                 crossmarkErrors: this.state.crossmarkErrors,
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 587
+                  lineNumber: 582
                 },
                 __self: this
               })
@@ -10126,10 +10110,9 @@ var AddArticleCard = (_temp = _class = function (_Component) {
           'mdt-version': version,
           'status': 'draft',
           'content': journal.replace(/(\r\n|\n|\r)/gm, '')
-        };
 
-        // check if its part of a issue, the issue props will tell us
-        var savePub;
+          // check if its part of a issue, the issue props will tell us
+        };var savePub;
 
         if (_this3.props.issue) {
           //this is just an issue doi OR undefined
@@ -10159,7 +10142,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
 
           _this3.setState({ version: version });
 
-          _reactRouter.browserHistory.push('/publications/' + encodeURIComponent(publication.message.doi));
+          _reactRouter.browserHistory.push(_routing.routes.publications + '/' + encodeURIComponent(publication.message.doi));
         });
       }
     });
@@ -10188,7 +10171,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
         'div',
         { className: 'innerTitleHolder', __source: {
             fileName: _jsxFileName,
-            lineNumber: 449
+            lineNumber: 444
           },
           __self: _this3
         },
@@ -10196,13 +10179,13 @@ var AddArticleCard = (_temp = _class = function (_Component) {
           'div',
           { className: 'innterTitleHolderIcon', __source: {
               fileName: _jsxFileName,
-              lineNumber: 450
+              lineNumber: 445
             },
             __self: _this3
           },
-          _react2.default.createElement('img', { src: '/images/ReviewArticle/Asset_Icons_White_Review.svg', __source: {
+          _react2.default.createElement('img', { src: 'images/ReviewArticle/Asset_Icons_White_Review.svg', __source: {
               fileName: _jsxFileName,
-              lineNumber: 451
+              lineNumber: 446
             },
             __self: _this3
           })
@@ -10211,7 +10194,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
           'div',
           { className: 'innerTitleHolderText', __source: {
               fileName: _jsxFileName,
-              lineNumber: 453
+              lineNumber: 448
             },
             __self: _this3
           },
@@ -10233,7 +10216,7 @@ var AddArticleCard = (_temp = _class = function (_Component) {
 
   this.back = function () {
     var publication = _this3.props.publication;
-    _reactRouter.browserHistory.push('/publications/' + encodeURIComponent(publication.message.doi));
+    _reactRouter.browserHistory.push(_routing.routes.publications + '/' + encodeURIComponent(publication.message.doi));
   };
 }, _temp);
 exports.default = AddArticleCard;
@@ -10320,7 +10303,7 @@ var TopBar = exports.TopBar = function TopBar(_ref) {
         },
         __self: undefined
       },
-      _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_White_Write.svg', __source: {
+      _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Write.svg', __source: {
           fileName: _jsxFileName,
           lineNumber: 10
         },
@@ -10455,7 +10438,7 @@ var InfoBubble = exports.InfoBubble = function InfoBubble() {
           },
           __self: undefined
         },
-        _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_Grey_Help.svg', __source: {
+        _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_Grey_Help.svg', __source: {
             fileName: _jsxFileName,
             lineNumber: 48
           },
@@ -10497,7 +10480,7 @@ var ErrorBubble = exports.ErrorBubble = function ErrorBubble(_ref2) {
         },
         __self: undefined
       },
-      _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_Grey_Caution.svg', __source: {
+      _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_Grey_Caution.svg', __source: {
           fileName: _jsxFileName,
           lineNumber: 56
         },
@@ -10908,7 +10891,7 @@ var OptionalTitleData = exports.OptionalTitleData = function (_Component3) {
               },
               __self: this
             },
-            _react2.default.createElement('img', { src: '/images/AddArticle/DarkTriangle.svg', __source: {
+            _react2.default.createElement('img', { src: 'images/AddArticle/DarkTriangle.svg', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 128
               },
@@ -12804,8 +12787,8 @@ var AddIssueCard = (_temp = _class = function (_Component) {
           invalidissueurl: { $set: !(0, _isURL2.default)(_this2.state.issue.issueUrl) },
           dupeissuedoi: { $set: _this2.state.issue.issueDoi.length > 0 ? isDupe[0] : false }, // we only care IF there is a DOI
           issuedoi: { $set: _this2.state.issue.issueDoi.length === 0 && (0, _isURL2.default)(_this2.state.issue.issueUrl) }, // we only care IF there is a DOI
-          invalidissuedoi: { $set: _this2.state.issue.issueDoi.length > 0 && (0, _isURL2.default)(_this2.state.issue.issueUrl) ? !validateOwnerPrefix() : false } // we only care IF there is a DOI
-        };
+          invalidissuedoi: { $set: _this2.state.issue.issueDoi.length > 0 && (0, _isURL2.default)(_this2.state.issue.issueUrl) ? !validateOwnerPrefix() : false // we only care IF there is a DOI
+          } };
 
         if (hasPrintYear) {
           // has print year, don't care if there is a online year
@@ -12935,10 +12918,9 @@ var AddIssueCard = (_temp = _class = function (_Component) {
           volume: theVolume,
           volumeDoi: volumeDoi,
           volumeUrl: volumeUrl
-        };
 
-        // contributor loading
-        var contributors = (0, _objectSearch2.default)(parsedIssue, 'contributors');
+          // contributor loading
+        };var contributors = (0, _objectSearch2.default)(parsedIssue, 'contributors');
         var contributee = [];
         // contributors are divied into 2 types
         // person_name and organization
@@ -13399,7 +13381,7 @@ var AddIssueCard = (_temp = _class = function (_Component) {
                                 },
                                 __self: this
                               },
-                              _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_White_Help.svg', __source: {
+                              _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Help.svg', __source: {
                                   fileName: _jsxFileName,
                                   lineNumber: 518
                                 },
@@ -13469,7 +13451,7 @@ var AddIssueCard = (_temp = _class = function (_Component) {
                                   },
                                   __self: this
                                 },
-                                _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_White_Help.svg', __source: {
+                                _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Help.svg', __source: {
                                     fileName: _jsxFileName,
                                     lineNumber: 534
                                   },
@@ -14875,6 +14857,2333 @@ var AddIssueCard = (_temp = _class = function (_Component) {
     });
   };
 }, _temp);
+exports.default = AddIssueCard;
+
+});
+
+require.register("components/addIssueCardRefactor.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = undefined;
+
+var _defineProperty2 = require('babel-runtime/helpers/defineProperty');
+
+var _defineProperty3 = _interopRequireDefault(_defineProperty2);
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _jsxFileName = 'app/components/addIssueCardRefactor.js';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+var _redux = require('redux');
+
+var _reactRouter = require('react-router');
+
+var _immutabilityHelper = require('immutability-helper');
+
+var _immutabilityHelper2 = _interopRequireDefault(_immutabilityHelper);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _reactToggleSwitch = require('react-toggle-switch');
+
+var _reactToggleSwitch2 = _interopRequireDefault(_reactToggleSwitch);
+
+var _my_decorators = require('my_decorators');
+
+var _jquery = require('jquery');
+
+var _jquery2 = _interopRequireDefault(_jquery);
+
+var _makeDateDropDown = require('../utilities/makeDateDropDown');
+
+var _makeDateDropDown2 = _interopRequireDefault(_makeDateDropDown);
+
+var _subItem = require('./SubItems/subItem');
+
+var _subItem2 = _interopRequireDefault(_subItem);
+
+var _fetch = require('../utilities/fetch');
+
+var _fetch2 = _interopRequireDefault(_fetch);
+
+var _dupeDOI = require('../utilities/dupeDOI');
+
+var _dupeDOI2 = _interopRequireDefault(_dupeDOI);
+
+var _isDOI = require('../utilities/isDOI');
+
+var _isDOI2 = _interopRequireDefault(_isDOI);
+
+var _isURL = require('../utilities/isURL');
+
+var _isURL2 = _interopRequireDefault(_isURL);
+
+var _xmldoc = require('../utilities/xmldoc');
+
+var _xmldoc2 = _interopRequireDefault(_xmldoc);
+
+var _jsesc = require('../utilities/jsesc');
+
+var _jsesc2 = _interopRequireDefault(_jsesc);
+
+var _objectSearch = require('../utilities/objectSearch');
+
+var _objectSearch2 = _interopRequireDefault(_objectSearch);
+
+var _getSubItems = require('../utilities/getSubItems');
+
+var _archiveLocations = require('../utilities/archiveLocations');
+
+var _xmlGenerator = require('../utilities/xmlGenerator');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var defaultState = {
+  showIssueDoiReq: false,
+  showHelper: false,
+  on: false,
+  error: false,
+  version: '0',
+  errors: {
+    issueUrl: false,
+    printDateYear: false,
+    onlineDateYear: false,
+    invalidissueurl: false,
+    dupeissuedoi: false,
+    invalidissuedoi: false,
+    issuedoi: false,
+    volumeUrl: false,
+    invalidvolumeurl: false,
+    dupevolumedoi: false,
+    invalidvolumedoi: false,
+    volumedoi: false
+  },
+  issue: {
+    issue: '',
+    issueTitle: '',
+    issueDoi: '',
+    issueUrl: '',
+    printDateYear: '',
+    printDateMonth: '',
+    printDateDay: '',
+    onlineDateYear: '',
+    onlineDateMonth: '',
+    onlineDateDay: '',
+    archiveLocation: '',
+    specialIssueNumber: '',
+    volume: '',
+    volumeDoi: '',
+    volumeUrl: ''
+  },
+  optionalIssueInfo: [{
+    firstName: '',
+    lastName: '',
+    suffix: '',
+    affiliation: '',
+    orcid: '',
+    alternativeName: '',
+    role: ''
+  }]
+};
+
+var AddIssueCard = function (_Component) {
+  (0, _inherits3.default)(AddIssueCard, _Component);
+
+  function AddIssueCard(props) {
+    (0, _classCallCheck3.default)(this, AddIssueCard);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (AddIssueCard.__proto__ || (0, _getPrototypeOf2.default)(AddIssueCard)).call(this, props));
+
+    _this.state = defaultState;
+    _this.state.issue.issueDoi = props.ownerPrefix + '/';
+    return _this;
+  }
+
+  (0, _createClass3.default)(AddIssueCard, [{
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      if (this.props.mode === 'edit') {
+        this.modalShown();
+      }
+    }
+  }, {
+    key: 'optionalIssueInfoHandler',
+    value: function optionalIssueInfoHandler(index, OptIssueInfo) {
+      var optIssueInfo = {};
+      for (var i in OptIssueInfo.refs) {
+        if (OptIssueInfo.refs[i]) {
+          optIssueInfo[i] = OptIssueInfo.refs[i].value;
+        }
+      }
+
+      this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
+        optionalIssueInfo: (0, _immutabilityHelper2.default)(this.state.optionalIssueInfo, (0, _defineProperty3.default)({}, index, { $set: optIssueInfo }))
+      });
+    }
+  }, {
+    key: 'addOptionalIssueInfo',
+    value: function addOptionalIssueInfo() {
+      this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
+        optionalIssueInfo: (0, _immutabilityHelper2.default)(this.state.optionalIssueInfo, { $push: [{
+            firstName: '',
+            lastName: '',
+            suffix: '',
+            affiliation: '',
+            orcid: '',
+            alternativeName: '',
+            role: ''
+          }]
+        })
+      });
+    }
+  }, {
+    key: 'removeOptionalIssueInfo',
+    value: function removeOptionalIssueInfo(index) {
+      this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
+        optionalIssueInfo: (0, _immutabilityHelper2.default)(this.state.optionalIssueInfo, { $splice: [[index, 1]] })
+      });
+    }
+  }, {
+    key: 'handler',
+    value: function handler(e) {
+      var name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length - 1);
+
+      if (name === 'issueUrl') {
+        e.currentTarget.value.trim().length > 0 ? this.setState({ showIssueDoiReq: true }) : this.setState({ showIssueDoiReq: false });
+      }
+
+      this.setState({
+        issue: (0, _immutabilityHelper2.default)(this.state.issue, (0, _defineProperty3.default)({}, name, { $set: e.currentTarget.value ? e.currentTarget.value : '' }))
+      });
+    }
+  }, {
+    key: 'validation',
+    value: function validation(callback) {
+      var _this2 = this;
+
+      var errorStates = {
+        issueTitle: { $set: false },
+        issueUrl: { $set: false },
+        printDateYear: { $set: false },
+        onlineDateYear: { $set: false },
+        invalidissueurl: { $set: false },
+        dupeissuedoi: { $set: false },
+        invalidissuedoi: { $set: false },
+        issuedoi: { $set: false },
+        volumeUrl: { $set: false },
+        invalidvolumeurl: { $set: false },
+        dupevolumedoi: { $set: false },
+        invalidvolumedoi: { $set: false },
+        volumedoi: { $set: false }
+      };
+      this.setState({
+        error: false,
+        errors: (0, _immutabilityHelper2.default)(this.state.errors, errorStates)
+      });
+
+      return (0, _dupeDOI2.default)([this.state.issue.issueDoi, this.state.issue.volumeDoi], function (isDupe, isValid) {
+
+        var hasPrintYear = false,
+            hasOnlineYear = false;
+        if (_this2.state.issue.printDateYear.length > 0 || _this2.state.issue.onlineDateYear.length > 0) {
+          //hasDate = true
+          if (_this2.state.issue.printDateYear.length > 0) {
+            hasPrintYear = true;
+          }
+          if (_this2.state.issue.onlineDateYear.length > 0) {
+            hasOnlineYear = true;
+          }
+        }
+
+        var validateOwnerPrefix = function validateOwnerPrefix() {
+          if ((0, _isDOI2.default)(_this2.state.issue.issueDoi) && _this2.state.issue.issueDoi.split('/')[0] === _this2.props.ownerPrefix) return true;else return false;
+        };
+
+        errorStates = {
+          issueTitle: { $set: _this2.state.issue.issueTitle.length === 0 },
+          issueUrl: { $set: _this2.state.issue.issueUrl.length === 0 },
+          printDateYear: { $set: _this2.state.issue.printDateYear.length === 0 },
+          onlineDateYear: { $set: _this2.state.issue.onlineDateYear.length === 0 },
+          invalidissueurl: { $set: !(0, _isURL2.default)(_this2.state.issue.issueUrl) },
+          dupeissuedoi: { $set: _this2.state.issue.issueDoi.length > 0 ? isDupe[0] : false }, // we only care IF there is a DOI
+          issuedoi: { $set: _this2.state.issue.issueDoi.length === 0 && (0, _isURL2.default)(_this2.state.issue.issueUrl) }, // we only care IF there is a DOI
+          invalidissuedoi: { $set: _this2.state.issue.issueDoi.length > 0 && (0, _isURL2.default)(_this2.state.issue.issueUrl) ? !validateOwnerPrefix() : false // we only care IF there is a DOI
+          } };
+
+        if (hasPrintYear) {
+          // has print year, don't care if there is a online year
+          errorStates.onlineDateYear = { $set: false };
+        }
+        if (hasOnlineYear) {
+          // has online year, don't care if there is a print year
+          errorStates.printDateYear = { $set: false };
+        }
+
+        errorStates.dupeissuedoi = _this2.state.issueDoiDisabled ? { $set: false } : errorStates.dupeissuedoi;
+
+        if ((_this2.state.issue.volume ? _this2.state.issue.volume : '').length > 0 || (_this2.state.issue.volumeDoi ? _this2.state.issue.volumeDoi : '').length > 0 || (_this2.state.issue.volumeUrl ? _this2.state.issue.volumeUrl : '').length > 0) {
+          errorStates.dupevolumedoi = { $set: (_this2.state.issue.volumeDoi ? _this2.state.issue.volumeDoi : '').length > 0 ? isDupe[1] ? isDupe[1] : false : false }, // we only care IF there is a DOI
+          errorStates.invalidvolumedoi = { $set: (_this2.state.issue.volumeDoi ? _this2.state.issue.volumeDoi : '').length > 0 && !(0, _isDOI2.default)(_this2.state.issue.volumeDoi) }, // we only care IF there is a DOI
+          errorStates.invalidvolumeurl = { $set: (_this2.state.issue.volumeUrl ? _this2.state.issue.volumeUrl : '').length > 0 ? !(0, _isURL2.default)(_this2.state.issue.volumeUrl) : false };
+
+          errorStates.dupevolumedoi = _this2.state.volumeDoiDisabled ? { $set: false } : errorStates.dupevolumedoi;
+        }
+
+        _this2.setState({
+          errors: (0, _immutabilityHelper2.default)(_this2.state.errors, errorStates)
+        }, function () {
+          var errors = ['issuedoi', 'invalidissuedoi', 'dupeissuedoi', 'issueTitle'];
+
+          for (var key in _this2.state.errors) {
+            // checking all the properties of errors to see if there is a true
+            if (_this2.state.errors[key]) {
+              // only return there is error and prevent from saving if there is no title + doi
+              _this2.setState({ error: true });
+              return errors.indexOf(key) > -1 ? callback(_this2.state.errors[key]) : callback(false);
+            }
+          }
+          return callback(false); // iterated the entire object, no true, returning a false, no error
+        });
+      });
+    }
+  }, {
+    key: 'onSubmit',
+    value: function onSubmit(e) {
+      var _this3 = this;
+
+      e.preventDefault();
+
+      this.validation(function (valid) {
+        // need it to be a callback because setting state does not happen right away
+        if (!valid) {
+          var props = _this3.props;
+          var publication = props.publication;
+          var state = _this3.state;
+
+          var issueXML = (0, _xmlGenerator.getIssueXml)(_this3.state);
+
+          var version = _this3.state.version;
+
+          if (props.mode === 'edit') {
+            version = String(parseInt(_this3.state.version) + 1);
+          }
+
+          var title = (0, _jsesc2.default)(_this3.state.issue.issueTitle);
+
+          var newRecord = {
+            'title': { 'title': title },
+            'doi': _this3.state.issue.issueDoi,
+            'owner-prefix': _this3.state.issue.issueDoi.split('/')[0],
+            'type': 'issue',
+            'mdt-version': version,
+            'status': 'draft',
+            'content': issueXML.replace(/(\r\n|\n|\r)/gm, '')
+          };
+
+          publication.message.contains = [newRecord];
+
+          _this3.props.postIssue(publication, function () {
+            _this3.props.handle(publication.message.doi);
+            _this3.setState({ version: version });
+            if (!_this3.state.error) {
+              _this3.closeModal();
+            }
+          });
+        }
+      });
+    }
+  }, {
+    key: 'closeModal',
+    value: function closeModal() {
+      this.setState(defaultState);
+      this.props.reduxControlModal({ showModal: false });
+    }
+  }, {
+    key: 'modalShown',
+    value: function modalShown() {
+      var _this4 = this;
+
+      var doi = this.props.issue.doi;
+      // if doi is not required, then how is UI suppose to find a issue?
+
+      this.props.fetchIssue(doi, function (Publication) {
+        var message = Publication.message;
+        var Issue = message.contains[0];
+        var version = Issue['mdt-version'];
+
+        var parsedIssue = (0, _xmldoc2.default)(Issue.content);
+        var issueTitle = (0, _objectSearch2.default)(parsedIssue, 'title') ? (0, _objectSearch2.default)(parsedIssue, 'title') : '';
+        var issue = (0, _objectSearch2.default)(parsedIssue, 'issue') ? (0, _objectSearch2.default)(parsedIssue, 'issue') : '';
+        var issueDoi = (0, _objectSearch2.default)(parsedIssue, 'doi') ? (0, _objectSearch2.default)(parsedIssue, 'doi') : '';
+        var issueUrl = (0, _objectSearch2.default)(parsedIssue, 'resource') ? (0, _objectSearch2.default)(parsedIssue, 'resource') : '';
+        var special_numbering = (0, _objectSearch2.default)(parsedIssue, 'special_numbering') ? (0, _objectSearch2.default)(parsedIssue, 'special_numbering') : '';
+        var publication_date = (0, _objectSearch2.default)(parsedIssue, 'publication_date');
+
+        if (!Array.isArray(publication_date)) publication_date = [publication_date]; //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
+
+        var onlinePubDate = _lodash2.default.find(publication_date, function (pubDate) {
+          if (pubDate) {
+            if (pubDate['-media_type'] === 'online') {
+              return pubDate;
+            }
+          }
+        });
+
+        var printPubDate = _lodash2.default.find(publication_date, function (pubDate) {
+          if (pubDate) {
+            if (pubDate['-media_type'] === 'print') {
+              return pubDate;
+            }
+          }
+        });
+        var printDateYear = '';
+        var printDateMonth = '';
+        var printDateDay = '';
+        if (printPubDate) {
+          printDateYear = printPubDate['year'] ? printPubDate['year'] : '';
+          printDateMonth = printPubDate['month'] ? printPubDate['month'] : '';
+          printDateDay = printPubDate['day'] ? printPubDate['day'] : '';
+        }
+
+        var onlineDateYear = '';
+        var onlineDateMonth = '';
+        var onlineDateDay = '';
+        if (onlinePubDate) {
+          onlineDateYear = onlinePubDate['year'] ? onlinePubDate['year'] : '';
+          onlineDateMonth = onlinePubDate['month'] ? onlinePubDate['month'] : '';
+          onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : '';
+        }
+
+        var archiveLocations = (0, _objectSearch2.default)(parsedIssue, 'archive_locations');
+        var archive = '';
+        if (archiveLocations) {
+          archive = archiveLocations.archive['-name'];
+        }
+
+        var journal_volume = (0, _objectSearch2.default)(parsedIssue, 'journal_volume');
+        if (journal_volume) {
+          var theVolume = (0, _objectSearch2.default)(journal_volume, 'volume') ? (0, _objectSearch2.default)(journal_volume, 'volume') : '';
+          var volumeDoiData = (0, _objectSearch2.default)(journal_volume, 'doi_data') ? (0, _objectSearch2.default)(journal_volume, 'doi_data') : '';
+          var volumeDoi = (0, _objectSearch2.default)(volumeDoiData, 'doi') ? (0, _objectSearch2.default)(volumeDoiData, 'doi') : '';
+          var volumeUrl = (0, _objectSearch2.default)(volumeDoiData, 'resource') ? (0, _objectSearch2.default)(volumeDoiData, 'resource') : '';
+        }
+
+        var setIssue = {
+          issue: issue,
+          issueTitle: issueTitle,
+          issueDoi: _this4.props.duplicate ? _this4.props.ownerPrefix + '/' : issueDoi,
+          issueUrl: _this4.props.duplicate ? '' : issueUrl,
+          printDateYear: printDateYear,
+          printDateMonth: printDateMonth,
+          printDateDay: printDateDay,
+          onlineDateYear: onlineDateYear,
+          onlineDateMonth: onlineDateMonth,
+          onlineDateDay: onlineDateDay,
+          archiveLocation: archive,
+          specialIssueNumber: special_numbering,
+          volume: theVolume,
+          volumeDoi: volumeDoi,
+          volumeUrl: volumeUrl
+
+          // contributor loading
+        };var contributors = (0, _objectSearch2.default)(parsedIssue, 'contributors');
+        var contributee = [];
+        // contributors are divied into 2 types
+        // person_name and organization
+        var person_name = undefined;
+        if (contributors) {
+          person_name = (0, _objectSearch2.default)(contributors, 'person_name');
+
+          if (person_name) {
+            // if exist
+            if (!Array.isArray(person_name)) {
+              // there is ONE funder
+              contributee.push({
+                firstName: person_name.given_name ? person_name.given_name : '',
+                lastName: person_name.surname ? person_name.surname : '',
+                suffix: person_name.suffix ? person_name.suffix : '',
+                affiliation: person_name.affiliation ? person_name.affiliation : '',
+                orcid: person_name.ORCID ? person_name.ORCID : '',
+                alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
+                role: person_name['-contributor_role'] ? person_name['-contributor_role'] : ''
+              });
+            } else {
+              // its an array
+              _lodash2.default.each(person_name, function (person) {
+                contributee.push({
+                  firstName: person.given_name ? person.given_name : '',
+                  lastName: person.surname ? person.surname : '',
+                  suffix: person.suffix ? person.suffix : '',
+                  affiliation: person.affiliation ? person.affiliation : '',
+                  orcid: person.ORCID ? person.ORCID : '',
+                  alternativeName: person['alt-name'] ? person['alt-name'] : '',
+                  role: person['-contributor_role'] ? person['-contributor_role'] : ''
+                });
+              });
+            }
+          }
+        }
+
+        if (contributee.length <= 0) {
+          contributee.push({
+            firstName: '',
+            lastName: '',
+            suffix: '',
+            affiliation: '',
+            orcid: '',
+            role: '',
+            alternativeName: ''
+          });
+        }
+
+        var issueDoiDisabled = false;
+        if (issueDoi) {
+          issueDoiDisabled = issueDoi.length > 0 && _this4.props.issue.status !== 'draft' ? true : false;
+        }
+
+        var volumeDoiDisabled = false;
+        if (volumeDoi) {
+          volumeDoiDisabled = volumeDoi.length > 0 && _this4.props.issue.status !== 'draft' ? true : false;
+        }
+
+        _this4.setState({
+          version: version,
+          issueDoiDisabled: issueDoiDisabled,
+          volumeDoiDisabled: volumeDoiDisabled,
+          issue: (0, _immutabilityHelper2.default)(_this4.state.issue, { $set: setIssue }),
+          optionalIssueInfo: (0, _immutabilityHelper2.default)(_this4.state.optionalIssueInfo, { $set: contributee })
+        });
+      });
+    }
+  }, {
+    key: 'componentDidUpdate',
+    value: function componentDidUpdate() {
+      var firstError = (0, _jquery2.default)(".fieldError").first();
+      if (firstError.length > 0) {
+        (0, _jquery2.default)('.fullError').find('.tooltips').css({
+          'top': firstError.offset().top + (firstError.position().top - firstError.position().top * .5) - ((0, _jquery2.default)('.switchLicense').first().position().top + 15) - ((0, _jquery2.default)('.switchLicense').first().offset().top + 15) + 15
+        });
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+      var _this5 = this;
+
+      return _react2.default.createElement(
+        'div',
+        { className: 'addIssueCard', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 436
+          },
+          __self: this
+        },
+        _react2.default.createElement(
+          'div',
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 437
+            },
+            __self: this
+          },
+          _react2.default.createElement(
+            'form',
+            { onSubmit: this.onSubmit.bind(this), className: 'addIssues', __source: {
+                fileName: _jsxFileName,
+                lineNumber: 438
+              },
+              __self: this
+            },
+            _react2.default.createElement(
+              'div',
+              { className: 'articleInnerForm', __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 439
+                },
+                __self: this
+              },
+              _react2.default.createElement(
+                'div',
+                { className: 'body', __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 440
+                  },
+                  __self: this
+                },
+                _react2.default.createElement(
+                  'div',
+                  { className: 'row infohelper', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 441
+                    },
+                    __self: this
+                  },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'errorHolder', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 442
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'switchOuterHolder', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 443
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'switchInnerHolder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 444
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'switchLicense', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 445
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'switchLabel', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 446
+                              },
+                              __self: this
+                            },
+                            _react2.default.createElement(
+                              'span',
+                              {
+                                __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 446
+                                },
+                                __self: this
+                              },
+                              'Show Help'
+                            )
+                          ),
+                          _react2.default.createElement(_reactToggleSwitch2.default, {
+                            ref: 'showHelper',
+                            onClick: function onClick() {
+                              _this5.setState({ on: !_this5.state.on }, function () {
+                                _this5.setState({ showHelper: _this5.state.on });
+                              });
+                            },
+                            on: this.state.on,
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 447
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    )
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'row', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 461
+                    },
+                    __self: this
+                  },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'fieldHolder', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 462
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 463
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 464
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 465
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 466
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 467
+                              },
+                              __self: this
+                            },
+                            'Issue'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 470
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder norequire', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 471
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('div', { className: 'required height32', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 472
+                            },
+                            __self: this
+                          })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 475
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32',
+                            type: 'text',
+                            name: 'issue.issue',
+                            onChange: this.handler.bind(this),
+                            value: this.state.issue.issue,
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 476
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    ),
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 486
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 487
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 488
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 489
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 490
+                              },
+                              __self: this
+                            },
+                            'Issue Title'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 493
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 494
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'required height32', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 495
+                              },
+                              __self: this
+                            },
+                            _react2.default.createElement(
+                              'span',
+                              {
+                                __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 496
+                                },
+                                __self: this
+                              },
+                              '*'
+                            )
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 499
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32',
+                            type: 'text',
+                            onChange: this.handler.bind(this),
+                            value: this.state.issue.issueTitle,
+                            name: 'issue.issueTitle',
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 500
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    )
+                  ),
+                  !this.state.error && this.state.showHelper && _react2.default.createElement(
+                    'div',
+                    { className: 'errorHolder talltooltip helpers', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 512
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'toolTipHolder', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 513
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'a',
+                        { className: 'tooltips', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 514
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'toolmsgholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 515
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'errormsgholder', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 516
+                              },
+                              __self: this
+                            },
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'errormsginnerholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 517
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Help.svg', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 518
+                                },
+                                __self: this
+                              }),
+                              'Please provide a Title that fully describes your Issue'
+                            )
+                          )
+                        )
+                      )
+                    )
+                  ),
+                  this.state.error && _react2.default.createElement(
+                    'div',
+                    { className: 'errorHolder talltooltip fullError', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 528
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'toolTipHolder', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 529
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'a',
+                        { className: 'tooltips', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 530
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'toolmsgholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 531
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'errormsgholder', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 532
+                              },
+                              __self: this
+                            },
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'errormsginnerholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 533
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 534
+                                  },
+                                  __self: this
+                                },
+                                _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Help.svg', __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 534
+                                  },
+                                  __self: this
+                                })
+                              ),
+                              (this.state.errors.issueTitle || this.state.errors.issuedoi || this.state.errors.issueUrl || this.state.errors.printDateYear || this.state.errors.onlineDateYear) && _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 542
+                                  },
+                                  __self: this
+                                },
+                                _react2.default.createElement(
+                                  'b',
+                                  {
+                                    __source: {
+                                      fileName: _jsxFileName,
+                                      lineNumber: 542
+                                    },
+                                    __self: this
+                                  },
+                                  'Required.'
+                                ),
+                                _react2.default.createElement('br', {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 542
+                                  },
+                                  __self: this
+                                }),
+                                'Please provide required informaton.'
+                              ),
+                              (this.state.errors.invalidissuedoi || this.state.errors.invalidvolumedoi) && _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 545
+                                  },
+                                  __self: this
+                                },
+                                _react2.default.createElement(
+                                  'b',
+                                  {
+                                    __source: {
+                                      fileName: _jsxFileName,
+                                      lineNumber: 545
+                                    },
+                                    __self: this
+                                  },
+                                  'Invalid DOI.'
+                                ),
+                                _react2.default.createElement('br', {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 545
+                                  },
+                                  __self: this
+                                }),
+                                'Please check your DOI (10.xxxx/xx...). Record prefix (10.xxxx) must match publication prefix.'
+                              ),
+                              this.state.errors.invalidissueurl && _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 548
+                                  },
+                                  __self: this
+                                },
+                                _react2.default.createElement(
+                                  'b',
+                                  {
+                                    __source: {
+                                      fileName: _jsxFileName,
+                                      lineNumber: 548
+                                    },
+                                    __self: this
+                                  },
+                                  'Invalid URL.'
+                                ),
+                                _react2.default.createElement('br', {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 548
+                                  },
+                                  __self: this
+                                }),
+                                'Please check your URL.'
+                              ),
+                              this.state.errors.dupeissuedoi && _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 551
+                                  },
+                                  __self: this
+                                },
+                                _react2.default.createElement(
+                                  'b',
+                                  {
+                                    __source: {
+                                      fileName: _jsxFileName,
+                                      lineNumber: 551
+                                    },
+                                    __self: this
+                                  },
+                                  'Duplicate DOI.'
+                                ),
+                                _react2.default.createElement('br', {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 551
+                                  },
+                                  __self: this
+                                }),
+                                'Registering a new DOI? This one already exists.'
+                              )
+                            )
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'row', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 561
+                    },
+                    __self: this
+                  },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'fieldHolder', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 562
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 563
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 564
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 565
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 566
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 567
+                              },
+                              __self: this
+                            },
+                            'Issue DOI'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 570
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder' + (this.state.showIssueDoiReq ? '' : ' norequire'), __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 571
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'required height32', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 574
+                              },
+                              __self: this
+                            },
+                            this.state.showIssueDoiReq ? _react2.default.createElement(
+                              'span',
+                              {
+                                __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 575
+                                },
+                                __self: this
+                              },
+                              '*'
+                            ) : ''
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 578
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32' + (this.state.errors.dupedoi || this.state.errors.invaliddoi ? ' fieldError' : ''),
+                            type: 'text',
+                            name: 'issue.issueDoi',
+                            onChange: this.handler.bind(this),
+                            value: this.state.issue.issueDoi,
+                            disabled: this.state.issueDoiDisabled && !this.props.duplicate,
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 579
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    ),
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 590
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 591
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 592
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 593
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 594
+                              },
+                              __self: this
+                            },
+                            'Issue URL (Required)'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 597
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 598
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'required height32', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 599
+                              },
+                              __self: this
+                            },
+                            _react2.default.createElement(
+                              'span',
+                              {
+                                __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 600
+                                },
+                                __self: this
+                              },
+                              '*'
+                            )
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 603
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32' + (this.state.errors.issueUrl || this.state.errors.invalidissueurl ? ' fieldError' : ''),
+                            type: 'text',
+                            name: 'issue.issueUrl',
+                            value: this.state.issue.issueUrl,
+                            onChange: this.handler.bind(this),
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 604
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    )
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'row', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 616
+                    },
+                    __self: this
+                  },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'fieldHolder', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 617
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 618
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 619
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 620
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 621
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 622
+                              },
+                              __self: this
+                            },
+                            'Print Date'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 625
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder' + ((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? ' dateselectrequire' : ' norequire'), __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 626
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'required height32', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 627
+                              },
+                              __self: this
+                            },
+                            (this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? _react2.default.createElement(
+                              'span',
+                              {
+                                __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 628
+                                },
+                                __self: this
+                              },
+                              '*'
+                            ) : _react2.default.createElement('span', {
+                              __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 628
+                              },
+                              __self: this
+                            })
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 631
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'datepickerholder', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 632
+                              },
+                              __self: this
+                            },
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'dateselectholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 633
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 634
+                                  },
+                                  __self: this
+                                },
+                                'Year ',
+                                (this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? '(*)' : ''
+                              ),
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 635
+                                  },
+                                  __self: this
+                                },
+                                (0, _makeDateDropDown2.default)(this.handler.bind(this), 'issue.printDateYear', 'y', this.state.issue.printDateYear, this.state.errors.printDateYear, 0, this, 'issue')
+                              )
+                            ),
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'dateselectholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 637
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 638
+                                  },
+                                  __self: this
+                                },
+                                'Month'
+                              ),
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 639
+                                  },
+                                  __self: this
+                                },
+                                (0, _makeDateDropDown2.default)(this.handler.bind(this), 'issue.printDateMonth', 'm', this.state.issue.printDateMonth, false, 0, this, 'issue')
+                              )
+                            ),
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'dateselectholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 643
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 644
+                                  },
+                                  __self: this
+                                },
+                                'Day'
+                              ),
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 645
+                                  },
+                                  __self: this
+                                },
+                                (0, _makeDateDropDown2.default)(this.handler.bind(this), 'issue.printDateDay', 'd', this.state.issue.printDateDay, false, 0, this, 'issue')
+                              )
+                            ),
+                            _react2.default.createElement('div', {
+                              __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 649
+                              },
+                              __self: this
+                            })
+                          )
+                        )
+                      )
+                    ),
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 656
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 657
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 658
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 659
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 660
+                              },
+                              __self: this
+                            },
+                            'Online Date'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 663
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder' + ((this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0 ? ' dateselectrequire' : ' norequire'), __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 664
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'required height32', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 665
+                              },
+                              __self: this
+                            },
+                            (this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0 ? _react2.default.createElement(
+                              'span',
+                              {
+                                __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 666
+                                },
+                                __self: this
+                              },
+                              '*'
+                            ) : _react2.default.createElement('span', {
+                              __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 666
+                              },
+                              __self: this
+                            })
+                          )
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 669
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'datepickerholder', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 670
+                              },
+                              __self: this
+                            },
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'dateselectholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 671
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 672
+                                  },
+                                  __self: this
+                                },
+                                'Year ',
+                                (this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0 ? '(*)' : ''
+                              ),
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 673
+                                  },
+                                  __self: this
+                                },
+                                (0, _makeDateDropDown2.default)(this.handler.bind(this), 'issue.onlineDateYear', 'y', this.state.issue.onlineDateYear, this.state.errors.onlineDateYear, 0, this, 'issue')
+                              )
+                            ),
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'dateselectholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 675
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 676
+                                  },
+                                  __self: this
+                                },
+                                'Month'
+                              ),
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 677
+                                  },
+                                  __self: this
+                                },
+                                (0, _makeDateDropDown2.default)(this.handler.bind(this), 'issue.onlineDateMonth', 'm', this.state.issue.onlineDateMonth, false, 0, this, 'issue')
+                              )
+                            ),
+                            _react2.default.createElement(
+                              'div',
+                              { className: 'dateselectholder', __source: {
+                                  fileName: _jsxFileName,
+                                  lineNumber: 681
+                                },
+                                __self: this
+                              },
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 682
+                                  },
+                                  __self: this
+                                },
+                                'Day'
+                              ),
+                              _react2.default.createElement(
+                                'div',
+                                {
+                                  __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 683
+                                  },
+                                  __self: this
+                                },
+                                (0, _makeDateDropDown2.default)(this.handler.bind(this), 'issue.onlineDateDay', 'd', this.state.issue.onlineDateDay, false, 0, this, 'issue')
+                              )
+                            ),
+                            _react2.default.createElement('div', {
+                              __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 687
+                              },
+                              __self: this
+                            })
+                          )
+                        )
+                      )
+                    )
+                  )
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'row', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 695
+                    },
+                    __self: this
+                  },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'fieldHolder', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 696
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 697
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 698
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 699
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 700
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 701
+                              },
+                              __self: this
+                            },
+                            'Archive Location'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 704
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder norequire', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 705
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('div', { className: 'required height32', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 706
+                            },
+                            __self: this
+                          })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 709
+                            },
+                            __self: this
+                          },
+                          (0, _archiveLocations.displayArchiveLocations)(this.handler.bind(this), this.state.issue.archiveLocation)
+                        )
+                      )
+                    ),
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 714
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 715
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 716
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 717
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 718
+                              },
+                              __self: this
+                            },
+                            'Special Issue Number'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 721
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder norequire', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 722
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('div', { className: 'required height32', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 723
+                            },
+                            __self: this
+                          })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 726
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32',
+                            type: 'text',
+                            name: 'issue.specialIssueNumber',
+                            onChange: this.handler.bind(this),
+                            value: this.state.issue.specialIssueNumber,
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 727
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    )
+                  ),
+                  _react2.default.createElement('div', { className: 'errorHolder', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 738
+                    },
+                    __self: this
+                  })
+                ),
+                _react2.default.createElement('hr', {
+                  __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 741
+                  },
+                  __self: this
+                }),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'row', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 742
+                    },
+                    __self: this
+                  },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'fieldHolder', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 743
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 744
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 745
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 746
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 747
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 748
+                              },
+                              __self: this
+                            },
+                            'Volume'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 751
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder norequire', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 752
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('div', { className: 'required height32', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 753
+                            },
+                            __self: this
+                          })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 756
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32',
+                            type: 'text',
+                            name: 'issue.volume',
+                            onChange: this.handler.bind(this),
+                            value: this.state.issue.volume,
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 757
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    )
+                  ),
+                  _react2.default.createElement('div', { className: 'errorHolder', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 768
+                    },
+                    __self: this
+                  })
+                ),
+                _react2.default.createElement(
+                  'div',
+                  { className: 'row', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 771
+                    },
+                    __self: this
+                  },
+                  _react2.default.createElement(
+                    'div',
+                    { className: 'fieldHolder', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 772
+                      },
+                      __self: this
+                    },
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 773
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 774
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 775
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 776
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 777
+                              },
+                              __self: this
+                            },
+                            'Volume DOI'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 780
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder norequire', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 781
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('div', { className: 'required height32', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 782
+                            },
+                            __self: this
+                          })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 785
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32' + (this.state.errors.dupedoi || this.state.errors.invaliddoi || this.state.errors.invalidvolumedoi ? ' fieldError' : ''),
+                            type: 'text',
+                            name: 'issue.volumeDoi',
+                            onChange: this.handler.bind(this),
+                            value: this.state.issue.volumeDoi,
+                            disabled: this.state.volumeDoiDisabled,
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 786
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    ),
+                    _react2.default.createElement(
+                      'div',
+                      { className: 'fieldinnerholder halflength', __source: {
+                          fileName: _jsxFileName,
+                          lineNumber: 797
+                        },
+                        __self: this
+                      },
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'labelholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 798
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement('div', {
+                          __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 799
+                          },
+                          __self: this
+                        }),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'labelinnerholder', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 800
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement(
+                            'div',
+                            { className: 'label', __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 801
+                              },
+                              __self: this
+                            },
+                            'Volume URL'
+                          )
+                        )
+                      ),
+                      _react2.default.createElement(
+                        'div',
+                        { className: 'requrefieldholder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 804
+                          },
+                          __self: this
+                        },
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'requiredholder norequire', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 805
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('div', { className: 'required height32', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 806
+                            },
+                            __self: this
+                          })
+                        ),
+                        _react2.default.createElement(
+                          'div',
+                          { className: 'field', __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 809
+                            },
+                            __self: this
+                          },
+                          _react2.default.createElement('input', {
+                            className: 'height32' + (this.state.errors.volumeUrl || this.state.errors.invalidvolumeurl ? ' fieldError' : ''),
+                            type: 'text',
+                            name: 'issue.volumeUrl',
+                            onChange: this.handler.bind(this),
+                            value: this.state.issue.volumeUrl,
+                            __source: {
+                              fileName: _jsxFileName,
+                              lineNumber: 810
+                            },
+                            __self: this
+                          })
+                        )
+                      )
+                    )
+                  )
+                )
+              ),
+              _react2.default.createElement(_subItem2.default, {
+                title: 'Optional Issue Information (Contributorship)',
+                arrowType: 'dark',
+                addable: true,
+                incomingData: this.state.optionalIssueInfo,
+                handler: this.optionalIssueInfoHandler.bind(this),
+                addHandler: this.addOptionalIssueInfo.bind(this),
+                remove: this.removeOptionalIssueInfo.bind(this),
+                __source: {
+                  fileName: _jsxFileName,
+                  lineNumber: 823
+                },
+                __self: this
+              }),
+              _react2.default.createElement(
+                'div',
+                { className: 'saveButtonHolder', __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 832
+                  },
+                  __self: this
+                },
+                _react2.default.createElement(
+                  'button',
+                  { type: 'submit', className: 'saveButton', __source: {
+                      fileName: _jsxFileName,
+                      lineNumber: 833
+                    },
+                    __self: this
+                  },
+                  'Submit'
+                )
+              )
+            )
+          )
+        )
+      );
+    }
+  }]);
+  return AddIssueCard;
+}(_react.Component);
+
 exports.default = AddIssueCard;
 
 });
@@ -17787,7 +20096,7 @@ var DepositCartItemCard = (_temp = _class = function (_Component) {
                                             },
                                             __self: this
                                         },
-                                        _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_White_Caution.svg', __source: {
+                                        _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Caution.svg', __source: {
                                                 fileName: _jsxFileName,
                                                 lineNumber: 433
                                             },
@@ -17843,7 +20152,7 @@ var DepositCartItemCard = (_temp = _class = function (_Component) {
                             },
                             __self: this
                         },
-                        _react2.default.createElement('img', { src: '/images/Deposit/Asset_Icons_Red_Caution.png', __source: {
+                        _react2.default.createElement('img', { src: 'images/Deposit/Asset_Icons_Red_Caution.png', __source: {
                                 fileName: _jsxFileName,
                                 lineNumber: 454
                             },
@@ -18358,7 +20667,7 @@ var DepositResult = function (_Component) {
                 },
                 __self: this
               },
-              _react2.default.createElement('img', { className: 'leftImage', src: '/images/Deposit/Asset_Icons_Deposit_Deposit Accepted.svg', __source: {
+              _react2.default.createElement('img', { className: 'leftImage', src: 'images/Deposit/Asset_Icons_Deposit_Deposit Accepted.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 25
                 },
@@ -18404,7 +20713,7 @@ var DepositResult = function (_Component) {
                 },
                 __self: this
               },
-              _react2.default.createElement('img', { className: 'rightImage', src: '/images/Deposit/Asset_Icons_Deposit_Deposit Failed.svg', __source: {
+              _react2.default.createElement('img', { className: 'rightImage', src: 'images/Deposit/Asset_Icons_Deposit_Deposit Failed.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 32
                 },
@@ -18653,7 +20962,7 @@ var ErrorBox = function (_Component2) {
                 },
                 __self: this
               },
-              _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_White_Caution.svg', __source: {
+              _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Caution.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 100
                 },
@@ -18671,7 +20980,7 @@ var ErrorBox = function (_Component2) {
                 this.props.errorMessage
               )
             ),
-            _react2.default.createElement('img', { src: '/images/AddArticle/Asset_Icons_White_Caution.svg', __source: {
+            _react2.default.createElement('img', { src: 'images/AddArticle/Asset_Icons_White_Caution.svg', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 101
               },
@@ -19061,13 +21370,13 @@ var Footer = function (_Component) {
                 },
                 __self: this
               },
-              _react2.default.createElement('img', { src: '/images/App/cc.svg', __source: {
+              _react2.default.createElement('img', { src: 'images/App/cc.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 38
                 },
                 __self: this
               }),
-              _react2.default.createElement('img', { src: '/images/App/by.svg', __source: {
+              _react2.default.createElement('img', { src: 'images/App/by.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 39
                 },
@@ -19162,6 +21471,8 @@ var _navBar = require('./navBar');
 
 var _navBar2 = _interopRequireDefault(_navBar);
 
+var _routing = require('../routing');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Header = (_temp = _class = function (_Component) {
@@ -19175,9 +21486,9 @@ var Header = (_temp = _class = function (_Component) {
   (0, _createClass3.default)(Header, [{
     key: 'render',
     value: function render() {
-      var isOnHome = this.props.path === '/';
+      var isOnHome = this.props.path === _routing.routes.base;
       var showPublicationsNav = false;
-      if (String(this.props.path).startsWith('/publications') || String(this.props.path).startsWith('/cart') || String(this.props.path).startsWith('/deposit-history')) {
+      if (String(this.props.path).startsWith(_routing.routes.publications) || String(this.props.path).startsWith(_routing.routes.depositCart) || String(this.props.path).startsWith(_routing.routes.depositHistory)) {
         showPublicationsNav = true;
       }
 
@@ -19185,7 +21496,7 @@ var Header = (_temp = _class = function (_Component) {
         'div',
         { className: 'header' + (isOnHome ? ' large' : ''), __source: {
             fileName: _jsxFileName,
-            lineNumber: 24
+            lineNumber: 25
           },
           __self: this
         },
@@ -19193,26 +21504,26 @@ var Header = (_temp = _class = function (_Component) {
           'div',
           { className: 'header-contents', __source: {
               fileName: _jsxFileName,
-              lineNumber: 25
-            },
-            __self: this
-          },
-          _react2.default.createElement('img', { src: '/images/App/crossref-content-registration-logo-200.svg', __source: {
-              fileName: _jsxFileName,
               lineNumber: 26
             },
             __self: this
-          }),
-          _react2.default.createElement('img', { className: 'second-logo-img', src: '/images/App/crossref-depositor-logo-200.svg', __source: {
+          },
+          _react2.default.createElement('img', { src: 'images/App/crossref-content-registration-logo-200.svg', __source: {
               fileName: _jsxFileName,
               lineNumber: 27
+            },
+            __self: this
+          }),
+          _react2.default.createElement('img', { className: 'second-logo-img', src: 'images/App/crossref-depositor-logo-200.svg', __source: {
+              fileName: _jsxFileName,
+              lineNumber: 28
             },
             __self: this
           })
         ),
         showPublicationsNav && _react2.default.createElement(_navBar2.default, { cart: this.props.cart, reduxControlModal: this.props.reduxControlModal, reduxLogout: this.props.reduxLogout, __source: {
             fileName: _jsxFileName,
-            lineNumber: 29
+            lineNumber: 30
           },
           __self: this
         })
@@ -19790,7 +22101,7 @@ var Modal = (_temp = _class = function (_React$Component) {
                       },
                       __self: this
                     },
-                    _react2.default.createElement('img', { src: '/images/Modal/Asset_Icons_White_Close.svg', __source: {
+                    _react2.default.createElement('img', { src: 'images/Modal/Asset_Icons_White_Close.svg', __source: {
                         fileName: _jsxFileName,
                         lineNumber: 48
                       },
@@ -19892,17 +22203,13 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _reactRouter = require('react-router');
 
-var _my_decorators = require('my_decorators');
-
 var _reactToastr = require('react-toastr');
-
-var _immutabilityHelper = require('immutability-helper');
-
-var _immutabilityHelper2 = _interopRequireDefault(_immutabilityHelper);
 
 var _pascaleCase = require('../utilities/pascaleCase');
 
 var _pascaleCase2 = _interopRequireDefault(_pascaleCase);
+
+var _routing = require('../routing');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -19965,7 +22272,7 @@ var PublicationNav = (_temp = _class = function (_Component) {
             },
             __self: this
           },
-          _react2.default.createElement('img', { src: '/images/Toast/Asset_Icons_White_Check.svg', __source: {
+          _react2.default.createElement('img', { src: 'images/Toast/Asset_Icons_White_Check.svg', __source: {
               fileName: _jsxFileName,
               lineNumber: 51
             },
@@ -20060,7 +22367,7 @@ var PublicationNav = (_temp = _class = function (_Component) {
             },
             _react2.default.createElement(
               _reactRouter.Link,
-              { to: '/publications', __source: {
+              { to: _routing.routes.publications, __source: {
                   fileName: _jsxFileName,
                   lineNumber: 87
                 },
@@ -20070,7 +22377,7 @@ var PublicationNav = (_temp = _class = function (_Component) {
             ),
             _react2.default.createElement(
               _reactRouter.Link,
-              { to: '/deposit-history', __source: {
+              { to: _routing.routes.depositHistory, __source: {
                   fileName: _jsxFileName,
                   lineNumber: 88
                 },
@@ -20080,7 +22387,7 @@ var PublicationNav = (_temp = _class = function (_Component) {
             ),
             _react2.default.createElement(
               _reactRouter.Link,
-              { className: 'depositCartHolder', to: '/cart', __source: {
+              { className: 'depositCartHolder', to: _routing.routes.depositCart, __source: {
                   fileName: _jsxFileName,
                   lineNumber: 89
                 },
@@ -20137,7 +22444,7 @@ var PublicationNav = (_temp = _class = function (_Component) {
                 },
                 localStorage.user,
                 ' ',
-                _react2.default.createElement('img', { className: 'profileActions' + (this.state.profileMenu ? ' menuOpen' : ''), src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                _react2.default.createElement('img', { className: 'profileActions' + (this.state.profileMenu ? ' menuOpen' : ''), src: 'images/AddArticle/DarkTriangle.svg', __source: {
                     fileName: _jsxFileName,
                     lineNumber: 101
                   },
@@ -20424,6 +22731,102 @@ exports.default = ArticleReview;
 
 });
 
+require.register("components/reviewArticleRefactor.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = undefined;
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _class, _temp;
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _propTypes = require('prop-types');
+
+var _propTypes2 = _interopRequireDefault(_propTypes);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _my_decorators = require('my_decorators');
+
+var _archiveLocations = require('../utilities/archiveLocations');
+
+var _objectSearch = require('../utilities/objectSearch');
+
+var _objectSearch2 = _interopRequireDefault(_objectSearch);
+
+var _articleReviewGenerator = require('../utilities/articleReviewGenerator');
+
+var _articleReviewGenerator2 = _interopRequireDefault(_articleReviewGenerator);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Languages = require('../utilities/language.json');
+
+var PublicationTypes = require('../utilities/publicationTypes.json');
+var AppliesTo = require('../utilities/appliesTo.json');
+var IdentifierTypes = require('../utilities/identifierTypes.json');
+var ArticleReview = (_temp = _class = function (_Component) {
+  (0, _inherits3.default)(ArticleReview, _Component);
+
+  function ArticleReview(props) {
+    (0, _classCallCheck3.default)(this, ArticleReview);
+
+    var _this = (0, _possibleConstructorReturn3.default)(this, (ArticleReview.__proto__ || (0, _getPrototypeOf2.default)(ArticleReview)).call(this, props));
+
+    _this.addToCart = function () {
+      _this.props.reduxControlModal({ showModal: false });
+      _this.props.cartUpdate([_this.props.reviewData]);
+    };
+
+    return _this;
+  }
+
+  (0, _createClass3.default)(ArticleReview, [{
+    key: 'render',
+    value: function render() {
+      var _props = this.props,
+          reviewData = _props.reviewData,
+          publication = _props.publication,
+          publicationMetaData = _props.publicationMetaData;
+
+      return (0, _articleReviewGenerator2.default)(publicationMetaData, reviewData, true, this.addToCart.bind(this));
+    }
+  }]);
+  return ArticleReview;
+}(_react.Component), _class.propTypes = {
+  cartUpdate: _propTypes2.default.func.isRequired
+}, _temp);
+exports.default = ArticleReview;
+
+});
+
 require.register("components/reviewDepositCart.js", function(exports, require, module) {
 'use strict';
 
@@ -20640,6 +23043,8 @@ var _issueReviewGenerator = require('./issueReviewGenerator');
 
 var _issueReviewGenerator2 = _interopRequireDefault(_issueReviewGenerator);
 
+var _routing = require('../routing');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var Languages = require('../utilities/language.json');
@@ -20686,16 +23091,16 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
       if (item.type.toLowerCase() === 'article') {
         this.props.reduxControlModal({ showModal: false });
         if (issue) {
-          _reactRouter.browserHistory.push('/publications/' + encodeURIComponent(publication.doi) + '/' + encodeURIComponent(issue) + '/addarticle/' + encodeURIComponent(item.doi));
+          _reactRouter.browserHistory.push(_routing.routes.publications + '/' + encodeURIComponent(publication.doi) + '/' + encodeURIComponent(issue) + '/addarticle/' + encodeURIComponent(item.doi));
         } else {
-          _reactRouter.browserHistory.push('/publications/' + encodeURIComponent(publication.doi) + '/addarticle/' + encodeURIComponent(item.doi));
+          _reactRouter.browserHistory.push(_routing.routes.publications + '/' + encodeURIComponent(publication.doi) + '/addarticle/' + encodeURIComponent(item.doi));
         }
       } else if (item.type.toLowerCase() === 'issue') {
         this.props.reduxControlModal({
           showModal: false
         });
         //Change this to open modal with correct issue DOI
-        _reactRouter.browserHistory.push('/publications/' + encodeURIComponent(publication.doi) + '?modal=' + encodeURIComponent(item.doi));
+        _reactRouter.browserHistory.push(_routing.routes.publications + '/' + encodeURIComponent(publication.doi) + '?modal=' + encodeURIComponent(item.doi));
       }
     }
   }, {
@@ -20707,7 +23112,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 65
+            lineNumber: 67
           },
           __self: this
         },
@@ -20723,7 +23128,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
         {
           __source: {
             fileName: _jsxFileName,
-            lineNumber: 74
+            lineNumber: 76
           },
           __self: this
         },
@@ -20744,7 +23149,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
         'div',
         { className: 'depositReviewItem', __source: {
             fileName: _jsxFileName,
-            lineNumber: 83
+            lineNumber: 85
           },
           __self: this
         },
@@ -20752,7 +23157,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
           'div',
           { className: 'itemTitle', __source: {
               fileName: _jsxFileName,
-              lineNumber: 84
+              lineNumber: 86
             },
             __self: this
           },
@@ -20762,7 +23167,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
                 _this2.toggleInfoSection();
               }, __source: {
                 fileName: _jsxFileName,
-                lineNumber: 85
+                lineNumber: 87
               },
               __self: this
             },
@@ -20770,13 +23175,13 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
               'span',
               { className: 'arrowHolder' + (this.state.showInfoSection ? ' openArrowHolder' : ''), __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 86
+                  lineNumber: 88
                 },
                 __self: this
               },
-              _react2.default.createElement('img', { src: '/images/AddArticle/Triangle.svg', __source: {
+              _react2.default.createElement('img', { src: 'images/AddArticle/Triangle.svg', __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 87
+                  lineNumber: 89
                 },
                 __self: this
               })
@@ -20786,7 +23191,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
               {
                 __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 89
+                  lineNumber: 91
                 },
                 __self: this
               },
@@ -20797,7 +23202,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
             'div',
             { className: 'addholder', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 91
+                lineNumber: 93
               },
               __self: this
             },
@@ -20807,7 +23212,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
                   _this2.gotoPage();
                 }, __source: {
                   fileName: _jsxFileName,
-                  lineNumber: 92
+                  lineNumber: 94
                 },
                 __self: this
               },
@@ -20819,7 +23224,7 @@ var DepositCartItemsReview = (_temp = _class = function (_Component) {
           'div',
           { className: 'itemInfo' + (this.state.showInfoSection ? ' showItemInfo' : ' hideItemInfo'), __source: {
               fileName: _jsxFileName,
-              lineNumber: 95
+              lineNumber: 97
             },
             __self: this
           },
@@ -21918,7 +24323,7 @@ var ArticlesPage = (_dec = (0, _reactRedux.connect)(mapDispatchToProps), _dec(_c
           'Click ',
           _react2.default.createElement(
             _reactRouter.Link,
-            { to: '/publications', __source: {
+            { to: '', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 29
               },
@@ -22093,7 +24498,7 @@ var DepositCartPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDispa
               },
               __self: _this3
             },
-            _react2.default.createElement('img', { src: '/images/ReviewArticle/Asset_Icons_White_Review.svg', __source: {
+            _react2.default.createElement('img', { src: 'images/ReviewArticle/Asset_Icons_White_Review.svg', __source: {
                 fileName: _jsxFileName,
                 lineNumber: 184
               },
@@ -22563,7 +24968,7 @@ var EmptyCart = function EmptyCart() {
         },
         __self: undefined
       },
-      _react2.default.createElement('img', { src: '/images/Deposit/Asset_Empty_Box_Empty Box Yellow.svg', __source: {
+      _react2.default.createElement('img', { src: 'images/Deposit/Asset_Empty_Box_Empty Box Yellow.svg', __source: {
           fileName: _jsxFileName,
           lineNumber: 347
         },
@@ -22604,7 +25009,7 @@ var WaitMessage = function WaitMessage() {
       },
       'Please wait while we process your deposit'
     ),
-    _react2.default.createElement('img', { src: '/images/Deposit/Asset_Load_Throbber_Load Throbber Grey.svg', __source: {
+    _react2.default.createElement('img', { src: 'images/Deposit/Asset_Load_Throbber_Load Throbber Grey.svg', __source: {
         fileName: _jsxFileName,
         lineNumber: 358
       },
@@ -23100,7 +25505,7 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
                     },
                     __self: this
                   },
-                  _react2.default.createElement('img', { className: 'calendarIcon', src: '/images/DepositHistory/Asset_Icons_Black_Calandar.svg', __source: {
+                  _react2.default.createElement('img', { className: 'calendarIcon', src: 'images/DepositHistory/Asset_Icons_Black_Calandar.svg', __source: {
                       fileName: _jsxFileName,
                       lineNumber: 226
                     },
@@ -23276,7 +25681,7 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
                     },
                     __self: this
                   },
-                  _react2.default.createElement('img', { className: 'calendarIcon', src: '/images/DepositHistory/Asset_Icons_Black_Calandar.svg', __source: {
+                  _react2.default.createElement('img', { className: 'calendarIcon', src: 'images/DepositHistory/Asset_Icons_Black_Calandar.svg', __source: {
                       fileName: _jsxFileName,
                       lineNumber: 254
                     },
@@ -23363,7 +25768,7 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
                   _this5.handleChange(_this5, { order: { $set: _this5.state.query.order === 'asc' ? 'desc' : 'asc' } });
                 },
                 className: 'orderBy' + (this.state.query.order === 'asc' ? ' ordered' : ''),
-                src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                src: 'images/AddArticle/DarkTriangle.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 277
                 },
@@ -23398,7 +25803,7 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
                   _this5.handleChange(_this5, { order: { $set: _this5.state.query.order === 'asc' ? 'desc' : 'asc' } });
                 },
                 className: 'orderBy' + (this.state.query.order === 'asc' ? ' ordered' : ''),
-                src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                src: 'images/AddArticle/DarkTriangle.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 290
                 },
@@ -23433,7 +25838,7 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
                   _this5.handleChange(_this5, { order: { $set: _this5.state.query.order === 'asc' ? 'desc' : 'asc' } });
                 },
                 className: 'orderBy' + (this.state.query.order === 'asc' ? ' ordered' : ''),
-                src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                src: 'images/AddArticle/DarkTriangle.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 303
                 },
@@ -23468,7 +25873,7 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
                   _this5.handleChange(_this5, { order: { $set: _this5.state.query.order === 'asc' ? 'desc' : 'asc' } });
                 },
                 className: 'orderBy' + (this.state.query.order === 'asc' ? ' ordered' : ''),
-                src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                src: 'images/AddArticle/DarkTriangle.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 316
                 },
@@ -23502,7 +25907,7 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
                   _this5.handleChange(_this5, { order: { $set: _this5.state.query.order === 'asc' ? 'desc' : 'asc' } });
                 },
                 className: 'orderBy' + (this.state.query.order === 'asc' ? ' ordered' : ''),
-                src: '/images/AddArticle/DarkTriangle.svg', __source: {
+                src: 'images/AddArticle/DarkTriangle.svg', __source: {
                   fileName: _jsxFileName,
                   lineNumber: 329
                 },
@@ -23512,13 +25917,13 @@ var DepositHistoryPage = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDi
           ),
           this.listDeposityHistory()
         ),
-        _react2.default.createElement(_reactPaginate2.default, { previousLabel: _react2.default.createElement('img', { className: 'prev', src: '/images/AddArticle/DarkTriangle.svg', __source: {
+        _react2.default.createElement(_reactPaginate2.default, { previousLabel: _react2.default.createElement('img', { className: 'prev', src: 'images/AddArticle/DarkTriangle.svg', __source: {
               fileName: _jsxFileName,
               lineNumber: 341
             },
             __self: this
           }),
-          nextLabel: _react2.default.createElement('img', { className: 'nex', src: '/images/AddArticle/DarkTriangle.svg', __source: {
+          nextLabel: _react2.default.createElement('img', { className: 'nex', src: 'images/AddArticle/DarkTriangle.svg', __source: {
               fileName: _jsxFileName,
               lineNumber: 342
             },
@@ -23922,7 +26327,7 @@ var _reactRouter = require('react-router');
 
 var _reactRedux = require('react-redux');
 
-var _my_decorators = require('my_decorators');
+var _routing = require('../routing');
 
 var _xmldoc = require('../utilities/xmldoc');
 
@@ -24008,9 +26413,9 @@ var PublicationCardContainer = (_dec = (0, _reactRedux.connect)(mapStateToProps,
       var whiteText = this.state.mouseOver ? { color: 'white' } : null;
       return _react2.default.createElement(
         _reactRouter.Link,
-        { to: this.state.overEdit ? null : '/publications/' + encodeURIComponent(this.props.doi), className: 'publication-card', __source: {
+        { to: this.state.overEdit ? null : _routing.routes.publications + '/' + encodeURIComponent(this.props.doi), className: 'publication-card', __source: {
             fileName: _jsxFileName,
-            lineNumber: 82
+            lineNumber: 83
           },
           __self: this
         },
@@ -24026,7 +26431,7 @@ var PublicationCardContainer = (_dec = (0, _reactRedux.connect)(mapStateToProps,
             },
             __source: {
               fileName: _jsxFileName,
-              lineNumber: 83
+              lineNumber: 84
             },
             __self: this
           },
@@ -24034,7 +26439,7 @@ var PublicationCardContainer = (_dec = (0, _reactRedux.connect)(mapStateToProps,
             'div',
             { style: whiteText, className: 'publication-type', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 88
+                lineNumber: 89
               },
               __self: this
             },
@@ -24044,7 +26449,7 @@ var PublicationCardContainer = (_dec = (0, _reactRedux.connect)(mapStateToProps,
             'div',
             { style: whiteText, className: 'publication-name', __source: {
                 fileName: _jsxFileName,
-                lineNumber: 89
+                lineNumber: 90
               },
               __self: this
             },
@@ -24063,7 +26468,7 @@ var PublicationCardContainer = (_dec = (0, _reactRedux.connect)(mapStateToProps,
               className: 'publication-edit',
               __source: {
                 fileName: _jsxFileName,
-                lineNumber: 90
+                lineNumber: 91
               },
               __self: this
             },
@@ -24084,7 +26489,7 @@ var PublicationCardContainer = (_dec = (0, _reactRedux.connect)(mapStateToProps,
 exports.default = PublicationCardContainer;
 
 
-var backgrounds = ['/images/Publications/PublicationButtonArtLarge_Publication Art 1.svg', '/images/Publications/PublicationButtonArtLarge_Publication Art 2.svg', '/images/Publications/PublicationButtonArtLarge_Publication Art 3.svg'];
+var backgrounds = ['images/Publications/PublicationButtonArtLarge_Publication Art 1.svg', 'images/Publications/PublicationButtonArtLarge_Publication Art 2.svg', 'images/Publications/PublicationButtonArtLarge_Publication Art 3.svg'];
 
 });
 
@@ -24564,6 +26969,105 @@ exports.default = PublicationsPage;
 
 });
 
+require.register("containers/reduxRelay.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+exports.default = undefined;
+
+var _getPrototypeOf = require('babel-runtime/core-js/object/get-prototype-of');
+
+var _getPrototypeOf2 = _interopRequireDefault(_getPrototypeOf);
+
+var _classCallCheck2 = require('babel-runtime/helpers/classCallCheck');
+
+var _classCallCheck3 = _interopRequireDefault(_classCallCheck2);
+
+var _createClass2 = require('babel-runtime/helpers/createClass');
+
+var _createClass3 = _interopRequireDefault(_createClass2);
+
+var _possibleConstructorReturn2 = require('babel-runtime/helpers/possibleConstructorReturn');
+
+var _possibleConstructorReturn3 = _interopRequireDefault(_possibleConstructorReturn2);
+
+var _inherits2 = require('babel-runtime/helpers/inherits');
+
+var _inherits3 = _interopRequireDefault(_inherits2);
+
+var _dec,
+    _class,
+    _jsxFileName = 'app/containers/reduxRelay.js';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _reactRedux = require('react-redux');
+
+var _redux = require('redux');
+
+var _my_decorators = require('my_decorators');
+
+var _application = require('../actions/application');
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var mapStateToProps = function mapStateToProps(state) {
+  if (state.reduxForm.submit) {
+    return {
+      reduxForm: state.reduxForm
+    };
+  } else return {};
+};
+
+var mapDispatchToProps = function mapDispatchToProps(dispatch) {
+  return (0, _redux.bindActionCreators)({
+    reduxEditForm: _application.editForm,
+    authenticate: _application.authenticate
+  }, dispatch);
+};
+
+var ReduxRelay = (_dec = (0, _reactRedux.connect)(mapStateToProps, mapDispatchToProps), _dec(_class = function (_Component) {
+  (0, _inherits3.default)(ReduxRelay, _Component);
+
+  function ReduxRelay() {
+    (0, _classCallCheck3.default)(this, ReduxRelay);
+    return (0, _possibleConstructorReturn3.default)(this, (ReduxRelay.__proto__ || (0, _getPrototypeOf2.default)(ReduxRelay)).apply(this, arguments));
+  }
+
+  (0, _createClass3.default)(ReduxRelay, [{
+    key: 'componentWillReceiveProps',
+    value: function componentWillReceiveProps(nextProps) {
+      if (nextProps.reduxForm && nextProps.reduxForm.submit) {
+        nextProps.reduxForm.submit(nextProps.reduxForm);
+        this.props.reduxEditForm({ submit: false });
+      }
+    }
+  }, {
+    key: 'render',
+    value: function render() {
+
+      return _react2.default.createElement(
+        'button',
+        { onClick: this.props.authenticate, __source: {
+            fileName: _jsxFileName,
+            lineNumber: 37
+          },
+          __self: this
+        },
+        'Test'
+      );
+    }
+  }]);
+  return ReduxRelay;
+}(_react.Component)) || _class);
+exports.default = ReduxRelay;
+
+});
+
 require.register("index.js", function(exports, require, module) {
 'use strict';
 
@@ -24605,7 +27109,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 var store = (0, _store2.default)();
 var history = (0, _reactRouterRedux.syncHistoryWithStore)(_reactRouter.browserHistory, store);
 
-if (_reactRouter.browserHistory.getCurrentLocation().pathname !== '/') {
+if (_reactRouter.browserHistory.getCurrentLocation().pathname !== '/mdt/') {
   store.dispatch((0, _application.getCRState)());
 }
 
@@ -24636,7 +27140,7 @@ document.addEventListener('DOMContentLoaded', function () {
       }),
       _react2.default.createElement(
         _reactRouter.Router,
-        { history: history, __source: {
+        { history: history, basename: 'mdt', __source: {
             fileName: _jsxFileName,
             lineNumber: 31
           },
@@ -25022,7 +27526,8 @@ function cartReducer() {
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-var _jsxFileName = 'app/routing.js';
+exports.routes = undefined;
+var _jsxFileName = 'app/routing.js'; /* eslint-disable no-multiple-empty-lines,padded-blocks */
 
 var _react = require('react');
 
@@ -25068,103 +27573,122 @@ var _depositHistoryPage2 = _interopRequireDefault(_depositHistoryPage);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-exports.default = function (store) {
-  var requireAuth = function requireAuth(nextState, replace) {
-    //not necessary?
-  };
+// ------------------ Set base url here ------------------
+var base = "/mdt";
+
+var routes = exports.routes = {
+  base: base || '/',
+  loggedInPage: base + '/loggedin',
+  publications: base + '/publications',
+  publicationsModal: base + '/publications?modal=:doi',
+  publication: base + '/publications/:doi',
+  articles: base + '/articles',
+  addArticle: base + '/publications/:pubDoi/addarticle',
+  editArticle: base + '/publications/:pubDoi/addarticle/:articleDoi',
+  addArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle',
+  editArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle/:articleDoi',
+  depositCart: base + '/cart',
+  depositHistory: base + '/deposit-history'
+};
+
+exports.default = function () {
 
   return _react2.default.createElement(
     _reactRouter.Route,
-    { path: '/', component: _app2.default, __source: {
+    { path: routes.base, component: _app2.default, basename: 'mdt', __source: {
         fileName: _jsxFileName,
-        lineNumber: 20
+        lineNumber: 38
       },
       __self: undefined
     },
     _react2.default.createElement(_reactRouter.IndexRoute, { component: _loginPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 21
+        lineNumber: 39
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'loggedin', component: _loggedIn2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.loggedInPage, component: _loggedIn2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 22
+        lineNumber: 40
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'publications', component: _publicationsPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.publications, component: _publicationsPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 23
+        lineNumber: 41
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'publications?modal=:doi', component: _publicationsPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.publicationsModal, component: _publicationsPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 24
+        lineNumber: 42
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'publications/:doi', component: _publicationPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.publication, component: _publicationPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 25
+        lineNumber: 43
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'articles', component: _articlesPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.articles, component: _articlesPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 26
+        lineNumber: 44
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'publications/:pubDoi/addarticle', component: _addArticlesPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.addArticle, component: _addArticlesPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 27
+        lineNumber: 45
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'publications/:pubDoi/addarticle/:articleDoi', component: _addArticlesPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.editArticle, component: _addArticlesPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 28
+        lineNumber: 46
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'publications/:pubDoi/:issueDoi/addarticle', component: _addArticlesPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.addArticleUnderIssue, component: _addArticlesPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 29
+        lineNumber: 47
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'publications/:pubDoi/:issueDoi/addarticle/:articleDoi', component: _addArticlesPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.editArticleUnderIssue, component: _addArticlesPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 30
+        lineNumber: 48
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'cart', component: _depositCartPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.depositCart, component: _depositCartPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 31
+        lineNumber: 49
       },
       __self: undefined
     }),
-    _react2.default.createElement(_reactRouter.Route, { path: 'deposit-history', component: _depositHistoryPage2.default, onEnter: requireAuth, __source: {
+    _react2.default.createElement(_reactRouter.Route, { path: routes.depositHistory, component: _depositHistoryPage2.default, __source: {
         fileName: _jsxFileName,
-        lineNumber: 32
+        lineNumber: 50
       },
       __self: undefined
     })
   );
 };
 
+// Is ArticlesPage doing anything? Remove?
+
 });
 
-require.register("store/index.js", function(exports, require, module) {
+;require.register("store/index.js", function(exports, require, module) {
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.default = configure;
+
+var _history = require('history');
 
 var _redux = require('redux');
 
@@ -25174,22 +27698,26 @@ var _reduxThunk = require('redux-thunk');
 
 var _reduxThunk2 = _interopRequireDefault(_reduxThunk);
 
-var _remoteSync = require('../middleware/remote-sync');
-
-var _remoteSync2 = _interopRequireDefault(_remoteSync);
-
 var _reactRouterRedux = require('react-router-redux');
 
 var _reducers = require('../reducers');
 
 var _reducers2 = _interopRequireDefault(_reducers);
 
+var _remoteSync = require('../middleware/remote-sync');
+
+var _remoteSync2 = _interopRequireDefault(_remoteSync);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function configure() {
   var create = window.devToolsExtension ? window.devToolsExtension()(_redux.createStore) : _redux.createStore;
 
-  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default, (0, _reactRouterRedux.routerMiddleware)(_reactRouter.browserHistory), _remoteSync2.default)(create);
+  var browserHistoryNew = (0, _reactRouter.useRouterHistory)(_history.createHistory)({
+    basename: 'mdt'
+  });
+
+  var createStoreWithMiddleware = (0, _redux.applyMiddleware)(_reduxThunk2.default, (0, _reactRouterRedux.routerMiddleware)(browserHistoryNew), _remoteSync2.default)(create);
 
   var store = createStoreWithMiddleware(_reducers2.default);
 
@@ -25267,6 +27795,581 @@ var displayArchiveLocations = exports.displayArchiveLocations = function display
         locations
     );
 };
+
+});
+
+require.register("utilities/articleReviewGenerator.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var _jsxFileName = 'app/utilities/articleReviewGenerator.js';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _archiveLocations = require('./archiveLocations');
+
+var _objectSearch = require('./objectSearch');
+
+var _objectSearch2 = _interopRequireDefault(_objectSearch);
+
+var _parseXMLArticle = require('./parseXMLArticle');
+
+var _parseXMLArticle2 = _interopRequireDefault(_parseXMLArticle);
+
+var _getSubItems = require('./getSubItems');
+
+var _xmldoc = require('./xmldoc');
+
+var _xmldoc2 = _interopRequireDefault(_xmldoc);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Languages = require('./language.json');
+
+var PublicationTypes = require('./publicationTypes.json');
+var AppliesTo = require('./appliesTo.json');
+var IdentifierTypes = require('./identifierTypes.json');
+
+
+var articleReviewGenerator = function articleReviewGenerator(publication, article, parsedAlready, func) {
+    var publicationMetaData = publication;
+    if (publication.content) {
+        publicationMetaData = (0, _xmldoc2.default)(publication.content);
+    }
+
+    var reviewData = article;
+    if (!parsedAlready) {
+        reviewData = (0, _parseXMLArticle2.default)(article);
+    }
+
+    var getFunding = function getFunding() {
+        var funders = (0, _getSubItems.getSubmitSubItems)(reviewData.funding).map(function (funder, i) {
+            var funderName = undefined;
+            if (funder.fundername) {
+                funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined;
+            }
+
+            var funder_identifier = undefined;
+            if (funder.funder_identifier) {
+                funder_identifier = funder.funder_identifier.trim().length > 0 ? funder.funder_identifier : undefined;
+            }
+
+            var attributes = '';
+            if (funderName || funder_identifier) {
+                //if an of these exist
+                attributes = '' + funderName + (funder_identifier ? ': ' + funder_identifier : '');
+                var grants = funder.grantNumbers.map(function (awardNumber, i) {
+                    return awardNumber;
+                });
+
+                var fundgroup = _react2.default.createElement(
+                    'p',
+                    { key: i, __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 44
+                        },
+                        __self: undefined
+                    },
+                    attributes,
+                    _react2.default.createElement('br', {
+                        __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 44
+                        },
+                        __self: undefined
+                    }),
+                    grants.length > 0 ? 'Grant Numbers: ' + grants.join(', ') : ''
+                );
+
+                return fundgroup;
+            }
+        });
+
+        return funders.join('').length > 0 ? funders : '';
+    };
+
+    var getLicense = function getLicense() {
+        var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+        var licenses = (0, _getSubItems.getSubmitSubItems)(reviewData.license).map(function (license, i) {
+
+            var appliesto = _lodash2.default.find(AppliesTo, function (applyto) {
+                if (applyto.value.trim().toLowerCase() === license.appliesto.trim().toLowerCase()) {
+                    return applyto;
+                }
+            });
+            var attributes = _react2.default.createElement(
+                'span',
+                { key: i, __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 62
+                    },
+                    __self: undefined
+                },
+                license.appliesto ? appliesto.name : '',
+                ': ',
+                license.licenseurl,
+                ' (',
+                license.acceptedDateDay,
+                ', ',
+                months[parseInt(license.acceptedDateMonth) - 1],
+                ' ',
+                license.acceptedDateYear,
+                ') ',
+                reviewData.addInfo.freetolicense === 'yes' ? ', Free to Read: Yes' : ', Free to Read: No',
+                _react2.default.createElement('br', {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 64
+                    },
+                    __self: undefined
+                })
+            );
+            return attributes;
+        });
+        return licenses.length > 0 ? licenses : '';
+    };
+
+    var getRelatedItems = function getRelatedItems() {
+        var relatedItems = (0, _getSubItems.getSubmitSubItems)(reviewData.relatedItems).map(function (relatedItem, i) {
+            var identifiertype = _lodash2.default.find(IdentifierTypes, function (identtype) {
+                if (identtype.name.trim().toLowerCase() === relatedItem.identifierType.trim().toLowerCase()) {
+                    return identtype;
+                }
+            });
+
+            var attributes = _react2.default.createElement(
+                'span',
+                { key: i, __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 78
+                    },
+                    __self: undefined
+                },
+                relatedItem.relationType,
+                ': ',
+                identifiertype ? identifiertype.value : '',
+                ' ',
+                relatedItem.relatedItemIdentifier,
+                ' ',
+                relatedItem.description.length > 0 ? relatedItem.description : '',
+                _react2.default.createElement('br', {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 78
+                    },
+                    __self: undefined
+                })
+            );
+
+            if (relatedItem.description.length > 0 && relatedItem.relationType.length > 0 && relatedItem.relationType.length > 0 && relatedItem.relationType.length > 0) {
+                return attributes;
+            }
+        });
+        return relatedItems.length > 0 ? relatedItems : '';
+    };
+
+    var getAddInfo = function getAddInfo() {
+        var retInfo = [];
+        if (reviewData.addInfo.similarityCheckURL.length > 0) {
+            retInfo.push(_react2.default.createElement(
+                'span',
+                {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 90
+                    },
+                    __self: undefined
+                },
+                'Similarity Check URL: ',
+                reviewData.addInfo.similarityCheckURL,
+                _react2.default.createElement('br', {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 90
+                    },
+                    __self: undefined
+                })
+            ));
+        }
+        if (reviewData.addInfo.archiveLocation.length > 0) {
+            var arLoc = _lodash2.default.find(_archiveLocations.ArchiveLocations, function (archiveLocation) {
+                if (archiveLocation.value.trim().toLowerCase() === reviewData.addInfo.archiveLocation.trim().toLowerCase()) {
+                    return archiveLocation;
+                }
+            });
+            retInfo.push(_react2.default.createElement(
+                'span',
+                {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 98
+                    },
+                    __self: undefined
+                },
+                'Archive Location: ',
+                arLoc.name,
+                _react2.default.createElement('br', {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 98
+                    },
+                    __self: undefined
+                })
+            ));
+        }
+        if (reviewData.addInfo.language.length > 0) {
+            var lang = _lodash2.default.find(Languages, function (language) {
+                if (language.abbr.trim().toLowerCase() === reviewData.addInfo.language.trim().toLowerCase()) {
+                    return language;
+                }
+            });
+            retInfo.push(_react2.default.createElement(
+                'span',
+                {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 106
+                    },
+                    __self: undefined
+                },
+                'Language: ',
+                lang.name,
+                _react2.default.createElement('br', {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 106
+                    },
+                    __self: undefined
+                })
+            ));
+        }
+
+        if (reviewData.addInfo.publicationType.length > 0) {
+            var pt = _lodash2.default.find(PublicationTypes, function (pubType) {
+                if (pubType.value.trim().toLowerCase() === reviewData.addInfo.publicationType.trim().toLowerCase()) {
+                    return pubType;
+                }
+            });
+            retInfo.push(_react2.default.createElement(
+                'span',
+                {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 115
+                    },
+                    __self: undefined
+                },
+                'Publication Type: ',
+                pt.name
+            ));
+        }
+        return retInfo.length > 0 ? retInfo : '';
+    };
+
+    var getPages = function getPages() {
+        var retStr = '';
+        if (reviewData.article.firstPage.trim().length > 0 || reviewData.article.lastPage.trim().length > 0) {
+            retStr = retStr + ', ';
+            if (reviewData.article.firstPage.trim().length > 0) {
+                retStr = retStr + reviewData.article.firstPage;
+            }
+            if (reviewData.article.firstPage.trim().length > 0 && reviewData.article.lastPage.trim().length > 0) {
+                retStr = retStr + '-';
+            }
+            if (reviewData.article.lastPage.trim().length > 0) {
+                retStr = retStr + reviewData.article.lastPage;
+            }
+            retStr = retStr + '. ';
+        }
+        return retStr;
+    };
+
+    var publicationAbbrevTitle = (0, _objectSearch2.default)(publicationMetaData, 'abrev_title');
+    var pubAbbrTitle = '';
+    if (publicationAbbrevTitle) {
+        if (publicationAbbrevTitle.trim().length > 0) {
+            pubAbbrTitle = ' ' + publicationAbbrevTitle.trim();
+        }
+    }
+
+    var contributors = (0, _getSubItems.getSubmitSubItems)(reviewData.contributors).map(function (contributor) {
+        var contributorName = contributor.firstName + ' ' + contributor.lastName;
+        var contributorGroupName = contributor.groupAuthorName;
+        if (contributorName.trim().length > 0 || contributorGroupName.trim().length) {
+            if (contributorName.trim().length > 0) {
+                return contributorName;
+            } else if (contributorGroupName.trim().length > 0) {
+                return contributorGroupName;
+            }
+        }
+    }).join(', ');
+
+    contributors = contributors.length > 0 ? contributors + ', et al.' : '';
+
+    var onlineDate = reviewData.article.onlineDateYear.length > 0 ? ' (' + reviewData.article.onlineDateYear + '), ' : '';
+    var title = reviewData.article.title.length > 0 ? reviewData.article.title + '.' : '';
+
+    var doi = reviewData.article.doi.length > 0 ? ' DOI: ' + reviewData.article.doi + '. ' : '';
+    var url = reviewData.article.url ? ' ' + reviewData.article.url + ' ' : '';
+    var locationId = reviewData.article.locationId.length > 0 ? ' ' + reviewData.article.locationId : '';
+
+    var generalHeading = contributors + onlineDate + title + pubAbbrTitle + locationId + getPages() + doi + url;
+
+    var months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    return _react2.default.createElement(
+        'div',
+        { className: 'ReviewArticleCard', __source: {
+                fileName: _jsxFileName,
+                lineNumber: 175
+            },
+            __self: undefined
+        },
+        _react2.default.createElement(
+            'div',
+            {
+                __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 176
+                },
+                __self: undefined
+            },
+            func ? _react2.default.createElement(
+                'div',
+                {
+                    __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 179
+                    },
+                    __self: undefined
+                },
+                _react2.default.createElement(
+                    'button',
+                    { className: 'addToCart', onClick: func, __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 180
+                        },
+                        __self: undefined
+                    },
+                    'Add To Cart'
+                )
+            ) : '',
+            _react2.default.createElement(
+                'div',
+                { className: 'reviewArticle', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 184
+                    },
+                    __self: undefined
+                },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'firstBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 185
+                        },
+                        __self: undefined
+                    },
+                    _react2.default.createElement('div', { className: 'innerBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 186
+                        },
+                        __self: undefined
+                    })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'secondBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 188
+                        },
+                        __self: undefined
+                    },
+                    _react2.default.createElement('div', { className: 'innerBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 189
+                        },
+                        __self: undefined
+                    })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'reviewContent', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 191
+                        },
+                        __self: undefined
+                    },
+                    _react2.default.createElement(
+                        'h4',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 192
+                            },
+                            __self: undefined
+                        },
+                        'General'
+                    ),
+                    _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 193
+                            },
+                            __self: undefined
+                        },
+                        generalHeading
+                    ),
+                    reviewData.article.onlineDateYear.length > 0 || reviewData.article.onlineDateMonth.length > 0 || reviewData.article.onlineDateDay.length > 0 || reviewData.article.printDateYear.length > 0 || reviewData.article.printDateMonth.length > 0 || reviewData.article.printDateDay.length > 0 || reviewData.article.acceptedDateYear.length > 0 || reviewData.article.acceptedDateMonth.length > 0 || reviewData.article.acceptedDateDay.length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 198
+                            },
+                            __self: undefined
+                        },
+                        reviewData.article.printDateYear.length > 0 || reviewData.article.printDateMonth.length > 0 || reviewData.article.printDateDay.length > 0 ? 'Print: ' + (reviewData.article.printDateDay.length > 0 ? reviewData.article.printDateDay : '') + (reviewData.article.printDateMonth.length > 0 && reviewData.article.printDateYear.length > 0 ? ', ' : '') + (reviewData.article.printDateMonth.length > 0 ? ' ' + months[parseInt(reviewData.article.printDateMonth) - 1] : '') + (reviewData.article.printDateYear.length > 0 ? ' ' + reviewData.article.printDateYear : '') : '',
+                        (reviewData.article.onlineDateYear.length > 0 || reviewData.article.onlineDateMonth.length > 0 || reviewData.article.onlineDateDay.length > 0) && _react2.default.createElement('br', {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 211
+                            },
+                            __self: undefined
+                        }),
+                        reviewData.article.onlineDateYear.length > 0 || reviewData.article.onlineDateMonth.length > 0 || reviewData.article.onlineDateDay.length > 0 ? 'Online: ' + (reviewData.article.onlineDateDay.length > 0 ? reviewData.article.onlineDateDay : '') + (reviewData.article.onlineDateMonth.length > 0 && reviewData.article.onlineDateYear.length > 0 ? ', ' : '') + (reviewData.article.onlineDateMonth.length > 0 ? ' ' + months[parseInt(reviewData.article.onlineDateMonth) - 1] : '') + (reviewData.article.onlineDateYear.length > 0 ? ' ' + reviewData.article.onlineDateYear : '') : '',
+                        (reviewData.article.acceptedDateYear.length > 0 || reviewData.article.acceptedDateMonth.length > 0 || reviewData.article.acceptedDateDay.length > 0) && _react2.default.createElement('br', {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 224
+                            },
+                            __self: undefined
+                        }),
+                        reviewData.article.acceptedDateYear.length > 0 || reviewData.article.acceptedDateMonth.length > 0 || reviewData.article.acceptedDateDay.length > 0 ? 'Accepted: ' + (reviewData.article.acceptedDateDay.length > 0 ? reviewData.article.acceptedDateDay : '') + (reviewData.article.acceptedDateMonth.length > 0 && reviewData.article.acceptedDateYear.length > 0 ? ', ' : '') + (reviewData.article.acceptedDateMonth.length > 0 ? ' ' + months[parseInt(reviewData.article.acceptedDateMonth) - 1] : '') + (reviewData.article.acceptedDateYear.length > 0 ? ' ' + reviewData.article.acceptedDateYear : '') : ''
+                    ) : '',
+                    reviewData.article.abstract.length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 242
+                            },
+                            __self: undefined
+                        },
+                        'Abstract',
+                        _react2.default.createElement('br', {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 242
+                            },
+                            __self: undefined
+                        }),
+                        reviewData.article.abstract
+                    ) : '',
+                    getFunding().length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 245
+                            },
+                            __self: undefined
+                        },
+                        _react2.default.createElement(
+                            'h4',
+                            {
+                                __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 246
+                                },
+                                __self: undefined
+                            },
+                            'Funding'
+                        ),
+                        getFunding()
+                    ) : '',
+                    getLicense().length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 252
+                            },
+                            __self: undefined
+                        },
+                        _react2.default.createElement(
+                            'h4',
+                            {
+                                __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 253
+                                },
+                                __self: undefined
+                            },
+                            'License'
+                        ),
+                        getLicense()
+                    ) : '',
+                    getRelatedItems().length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 259
+                            },
+                            __self: undefined
+                        },
+                        _react2.default.createElement(
+                            'h4',
+                            {
+                                __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 260
+                                },
+                                __self: undefined
+                            },
+                            'Related Items'
+                        ),
+                        getRelatedItems()
+                    ) : '',
+                    getAddInfo().length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 266
+                            },
+                            __self: undefined
+                        },
+                        _react2.default.createElement(
+                            'h4',
+                            {
+                                __source: {
+                                    fileName: _jsxFileName,
+                                    lineNumber: 267
+                                },
+                                __self: undefined
+                            },
+                            'Additional Information'
+                        ),
+                        getAddInfo()
+                    ) : ''
+                )
+            )
+        )
+    );
+};
+exports.default = articleReviewGenerator;
 
 });
 
@@ -25807,6 +28910,8 @@ var _isomorphicFetch2 = _interopRequireDefault(_isomorphicFetch);
 
 var _reactRouter = require('react-router');
 
+var _routing = require('../routing');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 var wrappedFetch = function wrappedFetch() {
@@ -25815,8 +28920,8 @@ var wrappedFetch = function wrappedFetch() {
   return _isomorphicFetch2.default.apply(_isomorphicFetch2.default, arguments).then(function (response) {
     if (response.status === 401) {
       console.log([response.status, _arguments, response]);
-      if (_reactRouter.browserHistory.getCurrentLocation().pathname !== '/') {
-        _reactRouter.browserHistory.push('/');
+      if (_reactRouter.browserHistory.getCurrentLocation().pathname !== _routing.routes.base) {
+        _reactRouter.browserHistory.push(_routing.routes.base);
         console.error('Authorization failed, kicking back to HomePage');
       }
     }
@@ -25887,7 +28992,125 @@ var getContributor = exports.getContributor = function getContributor(subitem) {
 
 });
 
-require.register("utilities/identifierTypes.json", function(exports, require, module) {
+require.register("utilities/helpers.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+  value: true
+});
+var _jsxFileName = 'app/utilities/helpers.js';
+exports.ClassWrapper = ClassWrapper;
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+function ClassWrapper(_ref) {
+  var _this = this;
+
+  var classNames = _ref.classNames,
+      children = _ref.children;
+
+  var Reducer = function Reducer() {
+    return classNames.reduceRight(function (previousValue, currentValue, index, array) {
+      if (index == array.length - 2) {
+
+        var LastChild = Array.isArray(previousValue) ? function (lastChildProps) {
+          return _react2.default.createElement(previousValue[0], { className: previousValue[1] }, lastChildProps.children);
+        } : function (lastChildProps) {
+          return _react2.default.createElement(
+            'div',
+            { className: previousValue, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 9
+              },
+              __self: _this
+            },
+            lastChildProps.children
+          );
+        };
+
+        var NextChild = Array.isArray(currentValue) ? function (nextChildProps) {
+          return _react2.default.createElement(currentValue[0], { className: currentValue[1] }, nextChildProps.children);
+        } : function (nextChildProps) {
+          return _react2.default.createElement(
+            'div',
+            { className: currentValue, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 12
+              },
+              __self: _this
+            },
+            nextChildProps.children
+          );
+        };
+
+        return _react2.default.createElement(
+          NextChild,
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 14
+            },
+            __self: _this
+          },
+          _react2.default.createElement(
+            LastChild,
+            {
+              __source: {
+                fileName: _jsxFileName,
+                lineNumber: 14
+              },
+              __self: _this
+            },
+            children
+          )
+        );
+      } else {
+
+        var ThisChild = Array.isArray(currentValue) ? function (thisChildProps) {
+          return _react2.default.createElement(currentValue[0], { className: currentValue[1] }, thisChildProps.children);
+        } : function (thisChildProps) {
+          return _react2.default.createElement(
+            'div',
+            { className: currentValue, __source: {
+                fileName: _jsxFileName,
+                lineNumber: 19
+              },
+              __self: _this
+            },
+            thisChildProps.children
+          );
+        };
+
+        return _react2.default.createElement(
+          ThisChild,
+          {
+            __source: {
+              fileName: _jsxFileName,
+              lineNumber: 21
+            },
+            __self: _this
+          },
+          previousValue
+        );
+      }
+    });
+  };
+  return _react2.default.createElement(Reducer, {
+    __source: {
+      fileName: _jsxFileName,
+      lineNumber: 24
+    },
+    __self: this
+  });
+}
+
+});
+
+;require.register("utilities/identifierTypes.json", function(exports, require, module) {
 module.exports = [
     {'name': 'doi', 'value': 'DOI'},
     {'name': 'issn', 'value': 'ISSN'},
@@ -25932,6 +29155,212 @@ var isURL = function isURL(url) {
 };
 
 exports.default = isURL;
+
+});
+
+require.register("utilities/issueReviewGenerator.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var _jsxFileName = 'app/utilities/issueReviewGenerator.js';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+var _lodash = require('lodash');
+
+var _lodash2 = _interopRequireDefault(_lodash);
+
+var _archiveLocations = require('./archiveLocations');
+
+var _objectSearch = require('./objectSearch');
+
+var _objectSearch2 = _interopRequireDefault(_objectSearch);
+
+var _parseXMLIssue = require('./parseXMLIssue');
+
+var _parseXMLIssue2 = _interopRequireDefault(_parseXMLIssue);
+
+var _xmldoc = require('./xmldoc');
+
+var _xmldoc2 = _interopRequireDefault(_xmldoc);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var Languages = require('./language.json');
+
+var PublicationTypes = require('./publicationTypes.json');
+var AppliesTo = require('./appliesTo.json');
+var IdentifierTypes = require('./identifierTypes.json');
+
+
+var issueReviewGenerator = function issueReviewGenerator(publication, issue) {
+    var publicationMetaData = (0, _xmldoc2.default)(publication.content);
+    var reviewData = (0, _parseXMLIssue2.default)(issue);
+
+    var getSubmitSubItems = function getSubmitSubItems(items) {
+        return _lodash2.default.filter(items, function (item) {
+            for (var key in item) {
+                // checking all the properties of errors to see if there is a true
+                if (item[key]) {
+                    try {
+                        if (item[key].trim().length > 0) {
+                            return item;
+                        }
+                    } catch (e) {
+                        if (item[key].length > 0) {
+                            return item;
+                        }
+                    }
+                }
+            }
+        });
+    };
+
+    var getdate = function getdate(pubDate) {
+        var parseDate = [];
+        for (var i = 0; i < pubDate.length; i++) {
+            if (pubDate[i].length > 0) {
+                parseDate.push(pubDate[i]);
+            }
+        }
+
+        return parseDate.join(' - ');
+    };
+
+    return _react2.default.createElement(
+        'div',
+        { className: 'ReviewArticleCard', __source: {
+                fileName: _jsxFileName,
+                lineNumber: 48
+            },
+            __self: this
+        },
+        _react2.default.createElement(
+            'div',
+            {
+                __source: {
+                    fileName: _jsxFileName,
+                    lineNumber: 49
+                },
+                __self: this
+            },
+            _react2.default.createElement(
+                'div',
+                { className: 'reviewArticle', __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 50
+                    },
+                    __self: this
+                },
+                _react2.default.createElement(
+                    'div',
+                    { className: 'firstBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 51
+                        },
+                        __self: this
+                    },
+                    _react2.default.createElement('div', { className: 'innerBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 52
+                        },
+                        __self: this
+                    })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'secondBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 54
+                        },
+                        __self: this
+                    },
+                    _react2.default.createElement('div', { className: 'innerBorder', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 55
+                        },
+                        __self: this
+                    })
+                ),
+                _react2.default.createElement(
+                    'div',
+                    { className: 'reviewContent', __source: {
+                            fileName: _jsxFileName,
+                            lineNumber: 57
+                        },
+                        __self: this
+                    },
+                    _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 58
+                            },
+                            __self: this
+                        },
+                        'Issue: ',
+                        reviewData.issue.issue ? reviewData.issue.issue : ''
+                    ),
+                    reviewData.issue.volume ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 59
+                            },
+                            __self: this
+                        },
+                        'Volume: ',
+                        reviewData.issue.volume ? reviewData.issue.volume : ''
+                    ) : '',
+                    reviewData.issue.issueDoi ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 60
+                            },
+                            __self: this
+                        },
+                        'Issue DOI: ',
+                        reviewData.issue.issueDoi ? reviewData.issue.issueDoi : ''
+                    ) : '',
+                    getdate([reviewData.issue.printDateYear, reviewData.issue.printDateMonth, reviewData.issue.printDateDay]).length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 63
+                            },
+                            __self: this
+                        },
+                        'Publication Print Date: ',
+                        getdate([reviewData.issue.printDateYear, reviewData.issue.printDateMonth, reviewData.issue.printDateDay])
+                    ) : '',
+                    getdate([reviewData.issue.onlineDateYear, reviewData.issue.onlineDateMonth, reviewData.issue.onlineDateDay]).length > 0 ? _react2.default.createElement(
+                        'p',
+                        {
+                            __source: {
+                                fileName: _jsxFileName,
+                                lineNumber: 68
+                            },
+                            __self: this
+                        },
+                        'Publication Online Date: ',
+                        getdate([reviewData.issue.onlineDateYear, reviewData.issue.onlineDateMonth, reviewData.issue.onlineDateDay])
+                    ) : ''
+                )
+            )
+        )
+    );
+};
+
+exports.default = issueReviewGenerator;
 
 });
 
@@ -26100,6 +29529,91 @@ module.exports = [{'abbr':'aa','name': 'Afar'},
 {'abbr':'za','name': 'Zhuang'},
 {'abbr':'zh','name': 'Chinese'},
 {'abbr':'zu','name': 'Zulu'}];
+});
+
+require.register("utilities/makeDateDropDown.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var _jsxFileName = 'app/utilities/makeDateDropDown.js';
+
+var _react = require('react');
+
+var _react2 = _interopRequireDefault(_react);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+var makeDateDropDown = function makeDateDropDown(handler, ref, type, preset, validation, index, item) {
+    var s = [_react2.default.createElement('option', { key: '-1', __source: {
+            fileName: _jsxFileName,
+            lineNumber: 4
+        },
+        __self: undefined
+    })],
+        start = 0,
+        end = 0;
+    if (type === 'y') {
+        start = 2017;
+        end = 1980;
+    } else if (type === 'd') {
+        start = 1;
+        end = 31;
+    } else if (type === 'm') {
+        start = 1;
+        end = 12;
+    }
+
+    if (type === 'y') {
+        for (var i = start; i >= end; i--) {
+            s.push(_react2.default.createElement(
+                'option',
+                { key: i, value: i, __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 18
+                    },
+                    __self: undefined
+                },
+                i
+            ));
+        }
+    } else {
+        for (var i = start; i <= end; i++) {
+            s.push(_react2.default.createElement(
+                'option',
+                { key: i, value: i, __source: {
+                        fileName: _jsxFileName,
+                        lineNumber: 22
+                    },
+                    __self: undefined
+                },
+                i
+            ));
+        }
+    }
+
+    return _react2.default.createElement(
+        'select',
+        {
+            className: 'height32 datepickselects' + (validation ? ' fieldError' : ''),
+            name: ref,
+            value: preset,
+            onChange: function onChange(event) {
+                return handler(event);
+            },
+            __source: {
+                fileName: _jsxFileName,
+                lineNumber: 27
+            },
+            __self: undefined
+        },
+        s
+    );
+};
+
+exports.default = makeDateDropDown;
+
 });
 
 require.register("utilities/objectSearch.js", function(exports, require, module) {
@@ -26718,10 +30232,9 @@ var parseXMLIssue = function parseXMLIssue(xml) {
         volume: theVolume,
         volumeDoi: volumeDoi,
         volumeUrl: volumeUrl
-    };
 
-    // contributor loading
-    var contributors = (0, _objectSearch2.default)(parsedIssue, 'contributors');
+        // contributor loading
+    };var contributors = (0, _objectSearch2.default)(parsedIssue, 'contributors');
     var contributee = [];
     // contributors are divied into 2 types
     // person_name and organization
@@ -26893,6 +30406,30 @@ var Roles = exports.Roles = [{ 'value': 'author', 'name': 'Author' }, { 'value':
 var displayRoles = exports.displayRoles = function displayRoles(ref, handler, value) {
     console.log("HERRE");
 };
+
+});
+
+require.register("utilities/x2js.js", function(exports, require, module) {
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+var x2Js = require('x2js');
+
+var store = null;
+
+var wrappedJSONtoXML = function wrappedJSONtoXML(content) {
+    var x2js = new x2Js();
+    var xml = x2js.js2xml(content);
+    return xml;
+};
+
+wrappedJSONtoXML.registerStore = function (storeRef) {
+    store = storeRef;
+};
+
+exports.default = wrappedJSONtoXML;
 
 });
 
@@ -27286,7 +30823,8 @@ exports.default = wrappedXmlDoc;
 
 });
 
-require.register("___globals___", function(exports, require, module) {
+require.alias("events/events.js", "events");
+require.alias("process/browser.js", "process");process = require('process');require.register("___globals___", function(exports, require, module) {
   
 });})();require('___globals___');
 

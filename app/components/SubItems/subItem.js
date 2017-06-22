@@ -9,6 +9,7 @@ import RelatedItems from './RelatedItems'
 import AdditionalInformation from './AdditionalInformation'
 import OptionalIssueInformation from './OptionalIssueInformation'
 import { CrossmarkCards, CrossmarkAddButton } from './Crossmark/crossmark'
+import {routes} from '../../routing'
 
 
 
@@ -139,7 +140,7 @@ export default class SubtItem extends Component {
           <div className='titleholder'>
             <div className={'titleinnholder' + (addable ? ' subinnerholder' : ' notclickableholder')} onClick={this.toggle.bind(this)}>
               <span className={'arrowHolder' + (this.state.showSection ? ' openArrowHolder' : '')}>
-                {(arrowType === 'dark') ? <img src="/images/AddArticle/DarkTriangle.svg" /> : <img src="/images/AddArticle/Triangle.svg" />}
+                {(arrowType === 'dark') ? <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} /> : <img src={`${routes.images}/AddArticle/Triangle.svg`} />}
               </span>
               <span>{title}{addable}</span>
             </div>

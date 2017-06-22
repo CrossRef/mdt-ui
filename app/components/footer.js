@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import { stateTrackerII } from 'my_decorators'
+import {routes} from '../routing'
 
 
 export default class Footer extends Component {
@@ -35,8 +36,8 @@ export default class Footer extends Component {
         <div className='footer-meta'>
           <div className='footer-meta-content flex'>
             <div className='text-left'>
-              <img src='/images/App/cc.svg' />
-              <img src='/images/App/by.svg' />
+              <img src={`${routes.images}/App/cc.svg`} />
+              <img src={`${routes.images}/App/by.svg`} />
              The content of this site is licensed under a <a href='https://creativecommons.org/licenses/by/4.0/' target='_blank' title='Creative Commons'>Creative Commons Attribution 4.0 International License</a>
             </div>
             <div className='text-right'>

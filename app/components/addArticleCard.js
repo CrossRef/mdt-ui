@@ -1,27 +1,22 @@
 import React, { Component } from 'react'
-import ReactDOM from 'react-dom'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
 import update from 'immutability-helper'
-import Switch from 'react-toggle-switch'
 import _ from 'lodash'
-import { stateTrackerII } from 'my_decorators'
 
-import fetch from '../utilities/fetch'
 import checkDupeDOI from '../utilities/dupeDOI'
-import xmldoc from '../utilities/xmldoc'
-import objectSearch from '../utilities/objectSearch'
 import ReviewArticle from './reviewArticle'
 import SubItem from './SubItems/subItem'
 import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
 import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
 import JSesc from '../utilities/jsesc'
 import $ from 'jquery'
-import { deParseCrossmark } from '../utilities/crossmarkHelpers'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import { makeDateDropDown } from '../utilities/date'
 import isUrl from '../utilities/isURL'
 import isDOI from '../utilities/isDOI'
+import {routes} from '../routing'
+
 
 const defaultState = {
   inCart: true,
@@ -276,7 +271,7 @@ export default class AddArticleCard extends Component {
 
           this.setState({version: version})
 
-          browserHistory.push(`/publications/${encodeURIComponent(publication.message.doi)}`)
+          browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
     })
@@ -448,7 +443,7 @@ export default class AddArticleCard extends Component {
         title:
           <div className='innerTitleHolder'>
             <div className='innterTitleHolderIcon'>
-              <img src='/images/ReviewArticle/Asset_Icons_White_Review.svg' />
+              <img src={`${routes.images}/ReviewArticle/Asset_Icons_White_Review.svg`} />
             </div>
             <div className='innerTitleHolderText'>
               {this.state.article.title}
@@ -469,7 +464,7 @@ export default class AddArticleCard extends Component {
 
   back = () => {
     var publication = this.props.publication
-    browserHistory.push(`/publications/${encodeURIComponent(publication.message.doi)}`)
+    browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
   }
 
 
@@ -485,7 +480,7 @@ export default class AddArticleCard extends Component {
           <form className='addArticleForm' onSubmit={this.onSubmit}>
 
           <div className="reviewArticleButtonDiv">
-            <button type='button' onClick={this.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src='/images/AddArticle/DarkTriangle.svg' /><span>Back</span></button>
+            <button type='button' onClick={this.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
             <button type='button' onClick={this.openReviewArticleModal} className="addPublication reviewbutton">Review</button>
             <button type='submit' className={'addPublication saveButton'}>Add To Cart</button>
           </div>
