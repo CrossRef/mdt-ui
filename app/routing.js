@@ -14,8 +14,10 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 
 // ------------------ Set base url here ------------------
-const base = "/mdt";
 
+let base = '/mdt'    // example '/mdt'
+
+if(base === '/' || !base) base = ''
 
 export const routes = {
   base: base || '/',

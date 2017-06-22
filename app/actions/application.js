@@ -92,8 +92,32 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
     })
-    .then((response)=> response.json() )
-    .then((state)=>{
+    .then((response)=> {
+      if(response.status === 401) throw '401 Unauthorized - Not logged in';
+      return response.text();
+    })
+    .then((textResponse)=>{
+      let state;
+      const newCRState = {
+        routing: {
+          locationBeforeTransitions: {
+            pathname: routes.publications,
+            query: ''
+          }
+        }
+      };
+
+      if (textResponse) {
+        try {
+          state = JSON.parse(textResponse);
+        } catch(err) {
+          state = newCRState
+        }
+        if(!state || !state.routing) state = newCRState
+      } else {
+        state = newCRState;
+      }
+
       let scrubbedState = {...state}; //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
       if(type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
@@ -118,7 +142,7 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
       // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
 
       if(!match || pathname === base) {
-        scrubbedState.routing.locationBeforeTransitions.pathname = base === '/' ? '/publications' : base + '/publications'
+        scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
       }
 
       console.warn('Retrieving from remote store: ', scrubbedState);
@@ -337,8 +361,6 @@ export function deleteRecord (doi, pubDoi, callback, error = (reason) => console
       .catch(reason => error(reason))
   }
 }
-
-
 
 
 
