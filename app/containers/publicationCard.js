@@ -36,6 +36,11 @@ export default class PublicationCardContainer extends Component {
 
   constructor() {
     super();
+    const backgrounds = [
+      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 1.svg`,
+      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 2.svg`,
+      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 3.svg`,
+    ]
     const backgroundIndex = (Math.floor(Math.random() * backgrounds.length) % backgrounds.length)
     const background = backgrounds[backgroundIndex];
     this.state = { mouseOver: false, overEdit: false, background }
@@ -101,9 +106,4 @@ export default class PublicationCardContainer extends Component {
   }
 }
 
-const backgrounds = [
-  `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 1.svg`,
-  `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 2.svg`,
-  `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 3.svg`,
-];
 
