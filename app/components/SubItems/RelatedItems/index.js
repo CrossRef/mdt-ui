@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { stateTrackerII } from 'my_decorators'
 import update from 'immutability-helper'
 
+import {routes} from '../../../routing'
 const RelationTypes = require('../../../utilities/relationTypes.json')
 const IdentifierTypes = require('../../../utilities/identifierTypes.json')
 
@@ -78,7 +79,7 @@ export default class RelatedItems extends Component {
             <div className='row subItemRow' onClick={this.toggle}>
                 <div className='subItemHeader subItemTitle'>
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
-                        <img src="images/AddArticle/DarkTriangle.svg" />
+                        <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
                     </span>
                     <span>Relation {this.props.index + 1}</span>
                 </div>

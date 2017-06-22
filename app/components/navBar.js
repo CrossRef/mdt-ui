@@ -48,7 +48,7 @@ export default class PublicationNav extends Component {
     this.setState({type: type})
     this.refs.container.success(
       <div className='toastMessage'>
-        <div className={'iconHolder' + (type === 'remove' ? ' remove-message' : '') }><img src='images/Toast/Asset_Icons_White_Check.svg' /></div>
+        <div className={'iconHolder' + (type === 'remove' ? ' remove-message' : '') }><img src={`${routes.images}/Toast/Asset_Icons_White_Check.svg`} /></div>
         <div className='message'>{pascaleCase(item.type)} {type === 'add' ? 'Added to Deposit Cart' : 'Removed From Deposit Cart'} ({title})</div>
       </div>,
       <div className='toastTitle'><div className='arrow'></div></div>,
@@ -98,7 +98,7 @@ export default class PublicationNav extends Component {
           </div>
           <div className='user'>
             <div className='userProfileMenuHolder'>
-              <span className='profileMenuTrigger tooltips' onClick={() => {this.openProfileMenu()}}>{localStorage.user} <img className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')} src='images/AddArticle/DarkTriangle.svg' /></span>
+              <span className='profileMenuTrigger tooltips' onClick={() => {this.openProfileMenu()}}>{localStorage.user} <img className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')} src={`${routes.images}/AddArticle/DarkTriangle.svg`} /></span>
               {this.state.profileMenu && <div className='profileMenu'>
                 <span onClick={()=>{this.logout()}}>Logout</span>
               </div>}

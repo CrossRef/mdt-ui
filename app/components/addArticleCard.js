@@ -443,7 +443,7 @@ export default class AddArticleCard extends Component {
         title:
           <div className='innerTitleHolder'>
             <div className='innterTitleHolderIcon'>
-              <img src='images/ReviewArticle/Asset_Icons_White_Review.svg' />
+              <img src={`${routes.images}/ReviewArticle/Asset_Icons_White_Review.svg`} />
             </div>
             <div className='innerTitleHolderText'>
               {this.state.article.title}
@@ -480,7 +480,7 @@ export default class AddArticleCard extends Component {
           <form className='addArticleForm' onSubmit={this.onSubmit}>
 
           <div className="reviewArticleButtonDiv">
-            <button type='button' onClick={this.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src='images/AddArticle/DarkTriangle.svg' /><span>Back</span></button>
+            <button type='button' onClick={this.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
             <button type='button' onClick={this.openReviewArticleModal} className="addPublication reviewbutton">Review</button>
             <button type='submit' className={'addPublication saveButton'}>Add To Cart</button>
           </div>

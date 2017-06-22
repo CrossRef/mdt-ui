@@ -24,8 +24,8 @@ export default class Header extends Component {
     return (
       <div className={'header' + (isOnHome ? ' large' : '')}>
         <div className='header-contents'>
-          <img src='images/App/crossref-content-registration-logo-200.svg' />
-          <img className='second-logo-img' src='images/App/crossref-depositor-logo-200.svg' />
+          <img src={`${routes.images}/App/crossref-content-registration-logo-200.svg`} />
+          <img className='second-logo-img' src={`${routes.images}/App/crossref-depositor-logo-200.svg`} />
         </div>
         { (showPublicationsNav) && <PublicationsNav cart={this.props.cart} reduxControlModal={this.props.reduxControlModal} reduxLogout={this.props.reduxLogout} /> }
       </div>

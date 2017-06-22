@@ -86,7 +86,7 @@ export default class DepositCartItemsReview extends Component {
             <div className='itemTitle'>
               <div className='titleinnholder' onClick={() => {this.toggleInfoSection()}}>
                 <span className={'arrowHolder' + (this.state.showInfoSection ? ' openArrowHolder' : '')}>
-                    <img src="images/AddArticle/Triangle.svg" />
+                    <img src={`${routes.images}/AddArticle/Triangle.svg`} />
                 </span>
                 <span>{item.title.title || `Issue ${item.title.issue || 'NA'}, Volume ${item.title.volume || 'NA'}`}</span>
               </div>

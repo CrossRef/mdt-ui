@@ -5,6 +5,8 @@ import { bindActionCreators } from 'redux'
 import ReactModal from 'react-modal'
 import { updateReporterII } from 'my_decorators'
 
+import {routes} from '../routing'
+
 
 
 export default class Modal extends React.Component {
@@ -45,7 +47,7 @@ export default class Modal extends React.Component {
                   {modalState.title}
                 </div>
                 <div className='titleclose'>
-                  <a onClick={ () => reduxControlModal({showModal:false}) }><img src='images/Modal/Asset_Icons_White_Close.svg' /></a>
+                  <a onClick={ () => reduxControlModal({showModal:false}) }><img src={`${routes.images}/Modal/Asset_Icons_White_Close.svg`} /></a>
                 </div>
               </div>
             </div>

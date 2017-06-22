@@ -12,6 +12,7 @@ import Footer from '../components/footer'
 import DepositCart from '../components/depositCart'
 import reviewDepositCart from '../components/reviewDepositCart'
 import DepositResult from '../components/depositResult'
+import {routes} from '../routing'
 
 
 
@@ -181,7 +182,7 @@ export default class DepositCartPage extends Component {
         title:
           <div className='innerTitleHolder'>
             <div className='innterTitleHolderIcon'>
-              <img src='images/ReviewArticle/Asset_Icons_White_Review.svg' />
+              <img src={`${routes.images}/ReviewArticle/Asset_Icons_White_Review.svg`} />
             </div>
             <div className='innerTitleHolderText'>
               Review All
@@ -344,7 +345,7 @@ const EmptyCart = () => {
         Deposit Cart is Empty
       </div>
       <div className='emptyBoxHolder'>
-        <img src='images/Deposit/Asset_Empty_Box_Empty Box Yellow.svg' />
+        <img src={`${routes.images}/Deposit/Asset_Empty_Box_Empty Box Yellow.svg`} />
       </div>
     </div>
   )
@@ -355,7 +356,7 @@ const WaitMessage = () => {
     <div className="waitMessage">
       <div>Just a moment...</div>
       <div>Please wait while we process your deposit</div>
-      <img src='images/Deposit/Asset_Load_Throbber_Load Throbber Grey.svg' />
+      <img src={`${routes.images}/Deposit/Asset_Load_Throbber_Load Throbber Grey.svg`} />
     </div>
   )
 }

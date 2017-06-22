@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import update from 'immutability-helper'
-import { stateTrackerII } from 'my_decorators'
 
+import {routes} from '../../../routing'
 const AppliesTo = require('../../../utilities/appliesTo.json')
 
 
@@ -59,7 +59,7 @@ export default class License extends Component {
             <div className='row subItemRow' onClick={this.toggle.bind(this)}>
                 <div className='subItemHeader subItemTitle'>
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
-                        <img src="images/AddArticle/DarkTriangle.svg" />
+                        <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
                     </span>
                     <span>License {this.props.index + 1}</span>
                 </div>

@@ -102,8 +102,8 @@ export default class PublicationCardContainer extends Component {
 }
 
 const backgrounds = [
-  'images/Publications/PublicationButtonArtLarge_Publication Art 1.svg',
-  'images/Publications/PublicationButtonArtLarge_Publication Art 2.svg',
-  'images/Publications/PublicationButtonArtLarge_Publication Art 3.svg',
+  `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 1.svg`,
+  `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 2.svg`,
+  `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 3.svg`,
 ];
 

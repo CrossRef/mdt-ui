@@ -19,6 +19,7 @@ const base = "/mdt";
 
 export const routes = {
   base: base || '/',
+  images: base + '/images',
   loggedInPage: base + '/loggedin',
   publications: base + '/publications',
   publicationsModal: base + '/publications?modal=:doi',

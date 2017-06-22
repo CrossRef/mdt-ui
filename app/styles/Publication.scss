@@ -7,7 +7,7 @@
   }
 
   .publication-header {
-    background: url('images/App/BannerArt_WorksList%20Banner.svg') no-repeat center center;
+    background: url('/mdt/images/App/BannerArt_WorksList%20Banner.svg') no-repeat center center;
     background-size: cover;
     height: 222px;
     border-bottom: 2px solid #4f5858;
@@ -40,7 +40,7 @@
 
           &:before {
             content: ' ';
-            background: url(images/Publications/Triangle.svg);
+            background: url(/mdt/images/Publications/Triangle.svg);
             width: 50px;
             height: 25px;
             display: block;

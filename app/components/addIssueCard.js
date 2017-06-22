@@ -1,11 +1,7 @@
 import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { browserHistory } from 'react-router'
 import update from 'immutability-helper'
 import _ from 'lodash'
 import Switch from 'react-toggle-switch'
-import { stateTrackerII } from 'my_decorators'
 import $ from 'jquery'
 
 import {makeDateDropDown} from  '../utilities/date'
@@ -20,6 +16,7 @@ import objectSearch from '../utilities/objectSearch'
 import { getContributor } from '../utilities/getSubItems'
 import { displayArchiveLocations } from '../utilities/archiveLocations'
 import { getIssueXml } from '../utilities/xmlGenerator'
+import {routes} from '../routing'
 
 
 
@@ -515,7 +512,7 @@ export default class AddIssueCard extends Component {
                           <div className='toolmsgholder'>
                             <div className='errormsgholder'>
                               <div className='errormsginnerholder'>
-                                <img src='images/AddArticle/Asset_Icons_White_Help.svg' />
+                                <img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} />
                                 Please provide a Title that fully describes your Issue
                               </div>
                             </div>
@@ -531,7 +528,7 @@ export default class AddIssueCard extends Component {
                           <div className='toolmsgholder'>
                             <div className='errormsgholder'>
                               <div className='errormsginnerholder'>
-                                <div><img src='images/AddArticle/Asset_Icons_White_Help.svg' /></div>
+                                <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
                                 {(
                                   this.state.errors.issue ||
                                   this.state.errors.issuedoi ||

@@ -2,12 +2,13 @@ import React, { Component } from 'react'
 import Switch from 'react-toggle-switch'
 
 import { ClassWrapper } from '../utilities/classwrapper'
+import {routes} from '../routing'
 
 
 export const TopBar = ({title}) =>
   <ClassWrapper classNames={['topbar', 'titleholder', 'titleinnerholder']}>
     <div className='titleIconHolder'>
-      <img src='images/AddArticle/Asset_Icons_White_Write.svg' />
+      <img src={`${routes.images}/AddArticle/Asset_Icons_White_Write.svg`} />
     </div>
     <div className='articletitle'>
       {title}
@@ -45,7 +46,7 @@ export class InfoHelperRow extends Component {
 export const InfoBubble = () =>
   <ClassWrapper classNames={['errorHolder talltooltip helpers', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder']}>
     <div className='errormsginnerholder'>
-      <div><img src='images/AddArticle/Asset_Icons_Grey_Help.svg' /></div>
+      <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} /></div>
       <div>Please provide a Title that fully describes your Article</div>
     </div>
   </ClassWrapper>
@@ -53,7 +54,7 @@ export const InfoBubble = () =>
 
 export const ErrorBubble = ({errors, crossmarkErrors}) =>
   <ClassWrapper classNames={['errorHolder talltooltip fullError', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder', 'errormsginnerholder']}>
-    <div><img src='images/AddArticle/Asset_Icons_Grey_Caution.svg' /></div>
+    <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Caution.svg`} /></div>
     {(
       errors.doi ||
       errors.url ||
@@ -125,7 +126,7 @@ export class OptionalTitleData extends Component {
       <div className='OptionalTitleFields'>
         <div className='toggleButton' onClick={this.props.toggleFields}>
             <span className={'arrowHolder' + (this.props.show ? ' openArrowHolder' : '')}>
-              <img src="images/AddArticle/DarkTriangle.svg" />
+              <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </span>
           <span>Optional Title Data</span>
         </div>

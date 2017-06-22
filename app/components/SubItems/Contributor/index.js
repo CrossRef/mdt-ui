@@ -3,6 +3,7 @@ import update from 'immutability-helper'
 import { stateTrackerII } from 'my_decorators'
 
 import { Roles } from '../../../utilities/roles.js'
+import {routes} from '../../../routing'
 
 
 
@@ -58,7 +59,7 @@ export default class Contributor extends Component {
             <div className='row subItemRow' onClick={this.toggle}>
                 <div className='subItemHeader subItemTitle'>
                     <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
-                        <img src="images/AddArticle/DarkTriangle.svg" />
+                        <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
                     </span>
                     <span>Contributor {this.props.index + 1}</span>
                 </div>
