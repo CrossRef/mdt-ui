@@ -68,8 +68,11 @@
         .searchType {
           height: 32px;
           width: 96px;
-          -webkit-appearance: none;
-          -webkit-border-radius: 0px;
+          background: url(/mdt/images/App/Ic_arrow_drop_down.svg) no-repeat right center;
+          background-size: 	25%;
+          -moz-appearance: none;
+           -webkit-appearance: none;
+           -webkit-border-radius: 0px;
           border-right:none;
           background-color: white;
         }
@@ -129,8 +132,9 @@
 
     .add-record {
       cursor: pointer;
-      color: black;
-      border: 1px solid #4f5858;
+      border:none;
+      background: #3eb1c8;
+      color: #fff;
       display: inline-block;
       width: 192px;
       height: 48px;
@@ -284,7 +288,7 @@
     // Nested table
 
     table.publication-children-listing td.issue-articles:last-child {
-      padding: 48px 0;
+
       padding-right: 0;
       border-top: 1px solid #ced3d9;
       border-bottom: 1px solid #ced3d9;

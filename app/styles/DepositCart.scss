@@ -337,8 +337,9 @@
     .itemholder {
         .item {
             margin: 0;
-            padding: 0;
+            padding: 0;        
             .stateIcon{
+                border-left: 1px solid #E3E6E9;
                 width: 10%;
                 .iconHolder {
                     display: inline-block;
@@ -349,13 +350,17 @@
                     }
                 }
             }
-            .title {
+            .stateIcon:last-child{
+                border-bottom: 1px solid #E3E6E9;
+            }
+            .title {                
                 width: 60%;
             }
             .status {
                 width: 10%;
             }
             .action {
+                border-right: 1px solid #E3E6E9;
                 width: 10%;
                 a {
                     cursor: pointer;
@@ -393,6 +398,7 @@
         }
     }
     .depositpubtitle {
+        
         background: #596565;
         color: #FFF;
         padding: 10px 0 10px 37px;

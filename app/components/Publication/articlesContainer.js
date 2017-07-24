@@ -19,10 +19,11 @@ export default class ArticleContainer extends Component {
     const articles = this.props.doi.contains
     const  issueDoi = this.props.doi.doi
     const  pubDoi = this.props.publication.message.doi
+    const padding = articles.length ? {padding:"48px 0",height: "32px"} : {padding: "0px 0", height: "0px"}
+
     return (<tr>
-      <td colSpan={6} className='issue-articles'>
-        <table>
-          <thead><tr><td /><td /><td /><td /><td /><td /></tr></thead>
+      <td colSpan={6} className='issue-articles' style={padding}>
+        <table >
           <tbody>
             {
               articles.map((article, i) => <Article
