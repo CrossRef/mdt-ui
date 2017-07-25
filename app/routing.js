@@ -15,7 +15,7 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 // ------------------ Set base url here ------------------
 
-let base = '/mdt'    // example '/mdt'
+let base = '/metadatamanager'    // example '/mdt'
 
 if(base === '/' || !base) base = ''
 

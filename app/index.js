@@ -20,7 +20,7 @@ setConfig({
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
-if(browserHistory.getCurrentLocation().pathname !== '/mdt/') {
+if(browserHistory.getCurrentLocation().pathname !== '/metadatamanager/') {
   store.dispatch(getCRState());
 }
 
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history} basename={'mdt'}>
+      <Router history={history} basename={'metadatamanager'}>
         {Routing(store)}
       </Router>
     </div>
