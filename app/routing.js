@@ -38,7 +38,7 @@ export const routes = {
 export default () => {
 
   return (
-    <Route path={routes.base} component={App} basename={'mdt'}>
+    <Route path={routes.base} component={App} basename={'metadatamanager'}>
       <IndexRoute component={LoginPage} />
       <Route path={routes.loggedInPage} component={LoggedInPage} />
       <Route path={routes.publications} component={PublicationsPage} />
