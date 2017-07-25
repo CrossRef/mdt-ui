@@ -30,6 +30,11 @@ export default class SubtItem extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (nextProps.first ){
+       this.setState({
+        showSection: nextProps.showSection
+       })      
+    }        
     this.setState({
         crossmarkCards: Object.keys(this.state.crossmarkCards).length ? this.state.crossmarkCards : (nextProps.showCards || emptyObject)
     })

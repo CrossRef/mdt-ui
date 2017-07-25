@@ -163,6 +163,9 @@ const parseXMLArticle = function (articleXML) {
     // person_name and organization
     var person_name = undefined
     var organization = undefined
+    retObj.openItems={}    
+    retObj.openItems.Contributors=contributors
+
     if (contributors) {
         person_name = objectSearch(contributors, 'person_name')
         organization = objectSearch(contributors, 'organization')
@@ -256,6 +259,7 @@ const parseXMLArticle = function (articleXML) {
     // fundings loading
     const fundings = objectSearch(parsedArticle, 'fr:assertion')
     var funders = []
+    retObj.openItems.Funding=fundings
     // contributors are divied into 2 types
     // person_name and organization
     if (fundings) {
@@ -339,6 +343,7 @@ const parseXMLArticle = function (articleXML) {
 
     // license loading
     const licences = objectSearch(parsedArticle, 'ai:license_ref')
+    retObj.openItems.Licenses=licences
     var lic = []
     // contributors are divied into 2 types
     // person_name and organization
@@ -384,6 +389,7 @@ const parseXMLArticle = function (articleXML) {
 
     // related items
     const relatedItems = objectSearch(parsedArticle, 'related_item')
+    retObj.openItems.relatedItems=relatedItems
     var relItem = []
     // contributors are divied into 2 types
     // person_name and organization
