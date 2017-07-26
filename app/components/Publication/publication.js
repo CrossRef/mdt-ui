@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
+import {stateTrackerII} from 'my_decorators'
 
 import Listing from './listing'
 import Filter from './filter'
@@ -69,6 +70,7 @@ export default class Publication extends Component {
     for(let i in selections){
       if(selections[i].article.type === 'article') this.props.reduxCartUpdate([this.state.selections[i].article])
     }
+    this.setState({selections:[]});
   }
 
   noneSelected = () => {
