@@ -1,4 +1,6 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
+import $ from 'jquery'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
 
@@ -29,6 +31,22 @@ export default class ActionBar extends Component {
       actionMenuOpen: false,
       addRecordMenuOpen: false
     }
+  }
+
+  componentWillMount() {
+    document.addEventListener('click', this.handleClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
+  handleClick = e => {
+    // if(!ReactDOM.findDOMNode(this).contains(e.target)) {
+    //   this.setState
+    // }
+
+    console.log($(ReactDOM.findDOMNode(this)), e.target);
   }
 
   openAddIssueModal = () => {
