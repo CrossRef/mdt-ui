@@ -14,7 +14,7 @@ export default function configure () {
     : createStore
 
   const browserHistoryNew = useRouterHistory(createHistory)({
-    basename: 'mdt'
+    basename: 'metadatamanager'
   })
 
   const createStoreWithMiddleware = applyMiddleware(

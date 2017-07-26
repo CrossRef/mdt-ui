@@ -50,7 +50,6 @@ export default class Search extends Component {
 
     this.props.asyncGetItem(item.doi)
     .then((result) => {
-      //return console.log(result);
 
       //clean up returned publication metadata
       result.message.doi = publication.message.doi;

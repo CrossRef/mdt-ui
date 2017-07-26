@@ -119,6 +119,14 @@ const defaultState = {
     publicationType:'',
     similarityCheckURL:'',
     freetolicense: ''
+  },
+  openItems: {
+    apiReturned: false,
+    Contributors:false,
+    Funding:false,
+    Licenses:false,
+    relatedItems:false,
+    addInfo:false
   }
 }
 
@@ -183,6 +191,7 @@ export default class AddArticleCard extends Component {
 
         this.setState({
           inCart: _.find(this.props.reduxCart, (cartItems) => { return cartItems.doi === parsedArticle.article.doi}) ? true : false,
+          first: true,
           doiDisabled: true,
           version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
           addInfo: parsedArticle.addInfo,
@@ -190,7 +199,8 @@ export default class AddArticleCard extends Component {
           contributors: parsedArticle.contributors,
           funding: parsedArticle.funding,
           license: parsedArticle.license,
-          relatedItems: parsedArticle.relatedItems
+          relatedItems: parsedArticle.relatedItems,
+          openItems: parsedArticle.openItems
         })
       }
     }
@@ -538,8 +548,9 @@ export default class AddArticleCard extends Component {
                 incomingData={this.state.contributors}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'contributors')}
-                showSection={this.state.showContributor}
+                showSection={this.state.openItems.Contributors}
                 addHandler={this.addSection.bind(this, 'contributors')}
+                apiReturned={this.state.openItems.apiReturned}
               />
               <SubItem
                 title={'Funding'}
@@ -547,7 +558,8 @@ export default class AddArticleCard extends Component {
                 incomingData={this.state.funding}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'funding')}
-                showSection={this.state.showFunding}
+                showSection={this.state.openItems.Funding}
+                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'funding')}
               />
               <SubItem
@@ -556,7 +568,8 @@ export default class AddArticleCard extends Component {
                 incomingData={this.state.license}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'license')}
-                showSection={this.state.showLicense}
+                showSection={this.state.openItems.Licenses}
+                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'license')}
                 freetoread={this.state.addInfo.freetolicense}
                 errorLicenseStartDate={this.state.errors.licenseStartDate}
@@ -568,7 +581,8 @@ export default class AddArticleCard extends Component {
                 incomingData={this.state.relatedItems}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'relatedItems')}
-                showSection={this.state.showRelatedItems}
+                showSection={this.state.openItems.relatedItems}
+                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'relatedItems')}
               />
               <SubItem
@@ -576,7 +590,8 @@ export default class AddArticleCard extends Component {
                 addable={false}
                 incomingData={this.state.addInfo}
                 handler={this.boundSetState}
-                showSection={this.state.showAdditionalInformation}
+                showSection={this.state.openItems.addInfo}
+                apiReturned={this.state.openItems.apiReturned}
               />
               {this.state.crossmark &&
                 <SubItem
@@ -585,6 +600,7 @@ export default class AddArticleCard extends Component {
                   crossmarkErrors={this.state.crossmarkErrors}
                 />
               }
+
             </div>
           </form>
         </div>

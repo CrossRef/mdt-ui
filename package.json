@@ -2,10 +2,6 @@
   "name": "react-boilerplate",
   "version": "0.1.0",
   "private": true,
-  "homepage": "/mdt/",
-  "paths": {
-    "public": "/mdt"
-  },
   "devDependencies": {
     "autoprefixer": "6.5.1",
     "auto-reload-brunch": "^2",
@@ -75,7 +71,7 @@
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
     "moment-timezone": "^0.5.13",
-    "my_decorators": "^1.1.0",
+    "my_decorators": "1.1.0",
     "prop-types": "^15.5.8",
     "query-string": "^4.3.4",
     "querystring": "^0.2.0",

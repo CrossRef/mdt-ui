@@ -448,7 +448,6 @@ export default class DepositCartItemCard extends Component {
     const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
     const cartType = cartItem.type
     const status = cartItem.status
-    console.log(cartItem.title);
     const title = cartItem.title.title ? cartItem.title.title.trim() : `Issue ${cartItem.title.issue || 'NA'}, Volume ${cartItem.title.volume || 'NA'}`
     return (
       <tr className='item'>

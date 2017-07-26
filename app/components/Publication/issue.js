@@ -3,7 +3,7 @@ import { Link, browserHistory } from 'react-router'
 import moment from 'moment'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
-
+import {routes} from '../../routing'
 import AddIssueCard from '../addIssueCard'
 import xmldoc from '../../utilities/xmldoc'
 import objectSearch from '../../utilities/objectSearch'
@@ -129,7 +129,7 @@ export default class Issue extends Component {
       <td className='date'>{date}</td>
       <td className='type'>{type}</td>
       <td className='status'>{status}</td>
-      <td className='url'>{url && <a className='issueDOILink' target='_blank' href={url}>{url}</a>}&nbsp;<Link className='issueDoiAddNew' to={`/mdt/publications/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi)}/addarticle`}><span>Add Article</span></Link></td>
+      <td className='url'>{url && <a className='issueDOILink' target='_blank' href={url}>{url}</a>}&nbsp;<Link className='issueDoiAddNew' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi)}/addarticle`}><span>Add Article</span></Link></td>
     </tr>)
   }
 }

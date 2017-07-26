@@ -3,7 +3,6 @@ import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
 import App from './containers/app'
-import ArticlesPage from './containers/articlesPage'
 import AddArticlesPage from './containers/addArticlesPage'
 import LoginPage from './containers/loginPage'
 import LoggedInPage from './containers/loggedIn'
@@ -26,7 +25,6 @@ export const routes = {
   publications: base + '/publications',
   publicationsModal: base + '/publications?modal=:doi',
   publication: base + '/publications/:doi',
-  articles: base + '/articles',
   addArticle: base + '/publications/:pubDoi/addarticle',
   editArticle: base + '/publications/:pubDoi/addarticle/:articleDoi',
   addArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle',
@@ -38,13 +36,12 @@ export const routes = {
 export default () => {
 
   return (
-    <Route path={routes.base} component={App} basename={'mdt'}>
+    <Route path={routes.base} component={App}>
       <IndexRoute component={LoginPage} />
       <Route path={routes.loggedInPage} component={LoggedInPage} />
       <Route path={routes.publications} component={PublicationsPage} />
       <Route path={routes.publicationsModal} component={PublicationsPage} />
       <Route path={routes.publication} component={PublicationPage} />
-      <Route path={routes.articles} component={ArticlesPage} />
       <Route path={routes.addArticle} component={AddArticlesPage} />
       <Route path={routes.editArticle} component={AddArticlesPage} />
       <Route path={routes.addArticleUnderIssue} component={AddArticlesPage} />

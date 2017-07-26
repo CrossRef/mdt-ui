@@ -33,7 +33,6 @@ export default class ArticleReview extends Component {
   }
 
   componentWillMount () {
-    console.log(this.props)
     if (this.props.issue) {
       this.props.asyncGetItem(this.props.issue.doi).then((issueData) => {
 
@@ -83,7 +82,6 @@ export default class ArticleReview extends Component {
   }
 
   render () {
-    console.log('WTFG');
     const { reviewData, publication, publicationMetaData} = this.props
     return this.wrapper(reviewData, publicationMetaData)
 

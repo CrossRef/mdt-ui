@@ -30,7 +30,10 @@ export default class SubtItem extends Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    const apiReturnedFirstTime = nextProps.apiReturned !== this.props.apiReturned;
+
     this.setState({
+        showSection: apiReturnedFirstTime ? nextProps.showSection : this.state.showSection,
         crossmarkCards: Object.keys(this.state.crossmarkCards).length ? this.state.crossmarkCards : (nextProps.showCards || emptyObject)
     })
   }

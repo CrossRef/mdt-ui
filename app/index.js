@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 import { STContainer, myDecoratorsConfig, setConfig } from 'my_decorators'
 
 import configure from './store'
-import Routing from './routing'
+import Routing, { routes } from './routing'
 import { getCRState } from './actions/application'
 
 
@@ -20,7 +20,7 @@ setConfig({
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
-if(browserHistory.getCurrentLocation().pathname !== '/mdt/') {
+if(browserHistory.getCurrentLocation().pathname !== `${routes.base}`) {
   store.dispatch(getCRState());
 }
 
@@ -28,8 +28,8 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history} basename={'mdt'}>
-        {Routing(store)}
+      <Router history={history}>
+        {Routing()}
       </Router>
     </div>
   </Provider>, document.querySelector('#root'))
