@@ -164,7 +164,7 @@ const parseXMLArticle = function (articleXML) {
     var person_name = undefined
     var organization = undefined
     retObj.openItems={}    
-    retObj.openItems.Contributors=contributors
+    retObj.openItems.Contributor=contributors
 
     if (contributors) {
         person_name = objectSearch(contributors, 'person_name')
@@ -343,7 +343,7 @@ const parseXMLArticle = function (articleXML) {
 
     // license loading
     const licences = objectSearch(parsedArticle, 'ai:license_ref')
-    retObj.openItems.Licenses=licences
+    retObj.openItems.License=licences
     var lic = []
     // contributors are divied into 2 types
     // person_name and organization
