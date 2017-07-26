@@ -71,7 +71,6 @@ export default class DepositCartItemsReview extends Component {
   }
 
   parseArticle (item, publication, parentIssue) {
-    console.log(parentIssue)
     return (
       <div>
         {articleReviewGenerator(publication, item.content, parentIssue)}
