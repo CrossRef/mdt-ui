@@ -28,7 +28,6 @@ const defaultState = {
   showRelatedItems: false,
   showAdditionalInformation: false,
   showHelper: false,
-  first: false,
   on: false,
   error: false,
   doiDisabled: false,
@@ -122,10 +121,12 @@ const defaultState = {
     freetolicense: ''
   },
   openItems: {
-    Contributor:false,
+    apiReturned: false,
+    Contributors:false,
     Funding:false,
-    License:false,
-    relatedItems:false
+    Licenses:false,
+    relatedItems:false,
+    addInfo:false
   }
 }
 
@@ -547,9 +548,9 @@ export default class AddArticleCard extends Component {
                 incomingData={this.state.contributors}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'contributors')}
-                showSection={this.state.openItems.Contributor}
+                showSection={this.state.openItems.Contributors}
                 addHandler={this.addSection.bind(this, 'contributors')}
-                first={this.state.first}
+                apiReturned={this.state.openItems.apiReturned}
               />
               <SubItem
                 title={'Funding'}
@@ -558,7 +559,7 @@ export default class AddArticleCard extends Component {
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'funding')}
                 showSection={this.state.openItems.Funding}
-                first={this.state.first}
+                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'funding')}
               />
               <SubItem
@@ -567,8 +568,8 @@ export default class AddArticleCard extends Component {
                 incomingData={this.state.license}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'license')}
-                showSection={this.state.openItems.License}
-                first={this.state.first}
+                showSection={this.state.openItems.Licenses}
+                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'license')}
                 freetoread={this.state.addInfo.freetolicense}
                 errorLicenseStartDate={this.state.errors.licenseStartDate}
@@ -581,7 +582,7 @@ export default class AddArticleCard extends Component {
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'relatedItems')}
                 showSection={this.state.openItems.relatedItems}
-                                first={this.state.first}
+                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'relatedItems')}
               />
               <SubItem
@@ -589,7 +590,8 @@ export default class AddArticleCard extends Component {
                 addable={false}
                 incomingData={this.state.addInfo}
                 handler={this.boundSetState}
-                showSection={this.state.showAdditionalInformation}
+                showSection={this.state.openItems.addInfo}
+                apiReturned={this.state.openItems.apiReturned}
               />
               {this.state.crossmark &&
                 <SubItem
@@ -599,8 +601,6 @@ export default class AddArticleCard extends Component {
                 />
               }
 
-              {this.state.first = false
-              }
             </div>
           </form>
         </div>
