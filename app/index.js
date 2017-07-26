@@ -20,7 +20,7 @@ setConfig({
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
-if(browserHistory.getCurrentLocation().pathname !== ('/' || `${routes.base}/`)) {
+if(browserHistory.getCurrentLocation().pathname !== `${routes.base}`) {
   store.dispatch(getCRState());
 }
 
