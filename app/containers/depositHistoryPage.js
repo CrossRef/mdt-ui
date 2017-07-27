@@ -270,7 +270,7 @@ export default class DepositHistoryPage extends Component {
         <table className='historyData'>
           <tr>
             <th className='first'>Deposit ID</th>
-            <th>
+            <th className="titleCell">
               <span
                 onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'title'}})}}
               >Title</span>
@@ -283,7 +283,7 @@ export default class DepositHistoryPage extends Component {
                 : ''
               }
             </th>
-            <th>
+            <th className="dateCell">
               <span
                 onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_timestamp'}})}}
               >Date</span>
@@ -296,7 +296,7 @@ export default class DepositHistoryPage extends Component {
                 : ''
               }
             </th>
-            <th>
+            <th className="typeCell">
               <span
                 onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'type'}})}}
               >Type</span>
@@ -309,7 +309,7 @@ export default class DepositHistoryPage extends Component {
                 : ''
               }
             </th>
-            <th>
+            <th className="statusCell">
               <span
                 onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_status'}})}}
               >Status</span>

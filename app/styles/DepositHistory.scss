@@ -88,17 +88,32 @@
                 border-right: 0px;
                 padding: 8px 0;
             }
+            .titleCell {
+                width: 290px;
+            }
+            .dateCell {
+                width: 120px;
+            }
+            .typeCell {
+                width: 75px
+            }
+            .statusCell {
+                width: 85px
+            }
             td {
+
                 padding-top: 32px;
             }
             .first {
                 border-left: 1px solid #DEE1E5;
                 padding: 8px 0 8px 32px;
+                width: 140px;
             }
             .last {
                 border-right: 1px solid #DEE1E5;
             }
             .firstTd {
+
                 padding: 32px 0 0 32px;
             }
         }
