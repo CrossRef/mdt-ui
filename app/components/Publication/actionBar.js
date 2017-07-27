@@ -33,7 +33,6 @@ export default class ActionBar extends Component {
   }
 
   handleClick = e => {
-    console.log('CLICK');
     const element = $(e.target);
     if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .tooltips'))) {
       this.setState({ actionMenuOpen: false, addRecordMenuOpen: false })
