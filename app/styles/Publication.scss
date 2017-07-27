@@ -137,17 +137,18 @@
       color: #fff;
       display: inline-block;
       width: 192px;
-      height: 48px;
       line-height: 48px;
       font-size: 16px;
       text: {
         decoration: none;
       }
+      div {
+        height: 100px !important;
+      }
     }
 
     .actions {
       width: 192px;
-      height: 48px;
       border: 1px solid black;
       line-height: 48px;
       font-size: 16px;
