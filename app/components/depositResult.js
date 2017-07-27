@@ -61,7 +61,7 @@ const renderResults = (resultData, closeErrors) => {
           <div className="articleResult">
             <p className="articleResult">{article.status}</p>
             <div className={article.errorMessage ? 'errorBox' : 'emptyBox'}>
-              {(!article.errorMessage && article.type === 'issue') ? <a href={`http://dx.doi.org/${article.doi}`}>http://dx.doi.org/{article.doi}</a> : ''}
+              {(!article.errorMessage && article.type === 'issue') ? <a target='_blank' href={`http://dx.doi.org/${article.doi}`}>http://dx.doi.org/{article.doi}</a> : ''}
               { article.errorMessage ? <ErrorBox errorMessage={article.errorMessage} closeErrors={closeErrors}/> : ''}
             </div>
           </div>
