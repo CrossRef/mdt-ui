@@ -32,18 +32,22 @@ export default class ActionBar extends Component {
     }
   }
 
-  componentWillMount() {
-    document.addEventListener('click', this.handleClick, false);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('click', this.handleClick, false);
-  }
-
   handleClick = e => {
+    console.log('CLICK');
     const element = $(e.target);
     if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .tooltips'))) {
       this.setState({ actionMenuOpen: false, addRecordMenuOpen: false })
+    }
+  }
+
+  componentWillUpdate (nextProps, nextState) {
+    const aMenuIsOpen = nextState.actionMenuOpen || nextState.addRecordMenuOpen;
+    const aMenuClosed = (this.state.actionMenuOpen && !nextState.actionMenuOpen) || (this.state.addRecordMenuOpen && !nextState.addRecordMenuOpen)
+
+    if(aMenuIsOpen) {
+      document.addEventListener('click', this.handleClick, false);
+    } else if (aMenuClosed) {
+      document.removeEventListener('click', this.handleClick, false);
     }
   }
 
