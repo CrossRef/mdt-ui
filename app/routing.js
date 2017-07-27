@@ -16,7 +16,7 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 let base = '/metadatamanager'    // example '/mdt'
 
-const absoluteAssetPaths = true; // set to true on dev servers, false in production
+const absoluteAssetPaths = false; // set to true on dev servers, false in production
 
 
 if(base === '/' || !base) base = ''
