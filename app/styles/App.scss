@@ -15,11 +15,12 @@
         margin-top: 63px;
         border-top: 1px solid black;
 
+        //Header contents for login page
         .header-contents {
           min-height: 63px;
           height: 63px;
+
           img {
-//            margin: 10px 40px 8px 16px;
             height: 54px;
           }
 
@@ -65,12 +66,16 @@
         margin: 0 auto;
         min-height: 63px;
         height: 63px;
-        display: flex;
+
+        a {
+          float:right
+        }
 
         img {
-          min-height: 42px;
+          float: left;
+          min-height: 52px;
           height: 42px;
-          margin: 10px 10px 8px 16px;
+          margin: 10px 10px -16px 16px;
         }
 
         .header-logo-name {
