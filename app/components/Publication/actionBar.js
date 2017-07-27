@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import $ from 'jquery'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
 
@@ -28,6 +29,24 @@ export default class ActionBar extends Component {
     this.state = {
       actionMenuOpen: false,
       addRecordMenuOpen: false
+    }
+  }
+
+  handleClick = e => {
+    const element = $(e.target);
+    if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .tooltips'))) {
+      this.setState({ actionMenuOpen: false, addRecordMenuOpen: false })
+    }
+  }
+
+  componentWillUpdate (nextProps, nextState) {
+    const aMenuIsOpen = nextState.actionMenuOpen || nextState.addRecordMenuOpen;
+    const aMenuClosed = (this.state.actionMenuOpen && !nextState.actionMenuOpen) || (this.state.addRecordMenuOpen && !nextState.addRecordMenuOpen)
+
+    if(aMenuIsOpen) {
+      document.addEventListener('click', this.handleClick, false);
+    } else if (aMenuClosed) {
+      document.removeEventListener('click', this.handleClick, false);
     }
   }
 
@@ -64,7 +83,7 @@ export default class ActionBar extends Component {
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add Record
-        {this.state.addRecordMenuOpen && <div>
+        {this.state.addRecordMenuOpen && <div className='actionBarDropDown'>
           <p onClick={()=>browserHistory.push(`${routes.publications}/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
           <p onClick={this.openAddIssueModal}>New Volume/Issue</p>
         </div>}
@@ -74,7 +93,7 @@ export default class ActionBar extends Component {
           onClick={this.props.selections.length ? () => this.setState({ actionMenuOpen : !this.state.actionMenuOpen, addRecordMenuOpen: false }) : null}
         >
           Action
-          {this.state.actionMenuOpen && <div>
+          {this.state.actionMenuOpen && <div className='actionBarDropDown'>
             <p className={onlyIssue ? 'grayedOut' : ''} onClick={onlyIssue ? null : handleAddCart}>Add to Cart</p>
             <p onClick={duplicateSelection}>Duplicate</p>
             <p onClick={deleteSelections}>Remove</p>
