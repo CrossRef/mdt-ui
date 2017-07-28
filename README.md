@@ -18,7 +18,6 @@ These instructions will get you a copy of the project up and running on your loc
 * npm run build
 * Copy the contents of public folder created in root to the deployment server root folder
 
-INSERT HERE
 
 ## Built With
 
