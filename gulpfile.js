@@ -12,7 +12,7 @@ var sass = require('gulp-sass');
 
 gulp.task('default', ['development']);
 
-gulp.task('development', ['assets', 'html', 'js', 'css', 'lint', 'connect', 'watch']);
+gulp.task('development', ['assets', 'html', 'js', 'css', 'connect', 'watch']);
 gulp.task('build', ['assets', 'html', 'js', 'css']);
 
 gulp.task('connect', function () {
