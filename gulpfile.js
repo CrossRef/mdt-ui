@@ -13,7 +13,7 @@ var sass = require('gulp-sass');
 gulp.task('default', ['development']);
 
 gulp.task('development', ['assets', 'html', 'js', 'css', 'lint', 'connect', 'watch']);
-gulp.task('build', ['assets', 'html', 'js', 'css', 'connect', 'watch']);
+gulp.task('build', ['assets', 'html', 'js', 'css']);
 
 gulp.task('connect', function () {
   connect.server({
@@ -34,10 +34,8 @@ gulp.task('html', function() {
   gulp.src('./buildAssets/index.html')
     .pipe(htmlreplace({
       paths: [`${rootDir}/app.css`, `${rootDir}/js/app.js`],
-      globals: {
-        src: JSON.stringify(globals),
-        tpl: '<script>window.globals = %s</script>'
-      }
+      globals: `<script>window.globals = ${JSON.stringify(globals)}</script>`,
+      favicon: `<link rel="shortcut icon" href="${rootDir}/favicon.ico" type="image/x-icon">`
     }))
     .pipe(gulp.dest('./public'));
 });
@@ -70,7 +68,6 @@ gulp.task('lint', function() {
 });
 
 gulp.task('watch', function () {
-  gulp.watch('./buildAssets/index.html', ['html'])
   gulp.watch('./app/**/*.js', ['js'])
   gulp.watch('./app/**/*.css', ['css'])
 });
