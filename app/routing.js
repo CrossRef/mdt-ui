@@ -14,16 +14,19 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 // ------------------ Set base url here ------------------
 
-let base = '/metadatamanager'    // example '/mdt'
+let base = '';
+let absoluteAssetPath = true;
+if(window.globals) {  // if production build, override these settings with global variables set in config file
+  base = globals.rootDir;
+  absoluteAssetPath = false;
+} else if (base === '/' || !base) {
+  base = ''
+}
 
-const absoluteAssetPaths = false; // set to true on dev servers, false in production
-
-
-if(base === '/' || !base) base = ''
 
 export const routes = {
   base: base || '/',
-  images: absoluteAssetPaths ? '/images' : base + '/images',
+  images: absoluteAssetPath ? '/images' : base + '/images',
   loggedInPage: base + '/loggedin',
   publications: base + '/publications',
   publicationsModal: base + '/publications?modal=:doi',
