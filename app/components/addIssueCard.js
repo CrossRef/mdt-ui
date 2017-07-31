@@ -247,13 +247,13 @@ export default class AddIssueCard extends Component {
         }
 
         publication.message.contains = [newRecord]
-        // this.props.postIssue(publication, () => {
-        //   this.props.handle(publication.message.doi)
-        //   this.setState({version: version})
-        //   if (!this.state.error) {
-        //     this.closeModal()
-        //   }
-        // })
+        this.props.postIssue(publication, () => {
+          this.props.handle(publication.message.doi)
+          this.setState({version: version})
+          if (!this.state.error) {
+            this.closeModal()
+          }
+        })
       }
     })
   }
