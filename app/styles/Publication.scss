@@ -64,7 +64,19 @@
       .record-search-container {
         position: relative;
         float:right;
-
+       &:before{
+         content: "";
+         background: url('images/AddArticle/DarkTriangle.svg') no-repeat right center;
+          width: 16px;
+          height: 100%;
+          top: 0;
+          left: 76px;
+          z-index: +1;
+          transform: rotate(180deg);
+          -webkit-transform: rotate(180deg);
+          position: absolute;
+          pointer-events: none;
+          }
         .searchType {
           height: 32px;
           width: 96px;
@@ -137,17 +149,18 @@
       color: #fff;
       display: inline-block;
       width: 192px;
-      height: 48px;
       line-height: 48px;
       font-size: 16px;
       text: {
         decoration: none;
       }
+      div {
+        height: 100px !important;
+      }
     }
 
     .actions {
       width: 192px;
-      height: 48px;
       border: 1px solid black;
       line-height: 48px;
       font-size: 16px;
@@ -164,7 +177,7 @@
         width: 160px;
         color: #FFFFFF;
         background: #616B6B;
-        height: 100px;
+        height: 140px;
         line-height: 30px;
         text-align: left;
         border-radius: 0px;

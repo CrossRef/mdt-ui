@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history}>
+      <Router history={history} onUpdate={()=>window.scrollTo(0, 0)}>
         {Routing()}
       </Router>
     </div>

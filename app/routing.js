@@ -16,11 +16,14 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 let base = '/metadatamanager'    // example '/mdt'
 
+const absoluteAssetPaths = false; // set to true on dev servers, false in production
+
+
 if(base === '/' || !base) base = ''
 
 export const routes = {
   base: base || '/',
-  images: base + '/images',
+  images: absoluteAssetPaths ? '/images' : base + '/images',
   loggedInPage: base + '/loggedin',
   publications: base + '/publications',
   publicationsModal: base + '/publications?modal=:doi',

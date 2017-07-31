@@ -24,7 +24,18 @@ export default class PublicationNav extends Component {
     }
   }
 
-  componentWillUpdate(nextProps) { //need to update this to do cause REACTJS to rerender
+  handleClick = () => {
+    this.setState({profileMenu: false})
+  }
+
+  componentWillUpdate(nextProps, nextState) { //need to update this to do cause REACTJS to rerender
+
+    if(nextState.profileMenu) {
+      document.addEventListener('click', this.handleClick, false);
+    } else if (this.state.profileMenu && !nextState.profileMenu) {
+      document.removeEventListener('click', this.handleClick, false);
+    }
+
     if (this.props.cart !== nextProps.cart) {
       if(this.props.cart.length < nextProps.cart.length) {
         var type = 'add'
