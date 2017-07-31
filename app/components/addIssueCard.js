@@ -204,9 +204,11 @@ export default class AddIssueCard extends Component {
           var errors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issue', 'invalidDoiPrefix']
 
           for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
-              if (this.state.errors[key]) { // only return there is error and prevent from saving if there is no issue + doi
+              if (this.state.errors[key]) {
                 this.setState({error: true})
-                return (errors.indexOf(key) > -1) ? callback(false) : callback(true)
+                //return (errors.indexOf(key) > -1) ? callback(false) : callback(true)
+
+                return callback(false)
               }
           }
           return callback(true) // iterated the entire object, no true, returning valid
@@ -245,7 +247,6 @@ export default class AddIssueCard extends Component {
         }
 
         publication.message.contains = [newRecord]
-        console.log('SUBMITTTT');
         // this.props.postIssue(publication, () => {
         //   this.props.handle(publication.message.doi)
         //   this.setState({version: version})
