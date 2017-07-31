@@ -201,12 +201,12 @@ export default class AddIssueCard extends Component {
         this.setState({
           errors: errorStates
         }, ()=>{
-          var errors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issue', 'invalidDoiPrefix']
+          //var errors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issue', 'invalidDoiPrefix']  // These would be the essential errors to prevent submission
 
           for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
               if (this.state.errors[key]) {
                 this.setState({error: true})
-                //return (errors.indexOf(key) > -1) ? callback(false) : callback(true)
+                //return (errors.indexOf(key) > -1) ? callback(false) : callback(true)  //Leaving this here in case we decide to validate against only essential errors, for now decided to validate all.
 
                 return callback(false)
               }
