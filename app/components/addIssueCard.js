@@ -17,6 +17,7 @@ import { getContributor } from '../utilities/getSubItems'
 import { displayArchiveLocations } from '../utilities/archiveLocations'
 import { getIssueXml } from '../utilities/xmlGenerator'
 import {routes} from '../routing'
+import {stateTrackerII} from 'my_decorators'
 
 
 
@@ -162,51 +163,55 @@ export default class AddIssueCard extends Component {
           }
         }
 
-        const validateOwnerPrefix = () => {
-          if(isDOI(this.state.issue.issueDoi) && this.state.issue.issueDoi.split('/')[0] === this.props.ownerPrefix) return true;
-          else return false
-        }
+        const isNotValidIssueDoi = this.state.issue.issueDoi ? !isDOI(this.state.issue.issueDoi) : false;
+        const validateOwnerPrefix = () => this.state.issue.issueDoi.split('/')[0] === this.props.ownerPrefix;
 
         errorStates = {
-          issue: {$set: (this.state.issue.issue.length === 0) },
-          issueUrl: {$set: (this.state.issue.issueUrl.length === 0) },
-          printDateYear: {$set: (this.state.issue.printDateYear.length === 0) },
-          onlineDateYear: {$set: (this.state.issue.onlineDateYear.length === 0) },
-          invalidissueurl: {$set: !isURL(this.state.issue.issueUrl) },
-          dupeissuedoi: {$set: (this.state.issue.issueDoi.length > 0) ? isDupe[0] : false }, // we only care IF there is a DOI
-          issuedoi: {$set: ((this.state.issue.issueDoi.length === 0) && (isURL(this.state.issue.issueUrl))) }, // we only care IF there is a DOI
-          invalidissuedoi: {$set: ((this.state.issue.issueDoi.length > 0) && (isURL(this.state.issue.issueUrl))) ? !validateOwnerPrefix() : false } // we only care IF there is a DOI
+          issue: !this.state.issue.issue,
+          issueUrl: !this.state.issue.issueUrl,
+          printDateYear: !this.state.issue.printDateYear,
+          onlineDateYear: !this.state.issue.onlineDateYear,
+          invalidissueurl: this.state.issue.issueUrl ? !isURL(this.state.issue.issueUrl) : false,
+          issuedoi: !this.state.issue.issueDoi,
+          invalidissuedoi: isNotValidIssueDoi,
+          invalidDoiPrefix: !isNotValidIssueDoi ? !validateOwnerPrefix() : false,
+          dupeissuedoi: !isNotValidIssueDoi && validateOwnerPrefix() ? isDupe[0] : false,
         }
 
         if (hasPrintYear) { // has print year, don't care if there is a online year
-          errorStates.onlineDateYear = {$set: false}
+          errorStates.onlineDateYear = false
         }
         if (hasOnlineYear) { // has online year, don't care if there is a print year
-          errorStates.printDateYear = {$set: false}
+          errorStates.printDateYear = false
         }
 
-        errorStates.dupeissuedoi = (this.state.issueDoiDisabled) ? {$set: false} : errorStates.dupeissuedoi
+        errorStates.dupeissuedoi = (this.state.issueDoiDisabled) ? false : errorStates.dupeissuedoi
 
         if (((this.state.issue.volume ? this.state.issue.volume : '').length > 0) || ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) || ((this.state.issue.volumeUrl ? this.state.issue.volumeUrl : '').length > 0)) {
-          errorStates.dupevolumedoi = {$set: ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) ? (isDupe[1] ? isDupe[1] : false) : false }, // we only care IF there is a DOI
-          errorStates.invalidvolumedoi = {$set: (((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) && (!isDOI(this.state.issue.volumeDoi))) }, // we only care IF there is a DOI
-          errorStates.invalidvolumeurl = {$set: ((this.state.issue.volumeUrl ? this.state.issue.volumeUrl: '').length > 0) ? !isURL(this.state.issue.volumeUrl) : false  }
+          errorStates.volumeUrl = this.state.issue.volumeDoi && !this.state.issue.volumeUrl;
+          errorStates.dupevolumedoi = ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) ? (isDupe[1] ? isDupe[1] : false) : false; // we only care IF there is a DOI
+          errorStates.invalidvolumedoi = ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) && (!isDOI(this.state.issue.volumeDoi)); // we only care IF there is a DOI
+          errorStates.invalidvolumeurl = ((this.state.issue.volumeUrl ? this.state.issue.volumeUrl: '').length > 0) ? !isURL(this.state.issue.volumeUrl) : false;
 
-          errorStates.dupevolumedoi = (this.state.volumeDoiDisabled) ? {$set: false} : errorStates.dupevolumedoi
+          errorStates.dupevolumedoi = (this.state.volumeDoiDisabled) ? false : errorStates.dupevolumedoi
         }
 
+
+
         this.setState({
-          errors: update(this.state.errors, errorStates)
+          errors: errorStates
         }, ()=>{
-          var errors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issueTitle']
+          //var errors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issue', 'invalidDoiPrefix']  // These would be the essential errors to prevent submission
 
           for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
-              if (this.state.errors[key]) { // only return there is error and prevent from saving if there is no title + doi
+              if (this.state.errors[key]) {
                 this.setState({error: true})
-                return (errors.indexOf(key) > -1) ? callback(this.state.errors[key]) : callback(false)
+                //return (errors.indexOf(key) > -1) ? callback(false) : callback(true)  //Leaving this here in case we decide to validate against only essential errors, for now decided to validate all.
+
+                return callback(false)
               }
           }
-          return callback(false) // iterated the entire object, no true, returning a false, no error
+          return callback(true) // iterated the entire object, no true, returning valid
         })
     })
   }
@@ -216,7 +221,7 @@ export default class AddIssueCard extends Component {
     e.preventDefault()
 
     this.validation((valid) => { // need it to be a callback because setting state does not happen right away
-      if (!valid) {
+      if (valid) {
         const props = this.props
         var publication = props.publication
         const state = this.state
@@ -242,7 +247,6 @@ export default class AddIssueCard extends Component {
         }
 
         publication.message.contains = [newRecord]
-
         this.props.postIssue(publication, () => {
           this.props.handle(publication.message.doi)
           this.setState({version: version})
@@ -472,7 +476,7 @@ export default class AddIssueCard extends Component {
                         </div>
                         <div className='field'>
                           <input
-                              className='height32'
+                              className={`height32 ${this.state.errors.issue && 'fieldError'}`}
                               type='text'
                               name='issue.issue'
                               onChange={this.handler}
@@ -529,23 +533,34 @@ export default class AddIssueCard extends Component {
                             <div className='errormsgholder'>
                               <div className='errormsginnerholder'>
                                 <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
-                                {(
-                                  this.state.errors.issue ||
-                                  this.state.errors.issuedoi ||
-                                  this.state.errors.issueUrl ||
-                                  this.state.errors.printDateYear ||
-                                  this.state.errors.onlineDateYear
-                                ) &&
-                                  <div><b>Required.</b><br />Please provide required informaton.</div>
+                                {(()=>{
+                                  let errors = [];
+                                  if(this.state.errors.issue) errors.push('Please provide an issue number.');
+                                  if(this.state.errors.issuedoi) errors.push('Please provide required DOI.');
+                                  if(this.state.errors.issueUrl) errors.push('Please provide required Issue URL.');
+                                  if(this.state.errors.printDateYear || this.state.errors.onlineDateYear) errors.push('Please provide either a print or online date.');
+                                  if(this.state.errors.volumeUrl) errors.push('Please provide required Volume URL.')
+                                  if(errors.length) return (
+                                    <div><b>Required.</b><br />{errors.length > 1 ? 'Please provide required information.' : errors[0]}</div>
+                                  );
+                                })()}
+                                {this.state.errors.invalidissuedoi &&
+                                  <div><b>Invalid Issue DOI.</b><br />Please check your issue DOI (10.xxxx/xx...).</div>
                                 }
-                                {(this.state.errors.invalidissuedoi || this.state.errors.invalidvolumedoi) &&
-                                  <div><b>Invalid DOI.</b><br />Please check your DOI (10.xxxx/xx...). Record prefix (10.xxxx) must match publication prefix.</div>
+                                {this.state.errors.invalidDoiPrefix &&
+                                <div><b>Invalid Issue DOI.</b><br />DOI prefix needs to match journal DOI prefix.</div>
                                 }
                                 {(this.state.errors.invalidissueurl) &&
                                   <div><b>Invalid URL.</b><br />Please check your URL.</div>
                                 }
                                 {(this.state.errors.dupeissuedoi) &&
-                                  <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>
+                                  <div><b>Duplicate Issue DOI.</b><br />Registering a new DOI? This one already exists.</div>
+                                }
+                                {this.state.errors.invalidvolumedoi &&
+                                  <div><b>Invalid Volume DOI.</b><br />Please check your volume DOI (10.xxxx/xx...).</div>
+                                }
+                                {(this.state.errors.dupevolumedoi) &&
+                                  <div><b>Duplicate Volume DOI.</b><br />Registering a new DOI? This one already exists.</div>
                                 }
                               </div>
                             </div>
@@ -561,20 +576,18 @@ export default class AddIssueCard extends Component {
                       <div className='labelholder'>
                         <div></div>
                         <div className='labelinnerholder'>
-                          <div className='label'>Issue DOI</div>
+                          <div className='label'>Issue DOI (Required)</div>
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className={
-                          'requiredholder' + (this.state.showIssueDoiReq ? '' : ' norequire')
-                        }>
+                        <div className='requiredholder'>
                           <div className='required height32'>
-                            {(this.state.showIssueDoiReq) ? <span>*</span> : ''}
+                            <span>*</span>
                           </div>
                         </div>
                         <div className='field'>
                           <input
-                              className={'height32' + ((this.state.errors.dupedoi || this.state.errors.invaliddoi) ? ' fieldError': '')}
+                              className={'height32' + ((this.state.errors.issuedoi || this.state.errors.dupeissuedoi || this.state.errors.invalidissuedoi || this.state.errors.invalidDoiPrefix) ? ' fieldError': '')}
                               type='text'
                               name='issue.issueDoi'
                               onChange={this.handler}
@@ -781,7 +794,7 @@ export default class AddIssueCard extends Component {
                         </div>
                         <div className='field'>
                           <input
-                              className={'height32' + ((this.state.errors.dupedoi || this.state.errors.invaliddoi || this.state.errors.invalidvolumedoi) ? ' fieldError': '')}
+                              className={'height32' + ((this.state.errors.dupevolumedoi || this.state.errors.invalidvolumedoi) ? ' fieldError': '')}
                               type='text'
                               name='issue.volumeDoi'
                               onChange={this.handler}
@@ -799,8 +812,9 @@ export default class AddIssueCard extends Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder norequire'>
+                        <div className={`requiredholder ${!this.state.issue.volumeDoi && 'norequire'}`}>
                           <div className='required height32'>
+                            {this.state.issue.volumeDoi && <span>*</span>}
                           </div>
                         </div>
                         <div className='field'>
