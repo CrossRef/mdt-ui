@@ -13,7 +13,7 @@ import { getCRState } from './actions/application'
 
 
 setConfig({
-	showStateTracker: true,
+	showStateTracker: false,
 	updateReports: { mount: false, update:false, pass:false, render: false }
 });
 
