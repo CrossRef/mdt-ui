@@ -250,7 +250,6 @@ export default class AddArticleCard extends Component {
           'mdt-version': version,
           'status': 'draft',
           'content': journal.replace(/(\r\n|\n|\r)/gm,''),
-          'pubDoi': this.props.publication.message.doi
         }
 
         // check if its part of a issue, the issue props will tell us
@@ -277,6 +276,7 @@ export default class AddArticleCard extends Component {
 
         this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
 
+          newRecord.pubDoi = this.props.publication.message.doi;
           this.props.reduxCartUpdate([newRecord]);
 
           this.setState({version: version})
