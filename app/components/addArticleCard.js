@@ -249,7 +249,7 @@ export default class AddArticleCard extends Component {
           'type': 'article',
           'mdt-version': version,
           'status': 'draft',
-          'content': journal.replace(/(\r\n|\n|\r)/gm,''),
+          'content': journal.replace(/(\r\n|\n|\r)/gm,'')
         }
 
         // check if its part of a issue, the issue props will tell us
