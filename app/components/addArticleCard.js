@@ -216,7 +216,7 @@ export default class AddArticleCard extends Component {
   }
 
   onSubmit = (e, event, dontNavigate) => {
-    if(e) e.preventDefault();
+    e.preventDefault();
 
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
 
