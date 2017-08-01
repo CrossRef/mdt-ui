@@ -8,7 +8,7 @@ import { STContainer, myDecoratorsConfig, setConfig } from 'my_decorators'
 
 import configure from './store'
 import Routing, { routes } from './routing'
-import { getCRState } from './actions/application'
+import { getCRState, controlModal } from './actions/application'
 
 
 
@@ -28,7 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history} onUpdate={()=>window.scrollTo(0, 0)}>
+      <Router history={history} onUpdate={()=>{
+        window.scrollTo(0, 0);
+        store.dispatch(controlModal({ showModal: false }))
+      }}>
         {Routing()}
       </Router>
     </div>
