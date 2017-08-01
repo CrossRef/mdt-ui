@@ -215,8 +215,8 @@ export default class AddArticleCard extends Component {
     }
   }
 
-  onSubmit = (e) => {
-    e.preventDefault();
+  onSubmit = (e, event, dontNavigate) => {
+    if(e) e.preventDefault();
 
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
 
@@ -249,7 +249,8 @@ export default class AddArticleCard extends Component {
           'type': 'article',
           'mdt-version': version,
           'status': 'draft',
-          'content': journal.replace(/(\r\n|\n|\r)/gm,'')
+          'content': journal.replace(/(\r\n|\n|\r)/gm,''),
+          'pubDoi': this.props.publication.message.doi
         }
 
         // check if its part of a issue, the issue props will tell us
@@ -276,11 +277,10 @@ export default class AddArticleCard extends Component {
 
         this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
 
-          newRecord.pubDoi = this.props.publication.message.doi;
           this.props.reduxCartUpdate([newRecord]);
 
           this.setState({version: version})
-
+          if(dontNavigate) return;
           browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
@@ -462,10 +462,10 @@ export default class AddArticleCard extends Component {
         style: 'defaultModal reviewModal',
         Component: ReviewArticle,
         props: {
+            submit: this.onSubmit,
             reviewData: this.state,
             publication: this.props.publication,
             publicationMetaData: this.props.publicationMetaData,
-            cartUpdate: this.props.reduxCartUpdate,
             issue: this.props.issuePublication ? this.props.issuePublication.message.contains[0] : undefined,
             asyncGetItem: this.props.asyncGetItem
         }

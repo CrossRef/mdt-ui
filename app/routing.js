@@ -14,7 +14,7 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 // ------------------ Set base url here ------------------
 
-let base = '/metadatamanager'    // example '/mdt'
+let base = '/'    // example '/mdt'
 
 const absoluteAssetPaths = false; // set to true on dev servers, false in production
 

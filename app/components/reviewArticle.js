@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import _ from 'lodash'
-import { stateTrackerII } from 'my_decorators'
+import { stateTrackerII, updateReporterII } from 'my_decorators'
 import update from 'immutability-helper'
 const Languages = require('../utilities/language.json')
 import { ArchiveLocations } from '../utilities/archiveLocations'
@@ -12,10 +12,10 @@ import objectSearch from '../utilities/objectSearch'
 import articleReviewGenerator from './articleReviewGenerator'
 import xmldoc from '../utilities/xmldoc'
 
+
 export default class ArticleReview extends Component {
 
   static propTypes = {
-    cartUpdate: is.func.isRequired,
     asyncGetItem: is.func
   }
 
@@ -60,30 +60,21 @@ export default class ArticleReview extends Component {
     } else this.setState({loaded: true})
   }
 
-  // shouldComponentUpdate(nextProps, nextState) {
-  //   console.log()
-  //   if (nextState.issue !== this.state.issue) {
-  //     return true
-  //   }
-  //   return false
-  // }
 
-  addToCart = () => {
+  addToCart = (e, event) => {
     this.props.reduxControlModal({showModal:false})
-    this.props.cartUpdate([this.props.reviewData])
+    const dontNavigate = true;
+    this.props.submit(e, event, dontNavigate);
   }
 
-  wrapper = (reviewData, publicationMetaData) => {
+
+  render () {
+    const { reviewData, publicationMetaData} = this.props
     if (this.state.loaded) {
       return articleReviewGenerator(publicationMetaData, reviewData, this.state.issue, true, this.addToCart)
     } else {
       return <div></div>
     }
-  }
-
-  render () {
-    const { reviewData, publication, publicationMetaData} = this.props
-    return this.wrapper(reviewData, publicationMetaData)
 
   }
 }
