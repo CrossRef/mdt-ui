@@ -12,28 +12,23 @@ import DepositCartPage from './containers/depositCartPage'
 import DepositHistoryPage from './containers/depositHistoryPage'
 
 
-// ------------------ Set base url here ------------------
 
-let base = '/metadatamanager'    // example '/mdt'
-
-const absoluteAssetPaths = false; // set to true on dev servers, false in production
-
-
-if(base === '/' || !base) base = ''
+let base = `/${window.location.pathname.split('/')[1]}/`;
+if(base === '//') base = '/';
 
 export const routes = {
-  base: base || '/',
-  images: absoluteAssetPaths ? '/images' : base + '/images',
-  loggedInPage: base + '/loggedin',
-  publications: base + '/publications',
-  publicationsModal: base + '/publications?modal=:doi',
-  publication: base + '/publications/:doi',
-  addArticle: base + '/publications/:pubDoi/addarticle',
-  editArticle: base + '/publications/:pubDoi/addarticle/:articleDoi',
-  addArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle',
-  editArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle/:articleDoi',
-  depositCart: base + '/cart',
-  depositHistory: base + '/deposit-history'
+  base: base,
+  images: base + 'images',
+  loggedInPage: base + 'loggedin',
+  publications: base + 'publications',
+  publicationsModal: base + 'publications?modal=:doi',
+  publication: base + 'publications/:doi',
+  addArticle: base + 'publications/:pubDoi/addarticle',
+  editArticle: base + 'publications/:pubDoi/addarticle/:articleDoi',
+  addArticleUnderIssue: base + 'publications/:pubDoi/:issueDoi/addarticle',
+  editArticleUnderIssue: base + 'publications/:pubDoi/:issueDoi/addarticle/:articleDoi',
+  depositCart: base + 'cart',
+  depositHistory: base + 'deposit-history'
 };
 
 export default () => {

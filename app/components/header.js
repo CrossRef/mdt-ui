@@ -16,8 +16,8 @@ export default class Header extends Component {
 
   render () {
     const isOnHome = this.props.path === routes.base
-    var showPublicationsNav = false
-    if(String(this.props.path).startsWith(routes.publications) || String(this.props.path).startsWith(routes.depositCart) || String(this.props.path).startsWith(routes.depositHistory)) {
+    var showPublicationsNav = false;
+    if(String(this.props.path) !== routes.base) {
       showPublicationsNav = true
     }
 
