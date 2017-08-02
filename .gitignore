@@ -2,6 +2,8 @@ node_modules
 .idea
 metadatamanager/
 metadatamanager
+public
+public/
 .DS_Store
 app/.DS_Store
 .vagrant
