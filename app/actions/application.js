@@ -144,6 +144,8 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
       if(!match || pathname === base) {
         scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
       }
+
+      console.warn('Retrieving from remote store: ', scrubbedState);
       dispatch({
         type: 'SET_STATE',
         payload: scrubbedState
