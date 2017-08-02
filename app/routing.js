@@ -14,7 +14,6 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 
 let base = `/${window.location.pathname.split('/')[1]}/`;
-console.log(window.location);
 if(base === '//') base = '/';
 
 export const routes = {
