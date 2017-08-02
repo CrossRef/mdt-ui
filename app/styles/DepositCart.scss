@@ -278,6 +278,16 @@
     padding: 15px 0;
     text-align: left;
     width: 960px;
+    position: relative;
+    .rightBorderBox {
+        position: absolute;
+        top:0;
+        left:0;
+        background-color: transparent;
+        width: 746px;
+        height: 55px;
+        border-right: 1px solid #E3E6E9;
+    }
     .item {
         margin: 0;
         padding: 0;
@@ -339,7 +349,6 @@
             margin: 0;
             padding: 0;        
             .stateIcon{
-                border-left: 1px solid #E3E6E9;
                 width: 10%;
                 .iconHolder {
                     display: inline-block;
@@ -407,6 +416,8 @@
 
 .titleHolderTD {
     padding: 0 !important;
+    left: -1px;
+    position:relative;
 }
 
 .aboveTitle {

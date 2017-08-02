@@ -81,6 +81,7 @@ export default class DepositCart extends Component {
     return (
       <div>
         <table className='depositTopBorder'>
+          <div className="rightBorderBox">&nbsp;</div>
           <tr className='item'>
             <td className='stateIcon'>
               &nbsp;
