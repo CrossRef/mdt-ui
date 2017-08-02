@@ -170,7 +170,6 @@ function cartReducer (state = [], action) {
           .values() // get the values from the groupBy object
           .value();
       }
-
       newState.push(action.cart[0])
       newState = mergeByDoi(newState) //does 2 things, removes dupes and also merge the content if there was 2 of the same that way there is more info if there is more info
 

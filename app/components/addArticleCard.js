@@ -215,7 +215,7 @@ export default class AddArticleCard extends Component {
     }
   }
 
-  onSubmit = (e) => {
+  onSubmit = (e, event, dontNavigate) => {
     e.preventDefault();
 
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
@@ -280,7 +280,7 @@ export default class AddArticleCard extends Component {
           this.props.reduxCartUpdate([newRecord]);
 
           this.setState({version: version})
-
+          if(dontNavigate) return;
           browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
@@ -462,10 +462,10 @@ export default class AddArticleCard extends Component {
         style: 'defaultModal reviewModal',
         Component: ReviewArticle,
         props: {
+            submit: this.onSubmit,
             reviewData: this.state,
             publication: this.props.publication,
             publicationMetaData: this.props.publicationMetaData,
-            cartUpdate: this.props.reduxCartUpdate,
             issue: this.props.issuePublication ? this.props.issuePublication.message.contains[0] : undefined,
             asyncGetItem: this.props.asyncGetItem
         }
