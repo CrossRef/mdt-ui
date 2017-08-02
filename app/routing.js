@@ -13,7 +13,8 @@ import DepositHistoryPage from './containers/depositHistoryPage'
 
 
 
-let base = `/${document.baseURI.substr(document.baseURI.indexOf(window.location.host) + window.location.host.length).split('/')[1]}/`;
+let base = `/${window.location.pathname.split('/')[1]}/`;
+console.log(window.location);
 if(base === '//') base = '/';
 
 export const routes = {
