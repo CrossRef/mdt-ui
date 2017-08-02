@@ -12,18 +12,13 @@ import DepositCartPage from './containers/depositCartPage'
 import DepositHistoryPage from './containers/depositHistoryPage'
 
 
-// ------------------ Set base url here ------------------
 
-let base = document.baseURI.substr(document.baseURI.indexOf(window.location.host) + window.location.host.length);    // example '/mdt'
-
-const absoluteAssetPaths = false; // set to true on dev servers, false in production
-
-
-if(base === '/' || !base) base = ''
+let base = `/${document.baseURI.substr(document.baseURI.indexOf(window.location.host) + window.location.host.length).split('/')[1]}/`;
+if(base === '//') base = '/';
 
 export const routes = {
-  base: base || '/',
-  images: absoluteAssetPaths ? '/images' : base + 'images',
+  base: base,
+  images: base + 'images',
   loggedInPage: base + 'loggedin',
   publications: base + 'publications',
   publicationsModal: base + 'publications?modal=:doi',

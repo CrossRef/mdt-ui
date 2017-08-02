@@ -14,7 +14,7 @@ cat > /etc/apache2/sites-available/crossref-local.conf <<EOF
 
   AllowEncodedSlashes NoDecode
 
-  <Directory /vagrant/public>
+  <Directory /vagrant/metadatamanager>
     Options Indexes FollowSymLinks
     AllowOverride All
     Require all granted

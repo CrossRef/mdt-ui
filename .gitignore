@@ -1,6 +1,8 @@
 node_modules
 .idea
-public/
-public
+metadatamanager/
+metadatamanager
 .DS_Store
 app/.DS_Store
+.vagrant
+ubuntu-xenial-16.04-cloudimg-console.log

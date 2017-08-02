@@ -21,6 +21,10 @@ exports.files = {
   }
 }
 
+exports.paths = {
+  public: 'metadatamanager'
+}
+
 exports.watcher = {
   awaitWriteFinish: {
     stabilityThreshold: 2000,
@@ -36,6 +40,7 @@ exports.plugins = {
 }
 
 exports.server = {
-  hostname: '0.0.0.0'
+  hostname: '0.0.0.0',
+  base: '/metadatamanager/'
 }
 
