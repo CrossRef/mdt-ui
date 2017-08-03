@@ -100,7 +100,7 @@ export default class Issue extends Component {
         doiMessage: this.props.publicationDoi,
         handle: this.props.handle,
         fetchIssue: this.props.fetchIssue,
-        postIssue: this.props.postIssue,
+        asyncSubmitIssue: this.props.asyncSubmitIssue,
         reduxCartUpdate: this.props.reduxCartUpdate,
         handleAddCart: this.props.handleAddCart,
         handleAddToList: this.props.handleAddToList,

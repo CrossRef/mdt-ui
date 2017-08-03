@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import is from 'prop-types'
 import update from 'immutability-helper'
 import _ from 'lodash'
 import Switch from 'react-toggle-switch'
@@ -70,6 +71,12 @@ const defaultState = {
 }
 
 export default class AddIssueCard extends Component {
+
+  static propTypes = {
+    asyncSubmitIssue: is.func.isRequired,
+    reduxControlModal: is.func.isRequired
+  }
+
   constructor (props) {
     super(props);
     this.state = defaultState;
@@ -247,7 +254,7 @@ export default class AddIssueCard extends Component {
         }
 
         publication.message.contains = [newRecord]
-        this.props.postIssue(publication, () => {
+        this.props.asyncSubmitIssue(publication, () => {
           this.props.handle(publication.message.doi)
           this.setState({version: version})
           if (!this.state.error) {

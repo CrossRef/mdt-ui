@@ -15,7 +15,7 @@ export default class Listing extends Component {
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,
     fetchIssue: is.func.isRequired,
-    postIssue: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired,
@@ -43,7 +43,7 @@ export default class Listing extends Component {
                 handleAddToList={this.props.handleAddToList}
                 fetchIssue={this.props.fetchIssue}
                 triggerModal={this.props.triggerModal}
-                postIssue={this.props.postIssue}
+                asyncSubmitIssue={this.props.asyncSubmitIssue}
                 handle={this.props.handle}
                 selections={this.props.selections}
               />,

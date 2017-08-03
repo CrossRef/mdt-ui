@@ -18,7 +18,7 @@ export default class ActionBar extends Component {
     publication: is.object.isRequired,
     handleAddCart: is.func.isRequired,
     deleteSelections: is.func.isRequired,
-    postIssue: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired
   }
@@ -61,7 +61,7 @@ export default class ActionBar extends Component {
         publication: this.props.publication,
         reduxControlModal: this.props.reduxControlModal,
 	      reduxCartUpdate: this.props.reduxCartUpdate,
-        postIssue: this.props.postIssue,
+        asyncSubmitIssue: this.props.asyncSubmitIssue,
         ownerPrefix: this.props.ownerPrefix
       }
     })

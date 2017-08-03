@@ -26,7 +26,7 @@ export default class Publication extends Component {
     handle: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     fetchIssue: is.func.isRequired,
-    postIssue: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     cart: is.array.isRequired, //is cart required here?
     ownerPrefix: is.string.isRequired,
     asyncSearchRecords: is.func.isRequired,
@@ -149,7 +149,7 @@ export default class Publication extends Component {
           publication: this.props.publication,
           handle: this.props.handle,
           fetchIssue: this.props.fetchIssue,
-          postIssue: this.props.postIssue,
+          asyncSubmitIssue: this.props.asyncSubmitIssue,
           ownerPrefix: this.props.ownerPrefix,
           duplicate: true
         }
@@ -180,7 +180,7 @@ export default class Publication extends Component {
           search={this.props.search} asyncGetItem={this.props.asyncGetItem}
           reduxControlModal={this.props.reduxControlModal}
           publication={publication}
-          postIssue={this.props.postIssue}
+          asyncSubmitIssue={this.props.asyncSubmitIssue}
           asyncGetPublications={this.props.handle}/>
 
         <ActionBar
@@ -194,7 +194,7 @@ export default class Publication extends Component {
           reduxCartUpdate={this.props.reduxCartUpdate}
           deleteSelections={this.deleteSelections}
           duplicateSelection={this.duplicateSelection}
-          postIssue={this.props.postIssue} />
+          asyncSubmitIssue={this.props.asyncSubmitIssue} />
         <div className='publication-children'>
           {contains.length ?
             <Listing
@@ -209,7 +209,7 @@ export default class Publication extends Component {
               handleRemoveFromList={this.handleRemoveFromList.bind(this)}
               handleAddToList={this.handleAddToList.bind(this)}
               fetchIssue={this.props.fetchIssue}
-              postIssue={this.props.postIssue}
+              asyncSubmitIssue={this.props.asyncSubmitIssue}
               triggerModal={this.props.triggerModal}
               selections={this.state.selections}
             /> : <div className='empty-message'>No articles, please create one!</div>}
