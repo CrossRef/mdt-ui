@@ -53,17 +53,6 @@ export default class PublicationPage extends Component {
     })
   }
 
-  fetchIssue (doi, callback) {
-    return fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
-    .then(doi => doi.json())
-    .then((doi) => {
-      return callback(doi)
-    })
-    .catch((reason) => {
-      console.warn('ERROR in publicationPage fetchIssue()', reason)
-    })
-  }
-
   render () {
     const doi = this.props.routeParams.doi;
 
@@ -78,10 +67,9 @@ export default class PublicationPage extends Component {
             asyncGetItem={this.props.asyncGetItem}
             cart={this.props.cart}
             publication={this.props.publication}
-            handle={this.props.asyncGetPublications}
+            asyncGetPublications={this.props.asyncGetPublications}
             reduxControlModal={this.props.reduxControlModal}
             reduxCartUpdate={this.props.reduxCartUpdate}
-            fetchIssue={this.fetchIssue.bind(this)}
             triggerModal={this.props.location.query.modal ? this.props.location.query.modal : undefined}
             asyncSubmitIssue={this.props.asyncSubmitIssue}
           />

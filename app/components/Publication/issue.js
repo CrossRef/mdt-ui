@@ -11,17 +11,22 @@ import update from 'immutability-helper'
 
 export default class Issue extends Component {
   static propTypes = {
-    handleRemoveFromList: is.func.isRequired,
-    handleAddToList: is.func.isRequired,
-    fetchIssue: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
-    publication: is.object.isRequired,
     publicationDoi: is.string.isRequired,
+    ownerPrefix: is.string.isRequired,
+
+    publication: is.object.isRequired,
     publicationMessage: is.object.isRequired,
     doi: is.object.isRequired,
-    reduxCartUpdate: is.func.isRequired,
-    ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired,
+
+    handleRemoveFromList: is.func.isRequired,
+    handleAddToList: is.func.isRequired,
+
+    reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
+
+    asyncGetItem: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired
   }
 
   constructor (props) {
@@ -42,7 +47,7 @@ export default class Issue extends Component {
   }
 
   getTitles (doi) {
-    this.props.fetchIssue(doi, (Publication) => {
+    this.props.asyncGetItem(doi).then((Publication) => {
       const message = Publication.message
       const Issue = message.contains[0]
       const parsedIssue = xmldoc(Issue.content);
@@ -95,23 +100,27 @@ export default class Issue extends Component {
       props: {
         mode: 'edit',
         issue: this.props.doi,
+        triggerModal: this.props.triggerModal,
+        ownerPrefix: this.props.ownerPrefix,
+
         publication: this.props.publication,
         publicationMessage: this.props.publicationMessage,
         doiMessage: this.props.publicationDoi,
-        handle: this.props.handle,
-        fetchIssue: this.props.fetchIssue,
-        asyncSubmitIssue: this.props.asyncSubmitIssue,
-        reduxCartUpdate: this.props.reduxCartUpdate,
+
         handleAddCart: this.props.handleAddCart,
         handleAddToList: this.props.handleAddToList,
-        triggerModal: this.props.triggerModal,
-        ownerPrefix: this.props.ownerPrefix
+
+        reduxCartUpdate: this.props.reduxCartUpdate,
+
+        asyncGetPublications: this.props.asyncGetPublications,
+        asyncGetItem: this.props.asyncGetItem,
+        asyncSubmitIssue: this.props.asyncSubmitIssue,
       }
     })
   }
 
   render () {
-    const { doiMessage, handle, fetchIssue, publicationMessage, publicationDoi, publication } = this.props
+    const { doiMessage, asyncGetItem, publicationMessage, publicationDoi, publication } = this.props
     let { status, type, date, doi } = this.props.doi
     date = moment(date || undefined).format('MMM Do YYYY')
     //title needs to be either issue title + volume title or either one

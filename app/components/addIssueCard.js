@@ -73,8 +73,11 @@ const defaultState = {
 export default class AddIssueCard extends Component {
 
   static propTypes = {
+    reduxControlModal: is.func.isRequired,
+
     asyncSubmitIssue: is.func.isRequired,
-    reduxControlModal: is.func.isRequired
+    asyncGetItem: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired
   }
 
   constructor (props) {
@@ -255,7 +258,7 @@ export default class AddIssueCard extends Component {
 
         publication.message.contains = [newRecord]
         this.props.asyncSubmitIssue(publication, () => {
-          this.props.handle(publication.message.doi)
+          this.props.asyncGetPublications(publication.message.doi)
           this.setState({version: version})
           if (!this.state.error) {
             this.closeModal()
@@ -273,7 +276,7 @@ export default class AddIssueCard extends Component {
   modalShown () {
     const { doi } = this.props.issue
     // if doi is not required, then how is UI suppose to find a issue?
-    this.props.fetchIssue(doi, (Publication) => {
+    this.props.asyncGetItem(doi).then((Publication) => {
       const message = Publication.message
       const Issue = message.contains[0]
       const version = Issue['mdt-version']

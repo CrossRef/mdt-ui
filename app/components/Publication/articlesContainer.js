@@ -7,12 +7,16 @@ import Article from './article'
 
 export default class ArticleContainer extends Component {
   static propTypes = {
+    filterBy: is.string.isRequired,
+    publicationDoi: is.string.isRequired,
+
+    doi: is.object,
+    selections: is.array.isRequired,
+
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,
-    filterBy: is.string.isRequired,
-    selections: is.array.isRequired,
-    publicationDoi: is.string.isRequired,
-    doi: is.object
+
+    asyncGetItem: is.func.isRequired,
   }
 
   render () {
@@ -27,15 +31,18 @@ export default class ArticleContainer extends Component {
           <tbody>
             {
               articles.map((article, i) => <Article
-                doi={article}
                 key={i}
-                fetchIssue={this.props.fetchIssue}
+                publicationDoi={this.props.publicationDoi}
+
+                doi={article}
+                issue = { issueDoi }
+                selections={this.props.selections}
+
                 handleAddCart={this.props.handleAddCart}
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}
-                issue = { issueDoi }
-                publicationDoi={this.props.publicationDoi}
-                selections={this.props.selections}
+
+                asyncGetItem={this.props.asyncGetItem}
               />)
             }
           </tbody>

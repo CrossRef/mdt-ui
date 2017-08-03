@@ -11,15 +11,19 @@ import ArticlesContainer from './articlesContainer'
 export default class Listing extends Component {
   static propTypes = {
     filterBy: is.string.isRequired,
-    reduxControlModal: is.func.isRequired,
-    handleRemoveFromList: is.func.isRequired,
-    handleAddToList: is.func.isRequired,
-    fetchIssue: is.func.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
-    reduxCartUpdate: is.func.isRequired,
     ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired,
-    publication: is.object
+    publication: is.object,
+
+    handleRemoveFromList: is.func.isRequired,
+    handleAddToList: is.func.isRequired,
+
+    reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
+
+    asyncGetItem: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
   }
 
   render () {
@@ -34,46 +38,57 @@ export default class Listing extends Component {
             return [
               <Issue doi={child} key={i}
                 ownerPrefix={this.props.ownerPrefix}
-                reduxControlModal={this.props.reduxControlModal}
-                publication={publication}
                 publicationDoi={publicationDoi}
+                triggerModal={this.props.triggerModal}
+
+                selections={this.props.selections}
+                publication={publication}
                 publicationMessage={publicationMessage}
-                reduxCartUpdate={this.props.reduxCartUpdate}
+
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}
-                fetchIssue={this.props.fetchIssue}
-                triggerModal={this.props.triggerModal}
+
+                reduxControlModal={this.props.reduxControlModal}
+                reduxCartUpdate={this.props.reduxCartUpdate}
+
+                asyncGetItem={this.props.asyncGetItem}
                 asyncSubmitIssue={this.props.asyncSubmitIssue}
-                handle={this.props.handle}
-                selections={this.props.selections}
+                asyncGetPublications={this.props.asyncGetPublications}
+
               />,
               <ArticlesContainer
-                filterBy={this.props.filterBy}
-                doi={child}
-                fetchIssue={this.props.fetchIssue}
-                publication={publication}
-                publicationDoi={publicationDoi}
-                publicationMessage={publicationMessage}
                 key={`${i}-articles`}
-                reduxCartUpdate={this.props.reduxCartUpdate}
+                filterBy={this.props.filterBy}
+                publicationDoi={publicationDoi}
+
+                doi={child}
+                publication={publication}
+                publicationMessage={publicationMessage}
+                selections={this.props.selections}
+
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}
-                handle={this.props.handle}
-                selections={this.props.selections}
+
+                reduxCartUpdate={this.props.reduxCartUpdate}
+
+                asyncGetItem={this.props.asyncGetItem}
               />
             ]
           case 'article':
             return <Article
-              doi={child}
               key={i}
-              fetchIssue={this.props.fetchIssue}
-              publication={publication}
               publicationDoi={publicationDoi}
+
+              doi={child}
+              selections={this.props.selections}
+
+              publication={publication}
               publicationMessage={publicationMessage}
+
               handleRemoveFromList={this.props.handleRemoveFromList}
               handleAddToList={this.props.handleAddToList}
-              handle={this.props.handle}
-              selections={this.props.selections}
+
+              asyncGetItem={this.props.asyncGetItem}
             />
         }
       }
