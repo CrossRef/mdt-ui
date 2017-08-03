@@ -26,7 +26,8 @@ export default class Issue extends Component {
     reduxCartUpdate: is.func.isRequired,
 
     asyncGetItem: is.func.isRequired,
-    asyncGetPublications: is.func.isRequired
+    asyncGetPublications: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired
   }
 
   constructor (props) {

@@ -40,7 +40,8 @@ const defaultState = {
     invalidvolumeurl: false,
     dupevolumedoi: false,
     invalidvolumedoi: false,
-    volumedoi: false
+    volumedoi: false,
+    dupeDois: false
   },
   issue: {
     issue: '',
@@ -88,7 +89,151 @@ export default class AddIssueCard extends Component {
 
   componentDidMount () {
     if(this.props.mode === 'edit') {
-      this.modalShown()
+      const { doi } = this.props.issue
+      this.props.asyncGetItem(doi).then((Publication) => {
+        const message = Publication.message
+        const Issue = message.contains[0]
+        const version = Issue['mdt-version']
+
+        const parsedIssue = xmldoc(Issue.content)
+        const issueTitle = objectSearch(parsedIssue, 'title') ? objectSearch(parsedIssue, 'title') : ''
+        const issue = objectSearch(parsedIssue, 'issue') ? objectSearch(parsedIssue, 'issue') : ''
+        const issueDoi = objectSearch(parsedIssue, 'doi') ? objectSearch(parsedIssue, 'doi') : ''
+        const issueUrl = objectSearch(parsedIssue, 'resource') ? objectSearch(parsedIssue, 'resource') : ''
+        const special_numbering = objectSearch(parsedIssue, 'special_numbering') ? objectSearch(parsedIssue, 'special_numbering') : ''
+        let publication_date = objectSearch(parsedIssue, 'publication_date');
+
+        if(!Array.isArray(publication_date)) publication_date = [publication_date]; //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
+
+        const onlinePubDate = _.find(publication_date, (pubDate) => {
+          if (pubDate) {
+            if (pubDate['-media_type'] === 'online') {
+              return pubDate
+            }
+          }
+        })
+
+        const printPubDate = _.find(publication_date, (pubDate) => {
+          if (pubDate) {
+            if (pubDate['-media_type'] === 'print') {
+              return pubDate
+            }
+          }
+        })
+        var printDateYear = ''
+        var printDateMonth = ''
+        var printDateDay = ''
+        if (printPubDate) {
+          printDateYear = printPubDate['year'] ? printPubDate['year'] : ''
+          printDateMonth = printPubDate['month'] ? printPubDate['month'] : ''
+          printDateDay = printPubDate['day'] ? printPubDate['day'] : ''
+        }
+
+        var onlineDateYear = ''
+        var onlineDateMonth = ''
+        var onlineDateDay = ''
+        if (onlinePubDate) {
+          onlineDateYear = onlinePubDate['year'] ? onlinePubDate['year'] : ''
+          onlineDateMonth = onlinePubDate['month'] ? onlinePubDate['month'] : ''
+          onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : ''
+        }
+
+        const archiveLocations = objectSearch(parsedIssue, 'archive_locations')
+        var archive = ''
+        if (archiveLocations) {
+          archive = archiveLocations.archive['-name']
+        }
+
+        const journal_volume = objectSearch(parsedIssue, 'journal_volume')
+        if (journal_volume) {
+          var theVolume = objectSearch(journal_volume, 'volume') ? objectSearch(journal_volume, 'volume') : ''
+          var volumeDoiData = objectSearch(journal_volume, 'doi_data') ? objectSearch(journal_volume, 'doi_data') : ''
+          var volumeDoi = objectSearch(volumeDoiData, 'doi') ? objectSearch(volumeDoiData, 'doi') : ''
+          var volumeUrl = objectSearch(volumeDoiData, 'resource') ? objectSearch(volumeDoiData, 'resource') : ''
+
+        }
+
+        const setIssue = {
+          issue: issue,
+          issueTitle: issueTitle,
+          issueDoi: this.props.duplicate ? this.props.ownerPrefix + '/' : issueDoi,
+          issueUrl: this.props.duplicate ?  '' : issueUrl,
+          printDateYear: printDateYear,
+          printDateMonth: printDateMonth,
+          printDateDay: printDateDay,
+          onlineDateYear: onlineDateYear,
+          onlineDateMonth: onlineDateMonth,
+          onlineDateDay: onlineDateDay,
+          archiveLocation: archive,
+          specialIssueNumber: special_numbering,
+          volume: theVolume,
+          volumeDoi: volumeDoi,
+          volumeUrl: volumeUrl
+        }
+
+        // contributor loading
+        const contributors = objectSearch(parsedIssue, 'contributors')
+        var contributee = []
+        // contributors are divied into 2 types
+        // person_name and organization
+        var person_name = undefined
+        if (contributors) {
+          person_name = objectSearch(contributors, 'person_name')
+
+          if (person_name) { // if exist
+            if (!Array.isArray(person_name)) {
+              // there is ONE funder
+              contributee.push(
+                {
+                  firstName: person_name.given_name ? person_name.given_name : '',
+                  lastName: person_name.surname ? person_name.surname : '',
+                  suffix: person_name.suffix ? person_name.suffix : '',
+                  affiliation: person_name.affiliation ? person_name.affiliation : '',
+                  orcid: person_name.ORCID ? person_name.ORCID : '',
+                  alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
+                  role: person_name['-contributor_role'] ? person_name['-contributor_role'] : ''
+                }
+              )
+            } else { // its an array
+              _.each(person_name, (person) => {
+                contributee.push(
+                  {
+                    firstName: person.given_name ? person.given_name : '',
+                    lastName: person.surname ? person.surname : '',
+                    suffix: person.suffix ? person.suffix : '',
+                    affiliation: person.affiliation ? person.affiliation : '',
+                    orcid: person.ORCID ? person.ORCID : '',
+                    alternativeName: person['alt-name'] ? person['alt-name'] : '',
+                    role: person['-contributor_role'] ? person['-contributor_role'] : ''
+                  }
+                )
+              })
+            }
+          }
+        }
+
+        if (contributee.length <= 0) {
+          contributee.push(
+            {
+              firstName: '',
+              lastName: '',
+              suffix: '',
+              affiliation: '',
+              orcid: '',
+              role: '',
+              alternativeName: ''
+            }
+          )
+        }
+
+        this.setState({
+          version: version,
+          issueDoiDisabled: true,
+          volumeDoiDisabled: !!volumeDoi,
+          issue:  update(this.state.issue, {$set: setIssue }),
+          optionalIssueInfo: update(this.state.optionalIssueInfo, {$set: contributee })
+        })
+      })
     }
   }
 
@@ -141,23 +286,24 @@ export default class AddIssueCard extends Component {
 
   validation (callback) {
     var errorStates = {
-      issue: {$set: false},
-      issueUrl: {$set: false },
-      printDateYear: {$set: false },
-      onlineDateYear: {$set: false },
-      invalidissueurl: {$set: false },
-      dupeissuedoi: {$set: false },
-      invalidissuedoi: {$set: false },
-      issuedoi: {$set: false },
-      volumeUrl: {$set: false},
-      invalidvolumeurl: {$set: false },
-      dupevolumedoi: {$set: false },
-      invalidvolumedoi: {$set: false },
-      volumedoi: {$set: false}
+      issue: false,
+      issueUrl: false,
+      printDateYear: false,
+      onlineDateYear: false,
+      invalidissueurl: false,
+      dupeissuedoi: false,
+      invalidissuedoi: false,
+      issuedoi: false,
+      volumeUrl: false,
+      invalidvolumeurl: false,
+      dupevolumedoi: false,
+      invalidvolumedoi: false,
+      volumedoi: false,
+      dupeDois: false
     }
     this.setState({
       error: false,
-      errors: update(this.state.errors, errorStates)
+      errors: errorStates
     })
 
     return checkDupeDOI([this.state.issue.issueDoi, this.state.issue.volumeDoi], (isDupe , isValid) => {
@@ -173,6 +319,7 @@ export default class AddIssueCard extends Component {
           }
         }
 
+        const issueDoiDisabled = this.state.issueDoiDisabled;
         const isNotValidIssueDoi = this.state.issue.issueDoi ? !isDOI(this.state.issue.issueDoi) : false;
         const validateOwnerPrefix = () => this.state.issue.issueDoi.split('/')[0] === this.props.ownerPrefix;
 
@@ -185,7 +332,8 @@ export default class AddIssueCard extends Component {
           issuedoi: !this.state.issue.issueDoi,
           invalidissuedoi: isNotValidIssueDoi,
           invalidDoiPrefix: !isNotValidIssueDoi ? !validateOwnerPrefix() : false,
-          dupeissuedoi: !isNotValidIssueDoi && validateOwnerPrefix() ? isDupe[0] : false,
+          dupeissuedoi: !issueDoiDisabled && !isNotValidIssueDoi && validateOwnerPrefix() ? isDupe[0] : false,
+          dupeDois: this.state.issueDoi === this.state.volumeDoi
         }
 
         if (hasPrintYear) { // has print year, don't care if there is a online year
@@ -195,15 +343,12 @@ export default class AddIssueCard extends Component {
           errorStates.printDateYear = false
         }
 
-        errorStates.dupeissuedoi = (this.state.issueDoiDisabled) ? false : errorStates.dupeissuedoi
-
-        if (((this.state.issue.volume ? this.state.issue.volume : '').length > 0) || ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) || ((this.state.issue.volumeUrl ? this.state.issue.volumeUrl : '').length > 0)) {
+        if (this.state.issue.volume || this.state.issue.volumeDoi || this.state.issue.volumeUrl) {
           errorStates.volumeUrl = this.state.issue.volumeDoi && !this.state.issue.volumeUrl;
-          errorStates.dupevolumedoi = ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) ? (isDupe[1] ? isDupe[1] : false) : false; // we only care IF there is a DOI
-          errorStates.invalidvolumedoi = ((this.state.issue.volumeDoi ? this.state.issue.volumeDoi : '').length > 0) && (!isDOI(this.state.issue.volumeDoi)); // we only care IF there is a DOI
-          errorStates.invalidvolumeurl = ((this.state.issue.volumeUrl ? this.state.issue.volumeUrl: '').length > 0) ? !isURL(this.state.issue.volumeUrl) : false;
+          errorStates.dupevolumedoi = (!this.state.volumeDoiDisabled && this.state.issue.volumeDoi) ? (isDupe[1] ? isDupe[1] : false) : false; // we only care IF there is a DOI
+          errorStates.invalidvolumedoi = this.state.issue.volumeDoi && !isDOI(this.state.issue.volumeDoi); // we only care IF there is a DOI
+          errorStates.invalidvolumeurl = this.state.issue.volumeUrl ? !isURL(this.state.issue.volumeUrl) : false;
 
-          errorStates.dupevolumedoi = (this.state.volumeDoiDisabled) ? false : errorStates.dupevolumedoi
         }
 
 
@@ -232,22 +377,22 @@ export default class AddIssueCard extends Component {
 
     this.validation((valid) => { // need it to be a callback because setting state does not happen right away
       if (valid) {
-        const props = this.props
-        var publication = props.publication
-        const state = this.state
+        const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
 
         const issueXML = getIssueXml(this.state)
 
-        var version = this.state.version
+        let version = this.state.version
 
-        if (props.mode === 'edit') {
+        if (mode === 'edit') {
           version = String(parseInt(this.state.version) + 1)
         }
 
-        const title = JSesc(this.state.issue.issueTitle)
+        const title = JSesc(this.state.issue.issueTitle);
+        const issueNumber = JSesc(this.state.issue.issue);
+        const volume = JSesc(this.state.issue.volume);
 
         const newRecord = {
-          'title': {'title': title},
+          'title': {title, issueNumber, volume},
           'doi': this.state.issue.issueDoi,
           'owner-prefix': this.state.issue.issueDoi.split('/')[0],
           'type': 'issue',
@@ -255,10 +400,9 @@ export default class AddIssueCard extends Component {
           'status': 'draft',
           'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
         }
-
         publication.message.contains = [newRecord]
-        this.props.asyncSubmitIssue(publication, () => {
-          this.props.asyncGetPublications(publication.message.doi)
+        asyncSubmitIssue(publication, () => {
+          asyncGetPublications(publication.message.doi)
           this.setState({version: version})
           if (!this.state.error) {
             this.closeModal()
@@ -273,164 +417,6 @@ export default class AddIssueCard extends Component {
     this.props.reduxControlModal({showModal:false})
   }
 
-  modalShown () {
-    const { doi } = this.props.issue
-    // if doi is not required, then how is UI suppose to find a issue?
-    this.props.asyncGetItem(doi).then((Publication) => {
-      const message = Publication.message
-      const Issue = message.contains[0]
-      const version = Issue['mdt-version']
-
-      const parsedIssue = xmldoc(Issue.content)
-      const issueTitle = objectSearch(parsedIssue, 'title') ? objectSearch(parsedIssue, 'title') : ''
-      const issue = objectSearch(parsedIssue, 'issue') ? objectSearch(parsedIssue, 'issue') : ''
-      const issueDoi = objectSearch(parsedIssue, 'doi') ? objectSearch(parsedIssue, 'doi') : ''
-      const issueUrl = objectSearch(parsedIssue, 'resource') ? objectSearch(parsedIssue, 'resource') : ''
-      const special_numbering = objectSearch(parsedIssue, 'special_numbering') ? objectSearch(parsedIssue, 'special_numbering') : ''
-      let publication_date = objectSearch(parsedIssue, 'publication_date');
-
-      if(!Array.isArray(publication_date)) publication_date = [publication_date]; //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
-
-      const onlinePubDate = _.find(publication_date, (pubDate) => {
-        if (pubDate) {
-          if (pubDate['-media_type'] === 'online') {
-            return pubDate
-          }
-        }
-      })
-
-      const printPubDate = _.find(publication_date, (pubDate) => {
-        if (pubDate) {
-          if (pubDate['-media_type'] === 'print') {
-            return pubDate
-          }
-        }
-      })
-      var printDateYear = ''
-      var printDateMonth = ''
-      var printDateDay = ''
-      if (printPubDate) {
-        printDateYear = printPubDate['year'] ? printPubDate['year'] : ''
-        printDateMonth = printPubDate['month'] ? printPubDate['month'] : ''
-        printDateDay = printPubDate['day'] ? printPubDate['day'] : ''
-      }
-
-      var onlineDateYear = ''
-      var onlineDateMonth = ''
-      var onlineDateDay = ''
-      if (onlinePubDate) {
-        onlineDateYear = onlinePubDate['year'] ? onlinePubDate['year'] : ''
-        onlineDateMonth = onlinePubDate['month'] ? onlinePubDate['month'] : ''
-        onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : ''
-      }
-
-      const archiveLocations = objectSearch(parsedIssue, 'archive_locations')
-      var archive = ''
-      if (archiveLocations) {
-        archive = archiveLocations.archive['-name']
-      }
-
-      const journal_volume = objectSearch(parsedIssue, 'journal_volume')
-      if (journal_volume) {
-        var theVolume = objectSearch(journal_volume, 'volume') ? objectSearch(journal_volume, 'volume') : ''
-        var volumeDoiData = objectSearch(journal_volume, 'doi_data') ? objectSearch(journal_volume, 'doi_data') : ''
-        var volumeDoi = objectSearch(volumeDoiData, 'doi') ? objectSearch(volumeDoiData, 'doi') : ''
-        var volumeUrl = objectSearch(volumeDoiData, 'resource') ? objectSearch(volumeDoiData, 'resource') : ''
-
-      }
-
-      const setIssue = {
-        issue: issue,
-        issueTitle: issueTitle,
-        issueDoi: this.props.duplicate ? this.props.ownerPrefix + '/' : issueDoi,
-        issueUrl: this.props.duplicate ?  '' : issueUrl,
-        printDateYear: printDateYear,
-        printDateMonth: printDateMonth,
-        printDateDay: printDateDay,
-        onlineDateYear: onlineDateYear,
-        onlineDateMonth: onlineDateMonth,
-        onlineDateDay: onlineDateDay,
-        archiveLocation: archive,
-        specialIssueNumber: special_numbering,
-        volume: theVolume,
-        volumeDoi: volumeDoi,
-        volumeUrl: volumeUrl
-      }
-
-      // contributor loading
-      const contributors = objectSearch(parsedIssue, 'contributors')
-      var contributee = []
-      // contributors are divied into 2 types
-      // person_name and organization
-      var person_name = undefined
-      if (contributors) {
-        person_name = objectSearch(contributors, 'person_name')
-
-        if (person_name) { // if exist
-          if (!Array.isArray(person_name)) {
-            // there is ONE funder
-            contributee.push(
-              {
-                firstName: person_name.given_name ? person_name.given_name : '',
-                lastName: person_name.surname ? person_name.surname : '',
-                suffix: person_name.suffix ? person_name.suffix : '',
-                affiliation: person_name.affiliation ? person_name.affiliation : '',
-                orcid: person_name.ORCID ? person_name.ORCID : '',
-                alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
-                role: person_name['-contributor_role'] ? person_name['-contributor_role'] : ''
-              }
-            )
-          } else { // its an array
-            _.each(person_name, (person) => {
-              contributee.push(
-                {
-                  firstName: person.given_name ? person.given_name : '',
-                  lastName: person.surname ? person.surname : '',
-                  suffix: person.suffix ? person.suffix : '',
-                  affiliation: person.affiliation ? person.affiliation : '',
-                  orcid: person.ORCID ? person.ORCID : '',
-                  alternativeName: person['alt-name'] ? person['alt-name'] : '',
-                  role: person['-contributor_role'] ? person['-contributor_role'] : ''
-                }
-              )
-            })
-          }
-        }
-      }
-
-      if (contributee.length <= 0) {
-        contributee.push(
-          {
-            firstName: '',
-            lastName: '',
-            suffix: '',
-            affiliation: '',
-            orcid: '',
-            role: '',
-            alternativeName: ''
-          }
-        )
-      }
-
-      var issueDoiDisabled = false
-      if (issueDoi) {
-        issueDoiDisabled = (issueDoi.length > 0 && this.props.issue.status !== 'draft') ? true : false
-      }
-
-      var volumeDoiDisabled = false
-      if (volumeDoi) {
-        volumeDoiDisabled = (volumeDoi.length > 0 && this.props.issue.status !== 'draft') ? true : false
-      }
-
-      this.setState({
-        version: version,
-        issueDoiDisabled: issueDoiDisabled,
-        volumeDoiDisabled: volumeDoiDisabled,
-        issue:  update(this.state.issue, {$set: setIssue }),
-        optionalIssueInfo: update(this.state.optionalIssueInfo, {$set: contributee })
-      })
-    })
-  }
 
   componentDidUpdate() {
     var firstError = $(".fieldError").first()
@@ -571,6 +557,9 @@ export default class AddIssueCard extends Component {
                                 }
                                 {(this.state.errors.dupevolumedoi) &&
                                   <div><b>Duplicate Volume DOI.</b><br />Registering a new DOI? This one already exists.</div>
+                                }
+                                {(this.state.errors.dupeDois) &&
+                                <div><b>Duplicate DOIs.</b><br />Issue and Volume DOIs cannot be the same.</div>
                                 }
                               </div>
                             </div>
@@ -804,7 +793,7 @@ export default class AddIssueCard extends Component {
                         </div>
                         <div className='field'>
                           <input
-                              className={'height32' + ((this.state.errors.dupevolumedoi || this.state.errors.invalidvolumedoi) ? ' fieldError': '')}
+                              className={'height32' + ((this.state.errors.dupevolumedoi || this.state.errors.invalidvolumedoi || this.state.errors.dupeDois) ? ' fieldError': '')}
                               type='text'
                               name='issue.volumeDoi'
                               onChange={this.handler}
