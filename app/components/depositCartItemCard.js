@@ -15,7 +15,7 @@ import objectSearch from '../utilities/objectSearch'
 import xmldoc from '../utilities/xmldoc'
 import {routes} from '../routing'
 
-
+@stateTrackerII
 export default class DepositCartItemCard extends Component {
   static propTypes = {
     cartItem: is.object.isRequired,

@@ -3,6 +3,7 @@ import is from 'prop-types'
 import { browserHistory } from 'react-router'
 import update from 'immutability-helper'
 import _ from 'lodash'
+import {stateTrackerII} from 'my_decorators'
 
 import checkDupeDOI from '../utilities/dupeDOI'
 import ReviewArticle from './reviewArticle'
@@ -150,7 +151,8 @@ export default class AddArticleCard extends Component {
       Journal: is.object
     }),
     ownerPrefix: is.string.isRequired,
-    crossmarkPrefixes: is.array.isRequired
+    crossmarkPrefixes: is.array.isRequired,
+    issue: is.string
   }
 
   constructor (props) {
@@ -269,6 +271,7 @@ export default class AddArticleCard extends Component {
           issuePublication.message.contains = [theIssue]
 
           savePub = issuePublication
+          console.log(savePub);
         } else { // not issue, so just put directly under the publication
           publication.message.contains = [newRecord];
           savePub = publication
