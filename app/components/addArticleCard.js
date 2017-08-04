@@ -190,7 +190,7 @@ export default class AddArticleCard extends Component {
         }
 
         this.setState({
-          inCart: _.find(this.props.reduxCart, (cartItems) => { return cartItems.doi === parsedArticle.article.doi}) ? true : false,
+          inCart: !!_.find(this.props.reduxCart, (cartItems) => { return cartItems.doi === parsedArticle.article.doi}),
           first: true,
           doiDisabled: true,
           version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
@@ -244,6 +244,7 @@ export default class AddArticleCard extends Component {
 
         var newRecord = {
           'title': {'title': title},
+          'date': new Date(),
           'doi': this.state.article.doi,
           'owner-prefix': this.state.article.doi.split('/')[0],
           'type': 'article',

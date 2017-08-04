@@ -78,7 +78,7 @@ export default class AddIssueCard extends Component {
     reduxControlModal: is.func.isRequired,
 
     asyncSubmitIssue: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
+    asyncGetItem: is.func,
     asyncGetPublications: is.func.isRequired
   }
 
@@ -102,17 +102,17 @@ export default class AddIssueCard extends Component {
 
         if (journal_volume) {
           delete journal_issue['journal_volume'];
-          var theVolume = objectSearch(journal_volume, 'volume') ? objectSearch(journal_volume, 'volume') : ''
-          var volumeDoiData = objectSearch(journal_volume, 'doi_data') ? objectSearch(journal_volume, 'doi_data') : ''
-          var volumeDoi = objectSearch(volumeDoiData, 'doi') ? objectSearch(volumeDoiData, 'doi') : ''
-          var volumeUrl = objectSearch(volumeDoiData, 'resource') ? objectSearch(volumeDoiData, 'resource') : ''
+          var theVolume = objectSearch(journal_volume, 'volume') || '';
+          var volumeDoiData = objectSearch(journal_volume, 'doi_data') || ''
+          var volumeDoi = objectSearch(volumeDoiData, 'doi') || ''
+          var volumeUrl = objectSearch(volumeDoiData, 'resource') || ''
         }
 
-        const issueTitle = objectSearch(journal_issue, 'title') ? objectSearch(journal_issue, 'title') : ''
-        const issue = objectSearch(journal_issue, 'issue') ? objectSearch(journal_issue, 'issue') : ''
-        const issueDoi = objectSearch(journal_issue, 'doi') ? objectSearch(journal_issue, 'doi') : ''
-        const issueUrl = objectSearch(journal_issue, 'resource') ? objectSearch(journal_issue, 'resource') : ''
-        const special_numbering = objectSearch(parsedIssue, 'special_numbering') ? objectSearch(parsedIssue, 'special_numbering') : ''
+        const issueTitle = objectSearch(journal_issue, 'title') || ''
+        const issue = objectSearch(journal_issue, 'issue') || ''
+        const issueDoi = objectSearch(journal_issue, 'doi') || ''
+        const issueUrl = objectSearch(journal_issue, 'resource') || ''
+        const special_numbering = objectSearch(parsedIssue, 'special_numbering') || ''
         let publication_date = objectSearch(journal_issue, 'publication_date');
 
         if(!Array.isArray(publication_date)) publication_date = [publication_date]; //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
@@ -169,9 +169,9 @@ export default class AddIssueCard extends Component {
           onlineDateDay: onlineDateDay,
           archiveLocation: archive,
           specialIssueNumber: special_numbering,
-          volume: theVolume,
-          volumeDoi: volumeDoi,
-          volumeUrl: volumeUrl
+          volume: theVolume || '',
+          volumeDoi: volumeDoi || '',
+          volumeUrl: volumeUrl || ''
         }
 
         // contributor loading
@@ -396,6 +396,7 @@ export default class AddIssueCard extends Component {
 
         const newRecord = {
           'title': {title, issue, volume},
+          'date': new Date(),
           'doi': this.state.issue.issueDoi,
           'owner-prefix': this.state.issue.issueDoi.split('/')[0],
           'type': 'issue',
@@ -403,6 +404,7 @@ export default class AddIssueCard extends Component {
           'status': 'draft',
           'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
         }
+
         publication.message.contains = [newRecord]
         asyncSubmitIssue(publication, () => {
           asyncGetPublications(publication.message.doi)

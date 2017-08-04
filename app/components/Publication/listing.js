@@ -7,7 +7,7 @@ import Issue from './issue'
 import Article from './article'
 import ArticlesContainer from './articlesContainer'
 
-
+@stateTrackerII
 export default class Listing extends Component {
   static propTypes = {
     filterBy: is.string.isRequired,
@@ -26,11 +26,54 @@ export default class Listing extends Component {
     asyncGetPublications: is.func.isRequired,
   }
 
+  state = {
+    sort: {by: 'date', asc: false }
+  }
+
+  sortRecords = (records) => {
+    const { by, asc } = this.state.sort;
+    const compare = (a, b) => {
+      if(!asc) [a, b] = [b, a]
+      if(a < b) return -1;
+      if(a > b) return 1;
+      return 0;
+    }
+    const sortSelector = {
+      'title': ()=> records.sort(function(a,b) {
+        a = (a.title.title || a.title.volume || a.title.issue).toLowerCase();
+        b = (b.title.title || b.title.volume || b.title.issue).toLowerCase();
+        return compare(a,b)
+      }),
+      'date': ()=> records.sort(function(a,b) {
+        return compare(a.date, b.date)
+      }),
+      'type': ()=> records.sort(function(a,b) {
+        return compare(a.type, b.type)
+      }),
+      'status': ()=> records.sort(function(a,b) {
+        return compare(a.status, b.status)
+      })
+    };
+    return sortSelector[by]()
+  }
+
+  sortHandler = (e) => {
+    this.setState({
+      sort: {
+        by: e.target.name,
+        asc: e.target.name === this.state.sort.by ? !this.state.sort.asc : false
+      }
+    })
+  }
+
   render () {
     const publicationDoi = this.props.publicationMessage.doi
     const publicationMessage = this.props.publicationMessage
     const publication = this.props.publication
-    const contains = this.props.publicationMessage.contains || []
+    let contains = this.props.publicationMessage.contains || []
+
+    contains = this.sortRecords(contains);
+
     var itemlist = _.flatten(contains.map((child, i) => {
       if (child) {
         switch (child.type.toLowerCase()) {
@@ -105,10 +148,10 @@ export default class Listing extends Component {
         <thead>
           <tr>
             <td className='checkbox' />
-            <td className='title' />
-            <td className='date'>Date</td>
-            <td className='type'>Type</td>
-            <td className='status'>Status</td>
+            <td className='title'><a name='title' onClick={this.sortHandler}>Title</a></td>
+            <td className='date'><a name='date' onClick={this.sortHandler}>Date</a></td>
+            <td className='type'><a name='type' onClick={this.sortHandler}>Type</a></td>
+            <td className='status'><a name='status' onClick={this.sortHandler}>Status</a></td>
             <td className='url' />
           </tr>
         </thead>

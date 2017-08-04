@@ -122,7 +122,7 @@ export default class Issue extends Component {
 
   render () {
     const { doiMessage, asyncGetItem, publicationMessage, publicationDoi, publication } = this.props
-    let { status, type, date, doi } = this.props.doi
+    let { status, type, date, doi } = this.props.doi;
     date = moment(date || undefined).format('MMM Do YYYY')
     //title needs to be either issue title + volume title or either one
     const issueTitle = this.state.issue.title || this.state.issue.issue || '';
