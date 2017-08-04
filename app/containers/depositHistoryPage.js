@@ -5,6 +5,9 @@ import update from 'immutability-helper'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
+import DatePicker from 'react-datepicker'
+import $ from 'jquery'
+
 import ReactPaginate from 'react-paginate';
 import { getDepositHistory } from '../actions/application'
 import DepositHistoryItem from '../components/depositHistoryItem'
@@ -23,6 +26,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch)
 
 @connect(mapStateToProps, mapDispatchToProps)
+@stateTrackerII
 export default class DepositHistoryPage extends Component {
 
   static propTypes = {
@@ -33,9 +37,13 @@ export default class DepositHistoryPage extends Component {
     super(props)
     this.state = {
       depositHistory: [],
+      startCalendarOpen: false,
+      startFullDate: '',
       startDate: '',
       startMonth: '',
       startYear: '',
+      endCalendarOpen: false,
+      endFullDate: '',
       endDate: '31',
       endMonth: '12',
       endYear: '',
@@ -194,6 +202,10 @@ export default class DepositHistoryPage extends Component {
     })
   }
 
+  boundSetState = (object) => {
+    this.setState(object)
+  }
+
   render () {
     return (
       <div className='depositHistory'>
@@ -225,7 +237,10 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'><img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} /></div>
+                <div className='iconHolder'>
+                  {this.state.startCalendarOpen && <Calendar className='startCalendar' setParentState={this.boundSetState} date={this.state.startFullDate}/>}
+                  <a className="calendarButton" onClick={()=>this.setState({startCalendarOpen: !this.state.startCalendarOpen})}><img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} /></a>
+                </div>
               </div>
             </div>
           </div>
@@ -253,7 +268,10 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'><img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} /></div>
+                <div className='iconHolder'>
+                  <DatePicker selected={this.state.endFullDate} onChange={(date)=>console.log(date)}/>
+                  <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                </div>
               </div>
             </div>
           </div>
@@ -356,3 +374,41 @@ export default class DepositHistoryPage extends Component {
   }
 }
 
+
+class Calendar extends Component {
+
+  componentDidMount() {
+    console.log('mounting')
+    const selector = $(`.${this.props.className} input`);
+    selector.focus();
+
+    document.addEventListener('click', this.handleClick, false);
+  }
+
+  componentDidUnmount() {
+    console.log('unmounting');
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
+  handleClick = e => {
+    const element = $(e.target);
+    if(!(element.parents('.iconHolder').length || element.is('.iconHolder'))) {
+      this.props.setParentState({startCalendarOpen: false, endCalendarOpen: false})
+    }
+  }
+
+  render() {
+    return (
+      <div className={this.props.className}>
+        <DatePicker
+          selected={this.props.date}
+          onChange={(date)=>{
+            console.log(date.format('MM'));
+            this.props.setParentState({startCalendarOpen: false, endCalendarOpen: false})
+          }}
+        />
+      </div>
+    )
+  }
+
+}
