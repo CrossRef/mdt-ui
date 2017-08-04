@@ -3,6 +3,7 @@ import _ from 'lodash'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 
+import { routes } from '../../routing'
 import Issue from './issue'
 import Article from './article'
 import ArticlesContainer from './articlesContainer'
@@ -61,7 +62,7 @@ export default class Listing extends Component {
     this.setState({
       sort: {
         by: e.target.name,
-        asc: e.target.name === this.state.sort.by ? !this.state.sort.asc : false
+        asc: e.target.name === this.state.sort.by ? !this.state.sort.asc : true
       }
     })
   }
@@ -143,15 +144,41 @@ export default class Listing extends Component {
       })
     }
 
+    const {by, asc} = this.state.sort;
+
     return (
       <table className='publication-children-listing'>
         <thead>
           <tr>
             <td className='checkbox' />
-            <td className='title'><a name='title' onClick={this.sortHandler}>Title</a></td>
-            <td className='date'><a name='date' onClick={this.sortHandler}>Date</a></td>
-            <td className='type'><a name='type' onClick={this.sortHandler}>Type</a></td>
-            <td className='status'><a name='status' onClick={this.sortHandler}>Status</a></td>
+            <td className='title'>
+              <a name='title' className={`cursor ${by === 'title' && 'sorted'}`} onClick={this.sortHandler}>Title</a>
+              <img name='title'
+                onClick={this.sortHandler}
+                className={`orderBy ${(by==='title' && asc) && 'ordered'}`}
+                src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
+            <td className='date'>
+              <a name='date' className={`cursor ${by === 'date' && 'sorted'}`} onClick={this.sortHandler}>Date</a>
+              <img name='date'
+                   onClick={this.sortHandler}
+                   className={`orderBy ${(by==='date' && asc) && 'ordered'}`}
+                   src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
+            <td className='type'>
+              <a name='type' className={`cursor ${by === 'type' && 'sorted'}`} onClick={this.sortHandler}>Type</a>
+              <img name='type'
+                   onClick={this.sortHandler}
+                   className={`orderBy ${(by==='type' && asc) && 'ordered'}`}
+                   src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
+            <td className='status'>
+              <a name='status' className={`cursor ${by === 'status' && 'sorted'}`} onClick={this.sortHandler}>Status</a>
+              <img name='status'
+                   onClick={this.sortHandler}
+                   className={`orderBy ${(by==='status' && asc) && 'ordered'}`}
+                   src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
             <td className='url' />
           </tr>
         </thead>

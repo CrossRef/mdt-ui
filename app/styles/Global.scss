@@ -12,6 +12,10 @@
   }
 }
 
+.cursor {
+  cursor: pointer;
+}
+
 input[type=button], input[type=submit] {
   &.button-anchor {
     padding: 16px;

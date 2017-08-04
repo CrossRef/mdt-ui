@@ -292,6 +292,7 @@
 
         tr:last-child td {
           border-bottom: 1px solid #ced3d9;
+          overflow: visible;
         }
       }
     }
@@ -423,4 +424,8 @@
 .grayedOut {
   color: grey;
   cursor: not-allowed;
+}
+
+.sorted {
+  color: #3eb1c8;
 }
