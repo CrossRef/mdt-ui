@@ -195,6 +195,8 @@ export default class DepositHistoryPage extends Component {
   }
 
   render () {
+    const { order, 'sort-field': sortField } = this.state.query;
+
     return (
       <div className='depositHistory'>
         <div className='pageTitle'>
@@ -272,68 +274,53 @@ export default class DepositHistoryPage extends Component {
             <th className='first'>Deposit ID</th>
             <th className="titleCell">
               <span
-                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'title'}})}}
+                className={`cursor ${(sortField === 'title') && 'sorted'}`}
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'title'}, order: {$set: (sortField !== 'title') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
               >Title</span>
-              {
-                (this.state.query['sort-field'] === 'title') ?
-                  <img
-                    onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
-                    className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
-                : ''
-              }
+              <img
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'title'}, order: {$set: (sortField !== 'title') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
+                className={'orderBy' + ((sortField === 'title' && order === 'asc') ? ' ordered' : '')}
+                src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
             <th className="dateCell">
               <span
-                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_timestamp'}})}}
+                className={`cursor ${(sortField === 'event_timestamp') && 'sorted'}`}
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_timestamp'}, order: {$set: (sortField !== 'event_timestamp') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
               >Date</span>
-              {
-                (this.state.query['sort-field'] === 'event_timestamp') ?
-                  <img
-                    onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
-                    className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
-                : ''
-              }
+              <img
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_timestamp'}, order: {$set: (sortField !== 'event_timestamp') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
+                className={'orderBy' + ((sortField === 'event_timestamp' && order === 'asc') ? ' ordered' : '')}
+                src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
             <th className="typeCell">
               <span
-                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'type'}})}}
+                className={`cursor ${(sortField === 'type') && 'sorted'}`}
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'type'}, order: {$set: (sortField !== 'type') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
               >Type</span>
-              {
-                (this.state.query['sort-field'] === 'type') ?
-                  <img
-                    onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
-                    className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
-                : ''
-              }
+              <img
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'type'}, order: {$set: (sortField !== 'type') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
+                className={'orderBy' + ((order === 'asc' && sortField === 'type') ? ' ordered' : '')}
+                src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
             <th className="statusCell">
               <span
-                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_status'}})}}
+                className={`cursor ${(sortField === 'event_status') && 'sorted'}`}
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_status'}, order: {$set: (sortField !== 'event_status') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
               >Status</span>
-              {
-                (this.state.query['sort-field'] === 'event_status') ?
-                  <img
-                    onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
-                    className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
-                : ''
-              }
+              <img
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'event_status'}, order: {$set: (sortField !== 'event_status') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
+                className={'orderBy' + ((order === 'asc' && sortField === 'event_status') ? ' ordered' : '')}
+                src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
             <th className='last'>
               <span
-                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'doi'}})}}
+                className={`cursor ${(sortField === 'doi') && 'sorted'}`}
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'doi'}, order: {$set: (sortField !== 'doi') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
               >DOI</span>
-              {
-                (this.state.query['sort-field'] === 'doi') ?
-                  <img
-                    onClick={()=>{this.handleChange(this, {order: {$set: (this.state.query.order === 'asc') ? 'desc' : 'asc'}})}}
-                    className={'orderBy' + ((this.state.query.order === 'asc') ? ' ordered' : '')}
-                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
-                : ''
-              }
+              <img
+                onClick={()=>{this.handleChange(this, {'sort-field': {$set: 'doi'}, order: {$set: (sortField !== 'doi') ? 'desc' : (order === 'asc') ? 'desc' : 'asc'}})}}
+                className={'orderBy' + ((order === 'asc' && sortField === 'doi') ? ' ordered' : '')}
+                src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
           </tr>
           {

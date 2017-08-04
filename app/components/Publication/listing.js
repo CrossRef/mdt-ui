@@ -62,7 +62,7 @@ export default class Listing extends Component {
     this.setState({
       sort: {
         by: e.target.name,
-        asc: e.target.name === this.state.sort.by ? !this.state.sort.asc : true
+        asc: e.target.name === this.state.sort.by ? !this.state.sort.asc : false
       }
     })
   }
