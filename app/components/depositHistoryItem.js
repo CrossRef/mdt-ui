@@ -22,7 +22,6 @@ export default class DepositHistoryItem extends Component {
   }
 
   render () {
-//    console.log(this.props.history)
     return (
         <tr>
           <td className='firstTd'>{this.props.history.id}</td>
