@@ -271,7 +271,6 @@ export default class AddArticleCard extends Component {
           issuePublication.message.contains = [theIssue]
 
           savePub = issuePublication
-          console.log(savePub);
         } else { // not issue, so just put directly under the publication
           publication.message.contains = [newRecord];
           savePub = publication
