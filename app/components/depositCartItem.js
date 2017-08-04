@@ -16,7 +16,7 @@ import DepositCartItemCard from './depositCartItemCard'
 import { controlModal, getPublications, cartUpdate, getItem } from '../actions/application'
 import xmldoc from '../utilities/xmldoc'
 
-@stateTrackerII
+
 export default class DepositCartItem extends Component {
   static propTypes = {
     reduxCartUpdate: is.func.isRequired,
@@ -81,6 +81,7 @@ export default class DepositCartItem extends Component {
               key={counter}
               index={counter}
               underIssue={true}
+              issueDoi={this.props.cartItem.contains[i].doi}
               pubIndex={this.props.index}
               pubDoi={this.props.cartItem.doi}
               reduxCartUpdate={this.props.reduxCartUpdate}

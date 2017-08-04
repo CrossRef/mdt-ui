@@ -15,7 +15,7 @@ import objectSearch from '../utilities/objectSearch'
 import xmldoc from '../utilities/xmldoc'
 import {routes} from '../routing'
 
-@stateTrackerII
+
 export default class DepositCartItemCard extends Component {
   static propTypes = {
     cartItem: is.object.isRequired,
@@ -443,34 +443,6 @@ export default class DepositCartItemCard extends Component {
     )
   }
 
-  displayItem () {
-    const { cartItem } = this.props;
-    const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
-    const cartType = cartItem.type
-    const status = cartItem.status
-    const title = cartItem.title.title ? cartItem.title.title.trim() : `Issue ${cartItem.title.issue || 'NA'}, Volume ${cartItem.title.volume || 'NA'}`
-    return (
-      <tr className='item'>
-        <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
-            {(this.state.errorStr.length > 0) ? <div className='iconHolder'><img src={`${routes.images}/Deposit/Asset_Icons_Red_Caution.png`} /></div> : ''}
-        </td>
-        <td className={'title' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + ((this.props.underIssue) ? ' articleUnderIssue' : '')}>
-            {title}
-        </td>
-        <td className={'status' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
-            {status}
-        </td>
-        <td className={'action' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
-            {(cartType !== 'issue') && <a onClick={() => {this.remove()}}>remove</a>}
-        </td>
-        <td className='errorholder'>
-            {
-                (this.props.showError && this.state.errorStr.length > 0) ? this.displayError() : ''
-            }
-        </td>
-      </tr>
-    )
-  }
 
   componentDidUpdate(nextProps, nextState) {
       if (this.state.errorStr !== nextState.errorStr) {
@@ -494,9 +466,43 @@ export default class DepositCartItemCard extends Component {
     }
   }
 
+  editRecord = () => {
+    if(this.props.cartItem.type === 'issue') {
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(this.props.cartItem.doi)}`)
+    } else if (this.props.underIssue) {
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`)
+    } else {
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`)
+    }
+
+  }
+
   render () {
+    const { cartItem } = this.props;
+    const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
+    const cartType = cartItem.type
+    const status = cartItem.status
+    const title = cartItem.title.title ? cartItem.title.title.trim() : `Issue ${cartItem.title.issue || 'NA'}, Volume ${cartItem.title.volume || 'NA'}`
     return (
-       this.displayItem()
+      <tr className='item'>
+        <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
+          {(this.state.errorStr.length > 0) ? <div className='iconHolder'><img src={`${routes.images}/Deposit/Asset_Icons_Red_Caution.png`} /></div> : ''}
+        </td>
+        <td className={'title' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + ((this.props.underIssue) ? ' articleUnderIssue' : '')}>
+          <a className='cursor' onClick={this.editRecord}>{title}</a>
+        </td>
+        <td className={'status' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
+          {status}
+        </td>
+        <td className={'action' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
+          {(cartType !== 'issue') && <a onClick={() => {this.remove()}}>remove</a>}
+        </td>
+        <td className='errorholder'>
+          {
+            (this.props.showError && this.state.errorStr.length > 0) ? this.displayError() : ''
+          }
+        </td>
+      </tr>
     )
   }
 }
