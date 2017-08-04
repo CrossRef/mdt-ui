@@ -71,7 +71,7 @@ const defaultState = {
   }]
 }
 
-@stateTrackerII
+
 export default class AddIssueCard extends Component {
 
   static propTypes = {

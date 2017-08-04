@@ -8,7 +8,7 @@ import Issue from './issue'
 import Article from './article'
 import ArticlesContainer from './articlesContainer'
 
-@stateTrackerII
+
 export default class Listing extends Component {
   static propTypes = {
     filterBy: is.string.isRequired,
