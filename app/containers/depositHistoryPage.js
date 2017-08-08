@@ -5,6 +5,9 @@ import update from 'immutability-helper'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
+import DatePicker from 'react-datepicker'
+import $ from 'jquery'
+
 import ReactPaginate from 'react-paginate';
 import { getDepositHistory } from '../actions/application'
 import DepositHistoryItem from '../components/depositHistoryItem'
@@ -33,9 +36,13 @@ export default class DepositHistoryPage extends Component {
     super(props)
     this.state = {
       depositHistory: [],
+      startCalendarOpen: false,
+      startFullDate: '',
       startDate: '',
       startMonth: '',
       startYear: '',
+      endCalendarOpen: false,
+      endFullDate: '',
       endDate: '31',
       endMonth: '12',
       endYear: '',
@@ -194,6 +201,10 @@ export default class DepositHistoryPage extends Component {
     })
   }
 
+  boundSetState = (object) => {
+    this.setState(object)
+  }
+
   render () {
     const { order, 'sort-field': sortField } = this.state.query;
 
@@ -211,23 +222,28 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder'>
                 <div>Year</div>
-                <div>{makeDateDropDown(this.handleChange,'startYear','y')}</div>
+                <div>{makeDateDropDown(this.handleChange,'startYear','y', this.state.startYear)}</div>
               </div>
               <div className='dateselectholder'>
                 <div>Month</div>
                 <div>
-                  {makeDateDropDown(this.handleChange,'startMonth','m')}
+                  {makeDateDropDown(this.handleChange,'startMonth','m', this.state.startMonth)}
                 </div>
               </div>
               <div className='dateselectholder'>
                 <div>Day</div>
                 <div>
-                  {makeDateDropDown(this.handleChange,'startDate','d')}
+                  {makeDateDropDown(this.handleChange,'startDate','d', this.state.startDate)}
                 </div>
               </div>
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'><img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} /></div>
+                <div className='iconHolder'>
+                  {this.state.startCalendarOpen && <Calendar type='start' setParentState={this.boundSetState} date={this.state.startFullDate}/>}
+                  <a className="calendarButton" onClick={()=>this.setState({startCalendarOpen: !this.state.startCalendarOpen, endCalendarOpen: false})}>
+                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -239,23 +255,28 @@ export default class DepositHistoryPage extends Component {
               </div>
               <div className='dateselectholder'>
                 <div>Year</div>
-                <div>{makeDateDropDown(this.handleChange,'endYear','y')}</div>
+                <div>{makeDateDropDown(this.handleChange,'endYear','y', this.state.endYear)}</div>
               </div>
               <div className='dateselectholder'>
                 <div>Month</div>
                 <div>
-                  {makeDateDropDown(this.handleChange,'endMonth','m')}
+                  {makeDateDropDown(this.handleChange,'endMonth','m', this.state.endMonth)}
                 </div>
               </div>
               <div className='dateselectholder'>
                 <div>Day</div>
                 <div>
-                  {makeDateDropDown(this.handleChange,'endDate','d')}
+                  {makeDateDropDown(this.handleChange,'endDate','d', this.state.endDate)}
                 </div>
               </div>
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'><img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} /></div>
+                <div className='iconHolder'>
+                  {this.state.endCalendarOpen && <Calendar type='end' setParentState={this.boundSetState} date={this.state.endFullDate}/>}
+                  <a className="calendarButton" onClick={()=>this.setState({endCalendarOpen: !this.state.endCalendarOpen, startCalendarOpen: false})}>
+                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                  </a>
+                </div>
               </div>
             </div>
           </div>
@@ -343,3 +364,44 @@ export default class DepositHistoryPage extends Component {
   }
 }
 
+
+class Calendar extends Component {
+
+  componentDidMount() {
+    const selector = $(`.${this.props.type}Calendar input`);
+    selector.focus();
+    document.addEventListener('click', this.handleClick, false);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
+  handleClick = e => {
+    const element = $(e.target);
+    if(!(element.parents('.iconHolder').length || element.is('.iconHolder'))) {
+      this.props.setParentState({[`${this.props.type}CalendarOpen`]: false})
+    }
+  }
+
+  render() {
+    return (
+      <div className={`${this.props.type}Calendar`}>
+        <DatePicker
+          selected={this.props.date}
+          onChange={(date)=>{
+            const calendar = this.props.type;
+            const payload = {
+              [`${calendar}FullDate`]: date,
+              [`${calendar}Date`]: date.format('D'),
+              [`${calendar}Month`]: date.format('M'),
+              [`${calendar}Year`]: date.format('Y'),
+            }
+            this.props.setParentState(payload)
+          }}
+        />
+      </div>
+    )
+  }
+
+}

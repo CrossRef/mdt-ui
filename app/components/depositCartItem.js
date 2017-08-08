@@ -81,6 +81,7 @@ export default class DepositCartItem extends Component {
               key={counter}
               index={counter}
               underIssue={true}
+              issueDoi={this.props.cartItem.contains[i].doi}
               pubIndex={this.props.index}
               pubDoi={this.props.cartItem.doi}
               reduxCartUpdate={this.props.reduxCartUpdate}
