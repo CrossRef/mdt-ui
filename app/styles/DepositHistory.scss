@@ -57,12 +57,20 @@
         .iconHolder {
             background: #FFF;
             display: inline-block;
-            padding: 2px 6px;
             margin: 0;
-            .calendarIcon {
+
+            .calendarButton {
                 display: inline-block;
-                width: 27px;
+                width:39px;
+                height:auto;
+                padding: 2px 6px;
+
+                .calendarIcon {
+                    display: inline-block;
+                    width: 27px;
+                }
             }
+
         }
     }
     .doiSearchHolder {
