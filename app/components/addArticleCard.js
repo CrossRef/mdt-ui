@@ -3,6 +3,7 @@ import is from 'prop-types'
 import { browserHistory } from 'react-router'
 import update from 'immutability-helper'
 import _ from 'lodash'
+import {stateTrackerII} from 'my_decorators'
 
 import checkDupeDOI from '../utilities/dupeDOI'
 import ReviewArticle from './reviewArticle'
@@ -150,7 +151,8 @@ export default class AddArticleCard extends Component {
       Journal: is.object
     }),
     ownerPrefix: is.string.isRequired,
-    crossmarkPrefixes: is.array.isRequired
+    crossmarkPrefixes: is.array.isRequired,
+    issue: is.string
   }
 
   constructor (props) {

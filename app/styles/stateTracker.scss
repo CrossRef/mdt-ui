@@ -21,7 +21,7 @@
 
 .stateTracker ul {
 	list-style-position: inside;
-	list-style-type: circle;
+	list-style-type: none;
 	margin: 0;
 	padding-left:10px;
 	padding-bottom: 0;
@@ -42,9 +42,6 @@
 	cursor: pointer;
 }
 
-.stateTracker span {
-	margin-left: -20px;
-}
 
 .arrayList {
 	margin-left: 5px !important;
