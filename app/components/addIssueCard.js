@@ -116,7 +116,19 @@ export default class AddIssueCard extends Component {
       optionalIssueInfo: update(this.state.optionalIssueInfo, {$splice: [[index, 1]] })
     })
   }
-
+ checkdate(yearfield,monthfield,dayfield){
+    if (monthfield){
+      if (monthfield>12 || monthfield < 1) return true;
+    }
+    if (!dayfield){
+      return false;
+    }
+    // we have a year, month and day.
+    var dayobj = new Date(yearfield, monthfield-1, dayfield)
+    if ((dayobj.getMonth()+1!=monthfield)||(dayobj.getDate()!=dayfield)||(dayobj.getFullYear()!=yearfield))
+      return true;
+    return false;
+}
   handler = (e) => {
     const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
 
@@ -136,6 +148,8 @@ export default class AddIssueCard extends Component {
       printDateYear: {$set: false },
       onlineDateYear: {$set: false },
       invalidissueurl: {$set: false },
+      onlineDateInvalid: {$set: false },
+      printDateInvalid: {$set: false },
       dupeissuedoi: {$set: false },
       invalidissuedoi: {$set: false },
       issuedoi: {$set: false },
@@ -170,7 +184,10 @@ export default class AddIssueCard extends Component {
           issue: !this.state.issue.issue,
           issueUrl: !this.state.issue.issueUrl,
           printDateYear: !this.state.issue.printDateYear,
+          printDateInvalid:this.state.issue.printDateYear?this.checkdate(this.state.issue.printDateYear,this.state.issue.printDateMonth,this.state.issue.printDateDay):false,
+         
           onlineDateYear: !this.state.issue.onlineDateYear,
+          onlineDateInvalid:this.state.issue.onlineDateYear?this.checkdate(this.state.issue.onlineDateYear,this.state.issue.onlineDateMonth,this.state.issue.onlineDateDay):false,
           invalidissueurl: this.state.issue.issueUrl ? !isURL(this.state.issue.issueUrl) : false,
           issuedoi: !this.state.issue.issueDoi,
           invalidissuedoi: isNotValidIssueDoi,
@@ -539,6 +556,8 @@ export default class AddIssueCard extends Component {
                                   if(this.state.errors.issuedoi) errors.push('Please provide required DOI.');
                                   if(this.state.errors.issueUrl) errors.push('Please provide required Issue URL.');
                                   if(this.state.errors.printDateYear || this.state.errors.onlineDateYear) errors.push('Please provide either a print or online date.');
+                                  if(this.state.errors.printDateInvalid) errors.push('Print Date is invalid, please verify date.');
+                                  if(this.state.errors.onlineDateInvalid) errors.push('Online Date is invalid, please verify date.');
                                   if(this.state.errors.volumeUrl) errors.push('Please provide required Volume URL.')
                                   if(errors.length) return (
                                     <div><b>Required.</b><br />{errors.length > 1 ? 'Please provide required information.' : errors[0]}</div>
