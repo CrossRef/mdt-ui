@@ -274,7 +274,8 @@ export default class AddIssueCard extends Component {
       optionalIssueInfo: update(this.state.optionalIssueInfo, {$splice: [[index, 1]] })
     })
   }
- checkdate(yearfield,monthfield,dayfield){
+
+  checkdate(yearfield,monthfield,dayfield){
     if (monthfield){
       if (monthfield>12 || monthfield < 1) return true;
     }
@@ -286,7 +287,8 @@ export default class AddIssueCard extends Component {
     if ((dayobj.getMonth()+1!=monthfield)||(dayobj.getDate()!=dayfield)||(dayobj.getFullYear()!=yearfield))
       return true;
     return false;
-}
+  }
+
   handler = (e) => {
     const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
 
@@ -345,10 +347,10 @@ export default class AddIssueCard extends Component {
           issue: !this.state.issue.issue,
           issueUrl: !this.state.issue.issueUrl,
           printDateYear: !this.state.issue.printDateYear,
-          printDateInvalid:this.state.issue.printDateYear?this.checkdate(this.state.issue.printDateYear,this.state.issue.printDateMonth,this.state.issue.printDateDay):false,
+          printDateInvalid:this.state.issue.printDateYear ? this.checkdate(this.state.issue.printDateYear,this.state.issue.printDateMonth,this.state.issue.printDateDay): false,
          
           onlineDateYear: !this.state.issue.onlineDateYear,
-          onlineDateInvalid:this.state.issue.onlineDateYear?this.checkdate(this.state.issue.onlineDateYear,this.state.issue.onlineDateMonth,this.state.issue.onlineDateDay):false,
+          onlineDateInvalid:this.state.issue.onlineDateYear ? this.checkdate(this.state.issue.onlineDateYear,this.state.issue.onlineDateMonth,this.state.issue.onlineDateDay): false,
           invalidissueurl: this.state.issue.issueUrl ? !isURL(this.state.issue.issueUrl) : false,
           issuedoi: !this.state.issue.issueDoi,
           invalidissuedoi: isNotValidIssueDoi,
@@ -559,10 +561,8 @@ export default class AddIssueCard extends Component {
                                   if(errors.issue) requiredError.push('Please provide an issue number.');
                                   if(errors.issuedoi) requiredError.push('Please provide required DOI.');
                                   if(errors.issueUrl) requiredError.push('Please provide required Issue URL.');
-                                  if(errors.printDateYear || requiredError.onlineDateYear) errors.push('Please provide either a print or online date.');
+                                  if(errors.printDateYear || errors.onlineDateYear) requiredError.push('Please provide either a print or online date.');
                                   if(errors.volumeUrl) requiredError.push('Please provide required Volume URL.');
-                                  if(errors.printDateInvalid) errors.push('Print Date is invalid, please verify date.');
-                                  if(errors.onlineDateInvalid) errors.push('Online Date is invalid, please verify date.');
                                   if(requiredError.length) return (
                                     <div><b>Required.</b><br />{requiredError.length > 1 ? 'Please provide required information.' : requiredError[0]}</div>
                                   );
@@ -586,7 +586,13 @@ export default class AddIssueCard extends Component {
                                   <div><b>Duplicate Volume DOI.</b><br />Registering a new DOI? This one already exists.</div>
                                 }
                                 {(errors.dupeDois) &&
-                                <div><b>Duplicate DOIs.</b><br />Issue and Volume DOIs cannot be the same.</div>
+                                  <div><b>Duplicate DOIs.</b><br />Issue and Volume DOIs cannot be the same.</div>
+                                }
+                                {errors.printDateInvalid &&
+                                  <div><b>Invalid Print Date.</b><br />Please verify date.</div>
+                                }
+                                {errors.onlineDateInvalid &&
+                                  <div><b>Invalid Online Date.</b><br />Please verify date.</div>
                                 }
                               </div>
                             </div>
@@ -668,18 +674,18 @@ export default class AddIssueCard extends Component {
                           <div className='datepickerholder'>
                             <div className='dateselectholder'>
                               <div>Year {((this.state.issue.onlineDateYear ? this.state.issue.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
-                              <div>{makeDateDropDown(this.handler, 'issue.printDateYear', 'y', this.state.issue.printDateYear, errors.printDateYear)}</div>
+                              <div>{makeDateDropDown(this.handler, 'issue.printDateYear', 'y', this.state.issue.printDateYear, errors.printDateInvalid || errors.printDateYear)}</div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Month</div>
                               <div>
-                                {makeDateDropDown(this.handler, 'issue.printDateMonth', 'm', this.state.issue.printDateMonth, false)}
+                                {makeDateDropDown(this.handler, 'issue.printDateMonth', 'm', this.state.issue.printDateMonth, errors.printDateInvalid)}
                               </div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Day</div>
                               <div>
-                                {makeDateDropDown(this.handler, 'issue.printDateDay', 'd', this.state.issue.printDateDay, false)}
+                                {makeDateDropDown(this.handler, 'issue.printDateDay', 'd', this.state.issue.printDateDay, errors.printDateInvalid)}
                               </div>
                             </div>
                             <div>
@@ -706,18 +712,18 @@ export default class AddIssueCard extends Component {
                           <div className='datepickerholder'>
                             <div className='dateselectholder'>
                               <div>Year {((this.state.issue.printDateYear ? this.state.issue.printDateYear : '').length === 0 ? '(*)' : '')}</div>
-                              <div>{makeDateDropDown(this.handler, 'issue.onlineDateYear', 'y', this.state.issue.onlineDateYear, this.state.errors.onlineDateYear)}</div>
+                              <div>{makeDateDropDown(this.handler, 'issue.onlineDateYear', 'y', this.state.issue.onlineDateYear, errors.onlineDateInvalid || errors.onlineDateYear)}</div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Month</div>
                               <div>
-                                {makeDateDropDown(this.handler, 'issue.onlineDateMonth', 'm', this.state.issue.onlineDateMonth, false)}
+                                {makeDateDropDown(this.handler, 'issue.onlineDateMonth', 'm', this.state.issue.onlineDateMonth, errors.onlineDateInvalid)}
                               </div>
                             </div>
                             <div className='dateselectholder'>
                               <div>Day</div>
                               <div>
-                                {makeDateDropDown(this.handler, 'issue.onlineDateDay', 'd', this.state.issue.onlineDateDay, false)}
+                                {makeDateDropDown(this.handler, 'issue.onlineDateDay', 'd', this.state.issue.onlineDateDay, errors.onlineDateInvalid)}
                               </div>
                             </div>
                             <div>
