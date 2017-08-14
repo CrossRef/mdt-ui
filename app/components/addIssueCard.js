@@ -274,7 +274,19 @@ export default class AddIssueCard extends Component {
       optionalIssueInfo: update(this.state.optionalIssueInfo, {$splice: [[index, 1]] })
     })
   }
-
+ checkdate(yearfield,monthfield,dayfield){
+    if (monthfield){
+      if (monthfield>12 || monthfield < 1) return true;
+    }
+    if (!dayfield){
+      return false;
+    }
+    // we have a year, month and day.
+    var dayobj = new Date(yearfield, monthfield-1, dayfield)
+    if ((dayobj.getMonth()+1!=monthfield)||(dayobj.getDate()!=dayfield)||(dayobj.getFullYear()!=yearfield))
+      return true;
+    return false;
+}
   handler = (e) => {
     const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
 
@@ -289,10 +301,13 @@ export default class AddIssueCard extends Component {
 
   validation (callback) {
     var errorStates = {
+
       issue: false,
       issueUrl: false,
       printDateYear: false,
       onlineDateYear: false,
+      onlineDateInvalid: false ,
+      printDateInvalid: false ,
       invalidissueurl: false,
       dupeissuedoi: false,
       invalidissuedoi: false,
@@ -330,7 +345,10 @@ export default class AddIssueCard extends Component {
           issue: !this.state.issue.issue,
           issueUrl: !this.state.issue.issueUrl,
           printDateYear: !this.state.issue.printDateYear,
+          printDateInvalid:this.state.issue.printDateYear?this.checkdate(this.state.issue.printDateYear,this.state.issue.printDateMonth,this.state.issue.printDateDay):false,
+         
           onlineDateYear: !this.state.issue.onlineDateYear,
+          onlineDateInvalid:this.state.issue.onlineDateYear?this.checkdate(this.state.issue.onlineDateYear,this.state.issue.onlineDateMonth,this.state.issue.onlineDateDay):false,
           invalidissueurl: this.state.issue.issueUrl ? !isURL(this.state.issue.issueUrl) : false,
           issuedoi: !this.state.issue.issueDoi,
           invalidissuedoi: isNotValidIssueDoi,
@@ -536,12 +554,15 @@ export default class AddIssueCard extends Component {
                               <div className='errormsginnerholder'>
                                 <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
                                 {(()=>{
+
                                   let requiredError = [];
                                   if(errors.issue) requiredError.push('Please provide an issue number.');
                                   if(errors.issuedoi) requiredError.push('Please provide required DOI.');
                                   if(errors.issueUrl) requiredError.push('Please provide required Issue URL.');
                                   if(errors.printDateYear || requiredError.onlineDateYear) errors.push('Please provide either a print or online date.');
                                   if(errors.volumeUrl) requiredError.push('Please provide required Volume URL.');
+                                  if(errors.printDateInvalid) errors.push('Print Date is invalid, please verify date.');
+                                  if(errors.onlineDateInvalid) errors.push('Online Date is invalid, please verify date.');
                                   if(requiredError.length) return (
                                     <div><b>Required.</b><br />{requiredError.length > 1 ? 'Please provide required information.' : requiredError[0]}</div>
                                   );
