@@ -13,7 +13,7 @@ export default class TitleBar extends Component {
     search: is.object.isRequired,
     asyncGetItem: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
-    postIssue: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     publication: is.object.isRequired,
     asyncGetPublications: is.func.isRequired
   }
@@ -25,13 +25,17 @@ export default class TitleBar extends Component {
     return (<div className='publication-title'>
       <h1>{title}</h1>
       <SearchRecords
-        reduxControlModal={this.props.reduxControlModal}
-        asyncSearchRecords={this.props.asyncSearchRecords}
-        search={this.props.search} pubTitle={title}
-        asyncGetItem={this.props.asyncGetItem}
+        search={this.props.search}
+        pubTitle={title}
         publication={this.props.publication}
-        postIssue={this.props.postIssue}
-        asyncGetPublications={this.props.asyncGetPublications}/>
+
+        reduxControlModal={this.props.reduxControlModal}
+
+        asyncSubmitIssue={this.props.asyncSubmitIssue}
+        asyncGetPublications={this.props.asyncGetPublications}
+        asyncSearchRecords={this.props.asyncSearchRecords}
+        asyncGetItem={this.props.asyncGetItem}
+        />
     </div>)
   }
 }

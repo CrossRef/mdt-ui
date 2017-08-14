@@ -34,6 +34,7 @@ input.height64, textarea.height64, select.height64 {
     a.tooltips {
       position: relative;
       display: inline;
+      z-index: 1;
       .toolmsgholder {
         position: absolute;
         width: 200px;
