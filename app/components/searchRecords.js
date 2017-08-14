@@ -16,7 +16,7 @@ export default class Search extends Component {
     asyncGetItem: is.func.isRequired,
     pubTitle: is.string.isRequired,
     search: is.object.isRequired,
-    postIssue: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     publication: is.object.isRequired,
     asyncGetPublications: is.func.isRequired
   }
@@ -63,7 +63,7 @@ export default class Search extends Component {
         const record = result.message.contains[0];
         record['mdt-version'] = '0';
 
-        this.props.postIssue(result, () => {
+        this.props.asyncSubmitIssue(result, () => {
           this.props.asyncGetPublications(pubDoi) //gets updated publication data and refreshes page
         })
 
@@ -96,7 +96,7 @@ export default class Search extends Component {
               publicationMessage: publication.message,
               doiMessage: publication.message.doi,
               handle: this.props.asyncGetPublications,
-              postIssue: this.props.postIssue,
+              asyncSubmitIssue: this.props.asyncSubmitIssue,
             }
           })
         }
@@ -111,19 +111,19 @@ export default class Search extends Component {
             delete issue.content;
             delete issue['mdt-version'];
 
-            this.props.postIssue(result, () => {
+            this.props.asyncSubmitIssue(result, () => {
               this.props.asyncGetPublications(pubDoi)
             })
             return;
           }
         }
         
-        this.props.postIssue(result, () => {
+        this.props.asyncSubmitIssue(result, () => {
           //reset issue metadata
           issue.contains = [savedArticle]
           delete issue['mdt-version'];
 
-          this.props.postIssue(result, () => {
+          this.props.asyncSubmitIssue(result, () => {
             this.props.asyncGetPublications(pubDoi)
           })
         })

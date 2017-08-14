@@ -64,19 +64,19 @@
       .record-search-container {
         position: relative;
         float:right;
-       &:before{
-         content: "";
-         background: url('images/AddArticle/DarkTriangle.svg') no-repeat right center;
+
+        &:before {
+          content: "";
+          background: url('images/AddArticle/DarkTriangle.svg') no-repeat right center;
           width: 16px;
           height: 100%;
           top: 0;
           left: 76px;
-          z-index: +1;
           transform: rotate(180deg);
           -webkit-transform: rotate(180deg);
           position: absolute;
           pointer-events: none;
-          }
+        }
         .searchType {
           height: 32px;
           width: 96px;
@@ -292,6 +292,7 @@
 
         tr:last-child td {
           border-bottom: 1px solid #ced3d9;
+          overflow: visible;
         }
       }
     }
@@ -423,4 +424,8 @@
 .grayedOut {
   color: grey;
   cursor: not-allowed;
+}
+
+.sorted {
+  color: #3eb1c8;
 }

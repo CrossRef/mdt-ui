@@ -13,8 +13,9 @@ import {routes} from  '../../routing'
 export default class Publication extends Component {
 
   static propTypes = {
-    reduxControlModal: is.func.isRequired,
-    asyncDeleteRecord: is.func.isRequired,
+    cart: is.array.isRequired, //is cart required here?
+    ownerPrefix: is.string.isRequired,
+    search: is.object.isRequired,
 
     publication: is.shape({
       status: is.string.isRequired,
@@ -23,14 +24,13 @@ export default class Publication extends Component {
       message: is.object.isRequired
     }).isRequired,
 
-    handle: is.func.isRequired,
+    reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-    fetchIssue: is.func.isRequired,
-    postIssue: is.func.isRequired,
-    cart: is.array.isRequired, //is cart required here?
-    ownerPrefix: is.string.isRequired,
+
+    asyncDeleteRecord: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
-    search: is.object.isRequired,
     asyncGetItem: is.func.isRequired,
   }
 
@@ -42,7 +42,7 @@ export default class Publication extends Component {
     }
   }
 
-  handleAddToList (item) {
+  handleAddToList = (item) => {
     const selections = this.state.selections;
     const newSelections = [...selections]
     for (let i in selections) {
@@ -53,7 +53,7 @@ export default class Publication extends Component {
     this.setState({selections: newSelections})
   }
 
-  handleRemoveFromList(item) {
+  handleRemoveFromList = (item) => {
     var selections = this.state.selections
     const filteredSelections = selections.filter((selection)=>{
       return item.article.doi.toLowerCase() !== selection.article.doi.toLowerCase();
@@ -148,8 +148,8 @@ export default class Publication extends Component {
           issue: this.state.selections[0].article,
           publication: this.props.publication,
           handle: this.props.handle,
-          fetchIssue: this.props.fetchIssue,
-          postIssue: this.props.postIssue,
+          asyncGetItem: this.props.asyncGetItem,
+          asyncSubmitIssue: this.props.asyncSubmitIssue,
           ownerPrefix: this.props.ownerPrefix,
           duplicate: true
         }
@@ -165,7 +165,7 @@ export default class Publication extends Component {
   }
 
   render () {
-    const { publication, handle, reduxControlModal, ownerPrefix } = this.props
+    const { publication, asyncGetPublications, reduxControlModal, ownerPrefix } = this.props
     const publicationMessage = publication.message || emptyObject
     const contains = publicationMessage.contains || emptyArray
     const doi = publicationMessage.doi
@@ -180,38 +180,41 @@ export default class Publication extends Component {
           search={this.props.search} asyncGetItem={this.props.asyncGetItem}
           reduxControlModal={this.props.reduxControlModal}
           publication={publication}
-          postIssue={this.props.postIssue}
-          asyncGetPublications={this.props.handle}/>
+          asyncSubmitIssue={this.props.asyncSubmitIssue}
+          asyncGetPublications={this.props.asyncGetPublications}/>
 
         <ActionBar
           ownerPrefix={ownerPrefix}
           selections={this.state.selections}
           doi={doi}
           publication={publication}
-          handle={handle}
+          asyncGetPublications={asyncGetPublications}
           reduxControlModal={reduxControlModal}
           handleAddCart={this.handleAddCart}
           reduxCartUpdate={this.props.reduxCartUpdate}
           deleteSelections={this.deleteSelections}
           duplicateSelection={this.duplicateSelection}
-          postIssue={this.props.postIssue} />
+          asyncSubmitIssue={this.props.asyncSubmitIssue} />
         <div className='publication-children'>
           {contains.length ?
             <Listing
               filterBy={this.state.filterBy}
               ownerPrefix={ownerPrefix}
-              reduxControlModal={this.props.reduxControlModal}
-              handle={this.props.handle}
               publication={publication}
               publicationDoi={doi}
               publicationMessage={publicationMessage}
-              reduxCartUpdate={this.props.reduxCartUpdate}
-              handleRemoveFromList={this.handleRemoveFromList.bind(this)}
-              handleAddToList={this.handleAddToList.bind(this)}
-              fetchIssue={this.props.fetchIssue}
-              postIssue={this.props.postIssue}
               triggerModal={this.props.triggerModal}
               selections={this.state.selections}
+
+              handleRemoveFromList={this.handleRemoveFromList}
+              handleAddToList={this.handleAddToList}
+
+              reduxControlModal={this.props.reduxControlModal}
+              reduxCartUpdate={this.props.reduxCartUpdate}
+
+              asyncGetItem={this.props.asyncGetItem}
+              asyncSubmitIssue={this.props.asyncSubmitIssue}
+              asyncGetPublications={asyncGetPublications}
             /> : <div className='empty-message'>No articles, please create one!</div>}
         </div>
       </div>

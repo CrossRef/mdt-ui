@@ -8,11 +8,13 @@ import {routes} from '../../routing'
 
 export default class Article extends Component {
   static propTypes = {
+    publicationDoi: is.string.isRequired,
+
+    doi: is.object,
+    selections: is.array.isRequired,
+
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,
-    selections: is.array.isRequired,
-    publicationDoi: is.string.isRequired,
-    doi: is.object
   }
 
   toggleCheckBox (e) {
