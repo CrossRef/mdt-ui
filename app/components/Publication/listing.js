@@ -3,6 +3,7 @@ import _ from 'lodash'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 
+import { routes } from '../../routing'
 import Issue from './issue'
 import Article from './article'
 import ArticlesContainer from './articlesContainer'
@@ -11,22 +12,69 @@ import ArticlesContainer from './articlesContainer'
 export default class Listing extends Component {
   static propTypes = {
     filterBy: is.string.isRequired,
-    reduxControlModal: is.func.isRequired,
-    handleRemoveFromList: is.func.isRequired,
-    handleAddToList: is.func.isRequired,
-    fetchIssue: is.func.isRequired,
-    postIssue: is.func.isRequired,
-    reduxCartUpdate: is.func.isRequired,
     ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired,
-    publication: is.object
+    publication: is.object,
+
+    handleRemoveFromList: is.func.isRequired,
+    handleAddToList: is.func.isRequired,
+
+    reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
+
+    asyncGetItem: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
+  }
+
+  state = {
+    sort: {by: 'date', asc: false }
+  }
+
+  sortRecords = (records) => {
+    const { by, asc } = this.state.sort;
+    const compare = (a, b) => {
+      if(!asc) [a, b] = [b, a]
+      if(a < b) return -1;
+      if(a > b) return 1;
+      return 0;
+    }
+    const sortSelector = {
+      'title': ()=> records.sort(function(a,b) {
+        a = (a.title.title || a.title.volume || a.title.issue).toLowerCase();
+        b = (b.title.title || b.title.volume || b.title.issue).toLowerCase();
+        return compare(a,b)
+      }),
+      'date': ()=> records.sort(function(a,b) {
+        return compare(a.date, b.date)
+      }),
+      'type': ()=> records.sort(function(a,b) {
+        return compare(a.type, b.type)
+      }),
+      'status': ()=> records.sort(function(a,b) {
+        return compare(a.status, b.status)
+      })
+    };
+    return sortSelector[by]()
+  }
+
+  sortHandler = (e) => {
+    this.setState({
+      sort: {
+        by: e.target.name,
+        asc: e.target.name === this.state.sort.by ? !this.state.sort.asc : false
+      }
+    })
   }
 
   render () {
     const publicationDoi = this.props.publicationMessage.doi
     const publicationMessage = this.props.publicationMessage
     const publication = this.props.publication
-    const contains = this.props.publicationMessage.contains || []
+    let contains = this.props.publicationMessage.contains || []
+
+    contains = this.sortRecords(contains);
+
     var itemlist = _.flatten(contains.map((child, i) => {
       if (child) {
         switch (child.type.toLowerCase()) {
@@ -34,46 +82,57 @@ export default class Listing extends Component {
             return [
               <Issue doi={child} key={i}
                 ownerPrefix={this.props.ownerPrefix}
-                reduxControlModal={this.props.reduxControlModal}
-                publication={publication}
                 publicationDoi={publicationDoi}
+                triggerModal={this.props.triggerModal}
+
+                selections={this.props.selections}
+                publication={publication}
                 publicationMessage={publicationMessage}
-                reduxCartUpdate={this.props.reduxCartUpdate}
+
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}
-                fetchIssue={this.props.fetchIssue}
-                triggerModal={this.props.triggerModal}
-                postIssue={this.props.postIssue}
-                handle={this.props.handle}
-                selections={this.props.selections}
+
+                reduxControlModal={this.props.reduxControlModal}
+                reduxCartUpdate={this.props.reduxCartUpdate}
+
+                asyncGetItem={this.props.asyncGetItem}
+                asyncSubmitIssue={this.props.asyncSubmitIssue}
+                asyncGetPublications={this.props.asyncGetPublications}
+
               />,
               <ArticlesContainer
-                filterBy={this.props.filterBy}
-                doi={child}
-                fetchIssue={this.props.fetchIssue}
-                publication={publication}
-                publicationDoi={publicationDoi}
-                publicationMessage={publicationMessage}
                 key={`${i}-articles`}
-                reduxCartUpdate={this.props.reduxCartUpdate}
+                filterBy={this.props.filterBy}
+                publicationDoi={publicationDoi}
+
+                doi={child}
+                publication={publication}
+                publicationMessage={publicationMessage}
+                selections={this.props.selections}
+
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}
-                handle={this.props.handle}
-                selections={this.props.selections}
+
+                reduxCartUpdate={this.props.reduxCartUpdate}
+
+                asyncGetItem={this.props.asyncGetItem}
               />
             ]
           case 'article':
             return <Article
-              doi={child}
               key={i}
-              fetchIssue={this.props.fetchIssue}
-              publication={publication}
               publicationDoi={publicationDoi}
+
+              doi={child}
+              selections={this.props.selections}
+
+              publication={publication}
               publicationMessage={publicationMessage}
+
               handleRemoveFromList={this.props.handleRemoveFromList}
               handleAddToList={this.props.handleAddToList}
-              handle={this.props.handle}
-              selections={this.props.selections}
+
+              asyncGetItem={this.props.asyncGetItem}
             />
         }
       }
@@ -85,15 +144,41 @@ export default class Listing extends Component {
       })
     }
 
+    const {by, asc} = this.state.sort;
+
     return (
       <table className='publication-children-listing'>
         <thead>
           <tr>
             <td className='checkbox' />
-            <td className='title' />
-            <td className='date'>Date</td>
-            <td className='type'>Type</td>
-            <td className='status'>Status</td>
+            <td className='title'>
+              <a name='title' className={`cursor ${by === 'title' && 'sorted'}`} onClick={this.sortHandler}>Title</a>
+              <img name='title'
+                onClick={this.sortHandler}
+                className={`orderBy ${(by==='title' && asc) && 'ordered'}`}
+                src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
+            <td className='date'>
+              <a name='date' className={`cursor ${by === 'date' && 'sorted'}`} onClick={this.sortHandler}>Date</a>
+              <img name='date'
+                   onClick={this.sortHandler}
+                   className={`orderBy ${(by==='date' && asc) && 'ordered'}`}
+                   src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
+            <td className='type'>
+              <a name='type' className={`cursor ${by === 'type' && 'sorted'}`} onClick={this.sortHandler}>Type</a>
+              <img name='type'
+                   onClick={this.sortHandler}
+                   className={`orderBy ${(by==='type' && asc) && 'ordered'}`}
+                   src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
+            <td className='status'>
+              <a name='status' className={`cursor ${by === 'status' && 'sorted'}`} onClick={this.sortHandler}>Status</a>
+              <img name='status'
+                   onClick={this.sortHandler}
+                   className={`orderBy ${(by==='status' && asc) && 'ordered'}`}
+                   src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </td>
             <td className='url' />
           </tr>
         </thead>

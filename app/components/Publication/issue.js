@@ -11,26 +11,24 @@ import update from 'immutability-helper'
 
 export default class Issue extends Component {
   static propTypes = {
-    handleRemoveFromList: is.func.isRequired,
-    handleAddToList: is.func.isRequired,
-    fetchIssue: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
-    publication: is.object.isRequired,
     publicationDoi: is.string.isRequired,
+    ownerPrefix: is.string.isRequired,
+
+    publication: is.object.isRequired,
     publicationMessage: is.object.isRequired,
     doi: is.object.isRequired,
-    reduxCartUpdate: is.func.isRequired,
-    ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired,
-  }
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      issue: {}
-    }
-  }
+    handleRemoveFromList: is.func.isRequired,
+    handleAddToList: is.func.isRequired,
 
+    reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
+
+    asyncGetItem: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired
+  }
 
   toggleCheckBox = (e) => {
     const { doi } = this.props
@@ -41,36 +39,10 @@ export default class Issue extends Component {
     }
   }
 
-  getTitles (doi) {
-    this.props.fetchIssue(doi, (Publication) => {
-      const message = Publication.message
-      const Issue = message.contains[0]
-      const parsedIssue = xmldoc(Issue.content);
-      const issueTitle = objectSearch(parsedIssue, 'title') ? objectSearch(parsedIssue, 'title') : ''
-      const issueNumber = objectSearch(parsedIssue, 'issue') ? objectSearch(parsedIssue, 'issue') : ''
-      const journal_volume = objectSearch(parsedIssue, 'journal_volume')
-      var theVolume = ''
-      if (journal_volume) {
-        theVolume = objectSearch(journal_volume, 'volume') ? objectSearch(journal_volume, 'volume') : ''
-      }
-
-      this.setState({
-        issue: update(this.state.issue, {$set: {
-          title: issueTitle,
-          issue: issueNumber,
-          volumetitle: theVolume
-        }})
-      })
-
-    })
-  }
-
   componentWillReceiveProps(nextProps) {
     if(!this.props.selections.length)
     if ((nextProps.doi !== this.props.doi) || (this.props.triggerModal !== nextProps.triggerModal)){
       const { doi } = nextProps.doi
-      this.getTitles(doi)
-
       if (nextProps.triggerModal) { //its a doi
         if (nextProps.triggerModal === doi) {
           this.modalOpen();
@@ -78,11 +50,6 @@ export default class Issue extends Component {
       }
 
     }
-  }
-
-  componentDidMount () {
-    const { doi } = this.props.doi
-    this.getTitles(doi)
   }
 
   modalOpen = (e) => {
@@ -95,28 +62,33 @@ export default class Issue extends Component {
       props: {
         mode: 'edit',
         issue: this.props.doi,
+        triggerModal: this.props.triggerModal,
+        ownerPrefix: this.props.ownerPrefix,
+
         publication: this.props.publication,
         publicationMessage: this.props.publicationMessage,
         doiMessage: this.props.publicationDoi,
-        handle: this.props.handle,
-        fetchIssue: this.props.fetchIssue,
-        postIssue: this.props.postIssue,
-        reduxCartUpdate: this.props.reduxCartUpdate,
+
         handleAddCart: this.props.handleAddCart,
         handleAddToList: this.props.handleAddToList,
-        triggerModal: this.props.triggerModal,
-        ownerPrefix: this.props.ownerPrefix
+
+        reduxCartUpdate: this.props.reduxCartUpdate,
+
+        asyncGetPublications: this.props.asyncGetPublications,
+        asyncGetItem: this.props.asyncGetItem,
+        asyncSubmitIssue: this.props.asyncSubmitIssue,
       }
     })
   }
 
   render () {
-    const { doiMessage, handle, fetchIssue, publicationMessage, publicationDoi, publication } = this.props
-    let { status, type, date, doi } = this.props.doi
+    const { doiMessage, asyncGetItem, publicationMessage, publicationDoi, publication } = this.props
+    let { status, type, date, doi } = this.props.doi;
     date = moment(date || undefined).format('MMM Do YYYY')
     //title needs to be either issue title + volume title or either one
-    const issueTitle = this.state.issue.title || this.state.issue.issue || '';
-    const title = (this.state.issue.volumetitle ? ('Volume ' + this.state.issue.volumetitle) : '') + (this.state.issue.title || this.state.issue.issue ? ' Issue ' + issueTitle : '')
+    const { volume, issue, title} = this.props.doi.title;
+    const issueTitle = title || issue || '';
+    const displayTitle = `${volume && `Volume ${volume} `}${issueTitle && `Issue ${issueTitle}`}`
     const url = doi && `http://dx.doi.org/${doi}`
 
     const checked = !this.props.selections.length ? {checked:false} : {};
@@ -124,7 +96,7 @@ export default class Issue extends Component {
     return (<tr className='issue'>
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox} {...checked} /><span>&nbsp;</span></label></td>
       <td className='title'>
-        <a onClick={this.modalOpen} href="">{title}</a>
+        <a onClick={this.modalOpen} href="">{displayTitle}</a>
       </td>
       <td className='date'>{date}</td>
       <td className='type'>{type}</td>

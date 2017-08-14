@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 
-import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, getItem } from '../actions/application'
+import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, getItem, submitIssue } from '../actions/application'
 import fetch from '../utilities/fetch'
 import Publication from '../components/Publication/publication'
 
@@ -24,6 +24,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxClearCart: clearCart,
   asyncSearchRecords: searchRecords,
   asyncGetItem: getItem,
+  asyncSubmitIssue: submitIssue
 }, dispatch)
 
 
@@ -35,6 +36,7 @@ export default class PublicationPage extends Component {
     asyncGetPublications: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     search: is.object.isRequired,
     asyncDeleteRecord: is.func.isRequired,
     routeParams: is.shape({
@@ -48,31 +50,6 @@ export default class PublicationPage extends Component {
   componentDidMount () {
     this.props.asyncGetPublications(this.props.routeParams.doi, undefined, error => {
       this.setState({ serverError: error })
-    })
-  }
-
-  fetchIssue (doi, callback) {
-    return fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
-    .then(doi => doi.json())
-    .then((doi) => {
-      return callback(doi)
-    })
-    .catch((reason) => {
-      console.warn('ERROR in publicationPage fetchIssue()', reason)
-    })
-  }
-
-  postIssue (publication, callback) {
-    return fetch(`http://mdt.crossref.org/mdt/v1/work`, { // using isomorphic-fetch directly here, React is NOT passing the action everytime
-        method: 'post',
-        headers: {Authorization: localStorage.getItem('auth')},
-        body: JSON.stringify(publication)
-      }
-    ).then((response) => {
-      if(callback) return callback()
-    })
-    .catch((reason) => {
-      console.error('ERROR in publicationPage postIssue()', reason)
     })
   }
 
@@ -90,12 +67,11 @@ export default class PublicationPage extends Component {
             asyncGetItem={this.props.asyncGetItem}
             cart={this.props.cart}
             publication={this.props.publication}
-            handle={this.props.asyncGetPublications}
+            asyncGetPublications={this.props.asyncGetPublications}
             reduxControlModal={this.props.reduxControlModal}
             reduxCartUpdate={this.props.reduxCartUpdate}
-            fetchIssue={this.fetchIssue.bind(this)}
             triggerModal={this.props.location.query.modal ? this.props.location.query.modal : undefined}
-            postIssue={this.postIssue.bind(this)}
+            asyncSubmitIssue={this.props.asyncSubmitIssue}
           />
           :<div>
               <br/><br/><br/> {/*TEMPORARY STYLING, SHOULD USE CSS*/}

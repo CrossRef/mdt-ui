@@ -13,12 +13,12 @@ export default class ActionBar extends Component {
   static propTypes ={
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-    handle: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object.isRequired,
     handleAddCart: is.func.isRequired,
     deleteSelections: is.func.isRequired,
-    postIssue: is.func.isRequired,
+    asyncSubmitIssue: is.func.isRequired,
     ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired
   }
@@ -57,11 +57,11 @@ export default class ActionBar extends Component {
       style: 'addIssueModal',
       Component: AddIssueCard,
       props: {
-        handle: this.props.handle,
+        asyncGetPublications: this.props.asyncGetPublications,
         publication: this.props.publication,
         reduxControlModal: this.props.reduxControlModal,
 	      reduxCartUpdate: this.props.reduxCartUpdate,
-        postIssue: this.props.postIssue,
+        asyncSubmitIssue: this.props.asyncSubmitIssue,
         ownerPrefix: this.props.ownerPrefix
       }
     })
@@ -79,7 +79,7 @@ export default class ActionBar extends Component {
 
   render () {
     const onlyIssue = this.onlyIssueSelected();
-    const { doi, publication, handle, handleAddCart, deleteSelections, duplicateSelection } = this.props
+    const { doi, publication, handleAddCart, deleteSelections, duplicateSelection } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add Record
