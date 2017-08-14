@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { browserHistory } from 'react-router'
+import { browserHistory, Link } from 'react-router'
 import update from 'immutability-helper'
 import Switch from 'react-toggle-switch'
 import _ from 'lodash'
@@ -466,13 +466,13 @@ export default class DepositCartItemCard extends Component {
     }
   }
 
-  editRecord = () => {
+  getLink = () => {
     if(this.props.cartItem.type === 'issue') {
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(this.props.cartItem.doi)}`)
+      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(this.props.cartItem.doi)}`
     } else if (this.props.underIssue) {
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`)
+      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
     } else {
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`)
+      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
     }
 
   }
@@ -489,7 +489,7 @@ export default class DepositCartItemCard extends Component {
           {(this.state.errorStr.length > 0) ? <div className='iconHolder'><img src={`${routes.images}/Deposit/Asset_Icons_Red_Caution.png`} /></div> : ''}
         </td>
         <td className={'title' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + ((this.props.underIssue) ? ' articleUnderIssue' : '')}>
-          <a className='cursor' onClick={this.editRecord}>{title}</a>
+          <Link to={this.getLink()}>{title}</Link>
         </td>
         <td className={'status' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
           {status}
