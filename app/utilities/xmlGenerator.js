@@ -335,7 +335,7 @@ export const publicationXml = (form) => {
   const xmlArray = [
     `<Journal xmlns="http://www.crossref.org/xschema/1.1">`,
 
-      `<journal_metadata${form.language ? ` language=${form.language}` : '' }>`,
+      `<journal_metadata${form.language ? ` language="${form.language}"` : '' }>`,
 
         `<full_title>${form.title}</full_title>`,
 
@@ -350,11 +350,14 @@ export const publicationXml = (form) => {
 
       `</journal_metadata>`,
 
-      form.archivelocation ? `<archive_locations><archive name=${form.archivelocation}/></archive_locations>` : ``,
+      form.archivelocation ? `<archive_locations><archive name="${form.archivelocation}"/></archive_locations>` : ``,
     `</Journal>`
   ]
   return xmlArray.join('')
 }
+
+
+
 
 export const getIssueXml = (issueObj) => {
     // the title
@@ -415,7 +418,7 @@ export const getIssueXml = (issueObj) => {
       archiveLocation = `<archive_locations><archive name="${issueObj.issue.archiveLocation}"/></archive_locations>`
     }
 
-    return `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal_issue>${getContributor(issueObj.optionalIssueInfo)}${titles}${issue}${specialNumbering}${publicationOnlineDate}${publicationPrintDate}${volume}${archiveLocation}${doiData}</journal_issue></crossref>`
+    return `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal_issue>${getContributor(issueObj.optionalIssueInfo)}${titles}${publicationOnlineDate}${publicationPrintDate}${volume}${issue}${specialNumbering}${archiveLocation}${doiData}</journal_issue></crossref>`
     //took out xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd" per Mikes request
 }
 
