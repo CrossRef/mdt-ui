@@ -227,12 +227,12 @@ export class ArticleDOIField extends Component {
             </div>
             <div className='field'>
               <input
-                className={'height32' + ((this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi) ? ' fieldError': '')}
+                className={`height32 ${(this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi) && 'fieldError'} ${this.props.disabled && 'disabledDoi'}`}
                 type='text'
                 name="doi"
                 onChange={this.props.handleChange}
                 value={this.props.doi}
-                disabled={this.props.doiDisabled}
+                disabled={this.props.disabled}
               />
             </div>
           </div>
