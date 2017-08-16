@@ -86,9 +86,8 @@ export default class Issue extends Component {
     let { status, type, date, doi } = this.props.doi;
     date = moment(date || undefined).format('MMM Do YYYY')
     //title needs to be either issue title + volume title or either one
-    const { volume, issue, title} = this.props.doi.title;
-    const issueTitle = title || issue || '';
-    const displayTitle = `${volume && `Volume ${volume} `}${issueTitle && `Issue ${issueTitle}`}`
+    const { volume, issue} = this.props.doi.title;
+    const displayTitle = `${volume && `Volume ${volume} `}Issue ${issue}`
     const url = doi && `http://dx.doi.org/${doi}`
 
     const checked = !this.props.selections.length ? {checked:false} : {};

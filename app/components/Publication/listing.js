@@ -41,10 +41,8 @@ export default class Listing extends Component {
     }
     const sortSelector = {
       'title': ()=> records.sort(function(a,b) {
-        a = (a.title.title || a.title.volume || a.title.issue);
-        b = (b.title.title || b.title.volume || b.title.issue);
-        if(typeof a === 'string') a = a.toLowerCase();
-        if(typeof b === 'string') b = b.toLowerCase();
+        a = a.type === 'issue' ? `${a.title.volume}${a.title.issue}` : a.title.title.toLowerCase();
+        b = b.type === 'issue' ? `${b.title.volume}${b.title.issue}` : b.title.title.toLowerCase();
         return compare(a,b)
       }),
       'date': ()=> records.sort(function(a,b) {
