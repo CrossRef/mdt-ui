@@ -23,8 +23,8 @@ export default class DepositResult extends Component{
             <div className="articleResult">
               <p className="articleResult">{article.status}</p>
               <div className={article.errorMessage ? 'errorBox' : 'emptyBox'}>
-                {(!article.errorMessage) ? <a target='_blank' href={`http://dx.doi.org/${article.doi}`}>http://dx.doi.org/{article.doi}</a> : ''}
-                { article.errorMessage ? <ErrorBox errorMessage={article.errorMessage} closeErrors={this.closeErrors}/> : ''}
+                {!article.errorMessage ? <a target='_blank' href={`http://dx.doi.org/${article.doi}`}>http://dx.doi.org/{article.doi}</a>
+                : <ErrorBox errorMessage={article.errorMessage} closeErrors={this.closeErrors}/>}
               </div>
             </div>
           </div>
