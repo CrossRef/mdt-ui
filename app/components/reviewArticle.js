@@ -61,10 +61,9 @@ export default class ArticleReview extends Component {
   }
 
 
-  addToCart = (e, event) => {
+  addToCart = (e) => {
     this.props.reduxControlModal({showModal:false})
-    const dontNavigate = true;
-    this.props.submit(e, event, dontNavigate);
+    this.props.submit(e);
   }
 
 
