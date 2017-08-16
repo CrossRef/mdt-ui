@@ -13,6 +13,32 @@ export default class DepositResult extends Component{
 
   render() {
     const { resultCount, resultData, depositId } = this.props;
+    const resultArray = []
+
+    for (var pub in resultData) {
+      const articleElements = resultData[pub].map((article, index)=> {
+        return (
+          <div className={`articleBar ${article.type === 'issue' ? 'issueBar' : ''} ${article.errorMessage ? 'errorBorder' : 'normalBorder'}`} key={index}>
+            <p className="articleTitle">{article.title}</p>
+            <div className="articleResult">
+              <p className="articleResult">{article.status}</p>
+              <div className={article.errorMessage ? 'errorBox' : 'emptyBox'}>
+                {(!article.errorMessage) ? <a target='_blank' href={`http://dx.doi.org/${article.doi}`}>http://dx.doi.org/{article.doi}</a> : ''}
+                { article.errorMessage ? <ErrorBox errorMessage={article.errorMessage} closeErrors={this.closeErrors}/> : ''}
+              </div>
+            </div>
+          </div>
+        )
+      });
+
+      const pubCard =
+        <div key={pub} className="resultCard">
+          <div className="publicationTitleBar"><h3>{pub}</h3></div>
+          {articleElements}
+        </div>
+      resultArray.push(pubCard);
+    }
+
     return (
       <div>
         <div className='resultDiv'>
@@ -42,7 +68,7 @@ export default class DepositResult extends Component{
             <div className="rightStatus">Status</div>
           </div>
 
-          {renderResults(resultData, this.closeErrors)}
+          {resultArray}
 
         </div>
       </div>
@@ -51,39 +77,10 @@ export default class DepositResult extends Component{
 }
 
 
-const renderResults = (resultData, closeErrors) => {
-  const resultArray = [];
-  for (var pub in resultData) {
-    const articleElements = resultData[pub].map((article, index)=> {
-      return (
-        <div className={`articleBar ${article.type === 'issue' ? 'issueBar' : ''} ${article.errorMessage ? 'errorBorder' : 'normalBorder'}`} key={index}>
-          <p className="articleTitle">{article.title}</p>
-          <div className="articleResult">
-            <p className="articleResult">{article.status}</p>
-            <div className={article.errorMessage ? 'errorBox' : 'emptyBox'}>
-              {(!article.errorMessage && article.type === 'issue') ? <a target='_blank' href={`http://dx.doi.org/${article.doi}`}>http://dx.doi.org/{article.doi}</a> : ''}
-              { article.errorMessage ? <ErrorBox errorMessage={article.errorMessage} closeErrors={closeErrors}/> : ''}
-            </div>
-          </div>
-        </div>
-      )
-    });
-
-    const pubCard =
-      <div key={pub} className="resultCard">
-        <div className="publicationTitleBar"><h3>{pub}</h3></div>
-        {articleElements}
-      </div>
-    resultArray.push(pubCard);
-  }
-  return resultArray;
-}
-
-
 class ErrorBox extends Component {
   state = {errorBoxShow: false}
 
-  componentWillReceiveProps (nextProps) {
+  componentWillReceiveProps () {
     this.setState({errorBoxShow: false})
   }
 
