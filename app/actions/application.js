@@ -222,6 +222,7 @@ export function submitPublication (form, callback, error = reason => console.err
         message: {
           'title': {'title': form.title},
           'doi': form.DOI,
+          'date': new Date(),
           'owner-prefix': form.DOI.split('/')[0],
           'type': 'Publication',
           'mdt-version': form['mdt-version'] || '0',
