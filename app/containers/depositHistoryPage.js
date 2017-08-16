@@ -239,7 +239,7 @@ export default class DepositHistoryPage extends Component {
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
                 <div className='iconHolder'>
-                  {this.state.startCalendarOpen && <Calendar type='start' setParentState={this.boundSetState} date={this.state.startFullDate}/>}
+                  {this.state.startCalendarOpen && <Calendar type='start' setParentState={this.boundSetState} date={this.state.startFullDate} query={this.state.query}/>}
                   <a className="calendarButton" onClick={()=>this.setState({startCalendarOpen: !this.state.startCalendarOpen, endCalendarOpen: false})}>
                     <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
                   </a>
@@ -272,7 +272,7 @@ export default class DepositHistoryPage extends Component {
               <div className='dateselectholder dateicon'>
                 <div>&nbsp;</div>
                 <div className='iconHolder'>
-                  {this.state.endCalendarOpen && <Calendar type='end' setParentState={this.boundSetState} date={this.state.endFullDate}/>}
+                  {this.state.endCalendarOpen && <Calendar type='end' setParentState={this.boundSetState} date={this.state.endFullDate} query={this.state.query}/>}
                   <a className="calendarButton" onClick={()=>this.setState({endCalendarOpen: !this.state.endCalendarOpen, startCalendarOpen: false})}>
                     <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
                   </a>
@@ -365,6 +365,7 @@ export default class DepositHistoryPage extends Component {
 }
 
 
+
 class Calendar extends Component {
 
   componentDidMount() {
@@ -385,17 +386,19 @@ class Calendar extends Component {
   }
 
   render() {
+    const startOrEnd = this.props.type;
     return (
-      <div className={`${this.props.type}Calendar`}>
+      <div className={`${startOrEnd}Calendar`}>
         <DatePicker
           selected={this.props.date}
           onChange={(date)=>{
-            const calendar = this.props.type;
+            const d = date.format('D'), m = date.format('M'), y = date.format('Y');
             const payload = {
-              [`${calendar}FullDate`]: date,
-              [`${calendar}Date`]: date.format('D'),
-              [`${calendar}Month`]: date.format('M'),
-              [`${calendar}Year`]: date.format('Y'),
+              [`${startOrEnd}FullDate`]: date,
+              [`${startOrEnd}Date`]: d,
+              [`${startOrEnd}Month`]: m,
+              [`${startOrEnd}Year`]: y,
+              query: {...this.props.query, [startOrEnd]: `${y}-${m}-${d}`}
             }
             this.props.setParentState(payload)
           }}
