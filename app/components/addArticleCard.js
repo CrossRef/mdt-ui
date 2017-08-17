@@ -41,9 +41,9 @@ const defaultState = {
     url: false,
     dupedoi: false,
     invaliddoi: false,
+    invalidDoiPrefix: false,
     invalidurl: false,
     licenseStartDate: false,
-
   },
   crossmarkErrors: {
     peer_0_href:false,
@@ -292,18 +292,20 @@ export default class AddArticleCard extends Component {
 
   validation (callback) {
     var errorStates = {
-      title: {$set: false },
-      doi: {$set: false },
-      printDateYear: {$set: false },
-      onlineDateYear: {$set: false },
-      url: {$set: false },
-      invalidurl: {$set: false },
-      dupedoi: {$set: false },
-      invaliddoi: {$set: false}
+      title: false,
+      printDateYear: false,
+      onlineDateYear: false,
+      doi: false,
+      url: false,
+      dupedoi: false,
+      invaliddoi: false,
+      invalidDoiPrefix: false,
+      invalidurl: false,
+      licenseStartDate: false,
     }
     this.setState({
       error: false,
-      errors: update(this.state.errors, errorStates)
+      errors: errorStates
     })
 
     return checkDupeDOI(this.state.article.doi, (isDupe , isValid) => {
@@ -319,22 +321,24 @@ export default class AddArticleCard extends Component {
       }
 
       errorStates = {
-        title: {$set: (this.state.article.title.length === 0) },
-        doi: {$set: (this.state.article.doi.length === 0) },
-        printDateYear: {$set: (this.state.article.printDateYear.length === 0) },
-        onlineDateYear: {$set: (this.state.article.onlineDateYear.length === 0) },
-        url: {$set: (this.state.article.url.length === 0) },
-        invalidurl: {$set: !isUrl(this.state.article.url) && (this.state.article.url.length > 0) },
-        dupedoi: {$set: this.state.doiDisabled ? false : isDupe },
-        invaliddoi: {$set: ((this.state.article.doi.length > 0) && (isValid ? isValid : !isDOI(this.state.article.doi)))},
-        licenseStartDate: {$set: false }
+        title: (this.state.article.title.length === 0),
+        doi: (this.state.article.doi.length === 0),
+        printDateYear: (this.state.article.printDateYear.length === 0),
+        onlineDateYear: (this.state.article.onlineDateYear.length === 0),
+        url: (this.state.article.url.length === 0),
+        invalidurl: !isUrl(this.state.article.url) && (this.state.article.url.length > 0),
+        dupedoi: this.state.doiDisabled ? false : isDupe,
+        invaliddoi: ((this.state.article.doi.length > 0) && (isValid ? isValid : !isDOI(this.state.article.doi))),
+        licenseStartDate: false
       }
 
+      if(!errorStates.invaliddoi) errorState.invalidDoiPrefix = (this.state.article.doi.length.split('/')[0] !== this.props.ownerPrefix);
+
       if (hasPrintYear) { // has print year, don't care if there is a online year
-        errorStates.onlineDateYear = {$set: false}
+        errorStates.onlineDateYear = false
       }
       if (hasOnlineYear) { // has online year, don't care if there is a print year
-        errorStates.printDateYear = {$set: false}
+        errorStates.printDateYear = false
       }
 
       // if addInfo license to read to ON, license StartDates are required
@@ -360,7 +364,7 @@ export default class AddArticleCard extends Component {
 
         for(var i = 0; i < licenses.length; i++) { // looping through the license array after filtered to see if there is start date
           if (!licenses[i].startDate) {
-            errorStates.licenseStartDate = {$set: true}
+            errorStates.licenseStartDate = true
             break
           }
         }
@@ -399,10 +403,10 @@ export default class AddArticleCard extends Component {
       }
 
       this.setState({
-        errors: update(this.state.errors, errorStates),
+        errors: errorStates,
         crossmarkErrors: crossmarkErrors
       }, ()=>{
-        var errors = ['doi', 'title']
+        var errors = ['doi', 'invaliddoi', 'dupedoi', 'invalidDoiPrefix', 'title']
 
         for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
           if (this.state.errors[key]) {
