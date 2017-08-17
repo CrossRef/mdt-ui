@@ -25,7 +25,7 @@ const defaultState = {
   showHelper: false,
   on: false,
   error: false,
-  version: '0',
+  version: '1',
   errors: {
     issueUrl: false,
     printDateYear: false,

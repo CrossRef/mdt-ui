@@ -33,7 +33,7 @@ const defaultState = {
   on: false,
   error: false,
   doiDisabled: false,
-  version: '0',
+  version: '1',
   errors: {
     title: false,
     printDateYear: false,
@@ -158,7 +158,6 @@ export default class AddArticleCard extends Component {
 
   constructor (props) {
     super(props)
-
     this.state = defaultState;
     this.state.article.doi = props.ownerPrefix
   }
