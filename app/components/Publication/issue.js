@@ -11,12 +11,10 @@ import update from 'immutability-helper'
 
 export default class Issue extends Component {
   static propTypes = {
-    publicationDoi: is.string.isRequired,
     ownerPrefix: is.string.isRequired,
 
     publication: is.object.isRequired,
-    publicationMessage: is.object.isRequired,
-    doi: is.object.isRequired,
+    record: is.object.isRequired,
     selections: is.array.isRequired,
 
     handleRemoveFromList: is.func.isRequired,
@@ -31,11 +29,11 @@ export default class Issue extends Component {
   }
 
   toggleCheckBox = (e) => {
-    const { doi } = this.props
+    const { record } = this.props
     if(e.currentTarget.checked) {
-      this.props.handleAddToList({ article: doi })
+      this.props.handleAddToList({ article: record })
     } else {
-      this.props.handleRemoveFromList({ article: doi })
+      this.props.handleRemoveFromList({ article: record })
     }
   }
 
@@ -48,7 +46,6 @@ export default class Issue extends Component {
           this.modalOpen();
         }
       }
-
     }
   }
 
@@ -61,13 +58,10 @@ export default class Issue extends Component {
       Component: AddIssueCard,
       props: {
         mode: 'edit',
-        issue: this.props.doi,
+        issue: this.props.record,
         triggerModal: this.props.triggerModal,
         ownerPrefix: this.props.ownerPrefix,
-
         publication: this.props.publication,
-        publicationMessage: this.props.publicationMessage,
-        doiMessage: this.props.publicationDoi,
 
         handleAddCart: this.props.handleAddCart,
         handleAddToList: this.props.handleAddToList,
@@ -82,11 +76,10 @@ export default class Issue extends Component {
   }
 
   render () {
-    const { doiMessage, asyncGetItem, publicationMessage, publicationDoi, publication } = this.props
-    let { status, type, date, doi } = this.props.doi;
+    const publicationDoi = this.props.publication.message.doi;
+    let { status, type, date, doi } = this.props.record;
     date = moment(date || undefined).format('MMM Do YYYY')
-    //title needs to be either issue title + volume title or either one
-    const { volume, issue} = this.props.doi.title;
+    const { volume, issue} = this.props.record.title;
     const displayTitle = `${volume && `Volume ${volume} `}Issue ${issue}`
     const url = doi && `http://dx.doi.org/${doi}`
 

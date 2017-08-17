@@ -8,9 +8,7 @@ import {routes} from '../../routing'
 
 export default class Article extends Component {
   static propTypes = {
-    publicationDoi: is.string.isRequired,
-
-    doi: is.object,
+    record: is.object.isRequired,
     selections: is.array.isRequired,
 
     handleRemoveFromList: is.func.isRequired,
@@ -18,17 +16,18 @@ export default class Article extends Component {
   }
 
   toggleCheckBox (e) {
-    const { doi } = this.props
+    const { record } = this.props
     if(e.currentTarget.checked) {
-      this.props.handleAddToList({ article: doi })
+      this.props.handleAddToList({ article: record })
     } else {
-      this.props.handleRemoveFromList({ article: doi })
+      this.props.handleRemoveFromList({ article: record })
     }
   }
 
   render () {
-    let { title, status, type, date, doi } = this.props.doi
-    const { publicationDoi, issue } = this.props
+    let { title, status, type, date, doi } = this.props.record
+    const publicationDoi = this.props.publication.message.doi
+    const issue = this.props.issue
     date = moment(date || undefined).format('MMM Do YYYY')
     title = title.title
     const url = doi && `http://doi.org/${doi}`

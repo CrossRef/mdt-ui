@@ -68,10 +68,8 @@ export default class Listing extends Component {
   }
 
   render () {
-    const publicationDoi = this.props.publicationMessage.doi
-    const publicationMessage = this.props.publicationMessage
     const publication = this.props.publication
-    let contains = this.props.publicationMessage.contains || []
+    let contains = this.props.publication.message.contains || []
 
     contains = this.sortRecords(contains);
 
@@ -80,14 +78,13 @@ export default class Listing extends Component {
         switch (child.type.toLowerCase()) {
           case 'issue':
             return [
-              <Issue doi={child} key={i}
+              <Issue key={i}
                 ownerPrefix={this.props.ownerPrefix}
-                publicationDoi={publicationDoi}
                 triggerModal={this.props.triggerModal}
 
+                record={child}
                 selections={this.props.selections}
                 publication={publication}
-                publicationMessage={publicationMessage}
 
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}
@@ -100,14 +97,12 @@ export default class Listing extends Component {
                 asyncGetPublications={this.props.asyncGetPublications}
 
               />,
-              <ArticlesContainer
-                key={`${i}-articles`}
-                filterBy={this.props.filterBy}
-                publicationDoi={publicationDoi}
 
-                doi={child}
+              <ArticlesContainer key={`${i}-articles`}
+                filterBy={this.props.filterBy}
+
+                record={child}
                 publication={publication}
-                publicationMessage={publicationMessage}
                 selections={this.props.selections}
 
                 handleRemoveFromList={this.props.handleRemoveFromList}
@@ -119,15 +114,10 @@ export default class Listing extends Component {
               />
             ]
           case 'article':
-            return <Article
-              key={i}
-              publicationDoi={publicationDoi}
-
-              doi={child}
+            return <Article key={i}
+              record={child}
               selections={this.props.selections}
-
               publication={publication}
-              publicationMessage={publicationMessage}
 
               handleRemoveFromList={this.props.handleRemoveFromList}
               handleAddToList={this.props.handleAddToList}

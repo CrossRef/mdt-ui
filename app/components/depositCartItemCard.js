@@ -1,10 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { browserHistory, Link } from 'react-router'
+import { Link } from 'react-router'
 import update from 'immutability-helper'
-import Switch from 'react-toggle-switch'
 import _ from 'lodash'
 
 import { stateTrackerII } from 'my_decorators'
@@ -34,7 +31,6 @@ export default class DepositCartItemCard extends Component {
 
   constructor (props) {
     super(props)
-    const {publication} = this.props
     this.state = {
       error: false,
       errors: {

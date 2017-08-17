@@ -1,20 +1,8 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { browserHistory } from 'react-router'
-import update from 'immutability-helper'
-import Switch from 'react-toggle-switch'
-import _ from 'lodash'
 
-import { stateTrackerII } from 'my_decorators'
-import checkDupeDOI from '../utilities/dupeDOI'
-import isDOI from '../utilities/isDOI'
-import isURL from '../utilities/isURL'
-import objectSearch from '../utilities/objectSearch'
 import DepositCartItemCard from './depositCartItemCard'
-import { controlModal, getPublications, cartUpdate, getItem } from '../actions/application'
-import xmldoc from '../utilities/xmldoc'
+
 
 
 export default class DepositCartItem extends Component {
@@ -40,7 +28,7 @@ export default class DepositCartItem extends Component {
     }
   }
 
-  componentWillUpdate(nextProps, nextState) {
+  componentWillUpdate(nextProps) {
     if(this.props.errorIndex !== nextProps.errorIndex) {
       for(var i = 0; i < nextProps.cartItem.contains.length; i++){
         if(i===nextProps.errorIndex && nextProps.cartItem.doi === nextProps.errorPubDoi && nextProps.index === nextProps.errorPubIndex){
@@ -52,24 +40,25 @@ export default class DepositCartItem extends Component {
     }
   }
 
-  displayItem () {
+
+  render () {
     var row = []
     var counter = 0
     for(var i = 0; i < this.props.cartItem.contains.length; i++){
       row.push(
-          <DepositCartItemCard
-            key={counter}
-            index={counter}
-            pubIndex={this.props.index}
-            pubDoi={this.props.cartItem.doi}
-            reduxCartUpdate={this.props.reduxCartUpdate}
-            reduxCart={this.props.reduxCart}
-            reduxControlModal={this.props.reduxControlModal}
-            reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-            publication={this.state.publication}
-            cartItem={this.props.cartItem.contains[i]}
-            updateError={this.props.updateError}
-            showError={(counter===this.props.errorIndex && this.props.cartItem.doi === this.props.errorPubDoi && this.props.index === this.props.errorPubIndex) ? true : false}
+        <DepositCartItemCard
+          key={counter}
+          index={counter}
+          pubIndex={this.props.index}
+          pubDoi={this.props.cartItem.doi}
+          reduxCartUpdate={this.props.reduxCartUpdate}
+          reduxCart={this.props.reduxCart}
+          reduxControlModal={this.props.reduxControlModal}
+          reduxRemoveFromCart={this.props.reduxRemoveFromCart}
+          publication={this.state.publication}
+          cartItem={this.props.cartItem.contains[i]}
+          updateError={this.props.updateError}
+          showError={(counter===this.props.errorIndex && this.props.cartItem.doi === this.props.errorPubDoi && this.props.index === this.props.errorPubIndex) ? true : false}
         />
       )
       if (this.props.cartItem.contains[i].contains) {
@@ -100,33 +89,27 @@ export default class DepositCartItem extends Component {
     }
 
     return (
-      <div className='depositpage'>
-        <table>
-          <tr>
-            <td className='titleHolderTD'>
-              <table className='itemholder'>
-                <tr>
-                  <td className='stateIcon deposittitle'>&nbsp;</td>
-                  <td className='depositpubtitle' colSpan={3}>{this.props.cartItem.title}</td>
-                  <td className='titlerror errorholder'>&nbsp;</td>
-                </tr>
-              </table>
-            </td>
-          </tr>
-          <tr>
-            <table className='itemholder'>
-              {row}
-            </table>
-          </tr>
-        </table>
-      </div>
-    )
-  }
-
-  render () {
-    return (
       <div>
-        {this.displayItem()}
+        <div className='depositpage'>
+          <table>
+            <tr>
+              <td className='titleHolderTD'>
+                <table className='itemholder'>
+                  <tr>
+                    <td className='stateIcon deposittitle'>&nbsp;</td>
+                    <td className='depositpubtitle' colSpan={3}>{this.props.cartItem.title}</td>
+                    <td className='titlerror errorholder'>&nbsp;</td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <table className='itemholder'>
+                {row}
+              </table>
+            </tr>
+          </table>
+        </div>
       </div>
     )
   }

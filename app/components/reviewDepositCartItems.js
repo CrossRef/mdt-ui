@@ -1,15 +1,8 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import _ from 'lodash'
 import { stateTrackerII } from 'my_decorators'
 import { browserHistory } from 'react-router'
 
-const Languages = require('../utilities/language.json')
-import { ArchiveLocations } from '../utilities/archiveLocations'
-const PublicationTypes = require('../utilities/publicationTypes.json')
-const AppliesTo = require('../utilities/appliesTo.json')
-const IdentifierTypes = require('../utilities/identifierTypes.json')
-import objectSearch from '../utilities/objectSearch'
 import articleReviewGenerator from './articleReviewGenerator'
 import issueReviewGenerator from  './issueReviewGenerator'
 import {routes} from '../routing'

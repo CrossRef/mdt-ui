@@ -8,19 +8,28 @@ import SearchRecords from '../searchRecords'
 export default class TitleBar extends Component {
 
   static propTypes = {
-    publicationMessage: is.object.isRequired,
-    asyncSearchRecords: is.func.isRequired,
+    publication: is.shape({
+      title: is.shape({
+        title: is.string.isRequired
+      }),
+      status: is.string.isRequired,
+      'message-type': is.string.isRequired,
+      'message-version': is.string.isRequired,
+      message: is.object.isRequired
+    }).isRequired,
     search: is.object.isRequired,
-    asyncGetItem: is.func.isRequired,
+
     reduxControlModal: is.func.isRequired,
+
+    asyncSearchRecords: is.func.isRequired,
+    asyncGetItem: is.func.isRequired,
     asyncSubmitIssue: is.func.isRequired,
-    publication: is.object.isRequired,
     asyncGetPublications: is.func.isRequired
   }
 
   render () {
-    const { publicationMessage } = this.props
-    const title = (publicationMessage.title || {}).title || ''
+    const { publication } = this.props
+    const title = publication.message.title.title;
 
     return (<div className='publication-title'>
       <h1>{title}</h1>

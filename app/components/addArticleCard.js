@@ -17,6 +17,7 @@ import { makeDateDropDown } from '../utilities/date'
 import isUrl from '../utilities/isURL'
 import isDOI from '../utilities/isDOI'
 import {routes} from '../routing'
+import { getSubmitSubItems } from '../utilities/getSubItems'
 
 
 const defaultState = {
@@ -610,23 +611,4 @@ export default class AddArticleCard extends Component {
       </div>
     )
   }
-}
-
-
-function getSubmitSubItems (items) {
-  return _.filter(items, (item) => {
-    for(var key in item) { // checking all the properties of errors to see if there is a true
-      if(item[key]){
-        try {
-          if (item[key].trim().length > 0) {
-            return item
-          }
-        } catch (e) {
-          if (item[key].length > 0) {
-            return item
-          }
-        }
-      }
-    }
-  })
 }
