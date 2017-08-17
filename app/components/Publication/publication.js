@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
+import {stateTrackerII} from 'my_decorators'
 
 import Listing from './listing'
 import Filter from './filter'
@@ -102,7 +103,7 @@ export default class Publication extends Component {
       props: {
         confirm: () => {
           for(let i in this.state.selections){
-            this.props.asyncDeleteRecord(this.state.selections[i].article.doi, this.props.publication.message.doi)
+            this.props.asyncDeleteRecord(this.state.selections[i].article)
           }
           this.props.reduxControlModal({showModal:false}) //Can also put this as a callback for asyncDeleteRecord, will affect whether the modal closes first then record dissapears or vice versa
           this.setState({selections:[]})
