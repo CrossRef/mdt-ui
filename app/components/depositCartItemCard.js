@@ -14,6 +14,7 @@ import isURL from '../utilities/isURL'
 import objectSearch from '../utilities/objectSearch'
 import xmldoc from '../utilities/xmldoc'
 import {routes} from '../routing'
+import {getContributors, getLicenses} from '../utilities/parseXMLArticle'
 
 
 export default class DepositCartItemCard extends Component {
@@ -482,7 +483,7 @@ export default class DepositCartItemCard extends Component {
     const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
     const cartType = cartItem.type
     const status = cartItem.status
-    const title = cartType === 'issue' ? `Issue ${cartItem.title.issue}${cartItem.title.volume && `, Volume ${cartItem.title.volume}`}` : cartItem.title.title;
+    const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume} `}Issue ${cartItem.title.issue}` : cartItem.title.title;
     return (
       <tr className='item'>
         <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
@@ -505,87 +506,4 @@ export default class DepositCartItemCard extends Component {
       </tr>
     )
   }
-}
-
-
-
-
-function getLicenses (parsedArticle) {
-  // license loading
-  const licences = objectSearch(parsedArticle, 'ai:license_ref')
-  var lic = []
-  // contributors are divied into 2 types
-  // person_name and organization
-  if (licences) {
-    if (!Array.isArray(licences)) {
-      const licAcceptedDate = licences['-start_date'].split('-')
-      lic.push({
-        acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-        acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-        acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-        appliesto: licences['-applies_to'] ? licences['-applies_to'] : '',
-        licenseurl: licences['#text'] ? licences['#text'] : ''
-      })
-    } else {
-      for(var i = 0; i < licences.length; i++) {
-        const licAcceptedDate = licences[i]['-start_date'].split('-')
-        lic.push({
-          acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-          acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-          acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-          appliesto: licences[i]['-applies_to'] ? licences[i]['-applies_to'] : '',
-          licenseurl: licences[i]['#text'] ? licences[i]['#text'] : ''
-        })
-      }
-    }
-  }
-  return lic
-}
-
-function getContributors (parsedArticle) {
-  // contributor loading
-  var contributors = objectSearch(parsedArticle, 'contributors')
-  var contributee = []
-  // contributors are divied into 2 types
-  // person_name and organization
-  var person_name = undefined
-  var organization = undefined
-  if (contributors) {
-    person_name = objectSearch(contributors, 'person_name')
-    organization = objectSearch(contributors, 'organization')
-
-    if (person_name) { // if exist
-      if (!Array.isArray(person_name)) {
-        // there is ONE funder
-        contributee.push(
-          {
-            firstName: person_name.given_name ? person_name.given_name : '',
-            lastName: person_name.surname ? person_name.surname : '',
-            suffix: person_name.suffix ? person_name.suffix : '',
-            affiliation: person_name.affiliation ? person_name.affiliation : '',
-            orcid: person_name.ORCID ? person_name.ORCID : '',
-            role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
-            groupAuthorName: '',
-            groupAuthorRole: ''
-          }
-        )
-      } else { // its an array
-        _.each(person_name, (person) => {
-          contributee.push(
-            {
-              firstName: person.given_name ? person.given_name : '',
-              lastName: person.surname ? person.surname : '',
-              suffix: person.suffix ? person.suffix : '',
-              affiliation: person.affiliation ? person.affiliation : '',
-              orcid: person.ORCID ? person.ORCID : '',
-              role: person['-contributor_role'] ? person['-contributor_role'] : '',
-              groupAuthorName: '',
-              groupAuthorRole: ''
-            }
-          )
-        })
-      }
-    }
-  }
-  return contributee
 }
