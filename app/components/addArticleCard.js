@@ -223,7 +223,7 @@ export default class AddArticleCard extends Component {
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
 
     this.validation((valid) => { // need it to be a callback because setting state does not happen right away
-      if (!valid) {
+      if (valid) {
         const props = this.props
         var publication = this.props.publication
 
@@ -283,7 +283,7 @@ export default class AddArticleCard extends Component {
           this.props.reduxCartUpdate([newRecord]);
 
           this.setState({version: version})
-          if(dontNavigate) return;
+          //if(dontNavigate) return;
           browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
@@ -332,7 +332,7 @@ export default class AddArticleCard extends Component {
         licenseStartDate: false
       }
 
-      if(!errorStates.invaliddoi) errorState.invalidDoiPrefix = (this.state.article.doi.length.split('/')[0] !== this.props.ownerPrefix);
+      errorStates.invalidDoiPrefix = errorStates.invaliddoi ? false : (this.state.article.doi.split('/')[0] !== this.props.ownerPrefix);
 
       if (hasPrintYear) { // has print year, don't care if there is a online year
         errorStates.onlineDateYear = false
@@ -406,12 +406,12 @@ export default class AddArticleCard extends Component {
         errors: errorStates,
         crossmarkErrors: crossmarkErrors
       }, ()=>{
-        var errors = ['doi', 'invaliddoi', 'dupedoi', 'invalidDoiPrefix', 'title']
+        var criticalErrors = ['doi', 'invaliddoi', 'dupedoi', 'invalidDoiPrefix', 'title']
 
         for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
           if (this.state.errors[key]) {
             this.setState({error: true})
-            return (errors.indexOf(key) > -1) ? callback(this.state.errors[key]) : callback(false)
+            if(criticalErrors.indexOf(key) > -1) return callback(false)
           }
         }
         for(var key in this.state.crossmarkErrors) {
@@ -420,7 +420,7 @@ export default class AddArticleCard extends Component {
             return callback(this.state.crossmarkErrors[key])
           }
         }
-        return callback(false) // iterated the entire object, no true, returning a false, no error
+        return callback(true) // iterated the entire object, no true, returning valid
       })
     })
   }

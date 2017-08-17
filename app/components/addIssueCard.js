@@ -35,11 +35,13 @@ const defaultState = {
     invalidissueurl: false,
     dupeissuedoi: false,
     invalidissuedoi: false,
+    invalidIssueDoiPrefix: false,
     issuedoi: false,
     volumeUrl: false,
     invalidvolumeurl: false,
     dupevolumedoi: false,
     invalidvolumedoi: false,
+    invalidVolumeDoiPrefix: false,
     volumedoi: false,
     dupeDois: false
   },
@@ -354,7 +356,7 @@ export default class AddIssueCard extends Component {
           invalidissueurl: this.state.issue.issueUrl ? !isURL(this.state.issue.issueUrl) : false,
           issuedoi: !this.state.issue.issueDoi,
           invalidissuedoi: isNotValidIssueDoi,
-          invalidDoiPrefix: !isNotValidIssueDoi ? !validateOwnerPrefix() : false,
+          invalidIssueDoiPrefix: !isNotValidIssueDoi ? !validateOwnerPrefix() : false,
           dupeissuedoi: !issueDoiDisabled && !isNotValidIssueDoi && validateOwnerPrefix() ? isDupe[0] : false,
           dupeDois: this.state.issue.issueDoi === this.state.issue.volumeDoi
         }
@@ -367,9 +369,13 @@ export default class AddIssueCard extends Component {
         }
 
         if (this.state.issue.volume || this.state.issue.volumeDoi || this.state.issue.volumeUrl) {
+          const isNotValidVolumeDoi = this.state.issue.volumeDoi ? !isDOI(this.state.issue.volumeDoi) : false;
+          const validateVolumePrefix = () => this.state.issue.volumeDoi.split('/')[0] === this.props.ownerPrefix;
+
           errorStates.volumeUrl = this.state.issue.volumeDoi && !this.state.issue.volumeUrl;
           errorStates.dupevolumedoi = (!this.state.volumeDoiDisabled && this.state.issue.volumeDoi) ? (isDupe[1] ? isDupe[1] : false) : false; // we only care IF there is a DOI
-          errorStates.invalidvolumedoi = this.state.issue.volumeDoi && !isDOI(this.state.issue.volumeDoi); // we only care IF there is a DOI
+          errorStates.invalidvolumedoi = isNotValidVolumeDoi;
+          errorStates.invalidVolumeDoiPrefix = !isNotValidVolumeDoi ? !validateVolumePrefix() : false;
           errorStates.invalidvolumeurl = this.state.issue.volumeUrl ? !isURL(this.state.issue.volumeUrl) : false;
 
         }
@@ -379,12 +385,12 @@ export default class AddIssueCard extends Component {
         this.setState({
           errors: errorStates
         }, ()=>{
-          //var errors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issue', 'invalidDoiPrefix']  // These would be the essential errors to prevent submission
+          //var criticalErrors = ['issuedoi','invalidissuedoi','dupeissuedoi', 'issue', 'invalidIssueDoiPrefix']  // These would be the essential errors to prevent submission
 
           for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
               if (this.state.errors[key]) {
                 this.setState({error: true})
-                //return (errors.indexOf(key) > -1) ? callback(false) : callback(true)  //Leaving this here in case we decide to validate against only essential errors, for now decided to validate all.
+                //if (criticalErrors.indexOf(key) > -1) return callback(false)  //Leaving this here in case we decide to validate against only essential errors, for now decided to validate all.
 
                 return callback(false)
               }
@@ -570,7 +576,7 @@ export default class AddIssueCard extends Component {
                                 {errors.invalidissuedoi &&
                                   <div><b>Invalid Issue DOI.</b><br />Please check your issue DOI (10.xxxx/xx...).</div>
                                 }
-                                {errors.invalidDoiPrefix &&
+                                {errors.invalidIssueDoiPrefix &&
                                 <div><b>Invalid Issue DOI.</b><br />DOI prefix needs to match journal DOI prefix.</div>
                                 }
                                 {(errors.invalidissueurl) &&
@@ -581,6 +587,9 @@ export default class AddIssueCard extends Component {
                                 }
                                 {errors.invalidvolumedoi &&
                                   <div><b>Invalid Volume DOI.</b><br />Please check your volume DOI (10.xxxx/xx...).</div>
+                                }
+                                {errors.invalidVolumeDoiPrefix &&
+                                <div><b>Invalid Volume DOI.</b><br />DOI prefix needs to match journal DOI prefix.</div>
                                 }
                                 {(errors.dupevolumedoi) &&
                                   <div><b>Duplicate Volume DOI.</b><br />Registering a new DOI? This one already exists.</div>
@@ -619,7 +628,7 @@ export default class AddIssueCard extends Component {
                         </div>
                         <div className='field'>
                           <input
-                              className={`height32 ${(errors.issuedoi || errors.dupeissuedoi || errors.invalidissuedoi || errors.invalidDoiPrefix) && 'fieldError'} ${this.state.issueDoiDisabled && 'disabledDoi'}`}
+                              className={`height32 ${(errors.issuedoi || errors.dupeissuedoi || errors.invalidissuedoi || errors.invalidIssueDoiPrefix) && 'fieldError'} ${this.state.issueDoiDisabled && 'disabledDoi'}`}
                               type='text'
                               name='issue.issueDoi'
                               onChange={this.handler}
@@ -826,7 +835,7 @@ export default class AddIssueCard extends Component {
                         </div>
                         <div className='field'>
                           <input
-                              className={`height32 ${(errors.dupevolumedoi || errors.invalidvolumedoi || errors.dupeDois) && 'fieldError'} ${this.state.volumeDoiDisabled && 'disabledDoi'}`}
+                              className={`height32 ${(errors.dupevolumedoi || errors.invalidvolumedoi || errors.dupeDois || errors.invalidVolumeDoiPrefix) && 'fieldError'} ${this.state.volumeDoiDisabled && 'disabledDoi'}`}
                               type='text'
                               name='issue.volumeDoi'
                               onChange={this.handler}
