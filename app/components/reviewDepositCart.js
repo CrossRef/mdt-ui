@@ -3,13 +3,9 @@ import is from 'prop-types'
 import _ from 'lodash'
 import { stateTrackerII } from 'my_decorators'
 
-const Languages = require('../utilities/language.json')
-import { ArchiveLocations } from '../utilities/archiveLocations'
-const PublicationTypes = require('../utilities/publicationTypes.json')
-const AppliesTo = require('../utilities/appliesTo.json')
-const IdentifierTypes = require('../utilities/identifierTypes.json')
-import objectSearch from '../utilities/objectSearch'
 import DepositCartItemsReview from './reviewDepositCartItems'
+
+
 
 export default class DepositCartReview extends Component {
 
@@ -25,11 +21,11 @@ export default class DepositCartReview extends Component {
     }
   }
 
-  parseCart () {
+
+  render () {
     const { fullCart } = this.props
     var reviewblocks = []
     var retReviewBlocks = []
-    var counter = 0
     for(var i = 0; i < fullCart.length; i++) { //publication layer
       for(var j = 0; j < fullCart[i].contains.length; j++) { //article + issue/volume layer
         var item = fullCart[i].contains[j]
@@ -71,14 +67,9 @@ export default class DepositCartReview extends Component {
       }
     }
 
-    return retReviewBlocks
-  }
-
-
-  render () {
     return (
       <div className='ReviewDepositCartCard'>
-        {this.parseCart()}
+        {retReviewBlocks}
       </div>
     )
   }

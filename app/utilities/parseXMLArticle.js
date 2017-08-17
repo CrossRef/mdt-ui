@@ -1,12 +1,7 @@
-import React, { Component } from 'react'
+import React from 'react'
 import _ from 'lodash'
 import { deParseCrossmark } from './crossmarkHelpers'
 
-const Languages = require('./language.json')
-import { ArchiveLocations } from './archiveLocations'
-const PublicationTypes = require('./publicationTypes.json')
-const AppliesTo = require('./appliesTo.json')
-const IdentifierTypes = require('./identifierTypes.json')
 import xmldoc from './xmldoc'
 import objectSearch from './objectSearch'
 
@@ -160,89 +155,11 @@ const parseXMLArticle = function (articleXML) {
     retObj.openItems.addInfo = !!(archiveLocations || language || publicationType || similarityCheckURL || freeToRead);
 
     // contributor loading
-    const contributors = objectSearch(parsedArticle, 'contributors')
-    var contributee = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    var person_name = undefined
-    var organization = undefined
-
-    retObj.openItems.Contributors=!!contributors
-
-    if (contributors) {
-        person_name = objectSearch(contributors, 'person_name')
-        organization = objectSearch(contributors, 'organization')
-
-        if (person_name) { // if exist
-        if (!Array.isArray(person_name)) {
-            // there is ONE funder
-            contributee.push(
-            {
-                firstName: person_name.given_name ? person_name.given_name : '',
-                lastName: person_name.surname ? person_name.surname : '',
-                suffix: person_name.suffix ? person_name.suffix : '',
-                affiliation: person_name.affiliation ? person_name.affiliation : '',
-                orcid: person_name.ORCID ? person_name.ORCID : '',
-                role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
-                groupAuthorName: '',
-                groupAuthorRole: ''
-            }
-            )
-        } else { // its an array
-            _.each(person_name, (person) => {
-            contributee.push(
-                {
-                firstName: person.given_name ? person.given_name : '',
-                lastName: person.surname ? person.surname : '',
-                suffix: person.suffix ? person.suffix : '',
-                affiliation: person.affiliation ? person.affiliation : '',
-                orcid: person.ORCID ? person.ORCID : '',
-                role: person['-contributor_role'] ? person['-contributor_role'] : '',
-                groupAuthorName: '',
-                groupAuthorRole: ''
-                }
-            )
-            })
-        }
-        }
-
-        if (organization) { // if exist
-        if (!Array.isArray(organization)) {
-            // there is ONE organization
-            contributee.push(
-            {
-                firstName: '',
-                lastName: '',
-                suffix: '',
-                affiliation: '',
-                orcid: '',
-                role: '',
-                groupAuthorName: organization['#text'] ? organization['#text'] : '',
-                groupAuthorRole: organization['-contributor_role'] ? organization['-contributor_role'] : ''
-            }
-            )
-        } else { // its an array
-            _.each(organization, (org) => {
-            contributee.push(
-                {
-                firstName: '',
-                lastName: '',
-                suffix: '',
-                affiliation: '',
-                orcid: '',
-                role: '',
-                groupAuthorName: org['#text'] ? org['#text'] : '',
-                groupAuthorRole: org['-contributor_role'] ? org['-contributor_role'] : ''
-                }
-            )
-            })
-        }
-        }
-    }
+    const getOrganization = true;
+    var contributee = getContributors(parsedArticle, getOrganization, retObj);
 
     if (contributee.length <= 0) {
-        contributee.push(
-        {
+        contributee.push({
             firstName: '',
             lastName: '',
             suffix: '',
@@ -251,8 +168,7 @@ const parseXMLArticle = function (articleXML) {
             role: '',
             groupAuthorName: '',
             groupAuthorRole: ''
-        }
-        )
+        })
     }
 
     retObj = _.extend(retObj, {
@@ -263,8 +179,7 @@ const parseXMLArticle = function (articleXML) {
     const fundings = objectSearch(parsedArticle, 'fr:assertion')
     var funders = []
     retObj.openItems.Funding=!!fundings
-    // contributors are divied into 2 types
-    // person_name and organization
+
     if (fundings) {
         if (!Array.isArray(fundings)) {
             // only 1 funder
@@ -277,67 +192,63 @@ const parseXMLArticle = function (articleXML) {
             var grants = []
             // because I don't know what is returned back from backend cause there is no validation, I need to loop
             for(var i = 0; i < thefunder.length; i++) {
-            if (thefunder[i]['-name'] === 'funder_name'){
-                funderName = thefunder[i]['#text'].trim()
-                // within hte name, there is the funder ID
-                const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
-                if (thefunderReg) {
-                    funderIdent = thefunderReg['#text']
-                    funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
-                }
+              if (thefunder[i]['-name'] === 'funder_name'){
+                  funderName = thefunder[i]['#text'].trim()
+                  // within hte name, there is the funder ID
+                  const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
+                  if (thefunderReg) {
+                      funderIdent = thefunderReg['#text']
+                      funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
+                  }
 
-            } else if (thefunder[i]['-name'] === 'award_number'){
-                grants.push(thefunder[i]['#text'])
-            }
+              } else if (thefunder[i]['-name'] === 'award_number'){
+                  grants.push(thefunder[i]['#text'])
+              }
             }
             funders.push({
-            fundername: funderName,
-            funderRegistryID: funderRegId,
-            funder_identifier: funderIdent,
-            grantNumbers: grants.length > 0 ? grants : ['']
+              fundername: funderName,
+              funderRegistryID: funderRegId,
+              funder_identifier: funderIdent,
+              grantNumbers: grants.length > 0 ? grants : ['']
             })
         } else {
             _.each(fundings, (fund) => {
-            const thefunder = objectSearch(fund, 'fr:assertion')
-            var funderName = ''
-            var funderRegId = ''
-            var funderIdent = ''
-            var grants = []
-            // because I don't know what is returned back from backend cause there is no validation, I need to loop
-            for(var i = 0; i < thefunder.length; i++) {
-                if (thefunder[i]['-name'] === 'funder_name'){
-                funderName = thefunder[i]['#text'].trim()
-                // within hte name, there is the funder ID
-                const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
-                if (thefunderReg) {
-                    funderIdent = thefunderReg['#text']
-                    funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
-                }
-                } else if (thefunder[i]['-name'] === 'award_number'){
-                grants.push(thefunder[i]['#text'])
-                }
-            }
-            funders.push(
-                {
-                fundername: funderName,
-                funderRegistryID: funderRegId,
-                funder_identifier: funderIdent,
-                grantNumbers: grants.length > 0 ? grants : ['']
-                }
-            )
+              const thefunder = objectSearch(fund, 'fr:assertion')
+              var funderName = ''
+              var funderRegId = ''
+              var funderIdent = ''
+              var grants = []
+              // because I don't know what is returned back from backend cause there is no validation, I need to loop
+              for(var i = 0; i < thefunder.length; i++) {
+                  if (thefunder[i]['-name'] === 'funder_name'){
+                    funderName = thefunder[i]['#text'].trim()
+                    // within hte name, there is the funder ID
+                    const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
+                    if (thefunderReg) {
+                        funderIdent = thefunderReg['#text']
+                        funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
+                    }
+                  } else if (thefunder[i]['-name'] === 'award_number'){
+                    grants.push(thefunder[i]['#text'])
+                  }
+              }
+              funders.push({
+                  fundername: funderName,
+                  funderRegistryID: funderRegId,
+                  funder_identifier: funderIdent,
+                  grantNumbers: grants.length > 0 ? grants : ['']
+              })
             })
         }
     }
 
     if (funders.length <= 0) {
-        funders.push(
-        {
+        funders.push({
             fundername: '',
             funderRegistryID: '',
             funder_identifier: '',
             grantNumbers: ['']
-        }
-        )
+        })
     }
 
     retObj = _.extend(retObj, {
@@ -345,45 +256,16 @@ const parseXMLArticle = function (articleXML) {
     })
 
     // license loading
-    const licences = objectSearch(parsedArticle, 'ai:license_ref')
-    retObj.openItems.Licenses=!!licences
-    var lic = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    if (licences) {
-        if (!Array.isArray(licences)) {
-        const licAcceptedDate = licences['-start_date'].split('-')
-        lic.push({
-            acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-            acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-            acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-            appliesto: licences['-applies_to'] ? licences['-applies_to'] : '',
-            licenseurl: licences['#text'] ? licences['#text'] : ''
-            })
-        } else {
-        for(var i = 0; i < licences.length; i++) {
-            const licAcceptedDate = licences[i]['-start_date'].split('-')
-            lic.push({
-                acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-                acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-                acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-                appliesto: licences[i]['-applies_to'] ? licences[i]['-applies_to'] : '',
-                licenseurl: licences[i]['#text'] ? licences[i]['#text'] : ''
-            })
-        }
-        }
-    }
+    var lic = getLicenses(parsedArticle, retObj)
 
     if (lic.length <= 0) {
-        lic.push(
-        {
+        lic.push({
             acceptedDateDay: '',
             acceptedDateMonth: '',
             acceptedDateYear: '',
             appliesto: '',
             licenseurl: ''
-        }
-        )
+        })
     }
 
     retObj = _.extend(retObj, {
@@ -394,39 +276,36 @@ const parseXMLArticle = function (articleXML) {
     const relatedItems = objectSearch(parsedArticle, 'related_item')
     retObj.openItems.relatedItems= !!relatedItems;
     var relItem = []
-    // contributors are divied into 2 types
-    // person_name and organization
+
     if (relatedItems) {
         if (!Array.isArray(relatedItems)) {
-        const inter_work_relation = objectSearch(relatedItems, 'inter_work_relation')
-        relItem.push({
-            description: relatedItems['description'] ? relatedItems['description'] : '',
-            identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
-            relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
-            relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
-            })
+          const inter_work_relation = objectSearch(relatedItems, 'inter_work_relation')
+          relItem.push({
+              description: relatedItems['description'] ? relatedItems['description'] : '',
+              identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
+              relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
+              relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
+          })
         } else {
-        for(var i = 0; i < relatedItems.length; i++) {
+          for(var i = 0; i < relatedItems.length; i++) {
             const inter_work_relation = objectSearch(relatedItems[i], 'inter_work_relation')
             relItem.push({
-            description: relatedItems[i]['description'] ? relatedItems[i]['description'] : '',
-            identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
-            relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
-            relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
+              description: relatedItems[i]['description'] ? relatedItems[i]['description'] : '',
+              identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
+              relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
+              relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
             })
-        }
+          }
         }
     }
 
     if (relItem.length <= 0) {
-        relItem.push(
-        {
+        relItem.push({
             description: '',
             identifierType: '',
             relatedItemIdentifier: '',
             relationType: ''
-        }
-        )
+        })
     }
 
     retObj = _.extend(retObj, {
@@ -446,3 +325,124 @@ const parseXMLArticle = function (articleXML) {
     return retObj
 }
 export default parseXMLArticle
+
+
+
+
+export function getLicenses (parsedArticle, retObj) {
+  // license loading
+  const licences = objectSearch(parsedArticle, 'ai:license_ref')
+  if(retObj) retObj.openItems.Licenses=!!licences
+
+  var lic = []
+
+  if (licences) {
+    if (!Array.isArray(licences)) {
+      const licAcceptedDate = licences['-start_date'].split('-')
+      lic.push({
+        acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
+        acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
+        acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
+        appliesto: licences['-applies_to'] ? licences['-applies_to'] : '',
+        licenseurl: licences['#text'] ? licences['#text'] : ''
+      })
+    } else {
+      for(var i = 0; i < licences.length; i++) {
+        const licAcceptedDate = licences[i]['-start_date'].split('-')
+        lic.push({
+          acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
+          acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
+          acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
+          appliesto: licences[i]['-applies_to'] ? licences[i]['-applies_to'] : '',
+          licenseurl: licences[i]['#text'] ? licences[i]['#text'] : ''
+        })
+      }
+    }
+  }
+  return lic
+}
+
+
+export function getContributors (parsedArticle, getOrganization, retObj) {
+  // contributor loading
+  var contributors = objectSearch(parsedArticle, 'contributors');
+  if(retObj) retObj.openItems.Contributors=!!contributors
+
+  var contributee = []
+  // contributors are divied into 2 types
+  // person_name and organization
+  var person_name = undefined
+  var organization = undefined
+  if (contributors) {
+    person_name = objectSearch(contributors, 'person_name')
+    if (getOrganization) organization = objectSearch(contributors, 'organization')
+
+    if (person_name) { // if exist
+      if (!Array.isArray(person_name)) {
+        // there is ONE funder
+        contributee.push(
+          {
+            firstName: person_name.given_name ? person_name.given_name : '',
+            lastName: person_name.surname ? person_name.surname : '',
+            suffix: person_name.suffix ? person_name.suffix : '',
+            affiliation: person_name.affiliation ? person_name.affiliation : '',
+            orcid: person_name.ORCID ? person_name.ORCID : '',
+            role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
+            groupAuthorName: '',
+            groupAuthorRole: ''
+          }
+        )
+      } else { // its an array
+        _.each(person_name, (person) => {
+          contributee.push(
+            {
+              firstName: person.given_name ? person.given_name : '',
+              lastName: person.surname ? person.surname : '',
+              suffix: person.suffix ? person.suffix : '',
+              affiliation: person.affiliation ? person.affiliation : '',
+              orcid: person.ORCID ? person.ORCID : '',
+              role: person['-contributor_role'] ? person['-contributor_role'] : '',
+              groupAuthorName: '',
+              groupAuthorRole: ''
+            }
+          )
+        })
+      }
+    }
+
+    if (organization) {
+
+      if (!Array.isArray(organization)) {
+        // there is ONE organization
+        contributee.push(
+          {
+            firstName: '',
+            lastName: '',
+            suffix: '',
+            affiliation: '',
+            orcid: '',
+            role: '',
+            groupAuthorName: organization['#text'] ? organization['#text'] : '',
+            groupAuthorRole: organization['-contributor_role'] ? organization['-contributor_role'] : ''
+          }
+        )
+      } else { // its an array
+        _.each(organization, (org) => {
+          contributee.push(
+            {
+              firstName: '',
+              lastName: '',
+              suffix: '',
+              affiliation: '',
+              orcid: '',
+              role: '',
+              groupAuthorName: org['#text'] ? org['#text'] : '',
+              groupAuthorRole: org['-contributor_role'] ? org['-contributor_role'] : ''
+            }
+          )
+        })
+      }
+    }
+  }
+  return contributee
+}

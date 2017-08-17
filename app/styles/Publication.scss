@@ -160,10 +160,11 @@
     .actions {
       width: 192px;
       border: 1px solid black;
-      line-height: 48px;
+      line-height: 46px;
       font-size: 16px;
     }
     .activeAction {
+      line-height:48px;
       border:none;
       background: #3eb1c8;
       color: #fff;

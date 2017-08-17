@@ -7,6 +7,3 @@ export const Roles = [
     {'value':'translator', 'name':'Translator'}
 ]
 
-export const displayRoles = (ref, handler, value) => {
-    console.log("HERRE")
-}

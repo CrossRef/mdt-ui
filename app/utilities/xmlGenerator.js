@@ -1,6 +1,6 @@
 import _ from 'lodash'
 
-import { getContributor } from './getSubItems'
+import { getContributor, getSubmitSubItems } from './getSubItems'
 
 
 export const crossmarkXml = (form, crossmarkPrefix) => {
@@ -307,24 +307,6 @@ export const journalArticleXml = (component, crossmark) => {
     }
 
     return retStr
-  }
-
-  function getSubmitSubItems (items) {
-    return _.filter(items, (item) => {
-      for(var key in item) { // checking all the properties of errors to see if there is a true
-        if(item[key]){
-          try {
-            if (item[key].trim().length > 0) {
-              return item
-            }
-          } catch (e) {
-            if (item[key].length > 0) {
-              return item
-            }
-          }
-        }
-      }
-    })
   }
 }
 

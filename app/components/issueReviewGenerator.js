@@ -1,39 +1,13 @@
-import React, { Component } from 'react'
-import _ from 'lodash'
+import React from 'react'
 
-const Languages = require('../utilities/language.json')
-import { ArchiveLocations } from '../utilities/archiveLocations'
-const PublicationTypes = require('../utilities/publicationTypes.json')
-const AppliesTo = require('../utilities/appliesTo.json')
-const IdentifierTypes = require('../utilities/identifierTypes.json')
-import objectSearch from '../utilities/objectSearch'
 import parseXMLIssue from '../utilities/parseXMLIssue'
-import xmldoc from '../utilities/xmldoc'
+
+
 
 const issueReviewGenerator = function (publication, issue) {
-    const publicationMetaData = xmldoc(publication.content)
     const reviewData = parseXMLIssue(issue)
 
-    const getSubmitSubItems = (items) => {
-        return _.filter(items, (item) => {
-        for(var key in item) { // checking all the properties of errors to see if there is a true
-            if(item[key]){
-            try {
-                if (item[key].trim().length > 0) {
-                return item
-                }
-            } catch (e) {
-                if (item[key].length > 0) {
-                return item
-                }
-            }
-
-            }
-        }
-        })
-    }
-
-   const getdate = (pubDate) => {
+    const getdate = (pubDate) => {
         var parseDate = []
         for (var i = 0; i < pubDate.length; i++) {
             if (pubDate[i].length > 0) {
