@@ -217,7 +217,7 @@ export default class AddArticleCard extends Component {
     }
   }
 
-  onSubmit = (e, event, dontNavigate) => {
+  onSubmit = (e) => {
     e.preventDefault();
 
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
@@ -283,7 +283,6 @@ export default class AddArticleCard extends Component {
           this.props.reduxCartUpdate([newRecord]);
 
           this.setState({version: version})
-          if(dontNavigate) return;
           browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
