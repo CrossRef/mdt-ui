@@ -1,22 +1,18 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 import verifyIssn from 'issn-verify'
 
 import fetch from '../utilities/fetch'
 const languages = require('../utilities/language.json')
+import isDOI from '../utilities/isDOI'
+import isURL from '../utilities/isURL'
 
 
 
 export default class AddPublicationCard extends Component {
 
   static propTypes = {
-    reduxControlModal: is.func.isRequired,
-    asyncSubmitPublication: is.func.isRequired,
-    reduxAddDOIs: is.func,
-    reduxStorePublications: is.func,
     crossmarkPrefixes: is.array.isRequired,
 
     Journal: is.shape({
@@ -29,7 +25,13 @@ export default class AddPublicationCard extends Component {
       prefix: is.string.isRequired,
       publicationId: is.node,
       title: is.string
-    })
+    }),
+
+    reduxControlModal: is.func.isRequired,
+    reduxAddDOIs: is.func,
+    reduxStorePublications: is.func,
+
+    asyncSubmitPublication: is.func.isRequired
   };
 
   constructor(props) {
@@ -110,15 +112,6 @@ export default class AddPublicationCard extends Component {
     )
   }
 
-  validateURL () {
-    var re = /^(ftp|http|https):\/\/[^ "]+$/
-    return re.test(this.state.url)
-  }
-
-  validateDOI () {
-    var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
-    return re.test(this.state.DOI)
-  }
 
   validatePrefix () {
     return this.props.prefixes.includes(this.state.DOI.split('/')[0]) ? true : false
@@ -155,10 +148,10 @@ export default class AddPublicationCard extends Component {
         showISSNEmptyError: (this.state.electISSN.length <= 0),
         showISSNInvalidError: !this.validateISSN() && (this.state.electISSN.length > 0),
         showURLEmptyError: (this.state.url.length <= 0),
-        showURLError: !this.validateURL() && (this.state.url.length > 0),
+        showURLError: !isURL(this.state.url) && (this.state.url.length > 0),
         showDOIEmptyError: (this.state.DOI.length <= 0),
-        showDOIInvalidError: !this.validateDOI() && (this.state.DOI.length > 0),
-        showDOIPrefixError: ((this.state.DOI.length > 0) && this.validateDOI()) ? !this.validatePrefix() : false,
+        showDOIInvalidError: !isDOI(this.state.DOI) && (this.state.DOI.length > 0),
+        showDOIPrefixError: ((this.state.DOI.length > 0) && isDOI(this.state.DOI)) ? !this.validatePrefix() : false,
         showDOIError: isDupe
       }
 

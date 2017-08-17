@@ -1,13 +1,8 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import _ from 'lodash'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import update from 'immutability-helper'
-const Languages = require('../utilities/language.json')
-import { ArchiveLocations } from '../utilities/archiveLocations'
-const PublicationTypes = require('../utilities/publicationTypes.json')
-const AppliesTo = require('../utilities/appliesTo.json')
-const IdentifierTypes = require('../utilities/identifierTypes.json')
+
 import objectSearch from '../utilities/objectSearch'
 import articleReviewGenerator from './articleReviewGenerator'
 import xmldoc from '../utilities/xmldoc'
@@ -61,10 +56,9 @@ export default class ArticleReview extends Component {
   }
 
 
-  addToCart = (e, event) => {
+  addToCart = (e) => {
     this.props.reduxControlModal({showModal:false})
-    const dontNavigate = true;
-    this.props.submit(e, event, dontNavigate);
+    this.props.submit(e);
   }
 
 

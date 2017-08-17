@@ -1,12 +1,10 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 
 import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, getItem, submitIssue } from '../actions/application'
-import fetch from '../utilities/fetch'
 import Publication from '../components/Publication/publication'
 
 
@@ -18,10 +16,11 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
-  asyncGetPublications: getPublications,
-  asyncDeleteRecord: deleteRecord,
   reduxCartUpdate: cartUpdate,
   reduxClearCart: clearCart,
+
+  asyncGetPublications: getPublications,
+  asyncDeleteRecord: deleteRecord,
   asyncSearchRecords: searchRecords,
   asyncGetItem: getItem,
   asyncSubmitIssue: submitIssue
@@ -32,17 +31,19 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class PublicationPage extends Component {
 
   static propTypes = {
+    search: is.object.isRequired,
+    publication: is.object,
+    routeParams: is.shape({
+      doi: is.string.isRequired
+    }).isRequired,
+
     reduxControlModal: is.func.isRequired,
+
     asyncGetPublications: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
     asyncSubmitIssue: is.func.isRequired,
-    search: is.object.isRequired,
     asyncDeleteRecord: is.func.isRequired,
-    routeParams: is.shape({
-      doi: is.string.isRequired
-    }).isRequired,
-    publication: is.object
   }
 
   state = { serverError: null }
@@ -61,16 +62,18 @@ export default class PublicationPage extends Component {
         {this.props.publication ?
           <Publication
             ownerPrefix={doi.split('/')[0]}
-            asyncDeleteRecord={this.props.asyncDeleteRecord}
-            asyncSearchRecords={this.props.asyncSearchRecords}
             search={this.props.search}
-            asyncGetItem={this.props.asyncGetItem}
             cart={this.props.cart}
             publication={this.props.publication}
-            asyncGetPublications={this.props.asyncGetPublications}
+            triggerModal={this.props.location.query.modal ? this.props.location.query.modal : undefined}
+
             reduxControlModal={this.props.reduxControlModal}
             reduxCartUpdate={this.props.reduxCartUpdate}
-            triggerModal={this.props.location.query.modal ? this.props.location.query.modal : undefined}
+
+            asyncDeleteRecord={this.props.asyncDeleteRecord}
+            asyncSearchRecords={this.props.asyncSearchRecords}
+            asyncGetItem={this.props.asyncGetItem}
+            asyncGetPublications={this.props.asyncGetPublications}
             asyncSubmitIssue={this.props.asyncSubmitIssue}
           />
           :<div>

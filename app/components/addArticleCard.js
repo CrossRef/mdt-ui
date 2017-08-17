@@ -17,6 +17,7 @@ import { makeDateDropDown } from '../utilities/date'
 import isUrl from '../utilities/isURL'
 import isDOI from '../utilities/isDOI'
 import {routes} from '../routing'
+import { getSubmitSubItems } from '../utilities/getSubItems'
 
 
 const defaultState = {
@@ -32,7 +33,7 @@ const defaultState = {
   on: false,
   error: false,
   doiDisabled: false,
-  version: '0',
+  version: '1',
   errors: {
     title: false,
     printDateYear: false,
@@ -157,7 +158,6 @@ export default class AddArticleCard extends Component {
 
   constructor (props) {
     super(props)
-
     this.state = defaultState;
     this.state.article.doi = props.ownerPrefix
   }
@@ -217,13 +217,13 @@ export default class AddArticleCard extends Component {
     }
   }
 
-  onSubmit = (e, event, dontNavigate) => {
+  onSubmit = (e) => {
     e.preventDefault();
 
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
 
     this.validation((valid) => { // need it to be a callback because setting state does not happen right away
-      if (valid) {
+      if (!valid) {
         const props = this.props
         var publication = this.props.publication
 
@@ -283,7 +283,6 @@ export default class AddArticleCard extends Component {
           this.props.reduxCartUpdate([newRecord]);
 
           this.setState({version: version})
-          //if(dontNavigate) return;
           browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
@@ -364,7 +363,7 @@ export default class AddArticleCard extends Component {
 
         for(var i = 0; i < licenses.length; i++) { // looping through the license array after filtered to see if there is start date
           if (!licenses[i].startDate) {
-            errorStates.licenseStartDate = true
+            errorStates.licenseStartDate = {$set: true}
             break
           }
         }
@@ -403,15 +402,15 @@ export default class AddArticleCard extends Component {
       }
 
       this.setState({
-        errors: errorStates,
+        errors: update(this.state.errors, errorStates),
         crossmarkErrors: crossmarkErrors
       }, ()=>{
-        var criticalErrors = ['doi', 'invaliddoi', 'dupedoi', 'invalidDoiPrefix', 'title']
+        var errors = ['doi', 'title']
 
         for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
           if (this.state.errors[key]) {
             this.setState({error: true})
-            if(criticalErrors.indexOf(key) > -1) return callback(false)
+            return (errors.indexOf(key) > -1) ? callback(this.state.errors[key]) : callback(false)
           }
         }
         for(var key in this.state.crossmarkErrors) {
@@ -420,7 +419,7 @@ export default class AddArticleCard extends Component {
             return callback(this.state.crossmarkErrors[key])
           }
         }
-        return callback(true) // iterated the entire object, no true, returning valid
+        return callback(false) // iterated the entire object, no true, returning a false, no error
       })
     })
   }
@@ -614,23 +613,4 @@ export default class AddArticleCard extends Component {
       </div>
     )
   }
-}
-
-
-function getSubmitSubItems (items) {
-  return _.filter(items, (item) => {
-    for(var key in item) { // checking all the properties of errors to see if there is a true
-      if(item[key]){
-        try {
-          if (item[key].trim().length > 0) {
-            return item
-          }
-        } catch (e) {
-          if (item[key].length > 0) {
-            return item
-          }
-        }
-      }
-    }
-  })
 }

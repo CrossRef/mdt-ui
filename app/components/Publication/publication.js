@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
+import {stateTrackerII} from 'my_decorators'
 
 import Listing from './listing'
 import Filter from './filter'
@@ -102,7 +103,7 @@ export default class Publication extends Component {
       props: {
         confirm: () => {
           for(let i in this.state.selections){
-            this.props.asyncDeleteRecord(this.state.selections[i].article.doi, this.props.publication.message.doi)
+            this.props.asyncDeleteRecord(this.state.selections[i].article)
           }
           this.props.reduxControlModal({showModal:false}) //Can also put this as a callback for asyncDeleteRecord, will affect whether the modal closes first then record dissapears or vice versa
           this.setState({selections:[]})
@@ -166,43 +167,47 @@ export default class Publication extends Component {
 
   render () {
     const { publication, asyncGetPublications, reduxControlModal, ownerPrefix } = this.props
-    const publicationMessage = publication.message || emptyObject
-    const contains = publicationMessage.contains || emptyArray
-    const doi = publicationMessage.doi
+    const contains = publication.message.contains || emptyArray
+    const doi = publication.message.doi
     return (
       <div className='publication'>
         <Filter
           handleFilter={this.handleFilter.bind(this)}
         />
+
         <TitleBar
-          publicationMessage={publicationMessage}
-          asyncSearchRecords={this.props.asyncSearchRecords}
-          search={this.props.search} asyncGetItem={this.props.asyncGetItem}
-          reduxControlModal={this.props.reduxControlModal}
           publication={publication}
+          search={this.props.search} asyncGetItem={this.props.asyncGetItem}
+
+          reduxControlModal={this.props.reduxControlModal}
+
+          asyncSearchRecords={this.props.asyncSearchRecords}
           asyncSubmitIssue={this.props.asyncSubmitIssue}
           asyncGetPublications={this.props.asyncGetPublications}/>
 
         <ActionBar
           ownerPrefix={ownerPrefix}
-          selections={this.state.selections}
           doi={doi}
+
+          selections={this.state.selections}
           publication={publication}
-          asyncGetPublications={asyncGetPublications}
-          reduxControlModal={reduxControlModal}
+
           handleAddCart={this.handleAddCart}
-          reduxCartUpdate={this.props.reduxCartUpdate}
           deleteSelections={this.deleteSelections}
           duplicateSelection={this.duplicateSelection}
+
+          reduxControlModal={reduxControlModal}
+          reduxCartUpdate={this.props.reduxCartUpdate}
+
+          asyncGetPublications={asyncGetPublications}
           asyncSubmitIssue={this.props.asyncSubmitIssue} />
+
         <div className='publication-children'>
           {contains.length ?
             <Listing
               filterBy={this.state.filterBy}
               ownerPrefix={ownerPrefix}
               publication={publication}
-              publicationDoi={doi}
-              publicationMessage={publicationMessage}
               triggerModal={this.props.triggerModal}
               selections={this.state.selections}
 
@@ -254,5 +259,4 @@ function DeleteConfirmModal ({confirm, selections, close}) {
 }
 
 
-const emptyObject = {};
 const emptyArray = [];
