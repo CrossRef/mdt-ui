@@ -346,7 +346,7 @@ export function getDepositHistory (params, callback, error = (reason) => console
 	}
 }
 
-export function deleteRecord (doi, pubDoi, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
+export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
   return function(dispatch) {
     fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, {
       method: 'delete',
@@ -354,6 +354,14 @@ export function deleteRecord (doi, pubDoi, callback, error = (reason) => console
     })
       .then(response => {
         if(response.status === 200) {
+          if(type === 'issue') {
+            for(let i in contains) {
+              dispatch(removeFromCart(contains[i].doi))
+            }
+          } else {
+            dispatch(removeFromCart(doi))
+          }
+
           dispatch(getPublications(pubDoi));
           if(callback) callback();
         } else throw `delete ${response.url} failed: ${response.status || 'Unknown status'} - ${response.statusText || 'Unknown statusText' }`
