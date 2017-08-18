@@ -36,6 +36,11 @@ export default class PublicationPage extends Component {
     routeParams: is.shape({
       doi: is.string.isRequired
     }).isRequired,
+    location: is.shape({
+      query: is.shape({
+        modal: is.string
+      })
+    }),
 
     reduxControlModal: is.func.isRequired,
 
