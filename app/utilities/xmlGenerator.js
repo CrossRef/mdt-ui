@@ -118,7 +118,6 @@ export const crossmarkXml = (form, crossmarkPrefix) => {
 export const journalArticleXml = (component, crossmark) => {
   const state = component.state;
   const article = state.article;
-  console.log(article);
   const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
     printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay;
   const language = state.addInfo.language;
@@ -184,7 +183,6 @@ export const journalArticleXml = (component, crossmark) => {
 
     `</journal_article>`
   ];
-  console.log(array.join(''));
   return array.join('')
 
 
@@ -252,7 +250,6 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getLicenseXML () {
-    console.log(state.license);
     var licenses = getSubmitSubItems(state.license).map((license, i) => {
       const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay;
       const dayHolder = []
