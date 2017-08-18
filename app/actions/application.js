@@ -98,24 +98,27 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
     })
     .then((textResponse)=>{
       let state;
-      const newCRState = {
+      const blankCRState = {
         routing: {
           locationBeforeTransitions: {
             pathname: routes.publications,
             query: ''
           }
-        }
+        },
+        dois: [],
+        cart: [],
+        publications: {}
       };
 
       if (textResponse) {
         try {
-          state = JSON.parse(textResponse);
+          state = JSON.parse(textResponse);   // try to parse remote store state, if there are errors, use blank CRState
         } catch(err) {
-          state = newCRState
+          state = blankCRState
         }
-        if(!state || !state.routing) state = newCRState
+        if(!state || !state.routing) state = blankCRState
       } else {
-        state = newCRState;
+        state = blankCRState;
       }
 
       let scrubbedState = {...state}; //Scrubbed state is used to clear unnecessary or bad data from remote state.
@@ -124,26 +127,7 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
 
       // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
 
-
-      const pathname = scrubbedState.routing.locationBeforeTransitions.pathname;
-      const base = routes.base;
-      const matchLength = base.length + 4;
-
-      // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
-
-      let match = (function checkRoutes () {
-        for (var route in routes) {
-          if(pathname.substring(0, matchLength) === routes[route].substring(0, matchLength)) return true
-        }
-        return false
-      })();
-
-
-      // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
-
-      if(!match || pathname === base) {
-        scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
-      }
+      // handleChangedBaseUrl(scrubbedState)   // uncomment this line in case the base url has changed to deal with the transition between remote state with old base url to new url
 
       console.warn('Retrieving from remote store: ', scrubbedState);
       dispatch({
@@ -373,3 +357,25 @@ export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (
 
 
 
+
+function handleChangedBaseUrl (scrubbedState) {
+  const pathname = scrubbedState.routing.locationBeforeTransitions.pathname;
+  const base = routes.base;
+  const matchLength = base.length + 4;
+
+  // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
+
+  let match = (function checkRoutes () {
+    for (var route in routes) {
+      if(pathname.substring(0, matchLength) === routes[route].substring(0, matchLength)) return true
+    }
+    return false
+  })();
+
+
+  // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
+
+  if(!match || pathname === base) {
+    scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
+  }
+}
