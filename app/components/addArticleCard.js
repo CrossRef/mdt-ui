@@ -223,7 +223,7 @@ export default class AddArticleCard extends Component {
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
 
     this.validation((valid) => { // need it to be a callback because setting state does not happen right away
-      if (!valid) {
+      if (valid) {
         const props = this.props
         var publication = this.props.publication
 
@@ -363,7 +363,7 @@ export default class AddArticleCard extends Component {
 
         for(var i = 0; i < licenses.length; i++) { // looping through the license array after filtered to see if there is start date
           if (!licenses[i].startDate) {
-            errorStates.licenseStartDate = {$set: true}
+            errorStates.licenseStartDate = true
             break
           }
         }
@@ -402,15 +402,15 @@ export default class AddArticleCard extends Component {
       }
 
       this.setState({
-        errors: update(this.state.errors, errorStates),
+        errors: errorStates,
         crossmarkErrors: crossmarkErrors
       }, ()=>{
-        var errors = ['doi', 'title']
+        var criticalErrors = ['doi', 'invaliddoi', 'dupedoi', 'invalidDoiPrefix', 'title']
 
         for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
           if (this.state.errors[key]) {
             this.setState({error: true})
-            return (errors.indexOf(key) > -1) ? callback(this.state.errors[key]) : callback(false)
+            if(criticalErrors.indexOf(key) > -1) return callback(false)
           }
         }
         for(var key in this.state.crossmarkErrors) {
@@ -419,7 +419,7 @@ export default class AddArticleCard extends Component {
             return callback(this.state.crossmarkErrors[key])
           }
         }
-        return callback(false) // iterated the entire object, no true, returning a false, no error
+        return callback(true) // iterated the entire object, no true, returning valid
       })
     })
   }
