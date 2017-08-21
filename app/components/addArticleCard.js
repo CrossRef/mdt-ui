@@ -203,7 +203,7 @@ export default class AddArticleCard extends Component {
           license: parsedArticle.license,
           relatedItems: parsedArticle.relatedItems,
           openItems: parsedArticle.openItems
-        })
+        }, this.validation)
       }
     }
   }
@@ -289,7 +289,7 @@ export default class AddArticleCard extends Component {
     })
   }
 
-  validation (callback) {
+  validation (callback = ()=>{}) {
     var errorStates = {
       title: {$set: false },
       doi: {$set: false },
