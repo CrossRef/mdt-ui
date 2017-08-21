@@ -48,18 +48,17 @@ export default class DepositCartPage extends Component {
       showDeposit: true,
       fullCart: [],
       falseCnt: 0,
-      status: 'cart'
+      status: 'cart',
+      result: {
+        resultData: '',
+        resultCount: '',
+        depositId: ''
+      },
     }
   }
 
-  toggleDeposit = (showDeposit) => {
-    if (!showDeposit) {
-      var falseCnt = this.state.falseCnt
-      this.setState({
-        falseCnt: falseCnt + 1,
-        showDeposit: false
-      })
-    }
+  componentDidMount() {
+    this.getFullCart()
   }
 
   getFullCart (cart = this.props.cart) {
@@ -172,10 +171,6 @@ export default class DepositCartPage extends Component {
     }
   }
 
-  componentDidMount() {
-    this.getFullCart()
-  }
-
   review = () => {
       this.props.reduxControlModal({
         showModal: true,
@@ -216,19 +211,17 @@ export default class DepositCartPage extends Component {
       })
     }
 
-    this.props.asyncDeposit(toDeposit, (resultArray) => {
-      this.setState({status:'result', depositResult:resultArray})
+    this.props.asyncDeposit(toDeposit, (depositResult) => {
+      this.setState({status:'result', result: this.processDepositResult(depositResult)})
     }, errorHandler);
-
-
   }
 
-  processDepositResult = () => {
+  processDepositResult = (depositResult) => {
     const resultCount = {Success: 0, Failure: 0};
     const resultData = {};
     let depositId = [];
 
-    this.state.depositResult.forEach((result, index)=>{
+    depositResult.forEach((result, index)=>{
       let pubDoi, pubTitle, resultTitle, resultStatus, resultType;
       let error = {};
       const articleInfo = this.props.cart.find((cartItem)=>{
@@ -265,6 +258,7 @@ export default class DepositCartPage extends Component {
         ...error
       }];
 
+      if (resultStatus === 'Success') this.props.reduxRemoveFromCart(result['DOI:'])
     });
 
     depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0];
@@ -272,8 +266,18 @@ export default class DepositCartPage extends Component {
     return {resultData, resultCount, depositId}
   }
 
+  toggleDeposit = (showDeposit) => {
+    if (!showDeposit) {
+      var falseCnt = this.state.falseCnt
+      this.setState({
+        falseCnt: falseCnt + 1,
+        showDeposit: false
+      })
+    }
+  }
+
   render () {
-    const {resultData, resultCount, depositId} = (this.state.status === 'result' && this.state.depositResult) ? this.processDepositResult() : {};
+    const {resultData, resultCount, depositId} = this.state.result;
 
     return (
       <div className='depositPage'>
@@ -309,6 +313,12 @@ export default class DepositCartPage extends Component {
     )
   }
 }
+
+
+
+
+
+
 
 
 const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {
