@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import moment from 'moment'
 
 import { getContributor, getSubmitSubItems } from './getSubItems'
 
@@ -117,6 +118,8 @@ export const crossmarkXml = (form, crossmarkPrefix) => {
 export const journalArticleXml = (component, crossmark) => {
   const state = component.state;
   const article = state.article;
+  const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
+    printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay;
   const language = state.addInfo.language;
   const publicationType = state.addInfo.publicationType;
 
@@ -141,19 +144,19 @@ export const journalArticleXml = (component, crossmark) => {
       `${(article.abstract.trim().length > 0) ?
         `<jats:abstract xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"><jats:p>${article.abstract.trim()}</jats:p></jats:abstract>` : ''}`,
 
-      article.onlineDateYear.length > 0 ? [
+      onlineYear || onlineMonth || onlineDay ? [
         `<publication_date media_type="online">`,
-          `${article.onlineDateYear.length > 0 ? `<year>${article.onlineDateYear}</year>`:``}`,
-          `${article.onlineDateMonth.length > 0 ? `<month>${article.onlineDateMonth}</month>`:``}`,
-          `${article.onlineDateDay.length > 0 ? `<day>${article.onlineDateDay}</day>`:``}`,
+          `${onlineMonth.length > 0 ? `<month>${onlineMonth}</month>`:``}`,
+          `${onlineDay.length > 0 ? `<day>${onlineDay}</day>`:``}`,
+          `${onlineYear.length > 0 ? `<year>${onlineYear}</year>`:``}`,
         `</publication_date>`
       ].join('') : '',
 
-      article.printDateYear.length > 0 ? [
+      printYear || printMonth || printDay ? [
         `<publication_date media_type="print">`,
-          `${article.printDateYear.length > 0 ? `<year>${article.printDateYear}</year>`:``}`,
-          `${article.printDateMonth.length > 0 ? `<month>${article.printDateMonth}</month>`:``}`,
-          `${article.printDateDay.length > 0 ? `<day>${article.printDateDay}</day>`:``}`,
+          `${printMonth.length > 0 ? `<month>${printMonth}</month>`:``}`,
+          `${printDay.length > 0 ? `<day>${printDay}</day>`:``}`,
+          `${printYear.length > 0 ? `<year>${printYear}</year>`:``}`,
         `</publication_date>`
       ].join('') : '',
 
@@ -248,26 +251,28 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getLicenseXML () {
     var licenses = getSubmitSubItems(state.license).map((license, i) => {
+      const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay;
+      const dayHolder = []
+      if (year) {
+        dayHolder.push(year)
+      }
+      if (month) {
+        dayHolder.push(month)
+      }
+      if (day) {
+        dayHolder.push(day)
+      }
 
-      var dayHolder = []
-      if ((license.acceptedDateYear ? license.acceptedDateYear : '').length > 0) {
-        dayHolder.push(license.acceptedDateYear)
-      }
-      if ((license.acceptedDateMonth ? license.acceptedDateMonth : '').length > 0) {
-        dayHolder.push(license.acceptedDateMonth)
-      }
-      if ((license.acceptedDateDay ? license.acceptedDateDay : '').length > 0) {
-        dayHolder.push(license.acceptedDateDay)
-      }
-
-      var attributes = ``
-      if (dayHolder.length > 0) {
-        var freetolicense = ``
+      let attributes = ``
+      const isDate = dayHolder.length > 0;
+      if (isDate || license.licenseurl || license.appliesto) {
+        const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : '';
+        let freetolicense = ``
         if (state.addInfo.freetolicense === 'yes') {
-          freetolicense = `<ai:free_to_read start_date="${dayHolder.join('-')}"/>`
+          freetolicense = `<ai:free_to_read start_date="${date}"/>`
         }
 
-        attributes = `${freetolicense}<ai:license_ref applies_to="${license.appliesto}" start_date="${dayHolder.join('-')}">${license.licenseurl}</ai:license_ref>`
+        attributes = `${freetolicense}<ai:license_ref${license.appliesto ? ` applies_to="${license.appliesto}"`:''}${isDate ? ` start_date="${date}"`:''}>${license.licenseurl}</ai:license_ref>`
       }
       return attributes
     })

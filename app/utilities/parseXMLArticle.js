@@ -342,8 +342,16 @@ export function getLicenses (parsedArticle) {
   var lic = []
 
   if (licences) {
-    if (!Array.isArray(licences)) {
-      const licAcceptedDate = licences['-start_date'].split('-')
+    if (typeof licences === 'string') {
+      lic.push({
+        acceptedDateDay: '',
+        acceptedDateMonth: '',
+        acceptedDateYear: '',
+        appliesto: '',
+        licenseurl: licences
+      })
+    } else if (!Array.isArray(licences)) {
+      const licAcceptedDate = licences['-start_date'] ? licences['-start_date'].split('-') : [];
       lic.push({
         acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
         acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
@@ -353,7 +361,7 @@ export function getLicenses (parsedArticle) {
       })
     } else {
       for(var i = 0; i < licences.length; i++) {
-        const licAcceptedDate = licences[i]['-start_date'].split('-')
+        const licAcceptedDate = licences[i]['-start_date'] ? licences[i]['-start_date'].split('-') : [];
         lic.push({
           acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
           acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
