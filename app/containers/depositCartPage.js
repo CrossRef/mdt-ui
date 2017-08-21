@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
-import { controlModal, cartUpdate, getItem, removeFromCart, deposit } from '../actions/application'
+import { controlModal, cartUpdate, getItem, removeFromCart, clearCart, deposit } from '../actions/application'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import DepositCart from '../components/depositCart'
@@ -25,6 +25,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxCartUpdate: cartUpdate,
   reduxRemoveFromCart: removeFromCart,
+  reduxClearCart: clearCart,
   asyncGetItem: getItem,
   asyncDeposit: deposit
 }, dispatch)
@@ -36,6 +37,7 @@ export default class DepositCartPage extends Component {
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
+    reduxClearCart: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
     asyncDeposit: is.func.isRequired,
     cart: is.array.isRequired,
@@ -202,17 +204,19 @@ export default class DepositCartPage extends Component {
     this.setState({status:`processing`})
 
     const errorHandler = (error) => {
+      console.error(error);
       this.setState({status: 'cart'});
       this.props.reduxControlModal({
         showModal: true,
-        title: 'Server Response - ' + error,
+        title: error,
         style: 'errorModal',
         Component: ()=>null
       })
     }
 
     this.props.asyncDeposit(toDeposit, (depositResult) => {
-      this.setState({status:'result', result: this.processDepositResult(depositResult)})
+      this.setState({status:'result', result: this.processDepositResult(depositResult)});
+      this.props.reduxClearCart();
     }, errorHandler);
   }
 
@@ -257,8 +261,6 @@ export default class DepositCartPage extends Component {
         pubDoi: pubDoi,
         ...error
       }];
-
-      if (resultStatus === 'Success') this.props.reduxRemoveFromCart(result['DOI:'])
     });
 
     depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0];
