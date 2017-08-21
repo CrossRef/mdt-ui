@@ -156,9 +156,10 @@ const parseXMLArticle = function (articleXML) {
 
     // contributor loading
     const getOrganization = true;
-    var contributee = getContributors(parsedArticle, getOrganization, retObj);
+    var contributee = getContributors(parsedArticle, getOrganization);
 
-    if (contributee.length <= 0) {
+    const thereAreContributors = contributee.length > 0;
+    if (!thereAreContributors) {
         contributee.push({
             firstName: '',
             lastName: '',
@@ -170,6 +171,8 @@ const parseXMLArticle = function (articleXML) {
             groupAuthorRole: ''
         })
     }
+
+    retObj.openItems.Contributors = thereAreContributors;
 
     retObj = _.extend(retObj, {
         contributors: contributee
@@ -258,7 +261,9 @@ const parseXMLArticle = function (articleXML) {
     // license loading
     var lic = getLicenses(parsedArticle, retObj)
 
-    if (lic.length <= 0) {
+    const thereAreLicenses = lic.length > 0;
+
+    if (!thereAreLicenses) {
         lic.push({
             acceptedDateDay: '',
             acceptedDateMonth: '',
@@ -268,6 +273,7 @@ const parseXMLArticle = function (articleXML) {
         })
     }
 
+    retObj.openItems.Licenses = thereAreLicenses;
     retObj = _.extend(retObj, {
         license: lic
     })
@@ -329,10 +335,9 @@ export default parseXMLArticle
 
 
 
-export function getLicenses (parsedArticle, retObj) {
+export function getLicenses (parsedArticle) {
   // license loading
   const licences = objectSearch(parsedArticle, 'ai:license_ref')
-  if(retObj) retObj.openItems.Licenses=!!licences
 
   var lic = []
 
@@ -371,10 +376,9 @@ export function getLicenses (parsedArticle, retObj) {
 }
 
 
-export function getContributors (parsedArticle, getOrganization, retObj) {
+export function getContributors (parsedArticle, getOrganization) {
   // contributor loading
   var contributors = objectSearch(parsedArticle, 'contributors');
-  if(retObj) retObj.openItems.Contributors=!!contributors
 
   var contributee = []
   // contributors are divied into 2 types

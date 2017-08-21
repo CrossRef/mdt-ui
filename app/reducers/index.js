@@ -109,7 +109,6 @@ function modalReducer ( state = {
 function publicationsReducer (state = {}, action) {
   switch (action.type) {
     case 'PUBLICATIONS':
-      const publications = action.publications;
 
       function normalize (publications) {  //Redux likes normalized state: store items in an object, with the IDs of the items as keys and the items themselves as the values.
         let normalizedData = {};
@@ -135,7 +134,7 @@ function publicationsReducer (state = {}, action) {
             if(!eachRecord || !eachRecord.doi) return console.warn(`Had trouble retrieving data for a Record`, eachRecord || 'Empty Array Value');
             normalizedRecords[eachRecord.doi] = eachRecord;
           });
-          normalizedData[eachPublication.message.doi] = {...publications, normalizedRecords}
+          normalizedData[publications.message.doi] = {...publications, normalizedRecords}
 
         } else normalizedData[publications.message.doi] = publications;
 
