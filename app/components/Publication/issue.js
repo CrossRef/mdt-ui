@@ -80,7 +80,7 @@ export default class Issue extends Component {
     let { status, type, date, doi } = this.props.record;
     date = moment(date || undefined).format('MMM Do YYYY')
     const { volume, issue} = this.props.record.title;
-    const displayTitle = `${volume && `Volume ${volume} `}Issue ${issue}`
+    const displayTitle = `${volume && `Volume ${volume}, `}Issue ${issue}`
     const url = doi && `http://dx.doi.org/${doi}`
 
     const checked = !this.props.selections.length ? {checked:false} : {};

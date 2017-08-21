@@ -479,7 +479,7 @@ export default class DepositCartItemCard extends Component {
     const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
     const cartType = cartItem.type
     const status = cartItem.status
-    const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume} `}Issue ${cartItem.title.issue}` : cartItem.title.title;
+    const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume}, `}Issue ${cartItem.title.issue}` : cartItem.title.title;
     return (
       <tr className='item'>
         <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
