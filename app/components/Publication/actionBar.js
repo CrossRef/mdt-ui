@@ -50,6 +50,10 @@ export default class ActionBar extends Component {
     }
   }
 
+  componentWillUnmount () {
+    document.removeEventListener('click', this.handleClick, false);
+  }
+
   openAddIssueModal = () => {
     this.props.reduxControlModal({
       showModal: true,

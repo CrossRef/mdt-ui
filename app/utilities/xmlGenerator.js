@@ -272,7 +272,7 @@ export const journalArticleXml = (component, crossmark) => {
           freetolicense = `<ai:free_to_read start_date="${date}"/>`
         }
 
-        attributes = `${freetolicense}<ai:license_ref${license.appliesto && ` applies_to="${license.appliesto}"`} ${isDate && `start_date="${date}"`}>${license.licenseurl}</ai:license_ref>`
+        attributes = `${freetolicense}<ai:license_ref${license.appliesto ? ` applies_to="${license.appliesto}"`:''}${isDate ? ` start_date="${date}"`:''}>${license.licenseurl}</ai:license_ref>`
       }
       return attributes
     })
