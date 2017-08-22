@@ -60,6 +60,10 @@ export default class SubtItem extends Component {
     this.setState({ crossmarkCards: newState })
   }
 
+  componentDidUpdate () {
+    this.props.positionErrorBubble();
+  }
+
   render () {
     const { remove, handler, title, addHandler, addable, arrowType, makeDateDropDown, incomingData } = this.props
     // Map through the todos
@@ -75,6 +79,8 @@ export default class SubtItem extends Component {
               remove={remove}
               handler={handler}
               data={incomingData}
+              errorContributorLastName={this.props.errorContributorLastName}
+              positionErrorBubble={this.props.positionErrorBubble}
               index={i}/>
             break
           case 'Funding':
@@ -89,10 +95,11 @@ export default class SubtItem extends Component {
               grantNumbers={data.grantNumbers}
               addGrant={addGrant}
               removeGrant={removeGrant}
+              positionErrorBubble={this.props.positionErrorBubble}
               grantHandler={grantHandler}/>
             break
             case 'License':
-            const { freetoread, errorLicenseStartDate } = this.props
+            const { freetoread, errorLicenseStartDate, errorLicenseUrlInvalid } = this.props
             card = <License
                     key={i}
                     license={data}
@@ -102,7 +109,10 @@ export default class SubtItem extends Component {
                     index={i}
                     freetoread={freetoread}
                     errorLicenseStartDate={errorLicenseStartDate}
-                    makeDateDropDown={makeDateDropDown} />
+                    errorLicenseUrlInvalid={errorLicenseUrlInvalid}
+                    makeDateDropDown={makeDateDropDown}
+                    positionErrorBubble={this.props.positionErrorBubble}/>
+
             break
           case 'Related Items':
             card = <RelatedItems
@@ -111,6 +121,7 @@ export default class SubtItem extends Component {
               remove={remove}
               handler={handler}
               data={incomingData}
+              positionErrorBubble={this.props.positionErrorBubble}
               index={i}/>
             break
           case 'Optional Issue Information (Contributorship)':

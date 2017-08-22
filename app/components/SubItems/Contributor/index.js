@@ -16,6 +16,10 @@ export default class Contributor extends Component {
     }
   }
 
+  componentDidUpdate () {
+    this.props.positionErrorBubble();
+  }
+
   toggle = () => {
       this.setState({
         showSubItem: !this.state.showSubItem
@@ -104,13 +108,12 @@ export default class Contributor extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!this.props.contributor.firstName && 'norequire'}`}>
+                                        <div className='required height32'>{this.props.contributor.firstName && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${this.props.errorContributorLastName && 'fieldError'}`}
                                             type='text'
                                             ref='lastName'
                                             onChange={this.handleContributor}

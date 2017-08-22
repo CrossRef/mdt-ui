@@ -35,6 +35,10 @@ export default class Funding extends Component {
     }
   }
 
+  componentDidUpdate () {
+    this.props.positionErrorBubble();
+  }
+
   componentWillReceiveProps(nextProps) {
     this.setState({
       funder_identifier: nextProps.funding.funder_identifier,

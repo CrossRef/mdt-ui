@@ -47,6 +47,7 @@ export default class OptionalIssueInformation extends Component {
   }
 
   render () {
+    console.log('AWAEHBAEHAERARBAFBARBAEFBA!!!!!!!');
     return (
         <div className='optionalissueiinfo'>
             <div className='innerCardHolder'>

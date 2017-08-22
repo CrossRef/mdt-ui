@@ -45,6 +45,12 @@ const defaultState = {
     invalidDoiPrefix: false,
     invalidurl: false,
     licenseStartDate: false,
+
+    licenseUrlInvalid: false,
+    contributorLastName: false,
+    firstPage: false,
+
+
   },
   crossmarkErrors: {
     peer_0_href:false,
@@ -209,11 +215,18 @@ export default class AddArticleCard extends Component {
   }
 
   componentDidUpdate() {
+    this.positionErrorBubble()
+  }
+
+  positionErrorBubble = () => {
     var firstError = $(".fieldError").first()
     if (firstError.length > 0) {
+      $('.fullError').show()
       $('.fullError').find('.tooltips').css({
         'top': ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9)) - ($('.switchLicense').first().position().top + 15) - ($('.switchLicense').first().offset().top + 15))) + 25
       })
+    } else {
+      $('.fullError').hide()
     }
   }
 
@@ -301,6 +314,10 @@ export default class AddArticleCard extends Component {
       invalidDoiPrefix: false,
       invalidurl: false,
       licenseStartDate: false,
+
+      licenseUrlInvalid: false,
+      contributorLastName: false,
+      firstPage: false,
     }
     this.setState({
       error: false,
@@ -328,10 +345,16 @@ export default class AddArticleCard extends Component {
         invalidurl: !isUrl(this.state.article.url) && (this.state.article.url.length > 0),
         dupedoi: this.state.doiDisabled ? false : isDupe,
         invaliddoi: ((this.state.article.doi.length > 0) && (isValid ? isValid : !isDOI(this.state.article.doi))),
-        licenseStartDate: false
+        licenseStartDate: false,
+
+        licenseUrlInvalid: (this.state.license[0].licenseurl.length > 0) && !isUrl(this.state.license[0].licenseurl),
+        contributorLastName: (this.state.contributors[0].firstName && !this.state.contributors[0].lastName),
+        firstPage: false,
       }
 
       errorStates.invalidDoiPrefix = errorStates.invaliddoi ? false : (this.state.article.doi.split('/')[0] !== this.props.ownerPrefix);
+
+      //validate License Urls
 
       if (hasPrintYear) { // has print year, don't care if there is a online year
         errorStates.onlineDateYear = false
@@ -378,14 +401,13 @@ export default class AddArticleCard extends Component {
           const value = reduxForm[formField];
 
           if(field === 'href') {
-            var re = /^(ftp|http|https):\/\/[^ "]+$/
-            crossmarkErrors[formField] = !value ? false : !re.test(value)
+            crossmarkErrors[formField] = !value ? false : !isUrl(value)
           }
 
           if(card === 'update') {
             if(field === 'type' && value !== '') {
-              crossmarkErrors[`update_${i}_DOI_Missing`] = !reduxForm[`update_${i}_DOI`] ? true : false;
-              crossmarkErrors[`update_${i}_year`] = !reduxForm[`update_${i}_year`] ? true : false;
+              crossmarkErrors[`update_${i}_DOI_Missing`] = !reduxForm[`update_${i}_DOI`];
+              crossmarkErrors[`update_${i}_year`] = !reduxForm[`update_${i}_year`];
             }
 
             if(field === 'DOI') {
@@ -395,10 +417,10 @@ export default class AddArticleCard extends Component {
           }
 
           if(card === 'clinical' && value !== '') {
-            crossmarkErrors[`clinical_${i}_registry`] = !reduxForm[`clinical_${i}_registry`] ? true : false;
-            crossmarkErrors[`clinical_${i}_trialNumber`] = !reduxForm[`clinical_${i}_trialNumber`] ? true : false;
+            crossmarkErrors[`clinical_${i}_registry`] = !reduxForm[`clinical_${i}_registry`];
+            crossmarkErrors[`clinical_${i}_trialNumber`] = !reduxForm[`clinical_${i}_trialNumber`];
           }
-        };
+        }
       }
 
       this.setState({
@@ -487,7 +509,6 @@ export default class AddArticleCard extends Component {
 
   render () {
     const error = (this.props.addArticle || {}).error
-    const { publication, publicationMetaData } = this.props
     return (
       <div>
 
@@ -557,6 +578,8 @@ export default class AddArticleCard extends Component {
                 showSection={this.state.openItems.Contributors}
                 addHandler={this.addSection.bind(this, 'contributors')}
                 apiReturned={this.state.openItems.apiReturned}
+                positionErrorBubble={this.positionErrorBubble}
+                errorContributorLastName={this.state.errors.contributorLastName}
               />
               <SubItem
                 title={'Funding'}
@@ -567,6 +590,7 @@ export default class AddArticleCard extends Component {
                 showSection={this.state.openItems.Funding}
                 apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'funding')}
+                positionErrorBubble={this.positionErrorBubble}
               />
               <SubItem
                 title={'License'}
@@ -579,7 +603,9 @@ export default class AddArticleCard extends Component {
                 addHandler={this.addSection.bind(this, 'license')}
                 freetoread={this.state.addInfo.freetolicense}
                 errorLicenseStartDate={this.state.errors.licenseStartDate}
+                errorLicenseUrlInvalid={this.state.errors.licenseUrlInvalid}
                 makeDateDropDown={makeDateDropDown}
+                positionErrorBubble={this.positionErrorBubble}
               />
               <SubItem
                 title={'Related Items'}
@@ -590,6 +616,7 @@ export default class AddArticleCard extends Component {
                 showSection={this.state.openItems.relatedItems}
                 apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'relatedItems')}
+                positionErrorBubble={this.positionErrorBubble}
               />
               <SubItem
                 title={'Additional Information'}
@@ -598,12 +625,14 @@ export default class AddArticleCard extends Component {
                 handler={this.boundSetState}
                 showSection={this.state.openItems.addInfo}
                 apiReturned={this.state.openItems.apiReturned}
+                positionErrorBubble={this.positionErrorBubble}
               />
               {this.state.crossmark &&
                 <SubItem
                   title={'Crossmark'}
                   showCards={this.state.showCards}
                   crossmarkErrors={this.state.crossmarkErrors}
+                  positionErrorBubble={this.positionErrorBubble}
                 />
               }
 

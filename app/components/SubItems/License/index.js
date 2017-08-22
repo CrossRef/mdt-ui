@@ -15,6 +15,10 @@ export default class License extends Component {
     }
   }
 
+  componentDidUpdate () {
+    this.props.positionErrorBubble();
+  }
+
   displayAppliesTo () {
       var appliesTo = [
         <option key='-1'></option>,
@@ -130,7 +134,7 @@ export default class License extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${this.props.errorLicenseUrlInvalid && 'fieldError'}`}
                                             type='text'
                                             ref='licenseurl'
                                             onChange={this.handleLicense}

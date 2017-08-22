@@ -16,6 +16,10 @@ export default class RelatedItems extends Component {
     }
   }
 
+  componentDidUpdate () {
+    this.props.positionErrorBubble();
+  }
+
   toggle = () => {
       this.setState({
         showSubItem: !this.state.showSubItem

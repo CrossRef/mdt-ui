@@ -64,10 +64,7 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
       errors.licenseStartDate ||
       crossmarkErrors.update_0_DOI_Missing || crossmarkErrors.update_0_year || crossmarkErrors.clinical_0_registry || crossmarkErrors.clinical_0_trialNumber
     ) &&
-    <div><b>Required.</b><br />Please provide required informaton.</div>
-    }
-    {(errors.invalidurl) &&
-    <div><b>Invalid URL.</b><br />Please check your URL.</div>
+    <div><b>Required.</b><br />Please provide required information.</div>
     }
     {(errors.invaliddoi) &&
     <div><b>Invalid DOI.</b><br/>Please check your DOI (10.xxxx/xx...). Record prefix (10.xxxx) must match publication prefix.</div>
@@ -75,6 +72,16 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
     {(errors.dupedoi) &&
     <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>
     }
+    {(errors.invalidurl) &&
+    <div><b>Invalid Article URL.</b><br />Please check your URL.</div>
+    }
+    {(errors.contributorLastName) &&
+    <div><b>Required.</b><br />Please provide contributor last name with first name.</div>
+    }
+    {(errors.licenseUrlInvalid) &&
+    <div><b>Invalid License URL.</b><br />Please check your URL.</div>
+    }
+
     {(crossmarkErrors.peer_0_href) &&
     <div><b>Invalid URL.</b><br />Please check your Crossmark Peer Review URL.</div>
     }
