@@ -137,8 +137,6 @@ export const journalArticleXml = (component, crossmark) => {
         `${article.originallanguagetitlesubtitle.length > 0 ? `<subtitle>` + article.originallanguagetitlesubtitle.trim() + `</subtitle>` : ``}`,
       `</titles>`,
 
-      `${getAcceptanceDateXML()}`,
-
       `${(getContributorXML().length > 0) ? getContributorXML() : ``}`,
 
       `${(article.abstract.trim().length > 0) ?
@@ -290,7 +288,7 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getCollectionXML () {
     // similarity check
-    const similarityCheck = state.addInfo.similarityCheckURL.trim().length > 0 ? `<item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item>` : ``
+    const similarityCheck = state.addInfo.similarityCheckURL.trim().length > 0 ? `<collection property="crawler-based"><item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item></collection>` : ``
     return similarityCheck
   }
 
@@ -300,18 +298,6 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getPublisherItems () {
     return (article.locationId.trim().length > 0) ? `<publisher_item><item_number item_number_type="article_number">${article.locationId.trim()}</item_number></publisher_item>` : ``
-  }
-
-  function getAcceptanceDateXML () {
-    var retStr = ``
-    if ((article.acceptedDateYear.length > 0) || (article.acceptedDateMonth.length > 0) || (article.acceptedDateDay.length > 0)) {
-      retStr = retStr + ((article.acceptedDateYear.length > 0) ? `<year>${article.acceptedDateYear}</year>` : ``)
-      retStr = retStr + ((article.acceptedDateMonth.length > 0) ? `<month>${article.acceptedDateMonth}</month>` : ``)
-      retStr = retStr + ((article.acceptedDateDay.length > 0) ? `<day>${article.acceptedDateDay}</day>` : ``)
-      retStr = `<acceptance_date>${retStr}</acceptance_date>`
-    }
-
-    return retStr
   }
 }
 
