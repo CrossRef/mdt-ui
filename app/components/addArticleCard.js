@@ -144,7 +144,7 @@ export default class AddArticleCard extends Component {
     asyncGetItem: is.func.isRequired,
     reduxForm: is.object.isRequired,
     mode: is.string.isRequired,
-    duplicateFrom: is.string,
+    isDuplicate: is.bool.isRequired,
     publication: is.shape({
       message: is.object
     }).isRequired,
@@ -191,10 +191,14 @@ export default class AddArticleCard extends Component {
           this.setState({showCards: parsedArticle.crossmark.showCards});
         }
 
+        if(this.props.isDuplicate) {
+          parsedArticle.article.doi = this.props.ownerPrefix
+        }
+
         this.setState({
           inCart: !!_.find(this.props.reduxCart, (cartItems) => { return cartItems.doi === parsedArticle.article.doi}),
           first: true,
-          doiDisabled: true,
+          doiDisabled: !this.props.isDuplicate,
           version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
           addInfo: parsedArticle.addInfo,
           article: parsedArticle.article,
@@ -239,10 +243,6 @@ export default class AddArticleCard extends Component {
         const title = JSesc(this.state.article.title)
 
         var version = this.state.version
-
-        if (props.mode === 'edit') {
-          version = String(parseInt(this.state.version) + 1)
-        }
 
         var newRecord = {
           'title': {'title': title},

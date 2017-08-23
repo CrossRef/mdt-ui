@@ -7,8 +7,6 @@ import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
 import { controlModal, cartUpdate, getItem, removeFromCart, clearCart, deposit } from '../actions/application'
-import Header from '../components/header'
-import Footer from '../components/footer'
 import DepositCart from '../components/depositCart'
 import reviewDepositCart from '../components/reviewDepositCart'
 import DepositResult from '../components/depositResult'
@@ -239,7 +237,7 @@ export default class DepositCartPage extends Component {
       if(typeof result.result === 'string') {
         resultStatus = 'Failure';
         error.errorMessage = result.result;
-      } else if (typeof result.result === 'object') {
+      } else if (typeof result.result === 'object' && result.result.doi_batch_diagnostic) {
         depositId.push(result.result.doi_batch_diagnostic.submission_id);
         const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic;
         resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status'];

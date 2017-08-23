@@ -1,17 +1,10 @@
 import React, { Component } from 'react'
 import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
+import {stateTrackerII} from 'my_decorators'
 
 import {routes} from '../../../routing'
 
-
-function getSuggestionValue(suggestion) {
-  this.handleFunding(suggestion.uri)
-  this.setState({
-    funder_identifier: suggestion.uri
-  })
-  return suggestion.id;
-}
 
 function renderSuggestion(suggestion) {
   return (
@@ -26,9 +19,10 @@ export default class Funding extends Component {
     super(props)
     const {index, grantNumbers, funding} = this.props
     this.state = {
-      showSubItem: index === 0 ? true : false,
+      showSubItem: index === 0,
       suggestions: [],
       value: funding.funderRegistryID.trim().length ? funding.funderRegistryID : '',
+      funderRegistryID: funding.funderRegistryID.trim().length ? funding.funderRegistryID : '',
       funder_identifier: funding.funder_identifier.trim().length ? funding.funder_identifier : '',
       isLoading: false,
       grantNumbers: grantNumbers.length > 0 ? funding.grantNumbers : [''],
@@ -42,6 +36,32 @@ export default class Funding extends Component {
     })
   }
 
+  getSuggestionValue = (suggestion) => {
+    return suggestion
+  }
+
+  onChange = (e, {newValue}) => {
+    if (newValue.id || newValue === '') {
+      const event = {
+        target: {
+          name: 'funderRegistryID',
+          id: newValue.id || '',
+          uri: newValue.uri || '',
+        }
+      }
+      this.handleFunding(event)
+      this.setState({
+        value: newValue.id || '',
+        funderRegistryID: newValue.id || '',
+        funder_identifier: newValue.uri || ''
+      })
+    } else {
+      this.setState({
+        value: newValue
+      })
+    }
+  }
+
   getSuggestions (value) {
     const inputValue = value.trim().toLowerCase();
     const inputLength = inputValue.length;
@@ -51,31 +71,21 @@ export default class Funding extends Component {
     )
   }
 
-  onChange (event, { newValue }) {
-    this.setState({
-      value: newValue
-    });
-  }
-
-  loadSuggestions(value) {
+  onSuggestionsFetchRequested ({ value }) {
     this.setState({
       isLoading: true
     });
 
     fetch(`https://api.crossref.org/funders?query=${value}`)
-    .then((response) => {
+      .then((response) => {
         return response.json();
-    })
-    .then(function(stories) {
+      })
+      .then((stories) => {
         this.setState({
-            isLoading: false,
-            suggestions: stories.message.items
+          isLoading: false,
+          suggestions: stories.message.items
         });
-    }.bind(this))
-  }
-
-  onSuggestionsFetchRequested ({ value }) {
-    this.loadSuggestions(value)
+      })
   }
 
   onSuggestionsClearRequested () {
@@ -102,24 +112,28 @@ export default class Funding extends Component {
     })
   }
 
-  handleFunding = (uri) => {
-    var funder = {}
-    var grants = []
-    var funder_ident_count = 0
-    for(var i in this.refs){
-      if(i === 'funderRegistryID') {
-        funder[i] = this.state.value
-        funder['funder_identifier'] = uri
-      } else if ((i !== 'funder_identifier') && (i !== 'funderRegistryID') && (i.indexOf('grantNumbers') < 0)){
-        funder[i] = this.refs[i].value
-      } else if (i.indexOf('grantNumber') > -1){
-        grants.push(this.refs[i].value)
-      }
+  handleFunding = (e) => {
+    const funder = {
+      fundername: this.props.funding.fundername,
+      funderRegistryID: this.state.funderRegistryID,
+      funder_identifier: this.state.funder_identifier,
+      grantNumbers: this.state.grantNumbers
     }
 
-    funder.grantNumbers = grants
+    if(e.target.name === 'funderRegistryID') {
+      funder.funderRegistryID = e.target.id;
+      funder.funder_identifier = e.target.uri;
+    } else if (e.target.name === 'grantNumber') {
+      const grants = [];
+      for (const i in this.refs) {
+        grants.push(this.refs[i].value)
+      }
+      funder.grantNumbers = grants
+    } else {
+      funder[e.target.name] = e.target.value
+    }
 
-    this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
+    this.props.handler({
       funding: update(this.props.data, {[this.props.index]: {$set: funder }})
     })
   }
@@ -133,6 +147,7 @@ export default class Funding extends Component {
                     className='height32'
                     type='text'
                     ref={'grantNumbers_'+i}
+                    name="grantNumber"
                     onChange={this.handleFunding}
                     value={grantNumber}
                 />
@@ -146,12 +161,10 @@ export default class Funding extends Component {
   }
 
   render () {
-    const { value, suggestions } = this.state;
-
     const inputProps = {
       placeholder: 'Type a Funder Name to look up ID.',
-      value,
-      onChange: this.onChange.bind(this)
+      value: this.state.value,
+      onChange: this.onChange
     };
     const status = (this.state.isLoading ? 'Loading...' : 'Loading...');
     return (
@@ -189,7 +202,7 @@ export default class Funding extends Component {
                                         <input
                                             className='height32'
                                             type='text'
-                                            ref='fundername'
+                                            name='fundername'
                                             onChange={this.handleFunding}
                                             value={this.props.funding.fundername}
                                         />
@@ -214,12 +227,11 @@ export default class Funding extends Component {
                                     </div>
                                     <div className='field'>
                                         <Autosuggest
-                                            ref='funderRegistryID'
                                             renderSuggestion={renderSuggestion}
                                             suggestions={this.state.suggestions}
                                             onSuggestionsFetchRequested={this.onSuggestionsFetchRequested.bind(this)}
                                             onSuggestionsClearRequested={this.onSuggestionsClearRequested.bind(this)}
-                                            getSuggestionValue={getSuggestionValue.bind(this)}
+                                            getSuggestionValue={this.getSuggestionValue}
                                             inputProps={inputProps}
                                          />
                                         {this.state.isLoading &&
