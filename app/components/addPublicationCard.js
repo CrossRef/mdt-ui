@@ -7,6 +7,7 @@ import fetch from '../utilities/fetch'
 const languages = require('../utilities/language.json')
 import isDOI from '../utilities/isDOI'
 import isURL from '../utilities/isURL'
+import {apiBaseUrl} from '../actions/application'
 
 
 
@@ -94,7 +95,7 @@ export default class AddPublicationCard extends Component {
   }
 
   checkDupeDOI (callback) {
-    return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${this.state.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
+    return Promise.resolve(fetch(`${apiBaseUrl}/work?doi=${this.state.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
       .then(data => callback(data.status === 200))
     )
   }

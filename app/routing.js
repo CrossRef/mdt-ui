@@ -18,7 +18,7 @@ if(base === '//') base = '/';
 
 export const routes = {
   base: base,
-  images: base + 'images',
+  images: base + 'assets/images',
   loggedInPage: base + 'loggedin',
   publications: base + 'publications',
   publicationsModal: base + 'publications?modal=:doi',

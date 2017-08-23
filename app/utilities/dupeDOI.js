@@ -1,6 +1,8 @@
 import fetch from './fetch'
 import _ from 'lodash'
 
+import {apiBaseUrl} from '../actions/application'
+
 function isValidDOI (doi) {
   var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
   return re.test(doi)
@@ -10,7 +12,7 @@ function dupCheck (doi) {
   if(doi) {
     if (doi.length > 0) {
       if (isValidDOI(doi)) {
-        return Promise.resolve(fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+        return Promise.resolve(fetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then((data) => {return data.status === 200}))
       } else {
         return (false, false)
