@@ -1,4 +1,5 @@
 import _ from 'lodash'
+import moment from 'moment'
 
 import { getContributor, getSubmitSubItems } from './getSubItems'
 
@@ -117,6 +118,8 @@ export const crossmarkXml = (form, crossmarkPrefix) => {
 export const journalArticleXml = (component, crossmark) => {
   const state = component.state;
   const article = state.article;
+  const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
+    printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay;
   const language = state.addInfo.language;
   const publicationType = state.addInfo.publicationType;
 
@@ -134,26 +137,24 @@ export const journalArticleXml = (component, crossmark) => {
         `${article.originallanguagetitlesubtitle.length > 0 ? `<subtitle>` + article.originallanguagetitlesubtitle.trim() + `</subtitle>` : ``}`,
       `</titles>`,
 
-      `${getAcceptanceDateXML()}`,
-
       `${(getContributorXML().length > 0) ? getContributorXML() : ``}`,
 
       `${(article.abstract.trim().length > 0) ?
         `<jats:abstract xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"><jats:p>${article.abstract.trim()}</jats:p></jats:abstract>` : ''}`,
 
-      article.onlineDateYear.length > 0 ? [
+      onlineYear || onlineMonth || onlineDay ? [
         `<publication_date media_type="online">`,
-          `${article.onlineDateYear.length > 0 ? `<year>${article.onlineDateYear}</year>`:``}`,
-          `${article.onlineDateMonth.length > 0 ? `<month>${article.onlineDateMonth}</month>`:``}`,
-          `${article.onlineDateDay.length > 0 ? `<day>${article.onlineDateDay}</day>`:``}`,
+          `${onlineMonth.length > 0 ? `<month>${onlineMonth}</month>`:``}`,
+          `${onlineDay.length > 0 ? `<day>${onlineDay}</day>`:``}`,
+          `${onlineYear.length > 0 ? `<year>${onlineYear}</year>`:``}`,
         `</publication_date>`
       ].join('') : '',
 
-      article.printDateYear.length > 0 ? [
+      printYear || printMonth || printDay ? [
         `<publication_date media_type="print">`,
-          `${article.printDateYear.length > 0 ? `<year>${article.printDateYear}</year>`:``}`,
-          `${article.printDateMonth.length > 0 ? `<month>${article.printDateMonth}</month>`:``}`,
-          `${article.printDateDay.length > 0 ? `<day>${article.printDateDay}</day>`:``}`,
+          `${printMonth.length > 0 ? `<month>${printMonth}</month>`:``}`,
+          `${printDay.length > 0 ? `<day>${printDay}</day>`:``}`,
+          `${printYear.length > 0 ? `<year>${printYear}</year>`:``}`,
         `</publication_date>`
       ].join('') : '',
 
@@ -179,7 +180,7 @@ export const journalArticleXml = (component, crossmark) => {
       `</doi_data>`,
 
     `</journal_article>`
-  ];
+  ]; console.log(array.join(''))
   return array.join('')
 
 
@@ -215,27 +216,35 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getFunderXML () {
-    var funders = getSubmitSubItems(state.funding).map((funder, i) => {
-      var funderName = undefined
+    var funders = getSubmitSubItems(state.funding).map( funder => {
+      let funderName;
       if (funder.fundername) {
         funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
       }
 
-      var funder_identifier = undefined
+      let funder_identifier;
       if (funder.funder_identifier) {
         funder_identifier = funder.funder_identifier.trim().length > 0 ? funder.funder_identifier : undefined
       }
 
-      var attributes = ``
-      if (funderName || funder_identifier) { //if an of these exist
-        attributes = `<fr:assertion name="funder_name">${funderName}${funder_identifier ? `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>` : ``}</fr:assertion>`
-        var grants = funder.grantNumbers.map((awardNumber, i) => {
-          return `<fr:assertion name="award_number">${awardNumber}</fr:assertion>`
-        });
+      let grants = funder.grantNumbers ? funder.grantNumbers.map( awardNumber => {
+        return (awardNumber && awardNumber.trim()) ? `<fr:assertion name="award_number">${awardNumber}</fr:assertion>` : ''
+      }) : [];
 
-        var fundgroup = `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>`
-        return fundgroup
+      grants = _.filter(grants, (grant) => {
+        return grant !== ''
+      })
+
+      let attributes = '';
+
+      if (funderName) {
+        attributes = `<fr:assertion name="funder_name">${funderName}${funder_identifier ? `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>` : ``}</fr:assertion>`
+      } else if(funder_identifier) {
+        attributes = `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>`
       }
+
+      var fundgroup = ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined;
+      return fundgroup
     })
 
     funders = _.filter(funders, (funder) => {
@@ -248,26 +257,28 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getLicenseXML () {
     var licenses = getSubmitSubItems(state.license).map((license, i) => {
+      const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay;
+      const dayHolder = []
+      if (year) {
+        dayHolder.push(year)
+      }
+      if (month) {
+        dayHolder.push(month)
+      }
+      if (day) {
+        dayHolder.push(day)
+      }
 
-      var dayHolder = []
-      if ((license.acceptedDateYear ? license.acceptedDateYear : '').length > 0) {
-        dayHolder.push(license.acceptedDateYear)
-      }
-      if ((license.acceptedDateMonth ? license.acceptedDateMonth : '').length > 0) {
-        dayHolder.push(license.acceptedDateMonth)
-      }
-      if ((license.acceptedDateDay ? license.acceptedDateDay : '').length > 0) {
-        dayHolder.push(license.acceptedDateDay)
-      }
-
-      var attributes = ``
-      if (dayHolder.length > 0) {
-        var freetolicense = ``
+      let attributes = ``
+      const isDate = dayHolder.length > 0;
+      if (isDate || license.licenseurl || license.appliesto) {
+        const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : '';
+        let freetolicense = ``
         if (state.addInfo.freetolicense === 'yes') {
-          freetolicense = `<ai:free_to_read start_date="${dayHolder.join('-')}"/>`
+          freetolicense = `<ai:free_to_read start_date="${date}"/>`
         }
 
-        attributes = `${freetolicense}<ai:license_ref applies_to="${license.appliesto}" start_date="${dayHolder.join('-')}">${license.licenseurl}</ai:license_ref>`
+        attributes = `${freetolicense}<ai:license_ref${license.appliesto ? ` applies_to="${license.appliesto}"`:''}${isDate ? ` start_date="${date}"`:''}>${license.licenseurl}</ai:license_ref>`
       }
       return attributes
     })
@@ -275,17 +286,21 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getRelatedItemsXML () {
-    var relatedItems = getSubmitSubItems(state.relatedItems).map((relatedItem, i) => {
-      var attributes = `<related_item>${(relatedItem.description.length > 0) ? `<description>${relatedItem.description}</description>` : ``}<inter_work_relation relationship-type="${relatedItem.relationType}" identifier-type="${relatedItem.identifierType}">${relatedItem.relatedItemIdentifier}</inter_work_relation></related_item>`
+    var relatedItems = getSubmitSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}, i) => {
+
+      const interWorkRelation = (relationType || identifierType || relatedItemIdentifier) ?
+        `<inter_work_relation${relationType ? ` relationship-type="${relationType}"`:''}${identifierType ? ` identifier-type="${identifierType}"`:''}>${relatedItemIdentifier || ''}</inter_work_relation>`
+        : ''
+      const attributes = `<related_item xmlns="http://www.crossref.org/relations.xsd">${description ? `<description>${description}</description>` : ``}${interWorkRelation}</related_item>`
 
       return attributes
     })
-    return relatedItems.length > 0 ? `<program xlmns="http://www.crossref.org/relations.xsd">${relatedItems.join('')}</program>` : ``
+    return relatedItems.length > 0 ? `<rel:program xmlns:rel="http://www.crossref.org/relations.xsd">${relatedItems.join('')}</rel:program>` : ``
   }
 
   function getCollectionXML () {
     // similarity check
-    const similarityCheck = state.addInfo.similarityCheckURL.trim().length > 0 ? `<item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item>` : ``
+    const similarityCheck = state.addInfo.similarityCheckURL.trim().length > 0 ? `<collection property="crawler-based"><item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item></collection>` : ``
     return similarityCheck
   }
 
@@ -295,18 +310,6 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getPublisherItems () {
     return (article.locationId.trim().length > 0) ? `<publisher_item><item_number item_number_type="article_number">${article.locationId.trim()}</item_number></publisher_item>` : ``
-  }
-
-  function getAcceptanceDateXML () {
-    var retStr = ``
-    if ((article.acceptedDateYear.length > 0) || (article.acceptedDateMonth.length > 0) || (article.acceptedDateDay.length > 0)) {
-      retStr = retStr + ((article.acceptedDateYear.length > 0) ? `<year>${article.acceptedDateYear}</year>` : ``)
-      retStr = retStr + ((article.acceptedDateMonth.length > 0) ? `<month>${article.acceptedDateMonth}</month>` : ``)
-      retStr = retStr + ((article.acceptedDateDay.length > 0) ? `<day>${article.acceptedDateDay}</day>` : ``)
-      retStr = `<acceptance_date>${retStr}</acceptance_date>`
-    }
-
-    return retStr
   }
 }
 

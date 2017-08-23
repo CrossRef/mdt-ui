@@ -17,16 +17,17 @@ export default class DepositResult extends Component{
 
     for (var pub in resultData) {
       const articleElements = resultData[pub].map((article, index)=> {
+        const url = `http://dx.doi.org/${article.doi}`
         return (
           <div className={`articleBar ${article.type === 'issue' ? 'issueBar' : ''} ${article.errorMessage ? 'errorBorder' : 'normalBorder'}`} key={index}>
-            <p className="articleTitle">{article.title}</p>
-            <div className="articleResult">
-              <p className="articleResult">{article.status}</p>
-              <div className={article.errorMessage ? 'errorBox' : 'emptyBox'}>
-                {!article.errorMessage ? <a target='_blank' href={`http://dx.doi.org/${article.doi}`}>http://dx.doi.org/{article.doi}</a>
+            <tr className='depositResultRow'>
+              <td className="articleTitle">{article.title}</td>
+              <td className={article.errorMessage ? 'errorResult' : 'articleResult'}>{article.status}</td>
+              <td className={article.errorMessage ? 'errorBox' : 'urlBox'}>
+                {!article.errorMessage ? <a target='_blank' href={url}>{url}</a>
                 : <ErrorBox errorMessage={article.errorMessage} closeErrors={this.closeErrors}/>}
-              </div>
-            </div>
+              </td>
+            </tr>
           </div>
         )
       });

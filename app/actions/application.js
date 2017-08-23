@@ -4,7 +4,6 @@ import xmlParse from '../utilities/xmldoc'
 import fetch from '../utilities/fetch'
 import { publicationXml } from '../utilities/xmlGenerator'
 import { routes } from '../routing'
-
 const withQuery = require('with-query')
 
 // Action Creators, useless unless dispatched
@@ -59,9 +58,11 @@ export function removeFromCart(doi) {
 
 // Async Action Creators
 
+export const apiBaseUrl = 'http://mdt.crossref.org/mdt/v1'
+
 export function login (usr, pwd, error = (reason) => console.error('ERROR in login', reason)) {
   return function(dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/login`, {
+    fetch(`${apiBaseUrl}/login`, {
       method: 'post',
       body: JSON.stringify({usr, pwd})
     })
@@ -88,7 +89,7 @@ export function logout () {
 
 export function getCRState (type, error = (reason) => console.error('ERROR in getCRState', reason)) {
   return function(dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/state`, {
+    fetch(`${apiBaseUrl}/state`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
     })
@@ -161,7 +162,7 @@ export function search (query, error = (reason) => console.error('ERROR in searc
     if(!query) return;
     dispatch(searchValue(query));
     dispatch(searchLoading(true)); //having 2 dispatches seems to give the initial searchValue time to save to store before the return's searchValue is checked
-    fetch(`http://mdt.crossref.org/mdt/v1/search?q=${query}`, {
+    fetch(`${apiBaseUrl}/search?q=${query}`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
     })
@@ -178,7 +179,7 @@ export function searchRecords (query, pubTitle, type, error = (reason) => consol
     if(!query) return;
     dispatch(searchValue(query));
     dispatch(searchLoading(true));
-    fetch(`http://mdt.crossref.org/mdt/v1/search/works?q=${query}&title=${pubTitle}&type=${type.toLowerCase()}`, {
+    fetch(`${apiBaseUrl}/search/works?q=${query}&title=${pubTitle}&type=${type.toLowerCase()}`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
     })
@@ -197,7 +198,7 @@ export function getPublications (DOIs, callback, error = (reason) => console.err
     Promise.all(
       DOIs.map(
         (doi) =>
-          fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')}})
+          fetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')}})
             .then(publication => publication.json())
             .catch(reason => console.error(`ERROR: publication DOI fetch failed `, reason))
       )
@@ -215,7 +216,7 @@ export function getPublications (DOIs, callback, error = (reason) => console.err
 
 export function submitPublication (form, callback, error = reason => console.error('ERROR in submitPublication', reason)) {
   return function(dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/work`, {
+    fetch(`${apiBaseUrl}/work`, {
       method:'post',
       headers: {Authorization: localStorage.getItem('auth')},
       body: JSON.stringify({
@@ -232,7 +233,7 @@ export function submitPublication (form, callback, error = reason => console.err
         }
       })
     }).then(() =>
-      fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${form.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
+      fetch(`${apiBaseUrl}/work?doi=${form.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then(publication => publication.json())
         .then(publication => {
           dispatch(storePublications(publication));
@@ -252,13 +253,13 @@ export function submitPublication (form, callback, error = reason => console.err
 export function submitArticle (publication, articleDoi, callback, error = (reason) => console.error('ERROR in submitArticle', reason)) {
   return function(dispatch) {
 
-    fetch(`http://mdt.crossref.org/mdt/v1/work`, {
+    fetch(`${apiBaseUrl}/work`, {
         method: 'post',
         headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
       }
     ).then(() =>
-      fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${articleDoi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+      fetch(`${apiBaseUrl}/work?doi=${articleDoi}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then(article => article.json())
         .then((article) => {
           if(callback) callback();
@@ -272,7 +273,7 @@ export function submitArticle (publication, articleDoi, callback, error = (reaso
 
 export function submitIssue (publication, callback, error = (reason) => console.error('ERROR in submitIssue', reason)) {
   return function(dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/work`, {
+    fetch(`${apiBaseUrl}/work`, {
         method: 'post',
         headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
@@ -287,7 +288,7 @@ export function submitIssue (publication, callback, error = (reason) => console.
 
 export function deposit (cartArray, callback, error = (reason) => console.error(reason)) {
   return function(dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/deposit`, {
+    fetch(`${apiBaseUrl}/deposit`, {
       method:'post',
       headers: {Authorization: localStorage.getItem('auth')},
       body: JSON.stringify({
@@ -295,15 +296,20 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
       })
     })
     .then(result => {
-      if(result.status > 202) throw `Error ${result.status}: ${result.statusText}`;
+      if(result.status > 202) throw `Server Error ${result.status}: ${result.statusText}`;
       return result.json()
     })
     .then(result => {
       let resultArray = result.message;
       resultArray = resultArray.map((item) => {
-        const getXML = xmlParse(item.result);
-        if(getXML !== undefined) item.result = getXML;
-        return item;
+        try {
+          const getXML = xmlParse(item.result);
+          if(getXML !== undefined) item.result = getXML;
+          return item
+        } catch (error) {
+          console.error('Error Parsing Deposit result: ' + error);
+          return item;
+        }
       });
       console.log('DEPOSIT RESULT', resultArray);
       if(callback) callback(resultArray)
@@ -317,7 +323,7 @@ export function getItem (doi) {
 	return function(dispatch) {
 		if(doi){
 			return Promise.resolve(
-				fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+				fetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
 				.then(response => {
 				  if(response.status !== 200) {
 				    console.error(`${response.status}: ${response.statusText}`, response);
@@ -333,7 +339,7 @@ export function getItem (doi) {
 export function getDepositHistory (params, callback, error = (reason) => console.error(reason)) {
 	return function(dispatch) {
     return Promise.resolve(
-      fetch(withQuery('http://mdt.crossref.org/mdt/v1/history', params),
+      fetch(withQuery(`${apiBaseUrl}/history`, params),
       {
         headers: {Authorization: localStorage.getItem('auth')}
       }
@@ -348,7 +354,7 @@ export function getDepositHistory (params, callback, error = (reason) => console
 
 export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
   return function(dispatch) {
-    fetch(`http://mdt.crossref.org/mdt/v1/work?doi=${doi}`, {
+    fetch(`${apiBaseUrl}/work?doi=${doi}`, {
       method: 'delete',
       headers: {Authorization: localStorage.getItem('auth')}
     })

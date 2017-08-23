@@ -28,9 +28,11 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history} onUpdate={()=>{
+      <Router history={history} onUpdate={(a, b, c)=>{
+        if(!store.getState().routing.locationBeforeTransitions.query.modal) {
+          store.dispatch(controlModal({ showModal: false }))
+        }
         window.scrollTo(0, 0);
-        store.dispatch(controlModal({ showModal: false }))
       }}>
         {Routing()}
       </Router>

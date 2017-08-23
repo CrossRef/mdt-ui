@@ -126,7 +126,7 @@ export default class AddArticlesPage extends Component {
           issuePublication = {this.state.issuePublication}
           mode = { mode }
           issue = { issueDoi }
-          duplicateFrom = { this.props.location.state ? this.props.location.state.duplicateFrom : '' }
+          isDuplicate = { this.props.location.state ? !!this.props.location.state.duplicateFrom : false }
           crossmarkPrefixes = { this.props.crossmarkPrefixes }
           reduxCart = {this.props.reduxCart}
         />

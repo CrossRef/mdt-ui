@@ -6,9 +6,7 @@ import { bindActionCreators } from 'redux'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
-import { controlModal, cartUpdate, getItem, removeFromCart, deposit } from '../actions/application'
-import Header from '../components/header'
-import Footer from '../components/footer'
+import { controlModal, cartUpdate, getItem, removeFromCart, clearCart, deposit } from '../actions/application'
 import DepositCart from '../components/depositCart'
 import reviewDepositCart from '../components/reviewDepositCart'
 import DepositResult from '../components/depositResult'
@@ -25,6 +23,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxCartUpdate: cartUpdate,
   reduxRemoveFromCart: removeFromCart,
+  reduxClearCart: clearCart,
   asyncGetItem: getItem,
   asyncDeposit: deposit
 }, dispatch)
@@ -36,6 +35,7 @@ export default class DepositCartPage extends Component {
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
+    reduxClearCart: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
     asyncDeposit: is.func.isRequired,
     cart: is.array.isRequired,
@@ -48,18 +48,17 @@ export default class DepositCartPage extends Component {
       showDeposit: true,
       fullCart: [],
       falseCnt: 0,
-      status: 'cart'
+      status: 'cart',
+      result: {
+        resultData: '',
+        resultCount: '',
+        depositId: ''
+      },
     }
   }
 
-  toggleDeposit = (showDeposit) => {
-    if (!showDeposit) {
-      var falseCnt = this.state.falseCnt
-      this.setState({
-        falseCnt: falseCnt + 1,
-        showDeposit: false
-      })
-    }
+  componentDidMount() {
+    this.getFullCart()
   }
 
   getFullCart (cart = this.props.cart) {
@@ -172,10 +171,6 @@ export default class DepositCartPage extends Component {
     }
   }
 
-  componentDidMount() {
-    this.getFullCart()
-  }
-
   review = () => {
       this.props.reduxControlModal({
         showModal: true,
@@ -207,28 +202,28 @@ export default class DepositCartPage extends Component {
     this.setState({status:`processing`})
 
     const errorHandler = (error) => {
+      console.error(error);
       this.setState({status: 'cart'});
       this.props.reduxControlModal({
         showModal: true,
-        title: 'Server Response - ' + error,
+        title: error,
         style: 'errorModal',
         Component: ()=>null
       })
     }
 
-    this.props.asyncDeposit(toDeposit, (resultArray) => {
-      this.setState({status:'result', depositResult:resultArray})
+    this.props.asyncDeposit(toDeposit, (depositResult) => {
+      this.setState({status:'result', result: this.processDepositResult(depositResult)});
+      this.props.reduxClearCart();
     }, errorHandler);
-
-
   }
 
-  processDepositResult = () => {
+  processDepositResult = (depositResult) => {
     const resultCount = {Success: 0, Failure: 0};
     const resultData = {};
     let depositId = [];
 
-    this.state.depositResult.forEach((result, index)=>{
+    depositResult.forEach((result, index)=>{
       let pubDoi, pubTitle, resultTitle, resultStatus, resultType;
       let error = {};
       const articleInfo = this.props.cart.find((cartItem)=>{
@@ -242,7 +237,7 @@ export default class DepositCartPage extends Component {
       if(typeof result.result === 'string') {
         resultStatus = 'Failure';
         error.errorMessage = result.result;
-      } else if (typeof result.result === 'object') {
+      } else if (typeof result.result === 'object' && result.result.doi_batch_diagnostic) {
         depositId.push(result.result.doi_batch_diagnostic.submission_id);
         const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic;
         resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status'];
@@ -264,7 +259,6 @@ export default class DepositCartPage extends Component {
         pubDoi: pubDoi,
         ...error
       }];
-
     });
 
     depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0];
@@ -272,8 +266,18 @@ export default class DepositCartPage extends Component {
     return {resultData, resultCount, depositId}
   }
 
+  toggleDeposit = (showDeposit) => {
+    if (!showDeposit) {
+      var falseCnt = this.state.falseCnt
+      this.setState({
+        falseCnt: falseCnt + 1,
+        showDeposit: false
+      })
+    }
+  }
+
   render () {
-    const {resultData, resultCount, depositId} = (this.state.status === 'result' && this.state.depositResult) ? this.processDepositResult() : {};
+    const {resultData, resultCount, depositId} = this.state.result;
 
     return (
       <div className='depositPage'>
@@ -309,6 +313,12 @@ export default class DepositCartPage extends Component {
     )
   }
 }
+
+
+
+
+
+
 
 
 const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {

@@ -12,6 +12,7 @@ import update from 'immutability-helper'
 export default class Issue extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
+    triggerModal: is.string.isRequired,
 
     publication: is.object.isRequired,
     record: is.object.isRequired,
@@ -37,15 +38,9 @@ export default class Issue extends Component {
     }
   }
 
-  componentWillReceiveProps(nextProps) {
-    if(!this.props.selections.length)
-    if ((nextProps.doi !== this.props.doi) || (this.props.triggerModal !== nextProps.triggerModal)){
-      const { doi } = nextProps.doi
-      if (nextProps.triggerModal) { //its a doi
-        if (nextProps.triggerModal === doi) {
-          this.modalOpen();
-        }
-      }
+  componentDidMount() {
+    if (this.props.triggerModal === this.props.record.doi) {
+      this.modalOpen();
     }
   }
 
@@ -80,7 +75,7 @@ export default class Issue extends Component {
     let { status, type, date, doi } = this.props.record;
     date = moment(date || undefined).format('MMM Do YYYY')
     const { volume, issue} = this.props.record.title;
-    const displayTitle = `${volume && `Volume ${volume} `}Issue ${issue}`
+    const displayTitle = `${volume && `Volume ${volume}, `}Issue ${issue}`
     const url = doi && `http://dx.doi.org/${doi}`
 
     const checked = !this.props.selections.length ? {checked:false} : {};
