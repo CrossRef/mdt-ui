@@ -286,8 +286,12 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getRelatedItemsXML () {
-    var relatedItems = getSubmitSubItems(state.relatedItems).map((relatedItem, i) => {
-      var attributes = `<related_item xmlns="http://www.crossref.org/relations.xsd">${(relatedItem.description.length > 0) ? `<description>${relatedItem.description}</description>` : ``}<inter_work_relation relationship-type="${relatedItem.relationType}" identifier-type="${relatedItem.identifierType}">${relatedItem.relatedItemIdentifier}</inter_work_relation></related_item>`
+    var relatedItems = getSubmitSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}, i) => {
+
+      const interWorkRelation = (relationType || identifierType || relatedItemIdentifier) ?
+        `<inter_work_relation${relationType ? ` relationship-type="${relationType}"`:''}${identifierType ? ` identifier-type="${identifierType}"`:''}>${relatedItemIdentifier || ''}</inter_work_relation>`
+        : ''
+      const attributes = `<related_item xmlns="http://www.crossref.org/relations.xsd">${description ? `<description>${description}</description>` : ``}${interWorkRelation}</related_item>`
 
       return attributes
     })

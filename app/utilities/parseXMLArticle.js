@@ -271,24 +271,23 @@ const parseXMLArticle = function (articleXML) {
     const relatedItems = objectSearch(parsedArticle, 'related_item')
     retObj.openItems.relatedItems= !!relatedItems;
     var relItem = []
-
     if (relatedItems) {
         if (!Array.isArray(relatedItems)) {
-          const inter_work_relation = objectSearch(relatedItems, 'inter_work_relation')
+          const inter_work_relation = objectSearch(relatedItems, 'inter_work_relation') || {}
           relItem.push({
-              description: relatedItems['description'] ? relatedItems['description'] : '',
-              identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
-              relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
-              relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
+              description: relatedItems['description'] || '',
+              identifierType: inter_work_relation['-identifier-type'] || '',
+              relatedItemIdentifier: (typeof inter_work_relation === 'string') ? inter_work_relation : inter_work_relation['#text'] || '',
+              relationType: inter_work_relation['-relationship-type'] || ''
           })
         } else {
           for(var i = 0; i < relatedItems.length; i++) {
-            const inter_work_relation = objectSearch(relatedItems[i], 'inter_work_relation')
+            const inter_work_relation = objectSearch(relatedItems[i], 'inter_work_relation') || {}
             relItem.push({
-              description: relatedItems[i]['description'] ? relatedItems[i]['description'] : '',
-              identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
-              relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
-              relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
+              description: relatedItems[i]['description'] || '',
+              identifierType: inter_work_relation['-identifier-type'] || '',
+              relatedItemIdentifier: (typeof inter_work_relation === 'string') ? inter_work_relation : inter_work_relation['#text'] || '',
+              relationType: inter_work_relation['-relationship-type'] || ''
             })
           }
         }
