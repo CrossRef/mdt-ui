@@ -301,9 +301,14 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
     .then(result => {
       let resultArray = result.message;
       resultArray = resultArray.map((item) => {
-        const getXML = xmlParse(item.result);
-        if(getXML !== undefined) item.result = getXML;
-        return item;
+        try {
+          const getXML = xmlParse(item.result);
+          if(getXML !== undefined) item.result = getXML;
+          return item
+        } catch (error) {
+          console.error('Error Parsing Deposit result: ' + error);
+          return item;
+        }
       });
       console.log('DEPOSIT RESULT', resultArray);
       if(callback) callback(resultArray)

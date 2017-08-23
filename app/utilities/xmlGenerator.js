@@ -180,7 +180,7 @@ export const journalArticleXml = (component, crossmark) => {
       `</doi_data>`,
 
     `</journal_article>`
-  ];
+  ]; console.log(array.join(''))
   return array.join('')
 
 
@@ -216,27 +216,35 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getFunderXML () {
-    var funders = getSubmitSubItems(state.funding).map((funder, i) => {
-      var funderName = undefined
+    var funders = getSubmitSubItems(state.funding).map( funder => {
+      let funderName;
       if (funder.fundername) {
         funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
       }
 
-      var funder_identifier = undefined
+      let funder_identifier;
       if (funder.funder_identifier) {
         funder_identifier = funder.funder_identifier.trim().length > 0 ? funder.funder_identifier : undefined
       }
 
-      var attributes = ``
-      if (funderName || funder_identifier) { //if an of these exist
-        attributes = `<fr:assertion name="funder_name">${funderName}${funder_identifier ? `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>` : ``}</fr:assertion>`
-        var grants = funder.grantNumbers.map((awardNumber, i) => {
-          return `<fr:assertion name="award_number">${awardNumber}</fr:assertion>`
-        });
+      let grants = funder.grantNumbers ? funder.grantNumbers.map( awardNumber => {
+        return (awardNumber && awardNumber.trim()) ? `<fr:assertion name="award_number">${awardNumber}</fr:assertion>` : ''
+      }) : [];
 
-        var fundgroup = `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>`
-        return fundgroup
+      grants = _.filter(grants, (grant) => {
+        return grant !== ''
+      })
+
+      let attributes = '';
+
+      if (funderName) {
+        attributes = `<fr:assertion name="funder_name">${funderName}${funder_identifier ? `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>` : ``}</fr:assertion>`
+      } else if(funder_identifier) {
+        attributes = `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>`
       }
+
+      var fundgroup = ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined;
+      return fundgroup
     })
 
     funders = _.filter(funders, (funder) => {
@@ -279,11 +287,11 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getRelatedItemsXML () {
     var relatedItems = getSubmitSubItems(state.relatedItems).map((relatedItem, i) => {
-      var attributes = `<related_item>${(relatedItem.description.length > 0) ? `<description>${relatedItem.description}</description>` : ``}<inter_work_relation relationship-type="${relatedItem.relationType}" identifier-type="${relatedItem.identifierType}">${relatedItem.relatedItemIdentifier}</inter_work_relation></related_item>`
+      var attributes = `<related_item xmlns="http://www.crossref.org/relations.xsd">${(relatedItem.description.length > 0) ? `<description>${relatedItem.description}</description>` : ``}<inter_work_relation relationship-type="${relatedItem.relationType}" identifier-type="${relatedItem.identifierType}">${relatedItem.relatedItemIdentifier}</inter_work_relation></related_item>`
 
       return attributes
     })
-    return relatedItems.length > 0 ? `<program xlmns="http://www.crossref.org/relations.xsd">${relatedItems.join('')}</program>` : ``
+    return relatedItems.length > 0 ? `<rel:program xmlns:rel="http://www.crossref.org/relations.xsd">${relatedItems.join('')}</rel:program>` : ``
   }
 
   function getCollectionXML () {

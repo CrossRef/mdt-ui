@@ -185,64 +185,53 @@ const parseXMLArticle = function (articleXML) {
 
     if (fundings) {
         if (!Array.isArray(fundings)) {
-            // only 1 funder
-            // 0 is the actual funder data
-            // 1 is the grantnumbers
-            const thefunder = objectSearch(fundings, 'fr:assertion')
-            var funderName = ''
-            var funderRegId = ''
-            var funderIdent = ''
-            var grants = []
-            // because I don't know what is returned back from backend cause there is no validation, I need to loop
-            for(var i = 0; i < thefunder.length; i++) {
-              if (thefunder[i]['-name'] === 'funder_name'){
-                  funderName = thefunder[i]['#text'].trim()
-                  // within hte name, there is the funder ID
-                  const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
-                  if (thefunderReg) {
-                      funderIdent = thefunderReg['#text']
-                      funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
-                  }
-
-              } else if (thefunder[i]['-name'] === 'award_number'){
-                  grants.push(thefunder[i]['#text'])
-              }
-            }
-            funders.push({
-              fundername: funderName,
-              funderRegistryID: funderRegId,
-              funder_identifier: funderIdent,
-              grantNumbers: grants.length > 0 ? grants : ['']
-            })
+          parseFundings(fundings)
         } else {
             _.each(fundings, (fund) => {
-              const thefunder = objectSearch(fund, 'fr:assertion')
-              var funderName = ''
-              var funderRegId = ''
-              var funderIdent = ''
-              var grants = []
-              // because I don't know what is returned back from backend cause there is no validation, I need to loop
-              for(var i = 0; i < thefunder.length; i++) {
-                  if (thefunder[i]['-name'] === 'funder_name'){
-                    funderName = thefunder[i]['#text'].trim()
-                    // within hte name, there is the funder ID
-                    const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
-                    if (thefunderReg) {
-                        funderIdent = thefunderReg['#text']
-                        funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
-                    }
-                  } else if (thefunder[i]['-name'] === 'award_number'){
-                    grants.push(thefunder[i]['#text'])
-                  }
-              }
-              funders.push({
-                  fundername: funderName,
-                  funderRegistryID: funderRegId,
-                  funder_identifier: funderIdent,
-                  grantNumbers: grants.length > 0 ? grants : ['']
-              })
+              parseFundings(fund)
             })
         }
+    }
+
+    function parseFundings (fundParam) {
+      const thefunder = objectSearch(fundParam, 'fr:assertion')
+      let funderName = ''
+      let funderRegId = ''
+      let funderIdent = ''
+      let grants = []
+
+      if(!Array.isArray(thefunder)) {
+        parseTheFunder(thefunder)
+      } else {
+        for(let i = 0; i < thefunder.length; i++) {
+          parseTheFunder(thefunder[i])
+        }
+      }
+
+      function parseTheFunder (funder) {
+        if (funder['-name'] === 'funder_identifier') {
+          funderIdent = funder['#text']
+          funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
+        } else if (funder['-name'] === 'funder_name'){
+          funderName = funder['#text'].trim()
+          // within hte name, there is the funder ID
+          const thefunderReg = objectSearch(funder, 'fr:assertion')
+          if (thefunderReg) {
+            funderIdent = thefunderReg['#text']
+            funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
+          }
+
+        } else if (funder['-name'] === 'award_number'){
+          grants.push(funder['#text'])
+        }
+      }
+
+      funders.push({
+        fundername: funderName,
+        funderRegistryID: funderRegId,
+        funder_identifier: funderIdent,
+        grantNumbers: grants.length > 0 ? grants : ['']
+      })
     }
 
     if (funders.length <= 0) {
