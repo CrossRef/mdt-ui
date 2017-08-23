@@ -1,4 +1,5 @@
 import fetch from '../utilities/fetch'
+import {apiBaseUrl} from '../actions/application'
 
 
 var blacklistActions = [
@@ -60,7 +61,7 @@ export default store => next => action => {
         postingState.dois = removeDuplicates(postingState.dois);
 
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
-        fetch('http://mdt.crossref.org/mdt/v1/state', {
+        fetch(`${apiBaseUrl}/state`, {
           method: 'POST',
           headers: {Authorization: authHeader},
           body: JSON.stringify(postingState)

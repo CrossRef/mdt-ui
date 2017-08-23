@@ -2,13 +2,13 @@
 exports.files = {
   javascripts: {
     joinTo: {
-      'js/app.js': /^app/,
-      'js/libs.js': /^(?!app)/
+      'assets/js/app.js': /^app/,
+      'assets/js/libs.js': /^(?!app)/
     }
   },
-  stylesheets: {joinTo: 'app.css'},
+  stylesheets: {joinTo: 'assets/app.css'},
   templates: {
-    joinTo: 'js/app.js'
+    joinTo: 'assets/js/app.js'
   },
   conventions: {
     vendor: /^vendor[\\/]/
