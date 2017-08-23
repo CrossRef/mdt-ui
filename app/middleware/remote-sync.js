@@ -61,7 +61,7 @@ export default store => next => action => {
         postingState.dois = removeDuplicates(postingState.dois);
 
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
-        fetch(`${apiBaseUrl}/v1/state`, {
+        fetch(`${apiBaseUrl}/state`, {
           method: 'POST',
           headers: {Authorization: authHeader},
           body: JSON.stringify(postingState)
