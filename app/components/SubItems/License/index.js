@@ -85,15 +85,15 @@ export default class License extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className={'requiredholder' + (this.props.freetoread === 'yes' ? ' dateselectrequire' : ' norequire')}>
+                                    <div className={'requiredholder' + (this.props.freetoread ? ' dateselectrequire' : ' norequire')}>
                                         <div className='required height32'>
-                                            {(this.props.freetoread === 'yes' ?  <span>*</span> : '' )}
+                                            {(this.props.freetoread ?  <span>*</span> : '' )}
                                         </div>
                                     </div>
                                     <div className='field'>
                                         <div className='datepickerholder'>
                                             <div className='dateselectholder'>
-                                                <div>Year {(this.props.freetoread === 'yes' ? '(*)' : '')}</div>
+                                                <div>Year {(this.props.freetoread ? '(*)' : '')}</div>
                                                 <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', this.props.license.acceptedDateYear, this.props.errorLicenseStartDate)}</div>
                                             </div>
                                             <div className='dateselectholder'>

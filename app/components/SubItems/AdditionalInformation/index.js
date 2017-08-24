@@ -18,7 +18,7 @@ export default class AdditionalInformation extends Component {
   }
 
   componentWillMount () {
-    if (this.props.addInfo.freetolicense === 'yes') {
+    if (this.props.addInfo.freetolicense) {
         this.setState({
             on: true
         })
@@ -86,7 +86,7 @@ export default class AdditionalInformation extends Component {
         language: this.refs.language.value,
         publicationType: this.refs.publicationType.value,
         similarityCheckURL: this.refs.similarityCheckURL.value,
-        freetolicense: this.state.on  ? 'yes' : 'no'
+        freetolicense: this.state.on
       }})
     })
   }

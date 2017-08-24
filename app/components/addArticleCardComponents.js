@@ -59,21 +59,25 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
       errors.doi ||
       errors.url ||
       errors.title ||
-      errors.printDateYear ||
-      errors.onlineDateYear ||
       errors.licenseStartDate ||
       crossmarkErrors.update_0_DOI_Missing || crossmarkErrors.update_0_year || crossmarkErrors.clinical_0_registry || crossmarkErrors.clinical_0_trialNumber
     ) &&
     <div><b>Required.</b><br />Please provide required information.</div>
     }
     {(errors.invaliddoi) &&
-    <div><b>Invalid DOI.</b><br/>Please check your DOI (10.xxxx/xx...). Record prefix (10.xxxx) must match publication prefix.</div>
+    <div><b>Invalid Article DOI.</b><br/>Please check your DOI (10.xxxx/xx...).</div>
+    }
+    {(errors.invalidDoiPrefix) &&
+    <div><b>Invalid Article DOI.</b><br/>DOI prefix needs to match journal DOI prefix.</div>
     }
     {(errors.dupedoi) &&
     <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>
     }
     {(errors.invalidurl) &&
     <div><b>Invalid Article URL.</b><br />Please check your URL.</div>
+    }
+    {(errors.printDateYear || errors.onlineDateYear) &&
+    <div><b>Required.</b><br />Please provide either a print or online date.</div>
     }
     {(errors.contributorLastName) &&
     <div><b>Required.</b><br />Please provide contributor last name with first name.</div>
@@ -83,19 +87,19 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
     }
 
     {(crossmarkErrors.peer_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Peer Review URL.</div>
+    <div><b>Invalid Crossmark URL.</b><br />Please check your Peer Review URL.</div>
     }
     {(crossmarkErrors.copyright_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Copyright / Licensing URL.</div>
+    <div><b>Invalid Crossmark URL.</b><br />Please check your Copyright / Licensing URL.</div>
     }
     {(crossmarkErrors.supp_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Supplamentary Material URL.</div>
+    <div><b>Invalid Crossmark URL.</b><br />Please check your Supplamentary Material URL.</div>
     }
     {(crossmarkErrors.other_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Other URL.</div>
+    <div><b>Invalid Crossmark URL.</b><br />Please check your Other URL.</div>
     }
     {(crossmarkErrors.update_0_DOI_Invalid) &&
-    <div><b>Invalid DOI.</b><br />Please check your Crossmark Status Update DOI (10.xxxx/xx...).</div>
+    <div><b>Invalid Crossmark DOI.</b><br />Please check your Status Update DOI (10.xxxx/xx...).</div>
     }
   </ClassWrapper>
 
@@ -267,7 +271,7 @@ export class ArticleUrlField extends Component {
             </div>
             <div className='field'>
               <input
-                className={'height32' + ((this.props.errors.url) ? ' fieldError': '')}
+                className={'height32' + ((this.props.errors.url || this.props.errors.invalidurl) ? ' fieldError': '')}
                 type='text'
                 name="url"
                 onChange={this.props.handleChange}

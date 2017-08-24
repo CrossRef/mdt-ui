@@ -199,7 +199,7 @@ export default class DepositCartItemCard extends Component {
     })
 
     _.each(licenses, (license) => {
-        if(freeToRead === 'yes') { // only if free to read is ON
+        if(freeToRead) { // only if free to read is ON
             var licAcceptedDate = licences['-start_date']
             errorStates.freetoreadLicenseStartDate = {$set: (licAcceptedDate ? licAcceptedDate : '').length === 0 }
             return;

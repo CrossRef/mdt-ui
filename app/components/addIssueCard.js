@@ -5,7 +5,7 @@ import _ from 'lodash'
 import Switch from 'react-toggle-switch'
 import $ from 'jquery'
 
-import {makeDateDropDown} from  '../utilities/date'
+import {makeDateDropDown , validDate} from  '../utilities/date'
 import SubItem from './SubItems/subItem'
 import checkDupeDOI from '../utilities/dupeDOI'
 import isDOI from '../utilities/isDOI'
@@ -275,20 +275,6 @@ export default class AddIssueCard extends Component {
     })
   }
 
-  checkdate(yearfield,monthfield,dayfield){
-    if (monthfield){
-      if (monthfield>12 || monthfield < 1) return true;
-    }
-    if (!dayfield){
-      return false;
-    }
-    // we have a year, month and day.
-    var dayobj = new Date(yearfield, monthfield-1, dayfield)
-    if ((dayobj.getMonth()+1!=monthfield)||(dayobj.getDate()!=dayfield)||(dayobj.getFullYear()!=yearfield))
-      return true;
-    return false;
-  }
-
   handler = (e) => {
     const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
 
@@ -347,10 +333,10 @@ export default class AddIssueCard extends Component {
           issue: !this.state.issue.issue,
           issueUrl: !this.state.issue.issueUrl,
           printDateYear: !this.state.issue.printDateYear,
-          printDateInvalid:this.state.issue.printDateYear ? this.checkdate(this.state.issue.printDateYear,this.state.issue.printDateMonth,this.state.issue.printDateDay): false,
+          printDateInvalid:this.state.issue.printDateYear ? !validDate(this.state.issue.printDateYear,this.state.issue.printDateMonth,this.state.issue.printDateDay): false,
          
           onlineDateYear: !this.state.issue.onlineDateYear,
-          onlineDateInvalid:this.state.issue.onlineDateYear ? this.checkdate(this.state.issue.onlineDateYear,this.state.issue.onlineDateMonth,this.state.issue.onlineDateDay): false,
+          onlineDateInvalid:this.state.issue.onlineDateYear ? !validDate(this.state.issue.onlineDateYear,this.state.issue.onlineDateMonth,this.state.issue.onlineDateDay): false,
           invalidissueurl: this.state.issue.issueUrl ? !isURL(this.state.issue.issueUrl) : false,
           issuedoi: !this.state.issue.issueDoi,
           invalidissuedoi: isNotValidIssueDoi,

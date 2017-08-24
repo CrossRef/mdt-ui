@@ -61,7 +61,9 @@ export default class SubtItem extends Component {
   }
 
   componentDidUpdate () {
-    this.props.positionErrorBubble();
+    if(this.props.positionErrorBubble) {
+      this.props.positionErrorBubble();
+    }
   }
 
   render () {

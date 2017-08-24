@@ -13,7 +13,7 @@ import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
 import JSesc from '../utilities/jsesc'
 import $ from 'jquery'
 import parseXMLArticle from '../utilities/parseXMLArticle'
-import { makeDateDropDown } from '../utilities/date'
+import { makeDateDropDown, validDate } from '../utilities/date'
 import isUrl from '../utilities/isURL'
 import isDOI from '../utilities/isDOI'
 import {routes} from '../routing'
@@ -21,7 +21,6 @@ import { getSubmitSubItems } from '../utilities/getSubItems'
 
 
 const defaultState = {
-  inCart: true,
   crossmark: false,
   showCards: {},
   showOptionalTitleData: false,
@@ -36,21 +35,38 @@ const defaultState = {
   version: '1',
   errors: {
     title: false,
-    printDateYear: false,
-    onlineDateYear: false,
+
     doi: false,
-    url: false,
-    dupedoi: false,
     invaliddoi: false,
     invalidDoiPrefix: false,
-    invalidurl: false,
-    licenseStartDate: false,
+    dupedoi: false,
 
-    licenseUrlInvalid: false,
-    contributorLastName: false,
+    url: false,
+    invalidurl: false,
+
+    printDateYear: false,
+    printDateIncomplete: false,
+    printDateInvalid: false,
+    onlineDateYear: false,
+    onlineDateIncomplete: false,
+    onlineDateInvalid: false,
+
     firstPage: false,
 
+    contributorLastName: false,
+    contributorRole: false,
 
+    licenseUrl: false,
+    licenseUrlInvalid: false,
+    licenseDate: false,
+    licenseDateInvalid: false,
+    licenseDateIncomplete: false,
+
+    relatedItemIdType: false,
+    relatedItemRelType: false,
+    relatedItemDoiInvalid: false,
+
+    simCheckUrlInvalid: false
   },
   crossmarkErrors: {
     peer_0_href:false,
@@ -93,7 +109,11 @@ const defaultState = {
       orcid: '',
       role: '',
       groupAuthorName: '',
-      groupAuthorRole: ''
+      groupAuthorRole: '',
+      errors: {
+        contributorLastName: false,
+        contributorRole: false
+      }
     }
   ],
   funding: [
@@ -110,7 +130,13 @@ const defaultState = {
       acceptedDateMonth:'',
       acceptedDateYear:'',
       appliesto:'',
-      licenseurl:''
+      licenseurl:'',
+      errors: {
+        licenseUrl: false,
+        licenseUrlInvalid: false,
+        licenseDateInvalid: false,
+        licenseDateIncomplete: false
+      }
     }
   ],
   relatedItems: [
@@ -118,7 +144,12 @@ const defaultState = {
       relatedItemIdentifier: '',
       identifierType: '',
       description: '',
-      relationType: ''
+      relationType: '',
+      errors: {
+        relatedItemIdType: false,
+        relatedItemRelType: false,
+        relatedItemDoiInvalid: false
+      }
     }
   ],
   addInfo: {
@@ -126,7 +157,7 @@ const defaultState = {
     language:'',
     publicationType:'',
     similarityCheckURL:'',
-    freetolicense: ''
+    freetolicense: false
   },
   openItems: {
     apiReturned: false,
@@ -138,51 +169,52 @@ const defaultState = {
   }
 }
 
-
+@stateTrackerII
 export default class AddArticleCard extends Component {
 
   static propTypes = {
-    reduxCart: is.array.isRequired,
-    reduxCartUpdate: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
-    reduxEditForm: is.func.isRequired,
-    asyncSubmitArticle: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
-    reduxForm: is.object.isRequired,
     mode: is.string.isRequired,
     isDuplicate: is.bool.isRequired,
+    issue: is.string,
+    ownerPrefix: is.string.isRequired,
+
+    crossmarkPrefixes: is.array.isRequired,
+    reduxForm: is.object.isRequired,
+    reduxCart: is.array.isRequired,
     publication: is.shape({
       message: is.object
     }).isRequired,
     publicationMetaData: is.shape({
       Journal: is.object
     }),
-    ownerPrefix: is.string.isRequired,
-    crossmarkPrefixes: is.array.isRequired,
-    issue: is.string
+
+    reduxCartUpdate: is.func.isRequired,
+    reduxControlModal: is.func.isRequired,
+    reduxEditForm: is.func.isRequired,
+
+    asyncSubmitArticle: is.func.isRequired,
+    asyncGetItem: is.func.isRequired
   }
 
   constructor (props) {
-    super(props)
+    super(props);
     this.state = defaultState;
     this.state.article.doi = props.ownerPrefix
   }
 
   componentWillReceiveProps (nextProps) {
-    if (nextProps.mode === 'add') { //its new allow add to cart button
-      this.setState({
-        inCart: false
-      })
-    }
-
     if(nextProps.reduxForm !== this.props.reduxForm) {
       return;
     }
 
+    let setStatePayload = {};
+
     if(nextProps.crossmarkPrefixes.length && !this.state.crossmark) {
       if (nextProps.publication) {
         const thisPrefix = nextProps.publication.message ? nextProps.publication.message.doi.split('/')[0] : null;
-        if(thisPrefix && nextProps.crossmarkPrefixes.includes(thisPrefix)) this.setState({crossmark: true})
+        if(thisPrefix && nextProps.crossmarkPrefixes.includes(thisPrefix)) {
+          setStatePayload.crossmark = true
+        }
       }
     }
 
@@ -194,16 +226,14 @@ export default class AddArticleCard extends Component {
 
         if(parsedArticle.crossmark) {
           this.props.reduxEditForm(parsedArticle.crossmark.reduxForm);
-          this.setState({showCards: parsedArticle.crossmark.showCards});
+          setStatePayload.showCards = parsedArticle.crossmark.showCards;
         }
 
         if(this.props.isDuplicate) {
           parsedArticle.article.doi = this.props.ownerPrefix
         }
 
-        this.setState({
-          inCart: !!_.find(this.props.reduxCart, (cartItems) => { return cartItems.doi === parsedArticle.article.doi}),
-          first: true,
+        setStatePayload = {...setStatePayload, ...{
           doiDisabled: !this.props.isDuplicate,
           version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
           addInfo: parsedArticle.addInfo,
@@ -213,9 +243,10 @@ export default class AddArticleCard extends Component {
           license: parsedArticle.license,
           relatedItems: parsedArticle.relatedItems,
           openItems: parsedArticle.openItems
-        }, this.validation)
+        }}
       }
     }
+    this.setState(setStatePayload, nextProps.mode === 'edit' ? this.validation : null)
   }
 
   componentDidUpdate() {
@@ -239,43 +270,34 @@ export default class AddArticleCard extends Component {
 
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
 
-    this.validation((valid) => { // need it to be a callback because setting state does not happen right away
+    this.validation((valid) => {
       if (valid) {
-        const props = this.props
-        var publication = this.props.publication
-
-        const state = this.state
-
-        const metaData = `` // TODO: Publication information
-
-        const journalIssue = `` // TODO: Issue information
+        const publication = this.props.publication
 
         const journalArticle = journalArticleXml(this, crossmark);
         const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
 
         const title = JSesc(this.state.article.title)
 
-        var version = this.state.version
-
-        var newRecord = {
+        const newRecord = {
           'title': {'title': title},
           'date': new Date(),
           'doi': this.state.article.doi,
           'owner-prefix': this.state.article.doi.split('/')[0],
           'type': 'article',
-          'mdt-version': version,
+          'mdt-version': this.state.version,
           'status': 'draft',
           'content': journal.replace(/(\r\n|\n|\r)/gm,'')
         }
 
         // check if its part of a issue, the issue props will tell us
-        var savePub
+        let savePub;
 
         if (this.props.issue) { //this is just an issue doi OR undefined
           // if its an issue, we need to put this newRecord under the issue, NOT the publicaton
           // need to use the issuePublication, the publication has been mutated to allow reading of the article
-          var issuePublication = this.props.issuePublication
-          var theIssue = _.find(issuePublication.message.contains, (item) => {
+          const issuePublication = this.props.issuePublication
+          const theIssue = _.find(issuePublication.message.contains, (item) => {
             if ((item.type === 'issue') && (item.doi === this.props.issue)) {
               return item;
             }
@@ -295,7 +317,6 @@ export default class AddArticleCard extends Component {
           newRecord.pubDoi = this.props.publication.message.doi;
           this.props.reduxCartUpdate([newRecord]);
 
-          this.setState({version: version})
           browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
         });
       }
@@ -303,147 +324,193 @@ export default class AddArticleCard extends Component {
   }
 
   validation (callback = ()=>{}) {
-    var errorStates = {
-      title: false,
-      printDateYear: false,
-      onlineDateYear: false,
+    const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage } = this.state.article;
+
+    let criticalErrors = {
       doi: false,
-      url: false,
-      dupedoi: false,
       invaliddoi: false,
-      invalidDoiPrefix: false,
-      invalidurl: false,
-      licenseStartDate: false,
+      invalidDoiPrefix: false
+    };
+    criticalErrors.title = !title;
 
-      licenseUrlInvalid: false,
-      contributorLastName: false,
-      firstPage: false,
+    if(!this.state.doiDisabled) {
+      criticalErrors.doi = !doi;
+      criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi);
+      criticalErrors.invalidDoiPrefix = criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== this.props.ownerPrefix);
     }
-    this.setState({
-      error: false,
-      errors: errorStates
+
+    const hasDate = !!(printDateYear || onlineDateYear);
+    let warnings = {
+      licenseUrl: false,
+      licenseUrlInvalid: false,
+      licenseDate: false,
+      licenseDateIncomplete: false,
+      licenseDateInvalid: false,
+
+      contributorLastName: false,
+      contributorRole: false,
+
+      relatedItemIdType: false,
+      relatedItemRelType: false,
+      relatedItemDoiInvalid: false,
+    };
+    warnings.url = !url;
+    warnings.invalidurl = !!(url && !isUrl(url));
+
+    warnings.printDateYear = hasDate ? false : !printDateYear;
+    warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay));
+    warnings.printDateInvalid = warnings.printDateIncomplete ? false : !validDate(printDateYear, printDateMonth, printDateDay);
+
+    warnings.onlineDateYear = hasDate ? false : !onlineDateYear;
+    warnings.onlineDateIncomplete = !!(!onlineDateYear && (onlineDateMonth || onlineDateDay));
+    warnings.onlineDateInvalid = warnings.onlineDateIncomplete ? false : !validDate(onlineDateYear, onlineDateMonth, onlineDateDay);
+
+    warnings.firstPage = !!(lastPage && !firstPage);
+    warnings.simCheckUrlInvalid = !!(this.state.addInfo.similarityCheckURL && !isUrl(this.state.addInfo.similarityCheckURL));
+
+
+    const freetolicense = this.state.addInfo.freetolicense;
+    if (freetolicense){
+      warnings.licenseDate = true;
+    }
+
+    //validate License subItems
+    const licenses = getSubmitSubItems(this.state.license).map((license, i) => {
+      const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license;
+      const errors = {
+        licenseUrl: false,
+        licenseUrlInvalid: false,
+        licenseDateIncomplete: false,
+        licenseDateInvalid: false,
+      };
+
+      const thereIsDate = !!(acceptedDateDay || acceptedDateMonth || acceptedDateYear);
+      if(thereIsDate) {
+        warnings.licenseDate = false;
+        if(!(acceptedDateDay && acceptedDateMonth && acceptedDateYear)) {
+          errors.licenseDateIncomplete = true;
+          warnings.licenseDateIncomplete = true;
+        }
+      }
+
+      if(!errors.licenseDateIncomplete && !validDate(acceptedDateYear, acceptedDateMonth, acceptedDateDay)) {
+        errors.licenseDateInvalid = true;
+        warnings.licenseDateInvalid = true;
+      }
+
+      if(!licenseurl && (thereIsDate || appliesto)) {
+        errors.licenseUrl = true;
+        warnings.licenseUrl = true;
+      }
+
+      if(!errors.licenseUrl) {
+        const urlInvalid = !isUrl(licenseurl);
+        errors.licenseUrl = urlInvalid;
+        warnings.licenseUrl = urlInvalid;
+      }
+
+      return {...license, errors}
     })
 
-    return checkDupeDOI(this.state.article.doi, (isDupe , isValid) => {
-      var hasPrintYear = false, hasOnlineYear = false;
-      if ((this.state.article.printDateYear.length > 0) || (this.state.article.onlineDateYear.length > 0)) {
-        //hasDate = true
-        if ((this.state.article.printDateYear.length > 0)) {
-          hasPrintYear = true
+    //validate contributor subItems
+    const contributors = getSubmitSubItems(this.state.contributors).map( contributor => {
+      const errors = {
+        contributorLastName: contributor.firstName && !contributor.lastName,
+        contributorRole: !contributor.role
+      }
+      if(errors.contributorLastName) warnings.contributorLastName = true;
+      if(errors.contributorRole) warnings.contributorRole = true;
+
+      return {...contributor, errors}
+    })
+
+    //validate relatedItem subItems
+    const relatedItems = getSubmitSubItems(this.state.relatedItems).map( item => {
+      const errors = {
+        relatedItemIdType: !item.identifierType,
+        relatedItemRelType: !item.relationType,
+        relatedItemDoiInvalid: item.identifierType === 'doi' ? !isDOI(item.relatedItemIdentifier) : false
+      }
+      if(errors.relatedItemIdType) warnings.relatedItemIdType = true;
+      if(errors.relatedItemRelType) warnings.relatedItemRelType = true;
+      if(errors.relatedItemDoiInvalid) warnings.relatedItemDoiInvalid = true;
+
+      return {...item, errors}
+    })
+
+
+    const crossmarkErrors = {};
+    if(this.state.crossmark) {
+      const reduxForm = this.props.reduxForm;
+
+      for (const formField in reduxForm) {
+        const [ card, i, field ] = formField.split('_');
+        const value = reduxForm[formField];
+
+        if(field === 'href') {
+          crossmarkErrors[formField] = !value ? false : !isUrl(value)
         }
-        if ((this.state.article.onlineDateYear.length > 0)) {
-          hasOnlineYear = true
-        }
-      }
 
-      errorStates = {
-        title: (this.state.article.title.length === 0),
-        doi: (this.state.article.doi.length === 0),
-        printDateYear: (this.state.article.printDateYear.length === 0),
-        onlineDateYear: (this.state.article.onlineDateYear.length === 0),
-        url: (this.state.article.url.length === 0),
-        invalidurl: !isUrl(this.state.article.url) && (this.state.article.url.length > 0),
-        dupedoi: this.state.doiDisabled ? false : isDupe,
-        invaliddoi: ((this.state.article.doi.length > 0) && (isValid ? isValid : !isDOI(this.state.article.doi))),
-        licenseStartDate: false,
-
-        licenseUrlInvalid: (this.state.license[0].licenseurl.length > 0) && !isUrl(this.state.license[0].licenseurl),
-        contributorLastName: (this.state.contributors[0].firstName && !this.state.contributors[0].lastName),
-        firstPage: false,
-      }
-
-      errorStates.invalidDoiPrefix = errorStates.invaliddoi ? false : (this.state.article.doi.split('/')[0] !== this.props.ownerPrefix);
-
-      //validate License Urls
-
-      if (hasPrintYear) { // has print year, don't care if there is a online year
-        errorStates.onlineDateYear = false
-      }
-      if (hasOnlineYear) { // has online year, don't care if there is a print year
-        errorStates.printDateYear = false
-      }
-
-      // if addInfo license to read to ON, license StartDates are required
-      if (this.state.addInfo.freetolicense === 'yes'){
-        var licenses = getSubmitSubItems(this.state.license).map((license, i) => {
-          var dayHolder = []
-          if ((license.acceptedDateYear ? license.acceptedDateYear : '').length > 0) {
-            dayHolder.push(license.acceptedDateYear)
-          }
-          if ((license.acceptedDateMonth ? license.acceptedDateMonth : '').length > 0) {
-            dayHolder.push(license.acceptedDateMonth)
-          }
-          if ((license.acceptedDateDay ? license.acceptedDateDay : '').length > 0) {
-            dayHolder.push(license.acceptedDateDay)
+        if(card === 'update') {
+          if(field === 'type' && value !== '') {
+            crossmarkErrors[`update_${i}_DOI_Missing`] = !reduxForm[`update_${i}_DOI`];
+            crossmarkErrors[`update_${i}_year`] = !reduxForm[`update_${i}_year`];
           }
 
-          return {
-            index: i,
-            startDate: (dayHolder.join('').length > 0 ? dayHolder.join('-') : undefined),
-            url: license.url
-          }
-        })
-
-        for(var i = 0; i < licenses.length; i++) { // looping through the license array after filtered to see if there is start date
-          if (!licenses[i].startDate) {
-            errorStates.licenseStartDate = true
-            break
+          if(field === 'DOI') {
+            var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
+            crossmarkErrors[`${formField}_Invalid`] = !re.test(reduxForm[formField])
           }
         }
+
+        if(card === 'clinical' && value !== '') {
+          crossmarkErrors[`clinical_${i}_registry`] = !reduxForm[`clinical_${i}_registry`];
+          crossmarkErrors[`clinical_${i}_trialNumber`] = !reduxForm[`clinical_${i}_trialNumber`];
+        }
       }
+    }
 
-      const crossmarkErrors = {};
-      if(this.state.crossmark) {
-        const reduxForm = this.props.reduxForm;
+    const completeValidation = () => {
+      const setStatePayload = {
+        error: false,
+        errors: {...criticalErrors, ...warnings},
+        crossmarkErrors,
+        license: licenses.length ? licenses : this.state.license,
+        contributors: contributors.length ? contributors : this.state.contributors,
+        relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems
+      }
+      let valid = true;
 
-        for (var formField in reduxForm) {
-          const [ card, i, field ] = formField.split('_');
-          const value = reduxForm[formField];
-
-          if(field === 'href') {
-            crossmarkErrors[formField] = !value ? false : !isUrl(value)
-          }
-
-          if(card === 'update') {
-            if(field === 'type' && value !== '') {
-              crossmarkErrors[`update_${i}_DOI_Missing`] = !reduxForm[`update_${i}_DOI`];
-              crossmarkErrors[`update_${i}_year`] = !reduxForm[`update_${i}_year`];
-            }
-
-            if(field === 'DOI') {
-              var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
-              crossmarkErrors[`${formField}_Invalid`] = !re.test(reduxForm[formField])
-            }
-          }
-
-          if(card === 'clinical' && value !== '') {
-            crossmarkErrors[`clinical_${i}_registry`] = !reduxForm[`clinical_${i}_registry`];
-            crossmarkErrors[`clinical_${i}_trialNumber`] = !reduxForm[`clinical_${i}_trialNumber`];
-          }
+      for(const key in warnings) {
+        if (warnings[key]) {
+          setStatePayload.error = true;
         }
       }
 
-      this.setState({
-        errors: errorStates,
-        crossmarkErrors: crossmarkErrors
-      }, ()=>{
-        var criticalErrors = ['doi', 'invaliddoi', 'dupedoi', 'invalidDoiPrefix', 'title']
+      for(const key in crossmarkErrors) {
+        if(crossmarkErrors[key]) {
+          setStatePayload.error = true;
+        }
+      }
 
-        for(var key in this.state.errors) { // checking all the properties of errors to see if there is a true
-          if (this.state.errors[key]) {
-            this.setState({error: true})
-            if(criticalErrors.indexOf(key) > -1) return callback(false)
-          }
+      for(const key in criticalErrors) {
+        if(criticalErrors[key]) {
+          setStatePayload.error = true;
+          valid = false;
         }
-        for(var key in this.state.crossmarkErrors) {
-          if(this.state.crossmarkErrors[key]) {
-            this.setState({error: true})
-            return callback(this.state.crossmarkErrors[key])
-          }
-        }
-        return callback(true) // iterated the entire object, no true, returning valid
+      }
+
+      this.setState(setStatePayload, ()=>callback(valid))
+    }
+
+    if(this.state.doiDisabled || criticalErrors.doi || criticalErrors.invaliddoi || criticalErrors.invalidDoiPrefix) {
+      completeValidation()
+    } else {
+      return checkDupeDOI(doi, (isDupe) => {
+        criticalErrors.dupedoi = isDupe;
+        completeValidation()
       })
-    })
+    }
   }
 
   handleChange = (e) => {
@@ -602,7 +669,7 @@ export default class AddArticleCard extends Component {
                 apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'license')}
                 freetoread={this.state.addInfo.freetolicense}
-                errorLicenseStartDate={this.state.errors.licenseStartDate}
+                errorLicenseStartDate={this.state.errors.licenseDate}
                 errorLicenseUrlInvalid={this.state.errors.licenseUrlInvalid}
                 makeDateDropDown={makeDateDropDown}
                 positionErrorBubble={this.positionErrorBubble}

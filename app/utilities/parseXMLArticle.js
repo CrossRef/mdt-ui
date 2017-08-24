@@ -144,7 +144,7 @@ const parseXMLArticle = function (articleXML) {
         language: language ? language : '',
         publicationType: publicationType ? publicationType : '',
         similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
-        freetolicense: freeToRead ? 'yes' : 'no'
+        freetolicense: !!freeToRead
     }
 
     retObj = _.extend(retObj, {

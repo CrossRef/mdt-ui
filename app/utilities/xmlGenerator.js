@@ -175,7 +175,7 @@ export const journalArticleXml = (component, crossmark) => {
 
       `<doi_data>`,
         `<doi>${article.doi}</doi>`,
-        `<resource>${article.url}</resource>`,
+        `${article.url ? `<resource>${article.url}</resource>` : ''}`,
         `${(getCollectionXML().length > 0) ? getCollectionXML() : ``}`,
       `</doi_data>`,
 
