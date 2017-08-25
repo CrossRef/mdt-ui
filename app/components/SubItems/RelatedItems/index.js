@@ -12,7 +12,14 @@ export default class RelatedItems extends Component {
     super(props)
     const {index} = this.props
     this.state = {
-      showSubItem: index === 0 ? true : false,
+      showSubItem: index === 0,
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const {relatedItemIdType, relatedItemRelType, relatedItemDoiInvalid} = nextProps.relateditem.errors || {};
+    if(relatedItemIdType || relatedItemRelType || relatedItemDoiInvalid) {
+      this.setState({showSubItem: true})
     }
   }
 
@@ -34,7 +41,7 @@ export default class RelatedItems extends Component {
 
       return (
           <select
-            className='height32'
+            className={`height32 ${(this.props.relateditem.errors || {}).relatedItemRelType && 'fieldError'}`}
             type='text'
             ref='relationType'
             onChange={this.handleRelatedItems}
@@ -53,7 +60,7 @@ export default class RelatedItems extends Component {
 
       return (
           <select
-            className='height32'
+            className={`height32 ${(this.props.relateditem.errors || {}).relatedItemIdType && 'fieldError'}`}
             type='text'
             ref='identifierType'
             onChange={this.handleRelatedItems}
@@ -65,7 +72,9 @@ export default class RelatedItems extends Component {
   }
 
     handleRelatedItems = () => {
-        var relatedItems = {}
+        var relatedItems = {
+          errors: this.props.relateditem.errors
+        }
         for(var i in this.refs){
           if(this.refs[i]){
             relatedItems[i] = this.refs[i].value
@@ -78,6 +87,9 @@ export default class RelatedItems extends Component {
     }
 
   render () {
+    const { relatedItemIdentifier, description, relationType, identifierType } = this.props.relateditem;
+    const activeElement = !!(relatedItemIdentifier || description || relationType || identifierType)
+    const { relatedItemDoiInvalid } = this.props.relateditem.errors || {};
     return (
         <div>
             <div className='row subItemRow' onClick={this.toggle}>
@@ -111,11 +123,11 @@ export default class RelatedItems extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${relatedItemDoiInvalid && 'fieldError'}`}
                                             type='text'
                                             ref='relatedItemIdentifier'
                                             onChange={this.handleRelatedItems}
-                                            value={this.props.relateditem.relatedItemIdentifier}
+                                            value={relatedItemIdentifier}
                                         />
                                     </div>
                                 </div>
@@ -128,9 +140,8 @@ export default class RelatedItems extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!activeElement && 'norequire'}`}>
+                                        <div className='required height32'>{activeElement && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         {this.displayIdentifierTypes()}
@@ -161,7 +172,7 @@ export default class RelatedItems extends Component {
                                             type='text'
                                             ref='description'
                                             onChange={this.handleRelatedItems}
-                                            value={this.props.relateditem.description}
+                                            value={description}
                                         />
                                     </div>
                                 </div>
@@ -174,9 +185,8 @@ export default class RelatedItems extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!activeElement && 'norequire'}`}>
+                                        <div className='required height32'>{activeElement && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         {this.displayRelationTypes()}

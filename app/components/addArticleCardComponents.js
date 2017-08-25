@@ -61,7 +61,7 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
       errors.title ||
       errors.printDateIncomplete || errors.onlineDateIncomplete ||
       errors.firstPage ||
-      errors.contributorLastName || errors.contributorRole || errors.contributorGroupRole ||
+      errors.contributorLastName || errors.contributorRole || errors.contributorGroupRole || errors.contributorGroupName ||
       errors.licenseUrl || errors.licenseDateIncomplete ||
       errors.relatedItemIdType || errors. relatedItemRelType ||
       crossmarkErrors.update_0_DOI_Missing || crossmarkErrors.update_0_year || crossmarkErrors.clinical_0_registry || crossmarkErrors.clinical_0_trialNumber

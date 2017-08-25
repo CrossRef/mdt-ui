@@ -8,10 +8,18 @@ const AppliesTo = require('../../../utilities/appliesTo.json')
 
 export default class License extends Component {
   constructor (props) {
+    console.log(props.license.errors)
     super(props)
     const {index} = this.props
     this.state = {
-      showSubItem: index === 0 ? true : false,
+      showSubItem: index === 0,
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    const {licenseUrl, licenseUrlInvalid, licenseDateIncomplete, licenseDateInvalid} = nextProps.license.errors || {};
+    if(licenseUrl || licenseUrlInvalid || licenseDateIncomplete || licenseDateInvalid) {
+      this.setState({showSubItem: true})
     }
   }
 

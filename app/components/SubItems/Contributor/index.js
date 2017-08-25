@@ -16,6 +16,13 @@ export default class Contributor extends Component {
     }
   }
 
+  componentWillReceiveProps (nextProps) {
+    const {contributorLastName, contributorRole, contributorGroupName, contributorGroupRole} = nextProps.contributor.errors || {};
+    if(contributorLastName || contributorRole || contributorGroupName || contributorGroupRole) {
+      this.setState({showSubItem: true})
+    }
+  }
+
   componentDidUpdate () {
     this.props.positionErrorBubble();
   }
