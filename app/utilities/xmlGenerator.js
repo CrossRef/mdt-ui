@@ -274,8 +274,8 @@ export const journalArticleXml = (component, crossmark) => {
       if (isDate || license.licenseurl || license.appliesto) {
         const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : '';
         let freetolicense = ``
-        if (state.addInfo.freetolicense && isDate) {
-          freetolicense = `<ai:free_to_read start_date="${date}"/>`
+        if (i===0 && state.addInfo.freetolicense) {
+          freetolicense = `<ai:free_to_read${isDate ? ` start_date="${date}"` : ''}/>`
         }
 
         attributes = `${freetolicense}<ai:license_ref${license.appliesto ? ` applies_to="${license.appliesto}"`:''}${isDate ? ` start_date="${date}"`:''}>${license.licenseurl}</ai:license_ref>`

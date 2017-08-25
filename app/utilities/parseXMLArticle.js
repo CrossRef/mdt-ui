@@ -137,7 +137,7 @@ const parseXMLArticle = function (articleXML) {
     }
     const language = objectSearch(parsedArticle, '-language')
 
-    const freeToRead = objectSearch(parsedArticle, 'ai:free_to_read')
+    let freeToRead = objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1
 
     const addInfo = {
         archiveLocation: archive,

@@ -55,6 +55,7 @@ const defaultState = {
 
     contributorLastName: false,
     contributorRole: false,
+    contributorGroupName: false,
     contributorGroupRole: false,
 
     licenseUrl: false,
@@ -114,6 +115,7 @@ const defaultState = {
       errors: {
         contributorLastName: false,
         contributorRole: false,
+        contributorGroupName: false,
         contributorGroupRole: false
       }
     }
@@ -350,6 +352,7 @@ export default class AddArticleCard extends Component {
 
       contributorLastName: false,
       contributorRole: false,
+      contributorGroupName: false,
       contributorGroupRole: false,
 
       relatedItemIdType: false,
@@ -408,8 +411,8 @@ export default class AddArticleCard extends Component {
 
       if(!errors.licenseUrl) {
         const urlInvalid = !isUrl(licenseurl);
-        errors.licenseUrl = urlInvalid;
-        warnings.licenseUrl = urlInvalid;
+        errors.licenseUrlInvalid = urlInvalid;
+        warnings.licenseUrlInvalid = urlInvalid;
       }
 
       return {...license, errors}
@@ -423,10 +426,12 @@ export default class AddArticleCard extends Component {
       const errors = {
         contributorLastName: firstName && !lastName,
         contributorRole: (lastName || firstName || suffix || affiliation || orcid) && !role,
+        contributorGroupName: groupAuthorRole && !groupAuthorName,
         contributorGroupRole: groupAuthorName && !groupAuthorRole
       }
       if(errors.contributorLastName) warnings.contributorLastName = true;
       if(errors.contributorRole) warnings.contributorRole = true;
+      if(errors.contributorGroupName) warnings.contributorGroupName = true;
       if(errors.contributorGroupRole) warnings.contributorGroupRole = true;
 
       return {...contributor, errors}
@@ -638,6 +643,7 @@ export default class AddArticleCard extends Component {
 
                 <BottomFields
                   article={this.state.article}
+                  errors={this.state.errors}
                   makeDateDropDown={makeDateDropDown}
                   handleChange={this.handleChange}
                 />
@@ -654,7 +660,6 @@ export default class AddArticleCard extends Component {
                 addHandler={this.addSection.bind(this, 'contributors')}
                 apiReturned={this.state.openItems.apiReturned}
                 positionErrorBubble={this.positionErrorBubble}
-                errorContributorLastName={this.state.errors.contributorLastName}
               />
               <SubItem
                 title={'Funding'}

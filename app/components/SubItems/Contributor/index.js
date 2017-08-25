@@ -27,25 +27,28 @@ export default class Contributor extends Component {
   }
 
   displayRoles (ref) {
-      var roles = [
-        <option key='-1'></option>,
-        ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
-      ]
+    const {contributorRole, contributorGroupRole} = this.props.contributor.errors || {}
+    var roles = [
+      <option key='-1'></option>,
+      ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
+    ]
 
-      return (
-          <select
-            ref={ref}
-            onChange={this.handleContributor}
-            className='height32'
-            value={this.props.contributor[ref]}
-            >
-              {roles}
-          </select>
-      )
+    return (
+        <select
+          ref={ref}
+          onChange={this.handleContributor}
+          className={`height32 ${ref === 'role' ? contributorRole && 'fieldError' : contributorGroupRole && 'fieldError'}`}
+          value={this.props.contributor[ref]}
+          >
+            {roles}
+        </select>
+    )
   }
 
   handleContributor = () => {
-    var contributor = {}
+    var contributor = {
+      errors: this.props.contributor.errors
+    }
     for(var i in this.refs){
       if(this.refs[i]){
         contributor[i] = this.refs[i].value
@@ -58,6 +61,9 @@ export default class Contributor extends Component {
   }
 
   render () {
+    const errors = this.props.contributor.errors || {};
+    const {firstName, lastName, suffix, affiliation, orcid, groupAuthorName, groupAuthorRole} = this.props.contributor;
+    const roleRequired = !!(firstName || lastName || suffix || affiliation || orcid)
     return (
         <div>
             <div className='row subItemRow' onClick={this.toggle}>
@@ -95,7 +101,7 @@ export default class Contributor extends Component {
                                             type='text'
                                             ref='firstName'
                                             onChange={this.handleContributor}
-                                            value={this.props.contributor.firstName}
+                                            value={firstName}
                                         />
                                     </div>
                                 </div>
@@ -113,11 +119,11 @@ export default class Contributor extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className={`height32 ${this.props.errorContributorLastName && 'fieldError'}`}
+                                            className={`height32 ${errors.contributorLastName && 'fieldError'}`}
                                             type='text'
                                             ref='lastName'
                                             onChange={this.handleContributor}
-                                            value={this.props.contributor.lastName}
+                                            value={lastName}
                                         />
                                     </div>
                                 </div>
@@ -146,7 +152,7 @@ export default class Contributor extends Component {
                                             type='text'
                                             ref='suffix'
                                             onChange={this.handleContributor}
-                                            value={this.props.contributor.suffix}
+                                            value={suffix}
                                         />
                                     </div>
                                 </div>
@@ -169,7 +175,7 @@ export default class Contributor extends Component {
                                             type='text'
                                             ref='affiliation'
                                             onChange={this.handleContributor}
-                                            value={this.props.contributor.affiliation}
+                                            value={affiliation}
                                         />
                                     </div>
                                 </div>
@@ -198,7 +204,7 @@ export default class Contributor extends Component {
                                             type='text'
                                             ref='orcid'
                                             onChange={this.handleContributor}
-                                            value={this.props.contributor.orcid}
+                                            value={orcid}
                                         />
                                     </div>
                                 </div>
@@ -211,9 +217,8 @@ export default class Contributor extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!roleRequired && 'norequire'}`}>
+                                        <div className='required height32'>{roleRequired && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         {this.displayRoles('role')}
@@ -237,17 +242,16 @@ export default class Contributor extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!groupAuthorRole && 'norequire'}`}>
+                                        <div className='required height32'>{groupAuthorRole && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${errors.contributorGroupName && 'fieldError'}`}
                                             type='text'
                                             ref='groupAuthorName'
                                             onChange={this.handleContributor}
-                                            value={this.props.contributor.groupAuthorName}
+                                            value={groupAuthorName}
                                         />
                                     </div>
                                 </div>
@@ -260,9 +264,8 @@ export default class Contributor extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!groupAuthorName && 'norequire'}`}>
+                                        <div className='required height32'>{groupAuthorName && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         {this.displayRoles('groupAuthorRole')}

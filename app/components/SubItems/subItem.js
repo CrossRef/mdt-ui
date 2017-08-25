@@ -81,7 +81,6 @@ export default class SubtItem extends Component {
               remove={remove}
               handler={handler}
               data={incomingData}
-              errorContributorLastName={this.props.errorContributorLastName}
               positionErrorBubble={this.props.positionErrorBubble}
               index={i}/>
             break

@@ -59,7 +59,11 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
       errors.doi ||
       errors.url ||
       errors.title ||
-      errors.licenseStartDate ||
+      errors.printDateIncomplete || errors.onlineDateIncomplete ||
+      errors.firstPage ||
+      errors.contributorLastName || errors.contributorRole || errors.contributorGroupRole ||
+      errors.licenseUrl || errors.licenseDateIncomplete ||
+      errors.relatedItemIdType || errors. relatedItemRelType ||
       crossmarkErrors.update_0_DOI_Missing || crossmarkErrors.update_0_year || crossmarkErrors.clinical_0_registry || crossmarkErrors.clinical_0_trialNumber
     ) &&
     <div><b>Required.</b><br />Please provide required information.</div>
@@ -82,13 +86,18 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
     {(errors.printDateYear || errors.onlineDateYear) &&
     <div><b>Required.</b><br />Please provide either a print or online date.</div>
     }
-    {(errors.contributorLastName) &&
-    <div><b>Required.</b><br />Please provide contributor last name with first name.</div>
+    {(errors.printDateInvalid || errors.onlineDateInvalid) &&
+    <div><b>Invalid Publication Date.</b><br />Please check your date.</div>
     }
     {(errors.licenseUrlInvalid) &&
     <div><b>Invalid License URL.</b><br />Please check your URL.</div>
     }
-
+    {(errors.licenseDateInvalid) &&
+    <div><b>Invalid License Date.</b><br />Please check your Date.</div>
+    }
+    {(errors.relatedItemDoiInvalid) &&
+    <div><b>Invalid Related Item DOI.</b><br />Please check your DOI (10.xxxx/xx...)..</div>
+    }
     {(crossmarkErrors.peer_0_href) &&
     <div><b>Invalid Crossmark URL.</b><br />Please check your Peer Review URL.</div>
     }
@@ -289,7 +298,13 @@ export class ArticleUrlField extends Component {
 }
 
 export class DatesRow extends Component {
+
   render() {
+    const errors = this.props.errors;
+    const {printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay} = this.props.article;
+    const {printDateInvalid, printDateIncomplete, onlineDateInvalid, onlineDateIncomplete} = this.props.errors;
+    const printYearError = errors.printDateYear || printDateIncomplete || printDateInvalid;
+    const onlineYearError = errors.onlineDateYear || onlineDateIncomplete || onlineDateInvalid;
     return (
       <div className='row'>
         <div className='fieldHolder'>
@@ -310,19 +325,19 @@ export class DatesRow extends Component {
                   <div className='dateselectholder'>
                     <div>Year {((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateYear', 'y', this.props.article.printDateYear, this.props.errors.printDateYear)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateYear', 'y', printDateYear, printYearError)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', this.props.article.printDateMonth, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', printDateMonth, printDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Day</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateDay', 'd', this.props.article.printDateDay, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateDay', 'd', printDateDay, printDateInvalid)}
                     </div>
                   </div>
                   <div>
@@ -348,18 +363,18 @@ export class DatesRow extends Component {
                 <div className='datepickerholder'>
                   <div className='dateselectholder'>
                     <div>Year {((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0 ? '(*)' : '')}</div>
-                    <div>{this.props.makeDateDropDown(this.props.handleChange, 'onlineDateYear', 'y', this.props.article.onlineDateYear, this.props.errors.onlineDateYear)}</div>
+                    <div>{this.props.makeDateDropDown(this.props.handleChange, 'onlineDateYear', 'y', onlineDateYear, onlineYearError)}</div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', this.props.article.onlineDateMonth, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', onlineDateMonth, onlineDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Day</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateDay', 'd', this.props.article.onlineDateDay, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateDay', 'd', onlineDateDay, onlineDateInvalid)}
                     </div>
                   </div>
                   <div>
@@ -429,14 +444,13 @@ export class BottomFields extends Component {
                 </div>
               </div>
               <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height32'>
-                  </div>
+                <div className={`requiredholder ${!this.props.article.lastPage && 'norequire'}`}>
+                  <div className='required height32'>{this.props.article.lastPage && <span>*</span>}</div>
                 </div>
                 <div className='field'>
                   <input
                       name="firstPage"
-                      className='height32'
+                      className={`height32 ${this.props.errors.firstPage && 'fieldError'}`}
                       type='text'
                       onChange={this.props.handleChange}
                       value={this.props.article.firstPage}

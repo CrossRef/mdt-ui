@@ -67,11 +67,7 @@ export function makeDateDropDown (handler, name, type, preset, validation) {
 
 export function validDate ( yearfield, monthfield, dayfield ){
   yearfield = parseInt(yearfield); monthfield = parseInt(monthfield); dayfield = parseInt(dayfield);
-
-  if (monthfield){
-    if (monthfield > 12 || monthfield < 1) return false;
-  }
-  if (!dayfield){
+  if (!dayfield || !monthfield || !yearfield){
     return true;
   }
   // we have a year, month and day.
