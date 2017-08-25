@@ -198,16 +198,17 @@ export const journalArticleXml = (component, crossmark) => {
       ]
 
       attributes = _.filter(attributes, (attribute) => { // filter all the undefined
-        for(var key in attribute) { // checking all the properties of errors to see if there is a true
+        for(const key in attribute) { // checking all the properties of errors to see if there is a true
           if (attribute[key]) {
             return attribute
           }
         }
       })
 
-      var org = ((contributor.groupAuthorName && (contributor.groupAuthorName.trim().length>0)) && (contributor.groupAuthorRole && (contributor.groupAuthorRole.trim().length>0))) ? `<organization sequence="${i===0 ? 'first' : 'additional'}" contributor_role="${contributor.groupAuthorRole}">${contributor.groupAuthorName}</organization>` : undefined
+      const org = ((contributor.groupAuthorName && (contributor.groupAuthorName.trim().length>0)) || (contributor.groupAuthorRole && (contributor.groupAuthorRole.trim().length>0))) ?
+        `<organization sequence="${i===0 ? 'first' : 'additional'}"${contributor.groupAuthorRole ? ` contributor_role="${contributor.groupAuthorRole}"`:''}>${contributor.groupAuthorName}</organization>` : undefined
 
-      var person = `<person_name sequence="${i===0 ? 'first' : 'additional'}"${(contributor.role && (contributor.role.trim().length>0)) ? ` contributor_role="${contributor.role}"` : ``}>${attributes.join('')}</person_name>`
+      const person = `<person_name sequence="${i===0 ? 'first' : 'additional'}"${(contributor.role && (contributor.role.trim().length>0)) ? ` contributor_role="${contributor.role}"` : ``}>${attributes.join('')}</person_name>`
 
       return org ? org : person
     })
@@ -243,8 +244,7 @@ export const journalArticleXml = (component, crossmark) => {
         attributes = `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>`
       }
 
-      var fundgroup = ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined;
-      return fundgroup
+      return ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined;
     })
 
     funders = _.filter(funders, (funder) => {
@@ -274,7 +274,7 @@ export const journalArticleXml = (component, crossmark) => {
       if (isDate || license.licenseurl || license.appliesto) {
         const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : '';
         let freetolicense = ``
-        if (state.addInfo.freetolicense === 'yes') {
+        if (state.addInfo.freetolicense && isDate) {
           freetolicense = `<ai:free_to_read start_date="${date}"/>`
         }
 
@@ -286,22 +286,20 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getRelatedItemsXML () {
-    var relatedItems = getSubmitSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}, i) => {
+    const relatedItems = getSubmitSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}) => {
 
       const interWorkRelation = (relationType || identifierType || relatedItemIdentifier) ?
         `<inter_work_relation${relationType ? ` relationship-type="${relationType}"`:''}${identifierType ? ` identifier-type="${identifierType}"`:''}>${relatedItemIdentifier || ''}</inter_work_relation>`
         : ''
-      const attributes = `<related_item xmlns="http://www.crossref.org/relations.xsd">${description ? `<description>${description}</description>` : ``}${interWorkRelation}</related_item>`
 
-      return attributes
+      return `<related_item xmlns="http://www.crossref.org/relations.xsd">${description ? `<description>${description}</description>` : ``}${interWorkRelation}</related_item>`
     })
     return relatedItems.length > 0 ? `<rel:program xmlns:rel="http://www.crossref.org/relations.xsd">${relatedItems.join('')}</rel:program>` : ``
   }
 
   function getCollectionXML () {
     // similarity check
-    const similarityCheck = state.addInfo.similarityCheckURL.trim().length > 0 ? `<collection property="crawler-based"><item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item></collection>` : ``
-    return similarityCheck
+    return state.addInfo.similarityCheckURL.trim().length > 0 ? `<collection property="crawler-based"><item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item></collection>` : ``
   }
 
   function getPagesXML () {

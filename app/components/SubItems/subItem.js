@@ -100,8 +100,8 @@ export default class SubtItem extends Component {
               positionErrorBubble={this.props.positionErrorBubble}
               grantHandler={grantHandler}/>
             break
-            case 'License':
-            const { freetoread, errorLicenseStartDate, errorLicenseUrlInvalid } = this.props
+          case 'License':
+            const { freetoread } = this.props
             card = <License
                     key={i}
                     license={data}
@@ -109,9 +109,7 @@ export default class SubtItem extends Component {
                     handler={handler}
                     data={incomingData}
                     index={i}
-                    freetoread={freetoread}
-                    errorLicenseStartDate={errorLicenseStartDate}
-                    errorLicenseUrlInvalid={errorLicenseUrlInvalid}
+                    {...(i===0 ? {freetoread} : {})}
                     makeDateDropDown={makeDateDropDown}
                     positionErrorBubble={this.props.positionErrorBubble}/>
 

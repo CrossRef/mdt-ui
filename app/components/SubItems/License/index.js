@@ -44,20 +44,30 @@ export default class License extends Component {
   }
 
   handleLicense = () => {
-    var license = {}
+    let license = {
+      errors: this.props.license.errors
+    }
     for(var i in this.refs){
       if(this.refs[i]){
         license[i] = this.refs[i].value
       }
     }
 
-    this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
+    this.props.handler({
       license: update(this.props.data, {[this.props.index]: {$set: license }})
     })
 
   }
 
   render () {
+    const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, licenseurl, appliesto} = this.props.license;
+    const errors = this.props.license.errors || {};
+    const { licenseDate, licenseDateIncomplete, licenseDateInvalid} = errors;
+    const thereIsDate = !!(acceptedDateYear || acceptedDateMonth || acceptedDateDay);
+    const yearError = licenseDateInvalid || licenseDate || (licenseDateIncomplete && !acceptedDateYear);
+    const monthError = licenseDateInvalid || licenseDate || (licenseDateIncomplete && !acceptedDateMonth);
+    const dayError = licenseDateInvalid || licenseDate || (licenseDateIncomplete && !acceptedDateDay);
+
     return (
         <div>
             <div className='row subItemRow' onClick={this.toggle.bind(this)}>
@@ -94,18 +104,18 @@ export default class License extends Component {
                                         <div className='datepickerholder'>
                                             <div className='dateselectholder'>
                                                 <div>Year {(this.props.freetoread ? '(*)' : '')}</div>
-                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', this.props.license.acceptedDateYear, this.props.errorLicenseStartDate)}</div>
+                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', acceptedDateYear, yearError)}</div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Month</div>
                                                 <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', this.props.license.acceptedDateMonth, false)}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', acceptedDateMonth, monthError)}
                                                 </div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Day</div>
                                                 <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', this.props.license.acceptedDateDay, false)}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', acceptedDateDay, dayError)}
                                                 </div>
                                             </div>
                                             <div>
@@ -128,17 +138,16 @@ export default class License extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!(thereIsDate || appliesto) && 'norequire'}`}>
+                                        <div className='required height32'>{(thereIsDate || appliesto) && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className={`height32 ${this.props.errorLicenseUrlInvalid && 'fieldError'}`}
+                                            className={`height32 ${(errors.licenseUrl || errors.licenseUrlInvalid) && 'fieldError'}`}
                                             type='text'
                                             ref='licenseurl'
                                             onChange={this.handleLicense}
-                                            value={this.props.license.licenseurl}
+                                            value={licenseurl}
                                         />
                                     </div>
                                 </div>

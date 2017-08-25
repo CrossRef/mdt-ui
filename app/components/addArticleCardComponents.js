@@ -73,6 +73,9 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
     {(errors.dupedoi) &&
     <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>
     }
+    {(errors.licenseDate) &&
+    <div><b>License Date Required.</b><br />Please provide a license date.</div>
+    }
     {(errors.invalidurl) &&
     <div><b>Invalid Article URL.</b><br />Please check your URL.</div>
     }

@@ -55,6 +55,7 @@ const defaultState = {
 
     contributorLastName: false,
     contributorRole: false,
+    contributorGroupRole: false,
 
     licenseUrl: false,
     licenseUrlInvalid: false,
@@ -112,7 +113,8 @@ const defaultState = {
       groupAuthorRole: '',
       errors: {
         contributorLastName: false,
-        contributorRole: false
+        contributorRole: false,
+        contributorGroupRole: false
       }
     }
   ],
@@ -343,12 +345,12 @@ export default class AddArticleCard extends Component {
     let warnings = {
       licenseUrl: false,
       licenseUrlInvalid: false,
-      licenseDate: false,
       licenseDateIncomplete: false,
       licenseDateInvalid: false,
 
       contributorLastName: false,
       contributorRole: false,
+      contributorGroupRole: false,
 
       relatedItemIdType: false,
       relatedItemRelType: false,
@@ -369,9 +371,8 @@ export default class AddArticleCard extends Component {
     warnings.simCheckUrlInvalid = !!(this.state.addInfo.similarityCheckURL && !isUrl(this.state.addInfo.similarityCheckURL));
 
 
-    const freetolicense = this.state.addInfo.freetolicense;
-    if (freetolicense){
-      warnings.licenseDate = true;
+    if (this.state.addInfo.freetolicense){
+      criticalErrors.licenseDate = true;
     }
 
     //validate License subItems
@@ -380,13 +381,15 @@ export default class AddArticleCard extends Component {
       const errors = {
         licenseUrl: false,
         licenseUrlInvalid: false,
+        licenseDate: false,
         licenseDateIncomplete: false,
         licenseDateInvalid: false,
       };
 
       const thereIsDate = !!(acceptedDateDay || acceptedDateMonth || acceptedDateYear);
       if(thereIsDate) {
-        warnings.licenseDate = false;
+        criticalErrors.licenseDate = false;
+
         if(!(acceptedDateDay && acceptedDateMonth && acceptedDateYear)) {
           errors.licenseDateIncomplete = true;
           warnings.licenseDateIncomplete = true;
@@ -412,14 +415,19 @@ export default class AddArticleCard extends Component {
       return {...license, errors}
     })
 
+    if(criticalErrors.licenseDate) licenses[0].errors.licenseDate = true;  // if no licenses have a date and free to license is on, make first license require a date
+
     //validate contributor subItems
     const contributors = getSubmitSubItems(this.state.contributors).map( contributor => {
+      const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = contributor;
       const errors = {
-        contributorLastName: contributor.firstName && !contributor.lastName,
-        contributorRole: !contributor.role
+        contributorLastName: firstName && !lastName,
+        contributorRole: (lastName || firstName || suffix || affiliation || orcid) && !role,
+        contributorGroupRole: groupAuthorName && !groupAuthorRole
       }
       if(errors.contributorLastName) warnings.contributorLastName = true;
       if(errors.contributorRole) warnings.contributorRole = true;
+      if(errors.contributorGroupRole) warnings.contributorGroupRole = true;
 
       return {...contributor, errors}
     })
