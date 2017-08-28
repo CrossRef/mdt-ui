@@ -2,18 +2,18 @@ import React, { Component } from 'react'
 import { stateTrackerII } from 'my_decorators'
 
 import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial, Blank } from './crossmarkCards'
-
+import {cardNames} from '../../../utilities/crossmarkHelpers'
+const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
 
 const crossmarkCardSelector = {
-  'Publication History': PublicationHistory,
-  'Peer Review': PeerReview,
-  'Copyright & Licensing': Copyright,
-  'Supplementary Material': SupplementaryMaterial,
-  'Other': Other,
-  'Linked Clinical Trials': ClinicalTrials,
-  'Status Update': StatusUpdate
+  [pubHist]: PublicationHistory,
+  [peer]: PeerReview,
+  [copyright]: Copyright,
+  [supp]: SupplementaryMaterial,
+  [other]: Other,
+  [clinical]: ClinicalTrials,
+  [update]: StatusUpdate
 }
-
 
 export const CrossmarkAddButton = ({showSection, toggle, addList, toggleAdd, addCrossmarkCard}) =>
   <div className='addholder'>
@@ -34,14 +34,14 @@ export const CrossmarkAddButton = ({showSection, toggle, addList, toggleAdd, add
 
 
 
-export const CrossmarkCards = ({ makeDateDropDown, removeCrossmarkCard, crossmarkCards, errors }) => {
+export const CrossmarkCards = ({ makeDateDropDown, removeCrossmarkCard, crossmarkCards }) => {
   const crossmarkCardKeys = Object.keys(crossmarkCards);
   return (
     <div>
       {!crossmarkCardKeys.length && <Blank/>}
       {crossmarkCardKeys.map((cardName, index) => {
         const Card = crossmarkCardSelector[cardName];
-        return crossmarkCards[cardName] ? <Card key={`${cardName}-${index}`} number={crossmarkCards[cardName] - 1} remove={()=>removeCrossmarkCard(cardName)} errors={errors}/> : null
+        return crossmarkCards[cardName] ? <Card key={`${cardName}-${index}`} number={crossmarkCards[cardName] - 1} remove={()=>removeCrossmarkCard(cardName)} /> : null
       })}
     </div>
   )

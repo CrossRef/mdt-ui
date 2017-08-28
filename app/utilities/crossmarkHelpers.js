@@ -1,27 +1,36 @@
+export const cardNames = {
+  pubHist: 'Publication History',
+  peer: 'Peer Review',
+  clinical: 'Linked Clinical Trials',
+  update: 'Status Update',
+  copyright: 'Copyright & Licensing',
+  supp: 'Supplementary Material',
+  other: 'Other'
+}
 
-// deparseCrossmark takes a parsed xml JSON object and turns into shallow list of key/value pairs to be saved to reduxForm and read by crossmark components.
-// also prepares a list of cards that need to be shown on article load
-export function deParseCrossmark (data) {
+const {pubHist, peer, clinical, update, copyright, supp, other} = cardNames
+
+
+export function parseCrossmark (data) {
   const reduxForm = {};
-  const showCards = {}
+  const showCards = { firstLoad: true };
 
   if(data.updates) {
+    reduxForm[update] = {};
     if(!Array.isArray(data.updates.update)) data.updates.update = [data.updates.update];
 
-    showCards['Status Update'] = parseInt(data.updates.update.length);
+    showCards[update] = parseInt(data.updates.update.length);
 
-    data.updates.update.forEach((update, index)=>{
-      const cardNumber = `update_${index}`;
-      for (var key in update) {
-        const slicedKey = key.slice(1);
-        if(slicedKey === 'date') {
-          const [year, month, day] = update[key].split('-');
-          reduxForm[`${cardNumber}_year`] = year;
-          reduxForm[`${cardNumber}_month`] = month;
-          reduxForm[`${cardNumber}_day`] = day;
-        } else if (slicedKey ==='text') {
-          reduxForm[`${cardNumber}_DOI`] = update[key];
-        } else if (slicedKey ==='type')reduxForm[`${cardNumber}_${slicedKey}`] = upperCaseFirst(update[key])
+    data.updates.update.forEach((thisUpdate, i)=>{
+      let DOI = '', year = '', month = '', day = '';
+      if(typeof thisUpdate === 'string') DOI = thisUpdate;
+      if (thisUpdate['-date']) {
+        [year, month, day] = thisUpdate['-date'].split('-')
+      }
+      reduxForm[update][i] = {
+        type: upperCaseFirst(thisUpdate['-type']),
+        DOI: thisUpdate['#text'] || DOI || '',
+        year, month, day
       }
     });
   }
@@ -31,51 +40,38 @@ export function deParseCrossmark (data) {
 
     data.custom_metadata.assertion.forEach((assertion)=>{
 
+      function parseAttributes (card) {
+        const i = assertion['-order'];
+        showCards[card] = parseInt(i) + 1;
+        reduxForm[card] = reduxForm[card] ? reduxForm[card] : {};
+        reduxForm[card][i] = {};
+
+        for (let key in assertion) {
+          reduxForm[card][i][key.slice(1)] = assertion[key] || '';
+        }
+      }
 
       if(assertion['-group_name'] === 'publication_history') {
-        const cardNumber = `pubHist_${assertion['-order']}`;
-        showCards['Publication History'] = parseInt(assertion['-order']) + 1;
+        const i = assertion['-order'];
+        showCards[pubHist] = parseInt(i) + 1;
 
-        for (var key in assertion) {
-          const slicedKey = key.slice(1);
-          if(slicedKey === 'text') {
-            const [year, month, day] = assertion[key].split('-');
-            reduxForm[`${cardNumber}_year`] = year;
-            reduxForm[`${cardNumber}_month`] = month;
-            reduxForm[`${cardNumber}_day`] = day;
-          } else reduxForm[`${cardNumber}_${slicedKey}`] = assertion[key];
+        reduxForm[pubHist] = reduxForm[pubHist] || {};
+        const [ year, month, day ] = assertion['#text'] ? assertion['#text'].split('-') : ['','',''];
+        reduxForm[pubHist][i] = {
+          label: assertion['-label'] || '',
+          year, month, day
         }
       }
       else if (assertion['-group_name'] === 'peer_review') {
-        const cardNumber = `peer_${assertion['-order']}`;
-        showCards['Peer Review'] = parseInt(assertion['-order']) + 1;
-
-        for (var key in assertion) {
-          reduxForm[`${cardNumber}_${key.slice(1)}`] = assertion[key];
-        }
+        parseAttributes(peer)
       }
       else if (assertion['-group_name'] === 'copyright_licensing') {
-        const cardNumber = `copyright_${assertion['-order']}`;
-        showCards['Copyright & Licensing'] = parseInt(assertion['-order']) + 1;
-
-        for (var key in assertion) {
-          reduxForm[`${cardNumber}_${key.slice(1)}`] = assertion[key];
-        }
+        parseAttributes(copyright)
       }
       else if (assertion['-name'] === 'supplementary_Material') {
-        const cardNumber = `supp_${assertion['-order']}`;
-        showCards['Supplementary Material'] = parseInt(assertion['-order']) + 1;
-
-        for (var key in assertion) {
-          reduxForm[`${cardNumber}_${key.slice(1)}`] = assertion[key];
-        }
+        parseAttributes(supp)
       } else {
-        const cardNumber = `other_${assertion['-order']}`;
-        showCards['Other'] = parseInt(assertion['-order']) + 1;
-
-        for (var key in assertion) {
-          reduxForm[`${cardNumber}_${key.slice(1)}`] = assertion[key];
-        }
+        parseAttributes(other)
       }
     })
   }
@@ -83,21 +79,21 @@ export function deParseCrossmark (data) {
   if(data.custom_metadata && data.custom_metadata.program && data.custom_metadata.program['clinical-trial-number']) {
     if(!Array.isArray(data.custom_metadata.program['clinical-trial-number'])) data.custom_metadata.program['clinical-trial-number'] = [data.custom_metadata.program['clinical-trial-number']];
 
-    showCards['Linked Clinical Trials'] = parseInt(data.custom_metadata.program['clinical-trial-number'].length);
+    showCards[clinical] = parseInt(data.custom_metadata.program['clinical-trial-number'].length);
+    reduxForm[clinical] = {};
 
-    data.custom_metadata.program['clinical-trial-number'].forEach((clinical, index)=>{
-      const cardNumber = `clinical_${index}`;
-      for (var key in clinical) {
+    data.custom_metadata.program['clinical-trial-number'].forEach((eachClinical, i)=>{
+      reduxForm[clinical][i] = {};
+      for (let key in eachClinical) {
         const slicedKey = key.slice(1);
         if(slicedKey === 'text') {
-          reduxForm[`${cardNumber}_trialNumber`] = clinical[key];
+          reduxForm[clinical][i]['trialNumber'] = eachClinical[key] || '';
         }
         else if (slicedKey === 'registry') {
-          reduxForm[`${cardNumber}_${slicedKey}`] = swappedRegistry[clinical[key]];
+          reduxForm[clinical][i][slicedKey] = swappedRegistry[eachClinical[key]] || '';
         }
         else if (slicedKey === 'type'){
-
-          reduxForm[`${cardNumber}_${slicedKey}`] = relationships[clinical[key]]
+          reduxForm[clinical][i][slicedKey] = relationships[eachClinical[key]] || ''
         }
       }
     })
@@ -148,5 +144,6 @@ function swap(object){
 }
 
 function upperCaseFirst (string) {
+  if(!string) return '';
   return string.split('_').map((string)=>string.charAt(0).toUpperCase() + string.slice(1)).join(' ')
 }

@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Switch from 'react-toggle-switch'
 
 import { ClassWrapper } from '../utilities/classwrapper'
+import {cardNames} from '../utilities/crossmarkHelpers'
+const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames;
 import {routes} from '../routing'
 
 
@@ -52,67 +54,66 @@ export const InfoBubble = () =>
   </ClassWrapper>
 
 
+
+let requiredMessageInUse = false;
+const requiredMessage = () => {
+  if(!requiredMessageInUse) {
+    requiredMessageInUse = true;
+    return <div><b>Required.</b><br />Please provide required information.</div>
+  } else {
+    return null
+  }
+}
+
 export const ErrorBubble = ({errors, crossmarkErrors}) =>
   <ClassWrapper classNames={['errorHolder talltooltip fullError', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder', 'errormsginnerholder']}>
     <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Caution.svg`} /></div>
-    {(
-      errors.doi ||
-      errors.url ||
-      errors.title ||
-      errors.printDateIncomplete || errors.onlineDateIncomplete ||
-      errors.firstPage ||
-      errors.contributorLastName || errors.contributorRole || errors.contributorGroupRole || errors.contributorGroupName ||
-      errors.licenseUrl || errors.licenseDateIncomplete ||
-      errors.relatedItemIdType || errors. relatedItemRelType ||
-      crossmarkErrors.update_0_DOI_Missing || crossmarkErrors.update_0_year || crossmarkErrors.clinical_0_registry || crossmarkErrors.clinical_0_trialNumber
-    ) &&
-    <div><b>Required.</b><br />Please provide required information.</div>
-    }
-    {(errors.invaliddoi) &&
-    <div><b>Invalid Article DOI.</b><br/>Please check your DOI (10.xxxx/xx...).</div>
-    }
-    {(errors.invalidDoiPrefix) &&
-    <div><b>Invalid Article DOI.</b><br/>DOI prefix needs to match journal DOI prefix.</div>
-    }
-    {(errors.dupedoi) &&
-    <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>
-    }
-    {(errors.licenseDate) &&
-    <div><b>License Date Required.</b><br />Please provide a license date.</div>
-    }
-    {(errors.invalidurl) &&
-    <div><b>Invalid Article URL.</b><br />Please check your URL.</div>
-    }
-    {(errors.printDateYear || errors.onlineDateYear) &&
-    <div><b>Required.</b><br />Please provide either a print or online date.</div>
-    }
-    {(errors.printDateInvalid || errors.onlineDateInvalid) &&
-    <div><b>Invalid Publication Date.</b><br />Please check your date.</div>
-    }
-    {(errors.licenseUrlInvalid) &&
-    <div><b>Invalid License URL.</b><br />Please check your URL.</div>
-    }
-    {(errors.licenseDateInvalid) &&
-    <div><b>Invalid License Date.</b><br />Please check your Date.</div>
-    }
-    {(errors.relatedItemDoiInvalid) &&
-    <div><b>Invalid Related Item DOI.</b><br />Please check your DOI (10.xxxx/xx...)..</div>
-    }
-    {(crossmarkErrors.peer_0_href) &&
-    <div><b>Invalid Crossmark URL.</b><br />Please check your Peer Review URL.</div>
-    }
-    {(crossmarkErrors.copyright_0_href) &&
-    <div><b>Invalid Crossmark URL.</b><br />Please check your Copyright / Licensing URL.</div>
-    }
-    {(crossmarkErrors.supp_0_href) &&
-    <div><b>Invalid Crossmark URL.</b><br />Please check your Supplamentary Material URL.</div>
-    }
-    {(crossmarkErrors.other_0_href) &&
-    <div><b>Invalid Crossmark URL.</b><br />Please check your Other URL.</div>
-    }
-    {(crossmarkErrors.update_0_DOI_Invalid) &&
-    <div><b>Invalid Crossmark DOI.</b><br />Please check your Status Update DOI (10.xxxx/xx...).</div>
-    }
+
+    {requiredMessageInUse = false}
+    {errors.title && requiredMessage()}
+    {errors.doi && requiredMessage()}
+    {(errors.invaliddoi) && <div><b>Invalid Article DOI.</b><br/>Please check your DOI (10.xxxx/xx...).</div>}
+    {(errors.invalidDoiPrefix) && <div><b>Invalid Article DOI.</b><br/>DOI prefix needs to match journal DOI prefix.</div>}
+    {(errors.dupedoi) && <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>}
+    {errors.url && requiredMessage()}
+    {(errors.invalidurl) && <div><b>Invalid Article URL.</b><br />Please check your URL.</div>}
+    {(errors.printDateYear || errors.onlineDateYear) && <div><b>Required.</b><br />Please provide either a print or online date.</div>}
+    {(errors.printDateIncomplete || errors.onlineDateIncomplete) && requiredMessage()}
+    {(errors.printDateInvalid || errors.onlineDateInvalid) && <div><b>Invalid Publication Date.</b><br />Please check your date.</div>}
+    {errors.firstPage && requiredMessage()}
+
+    {errors.contributorLastName && requiredMessage()}
+    {errors.contributorRole && requiredMessage()}
+    {errors.contributorGroupRole && requiredMessage()}
+    {errors.contributorGroupName && requiredMessage()}
+
+    {(errors.licenseDate) && <div><b>License Date Required.</b><br />Please provide a license date.</div>}
+    {errors.licenseDateIncomplete && requiredMessage()}
+    {(errors.licenseDateInvalid) && <div><b>Invalid License Date.</b><br />Please check your Date.</div>}
+    {errors.licenseUrl && requiredMessage()}
+    {(errors.licenseUrlInvalid) && <div><b>Invalid License URL.</b><br />Please check your URL.</div>}
+
+    {(errors.relatedItemDoiInvalid) && <div><b>Invalid Related Item DOI.</b><br />Please check your DOI (10.xxxx/xx...)..</div>}
+    {errors.relatedItemIdType && requiredMessage()}
+    {errors.relatedItemRelType && requiredMessage()}
+
+    {errors.simCheckUrlInvalid && <div><b>Invalid Similarity Check URL.</b><br />Please check your URL.</div>}
+
+    {errors[`${pubHist} Label`] && requiredMessage()}
+    {errors[`${peer} Label`] && requiredMessage()}
+    {errors[`${peer} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Peer Review URL.</div>}
+    {errors[`${copyright} Label`] && requiredMessage()}
+    {errors[`${copyright} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Copyright / Licensing URL.</div>}
+    {errors[`${other} Label`] && requiredMessage()}
+    {errors[`${other} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Other URL.</div>}
+    {errors[`${supp} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Supplementary Material URL.</div>}
+    {errors[`${update} Type`] && requiredMessage()}
+    {errors[`${update} Date`] && requiredMessage()}
+    {errors[`${update} DOI`] && requiredMessage()}
+    {errors[`${update} DOIinvalid`] && <div><b>Invalid Crossmark DOI.</b><br />Please check your Status Update DOI (10.xxxx/xx...).</div>}
+    {errors[`${clinical} Registry`] && requiredMessage()}
+    {errors[`${clinical} TrialNumber`] && requiredMessage()}
+
   </ClassWrapper>
 
 

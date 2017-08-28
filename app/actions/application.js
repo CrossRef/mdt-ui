@@ -36,8 +36,12 @@ export function addDOIs(doi) {
 	return { type: 'DOI_ADD', doi }
 }
 
-export function editForm(keyVal) {
-    return { type: 'REDUXFORM_ADD', keyVal}
+export function editForm(keyPath, value) {
+  return { type: 'REDUXFORM_ADD', keyPath, value}
+}
+
+export function deleteCard(keyPath) {
+  return { type: 'REDUXFORM_DELETE', keyPath}
 }
 
 export function clearForm() {
@@ -53,7 +57,7 @@ export function clearCart() {
 }
 
 export function removeFromCart(doi) {
-	return { type: 'REMOVE_FROM_CART', action: {removeDoi: doi}}
+	return { type: 'REMOVE_FROM_CART', doi }
 }
 
 // Async Action Creators

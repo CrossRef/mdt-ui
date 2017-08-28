@@ -18,9 +18,12 @@ import isUrl from '../utilities/isURL'
 import isDOI from '../utilities/isDOI'
 import {routes} from '../routing'
 import { getSubmitSubItems } from '../utilities/getSubItems'
+import {cardNames} from '../utilities/crossmarkHelpers'
+import refreshErrorBubble from '../utilities/refreshErrorBubble'
 
 
 const defaultState = {
+  validating: false,
   crossmark: false,
   showCards: {},
   showOptionalTitleData: false,
@@ -69,17 +72,6 @@ const defaultState = {
     relatedItemDoiInvalid: false,
 
     simCheckUrlInvalid: false
-  },
-  crossmarkErrors: {
-    peer_0_href:false,
-    copyright_0_href:false,
-    supp_0_href:false,
-    other_0_href:false,
-    update_0_DOI_Invalid:false,
-    update_0_DOI_Missing:false,
-    update_0_year:false,
-    clinical_0_registry:false,
-    clinical_0_trialNumber:false
   },
   article: {
     title: '',
@@ -173,7 +165,7 @@ const defaultState = {
   }
 }
 
-@stateTrackerII
+
 export default class AddArticleCard extends Component {
 
   static propTypes = {
@@ -195,6 +187,7 @@ export default class AddArticleCard extends Component {
     reduxCartUpdate: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
     reduxEditForm: is.func.isRequired,
+    reduxDeleteCard: is.func.isRequired,
 
     asyncSubmitArticle: is.func.isRequired,
     asyncGetItem: is.func.isRequired
@@ -229,7 +222,7 @@ export default class AddArticleCard extends Component {
         const parsedArticle = parseXMLArticle(publication.message.contains[0].content);
 
         if(parsedArticle.crossmark) {
-          this.props.reduxEditForm(parsedArticle.crossmark.reduxForm);
+          this.props.reduxEditForm([], parsedArticle.crossmark.reduxForm);
           setStatePayload.showCards = parsedArticle.crossmark.showCards;
         }
 
@@ -254,19 +247,7 @@ export default class AddArticleCard extends Component {
   }
 
   componentDidUpdate() {
-    this.positionErrorBubble()
-  }
-
-  positionErrorBubble = () => {
-    var firstError = $(".fieldError").first()
-    if (firstError.length > 0) {
-      $('.fullError').show()
-      $('.fullError').find('.tooltips').css({
-        'top': ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9)) - ($('.switchLicense').first().position().top + 15) - ($('.switchLicense').first().offset().top + 15))) + 25
-      })
-    } else {
-      $('.fullError').hide()
-    }
+    refreshErrorBubble()
   }
 
   onSubmit = (e) => {
@@ -327,13 +308,15 @@ export default class AddArticleCard extends Component {
     })
   }
 
-  validation (callback = ()=>{}) {
+  validation (callback) {
     const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage } = this.state.article;
+    const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
 
     let criticalErrors = {
       doi: false,
       invaliddoi: false,
-      invalidDoiPrefix: false
+      invalidDoiPrefix: false,
+      licenseDate: false
     };
     criticalErrors.title = !title;
 
@@ -358,6 +341,28 @@ export default class AddArticleCard extends Component {
       relatedItemIdType: false,
       relatedItemRelType: false,
       relatedItemDoiInvalid: false,
+
+      // crossmark errors
+      [`${pubHist} Label`]: false,
+
+      [`${peer} Label`]: false,
+      [`${peer} Href`]: false,
+
+      [`${copyright} Label`]: false,
+      [`${copyright} Href`]: false,
+
+      [`${other} Label`]: false,
+      [`${other} Href`]: false,
+
+      [`${supp} Href`]: false,
+
+      [`${update} Type`]: false,
+      [`${update} DOI`]: false,
+      [`${update} DOIinvalid`]: false,
+      [`${update} Date`]: false,
+
+      [`${clinical} Registry`]: false,
+      [`${clinical} TrialNumber`]: false
     };
     warnings.url = !url;
     warnings.invalidurl = !!(url && !isUrl(url));
@@ -418,7 +423,14 @@ export default class AddArticleCard extends Component {
       return {...license, errors}
     })
 
-    if(criticalErrors.licenseDate) licenses[0].errors.licenseDate = true;  // if no licenses have a date and free to license is on, make first license require a date
+    if(criticalErrors.licenseDate) {  // if no licenses have a date and free to license is on, make first license require a date
+      if(!licenses.length) {
+        licenses[0] = {
+          errors: {}
+        }
+      }
+      licenses[0].errors.licenseDate = true;
+    }
 
     //validate contributor subItems
     const contributors = getSubmitSubItems(this.state.contributors).map( contributor => {
@@ -451,43 +463,73 @@ export default class AddArticleCard extends Component {
       return {...item, errors}
     })
 
-
-    const crossmarkErrors = {};
+    // crossmark validation
+    let newReduxForm = this.props.reduxForm;
     if(this.state.crossmark) {
-      const reduxForm = this.props.reduxForm;
 
-      for (const formField in reduxForm) {
-        const [ card, i, field ] = formField.split('_');
-        const value = reduxForm[formField];
+      function validateLabelHref (card) {
+        const map = newReduxForm.get(card);
+        if(map) {
+          map.entrySeq().forEach(([i, attributes])=>{
+            const errors = {
+              label: !attributes.get('label'),
+              href: (()=>{
+                const href = attributes.get('href');
+                return href ? !isUrl(href) : false
+              })()
+            }
 
-        if(field === 'href') {
-          crossmarkErrors[formField] = !value ? false : !isUrl(value)
+            if(errors.label) warnings[`${card} Label`] = true;
+            if(errors.href) warnings[`${card} Href`] = true;
+            newReduxForm = newReduxForm.setIn([card, i, 'errors'], errors)
+          })
         }
+      }
 
-        if(card === 'update') {
-          if(field === 'type' && value !== '') {
-            crossmarkErrors[`update_${i}_DOI_Missing`] = !reduxForm[`update_${i}_DOI`];
-            crossmarkErrors[`update_${i}_year`] = !reduxForm[`update_${i}_year`];
+      validateLabelHref(pubHist)
+      validateLabelHref(peer)
+      validateLabelHref(copyright)
+      validateLabelHref(other)
+      validateLabelHref(supp)
+
+      const updateMap = newReduxForm.get(update);
+      if(updateMap) {
+        updateMap.entrySeq().forEach(([i, attributes])=>{
+          const doi = attributes.get('DOI');
+          const errors = {
+            type: !attributes.get('type'),
+            DOI: !doi || !isDOI((doi)),
+            year: !attributes.get('year'),
+            month: !attributes.get('month'),
+            day: !attributes.get('day')
           }
+          if(errors.type) warnings[`${update} Type`] = true;
+          if(errors.DOI) !doi ? warnings[`${update} DOI`] = true : warnings[`${update} DOIinvalid`] = true;
+          if(errors.year || errors.month || errors.day) warnings[`${update} Date`] = true;
 
-          if(field === 'DOI') {
-            var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
-            crossmarkErrors[`${formField}_Invalid`] = !re.test(reduxForm[formField])
+          newReduxForm = newReduxForm.setIn([update, i, 'errors'], errors)
+        })
+      }
+
+      const clinicalMap =newReduxForm.get(clinical);
+      if(clinicalMap) {
+        clinicalMap.entrySeq().forEach(([i, attributes])=>{
+          const errors = {
+            registry: !attributes.get('registry'),
+            trialNumber: !attributes.get('trialNumber')
           }
-        }
-
-        if(card === 'clinical' && value !== '') {
-          crossmarkErrors[`clinical_${i}_registry`] = !reduxForm[`clinical_${i}_registry`];
-          crossmarkErrors[`clinical_${i}_trialNumber`] = !reduxForm[`clinical_${i}_trialNumber`];
-        }
+          if(errors.registry) warnings[`${clinical} Registry`] = true;
+          if(errors.trialNumber) warnings[`${clinical} TrialNumber`] = true;
+          newReduxForm = newReduxForm.setIn([clinical, i, 'errors'], errors)
+        })
       }
     }
 
     const completeValidation = () => {
       const setStatePayload = {
+        validating: true,
         error: false,
         errors: {...criticalErrors, ...warnings},
-        crossmarkErrors,
         license: licenses.length ? licenses : this.state.license,
         contributors: contributors.length ? contributors : this.state.contributors,
         relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems
@@ -500,12 +542,6 @@ export default class AddArticleCard extends Component {
         }
       }
 
-      for(const key in crossmarkErrors) {
-        if(crossmarkErrors[key]) {
-          setStatePayload.error = true;
-        }
-      }
-
       for(const key in criticalErrors) {
         if(criticalErrors[key]) {
           setStatePayload.error = true;
@@ -513,7 +549,15 @@ export default class AddArticleCard extends Component {
         }
       }
 
-      this.setState(setStatePayload, ()=>callback(valid))
+      this.props.reduxEditForm([], newReduxForm);
+      if(valid && callback) {
+        callback(true)
+      } else {
+        this.setState(setStatePayload, ()=>{
+          this.state.validating = false;
+          if(callback) callback(false)
+        })
+      }
     }
 
     if(this.state.doiDisabled || criticalErrors.doi || criticalErrors.invaliddoi || criticalErrors.invalidDoiPrefix) {
@@ -652,67 +696,61 @@ export default class AddArticleCard extends Component {
 
               <SubItem
                 title={'Contributor'}
+                validating={this.state.validating}
                 addable={true}
                 incomingData={this.state.contributors}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'contributors')}
                 showSection={this.state.openItems.Contributors}
                 addHandler={this.addSection.bind(this, 'contributors')}
-                apiReturned={this.state.openItems.apiReturned}
-                positionErrorBubble={this.positionErrorBubble}
               />
               <SubItem
                 title={'Funding'}
+                validating={this.state.validating}
                 addable={true}
                 incomingData={this.state.funding}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'funding')}
                 showSection={this.state.openItems.Funding}
-                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'funding')}
-                positionErrorBubble={this.positionErrorBubble}
               />
               <SubItem
                 title={'License'}
+                validating={this.state.validating}
                 addable={true}
                 incomingData={this.state.license}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'license')}
                 showSection={this.state.openItems.Licenses}
-                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'license')}
                 freetoread={this.state.addInfo.freetolicense}
-                errorLicenseStartDate={this.state.errors.licenseDate}
-                errorLicenseUrlInvalid={this.state.errors.licenseUrlInvalid}
                 makeDateDropDown={makeDateDropDown}
-                positionErrorBubble={this.positionErrorBubble}
               />
               <SubItem
                 title={'Related Items'}
+                validating={this.state.validating}
                 addable={true}
                 incomingData={this.state.relatedItems}
                 handler={this.boundSetState}
                 remove={this.removeSection.bind(this, 'relatedItems')}
                 showSection={this.state.openItems.relatedItems}
-                apiReturned={this.state.openItems.apiReturned}
                 addHandler={this.addSection.bind(this, 'relatedItems')}
-                positionErrorBubble={this.positionErrorBubble}
               />
               <SubItem
                 title={'Additional Information'}
+                validating={this.state.validating}
                 addable={false}
                 incomingData={this.state.addInfo}
                 handler={this.boundSetState}
                 showSection={this.state.openItems.addInfo}
-                apiReturned={this.state.openItems.apiReturned}
-                positionErrorBubble={this.positionErrorBubble}
+                simCheckError={this.state.errors.simCheckUrlInvalid}
               />
               {this.state.crossmark &&
                 <SubItem
                   title={'Crossmark'}
                   showCards={this.state.showCards}
                   crossmarkErrors={this.state.crossmarkErrors}
-                  positionErrorBubble={this.positionErrorBubble}
+                  reduxDeleteCard={this.props.reduxDeleteCard}
                 />
               }
 

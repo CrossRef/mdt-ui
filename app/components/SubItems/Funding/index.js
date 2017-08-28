@@ -4,6 +4,7 @@ import Autosuggest from 'react-autosuggest'
 import {stateTrackerII} from 'my_decorators'
 
 import {routes} from '../../../routing'
+import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
 
 
 function renderSuggestion(suggestion) {
@@ -30,7 +31,7 @@ export default class Funding extends Component {
   }
 
   componentDidUpdate () {
-    this.props.positionErrorBubble();
+    refreshErrorBubble();
   }
 
   componentWillReceiveProps(nextProps) {

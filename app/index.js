@@ -13,7 +13,7 @@ import { getCRState, controlModal } from './actions/application'
 
 
 setConfig({
-	showStateTracker: true,
+	showStateTracker: false,
 	updateReports: { mount: false, update:false, pass:false, render: false }
 });
 
@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history} onUpdate={(a, b, c)=>{
+      <Router history={history} onUpdate={()=>{
         if(!store.getState().routing.locationBeforeTransitions.query.modal) {
           store.dispatch(controlModal({ showModal: false }))
         }

@@ -9,7 +9,8 @@ import { editForm } from '../../../actions/application'
 
 const mapStateToProps = (state, props) => {
   return ({
-    reduxValue: state.reduxForm[props.name]
+    reduxValue: state.reduxForm.getIn(props.keyPath),
+    error: !!(state.reduxForm.getIn([props.keyPath[0], props.keyPath[1], 'errors']) || {})[props.keyPath[2]]
   })
 }
 
@@ -22,23 +23,22 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class ReduxTextInput extends Component {
 
   static propTypes = {
-    name: is.string.isRequired,
     className: is.string,
     reduxValue: is.string,
+    error: is.bool,
+    keyPath: is.array,
     handler:is.func
   }
 
   handler = (e) => {
     if(this.props.handler) this.props.handler(e);
-    this.props.reduxEditForm({
-      [e.target.name]:e.target.value
-    })
+    this.props.reduxEditForm(this.props.keyPath, e.target.value)
   }
 
   render() {
     return(
       <input
-        className={this.props.className}
+        className={`${this.props.className} ${this.props.error && 'fieldError'}`}
         type='text'
         name={this.props.name}
         onChange={this.handler}

@@ -3,6 +3,7 @@ import { stateTrackerII } from 'my_decorators'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
+import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
 const RelationTypes = require('../../../utilities/relationTypes.json')
 const IdentifierTypes = require('../../../utilities/identifierTypes.json')
 
@@ -11,20 +12,22 @@ export default class RelatedItems extends Component {
   constructor (props) {
     super(props)
     const {index} = this.props
+    const {relatedItemIdType, relatedItemRelType, relatedItemDoiInvalid} = props.relateditem.errors || {};
+    const show = !!(props.validating && (relatedItemIdType || relatedItemRelType || relatedItemDoiInvalid))
     this.state = {
-      showSubItem: index === 0,
+      showSubItem: index === 0 || show,
     }
   }
 
   componentWillReceiveProps (nextProps) {
     const {relatedItemIdType, relatedItemRelType, relatedItemDoiInvalid} = nextProps.relateditem.errors || {};
-    if(relatedItemIdType || relatedItemRelType || relatedItemDoiInvalid) {
+    if(nextProps.validating && (relatedItemIdType || relatedItemRelType || relatedItemDoiInvalid)) {
       this.setState({showSubItem: true})
     }
   }
 
   componentDidUpdate () {
-    this.props.positionErrorBubble();
+    refreshErrorBubble();
   }
 
   toggle = () => {

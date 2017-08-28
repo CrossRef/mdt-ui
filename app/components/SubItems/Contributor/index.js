@@ -3,6 +3,7 @@ import update from 'immutability-helper'
 import { stateTrackerII } from 'my_decorators'
 
 import { Roles } from '../../../utilities/roles.js'
+import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
 import {routes} from '../../../routing'
 
 
@@ -10,21 +11,23 @@ import {routes} from '../../../routing'
 export default class Contributor extends Component {
   constructor (props) {
     super(props)
-    const {index} = this.props
+    const {index} = this.props;
+    const {contributorLastName, contributorRole, contributorGroupName, contributorGroupRole} = props.contributor.errors || {};
+    const show = !!(props.validating && (contributorLastName || contributorRole || contributorGroupName || contributorGroupRole))
     this.state = {
-      showSubItem: index === 0 ? true : false,
+      showSubItem: index === 0 || show,
     }
   }
 
   componentWillReceiveProps (nextProps) {
     const {contributorLastName, contributorRole, contributorGroupName, contributorGroupRole} = nextProps.contributor.errors || {};
-    if(contributorLastName || contributorRole || contributorGroupName || contributorGroupRole) {
+    if(nextProps.validating && (contributorLastName || contributorRole || contributorGroupName || contributorGroupRole)) {
       this.setState({showSubItem: true})
     }
   }
 
   componentDidUpdate () {
-    this.props.positionErrorBubble();
+    refreshErrorBubble();
   }
 
   toggle = () => {

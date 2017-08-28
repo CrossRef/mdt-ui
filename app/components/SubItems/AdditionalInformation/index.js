@@ -111,7 +111,7 @@ export default class AdditionalInformation extends Component {
                                 </div>
                                 <div className='field'>
                                     <input
-                                        className='height32'
+                                        className={`height32 ${this.props.simCheckError && 'fieldError'}`}
                                         type='text'
                                         ref='similarityCheckURL'
                                         onChange={this.handleAddInfo}

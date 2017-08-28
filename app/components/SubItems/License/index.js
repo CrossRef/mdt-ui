@@ -2,29 +2,31 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
+import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
 const AppliesTo = require('../../../utilities/appliesTo.json')
 
 
 
 export default class License extends Component {
   constructor (props) {
-    console.log(props.license.errors)
     super(props)
     const {index} = this.props
+    const {licenseUrl, licenseUrlInvalid, licenseDateIncomplete, licenseDateInvalid} = props.license.errors || {};
+    const show = !!(props.validating && (licenseUrl || licenseUrlInvalid || licenseDateIncomplete || licenseDateInvalid))
     this.state = {
-      showSubItem: index === 0,
+      showSubItem: index === 0 || show,
     }
   }
 
   componentWillReceiveProps (nextProps) {
     const {licenseUrl, licenseUrlInvalid, licenseDateIncomplete, licenseDateInvalid} = nextProps.license.errors || {};
-    if(licenseUrl || licenseUrlInvalid || licenseDateIncomplete || licenseDateInvalid) {
+    if(nextProps.validating && (licenseUrl || licenseUrlInvalid || licenseDateIncomplete || licenseDateInvalid)) {
       this.setState({showSubItem: true})
     }
   }
 
   componentDidUpdate () {
-    this.props.positionErrorBubble();
+    refreshErrorBubble();
   }
 
   displayAppliesTo () {

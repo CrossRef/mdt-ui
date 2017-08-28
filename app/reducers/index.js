@@ -1,6 +1,7 @@
 import { routerReducer as routing } from 'react-router-redux'
 import { combineReducers } from 'redux'
 import _ from 'lodash'
+import {Map, fromJS} from 'immutable'
 
 
 
@@ -55,12 +56,32 @@ function searchReducer (state = {loading:false, searchValue: '', result:[]}, act
 }
 
 
-function reduxFormReducer (state = { submit: false }, action) {
+function reduxFormReducer (state = Map({ submit: false }), action) {
   switch (action.type) {
     case 'REDUXFORM_ADD':
-      return {...state, ...action.keyVal}
+      if(typeof action.value === 'object') action.value = fromJS(action.value);
+
+      if(action.value === '') {
+        const [cardKey, index, fieldKey] = action.keyPath;
+        const fieldGroup = state.getIn([cardKey, index]);
+
+        if(fieldGroup.size === 1 && fieldGroup.get(fieldKey)) {  // if this property is the last one, delete parent
+          const card = state.get(cardKey);
+          if(card.size === 1 && card.get(index)) {
+            return state.delete(cardKey)
+          } else {
+            return state.deleteIn([cardKey, index])
+          }
+        } else {
+          return state.deleteIn(action.keyPath)
+        }
+      } else {
+        return state.setIn(action.keyPath, action.value)
+      }
+    case 'REDUXFORM_DELETE':
+      return state.deleteIn(action.keyPath)
     case 'REDUXFORM_CLEAR':
-      return { submit: false }
+      return Map({ submit: false })
     default:
       return state
   }
@@ -74,7 +95,7 @@ function doiReducer (state = [], action) {
       if(!action.doi) return state;
       if(Array.isArray(action.doi)) {
         filteredDois = action.doi.filter( element => {
-          return element ? true : false
+          return !!element
         })
         return [...state, ...filteredDois]
       }
@@ -175,11 +196,14 @@ function cartReducer (state = [], action) {
       return [...newState]
     case 'REMOVE_FROM_CART':
       var removeIndex = _.findIndex(state, (item) => {
-        return action.action.removeDoi === item.doi
+        return action.doi === item.doi
       })
-      var newState = [...state];
-      newState.splice(removeIndex, 1);
-      return [...newState]
+      if(removeIndex !== -1) {
+        var newState = [...state];
+        newState.splice(removeIndex, 1);
+        console.log(state, newState);
+        return newState
+      } else return state
     case 'CLEAR_CART':
       var cart = []
       return [...cart]

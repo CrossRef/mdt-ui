@@ -10,6 +10,7 @@ import AdditionalInformation from './AdditionalInformation'
 import OptionalIssueInformation from './OptionalIssueInformation'
 import { CrossmarkCards, CrossmarkAddButton } from './Crossmark/crossmark'
 import {routes} from '../../routing'
+import refreshErrorBubble from '../../utilities/refreshErrorBubble'
 
 
 
@@ -22,19 +23,21 @@ export default class SubtItem extends Component {
 
   constructor (props) {
     super(props)
+    let loadedCrossmark = false;
+    if(props.title === 'Crossmark') {
+      loadedCrossmark = (props.title === 'Crossmark' && props.showCards.firstLoad)
+      delete props.showCards.firstLoad;
+    }
     this.state = {
-      showSection: false,
+      showSection: props.showSection || loadedCrossmark || !!this.props.simCheckError || this.props.freetoread,
       crossmarkButtons: false,
-      crossmarkCards: {}
+      crossmarkCards: loadedCrossmark ? props.showCards : {}
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const apiReturnedFirstTime = nextProps.apiReturned !== this.props.apiReturned;
-
     this.setState({
-        showSection: apiReturnedFirstTime ? nextProps.showSection : this.state.showSection,
-        crossmarkCards: Object.keys(this.state.crossmarkCards).length ? this.state.crossmarkCards : (nextProps.showCards || emptyObject)
+        showSection: nextProps.validating ? nextProps.showSection || !!this.props.freetoread : this.state.showSection,
     })
   }
 
@@ -57,13 +60,12 @@ export default class SubtItem extends Component {
   removeCrossmarkCard = (selection) => {
     const newState = {...this.state.crossmarkCards};
     delete newState[selection];
-    this.setState({ crossmarkCards: newState })
+    this.props.reduxDeleteCard([selection]);
+    this.setState({ crossmarkCards: newState });
   }
 
   componentDidUpdate () {
-    if(this.props.positionErrorBubble) {
-      this.props.positionErrorBubble();
-    }
+    refreshErrorBubble()
   }
 
   render () {
@@ -76,12 +78,12 @@ export default class SubtItem extends Component {
         switch (title) {
           case 'Contributor':
             card = <Contributor
+              validating={this.props.validating}
               key={i}
               contributor={data}
               remove={remove}
               handler={handler}
               data={incomingData}
-              positionErrorBubble={this.props.positionErrorBubble}
               index={i}/>
             break
           case 'Funding':
@@ -96,7 +98,6 @@ export default class SubtItem extends Component {
               grantNumbers={data.grantNumbers}
               addGrant={addGrant}
               removeGrant={removeGrant}
-              positionErrorBubble={this.props.positionErrorBubble}
               grantHandler={grantHandler}/>
             break
           case 'License':
@@ -109,8 +110,7 @@ export default class SubtItem extends Component {
                     data={incomingData}
                     index={i}
                     {...(i===0 ? {freetoread} : {})}
-                    makeDateDropDown={makeDateDropDown}
-                    positionErrorBubble={this.props.positionErrorBubble}/>
+                    makeDateDropDown={makeDateDropDown}/>
 
             break
           case 'Related Items':
@@ -120,7 +120,6 @@ export default class SubtItem extends Component {
               remove={remove}
               handler={handler}
               data={incomingData}
-              positionErrorBubble={this.props.positionErrorBubble}
               index={i}/>
             break
           case 'Optional Issue Information (Contributorship)':
@@ -139,12 +138,13 @@ export default class SubtItem extends Component {
     } else if (title==='Crossmark') {
       Nodes =
         <CrossmarkCards
-          removeCrossmarkCard={this.removeCrossmarkCard} crossmarkCards={this.state.crossmarkCards} errors={this.props.crossmarkErrors}/>
+          removeCrossmarkCard={this.removeCrossmarkCard} crossmarkCards={this.state.crossmarkCards}/>
 
     } else {
        Nodes = <AdditionalInformation
                       addInfo={incomingData}
                       data={incomingData}
+                      simCheckError={this.props.simCheckError}
                       handler={handler} />
     }
     return (
@@ -184,5 +184,3 @@ export default class SubtItem extends Component {
     )
   }
 }
-
-const emptyObject = {};
