@@ -31,13 +31,16 @@ export default class SubtItem extends Component {
     this.state = {
       showSection: props.showSection || loadedCrossmark || !!this.props.simCheckError || this.props.freetoread,
       crossmarkButtons: false,
-      crossmarkCards: loadedCrossmark ? props.showCards : {}
+      crossmarkCards: loadedCrossmark ? props.showCards : {},
+      freeToReadSwitchedOn: false
     }
   }
 
   componentWillReceiveProps(nextProps) {
+    const freeToReadSwitchedOn = !!(nextProps.freetoread && !this.props.freetoread)
     this.setState({
-        showSection: nextProps.validating ? nextProps.showSection || !!this.props.freetoread : this.state.showSection,
+      showSection: freeToReadSwitchedOn || (nextProps.validating ? nextProps.showSection || !!this.props.freetoread : this.state.showSection),
+      freeToReadSwitchedOn: freeToReadSwitchedOn
     })
   }
 
@@ -101,7 +104,8 @@ export default class SubtItem extends Component {
               grantHandler={grantHandler}/>
             break
           case 'License':
-            const { freetoread } = this.props
+            const { freetoread } = this.props;
+            const { freeToReadSwitchedOn } = this.state;
             card = <License
                     key={i}
                     license={data}
@@ -110,6 +114,7 @@ export default class SubtItem extends Component {
                     data={incomingData}
                     index={i}
                     {...(i===0 ? {freetoread} : {})}
+                    {...(i===0 ? {freeToReadSwitchedOn} : {})}
                     makeDateDropDown={makeDateDropDown}/>
 
             break
@@ -179,6 +184,7 @@ export default class SubtItem extends Component {
         {this.state.showSection &&
          <div className='body'>
            {Nodes}
+           {this.state.freeToReadSwitchedOn = false}
          </div>}
       </div>
     )

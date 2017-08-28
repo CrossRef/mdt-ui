@@ -11,17 +11,13 @@ import {routes} from '../../../routing'
 export default class Contributor extends Component {
   constructor (props) {
     super(props)
-    const {index} = this.props;
-    const {contributorLastName, contributorRole, contributorGroupName, contributorGroupRole} = props.contributor.errors || {};
-    const show = !!(props.validating && (contributorLastName || contributorRole || contributorGroupName || contributorGroupRole))
     this.state = {
-      showSubItem: index === 0 || show,
+      showSubItem: true
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {contributorLastName, contributorRole, contributorGroupName, contributorGroupRole} = nextProps.contributor.errors || {};
-    if(nextProps.validating && (contributorLastName || contributorRole || contributorGroupName || contributorGroupRole)) {
+    if(nextProps.validating) {
       this.setState({showSubItem: true})
     }
   }

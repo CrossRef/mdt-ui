@@ -10,17 +10,13 @@ const AppliesTo = require('../../../utilities/appliesTo.json')
 export default class License extends Component {
   constructor (props) {
     super(props)
-    const {index} = this.props
-    const {licenseUrl, licenseUrlInvalid, licenseDateIncomplete, licenseDateInvalid} = props.license.errors || {};
-    const show = !!(props.validating && (licenseUrl || licenseUrlInvalid || licenseDateIncomplete || licenseDateInvalid))
     this.state = {
-      showSubItem: index === 0 || show,
+      showSubItem: true,
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {licenseUrl, licenseUrlInvalid, licenseDateIncomplete, licenseDateInvalid} = nextProps.license.errors || {};
-    if(nextProps.validating && (licenseUrl || licenseUrlInvalid || licenseDateIncomplete || licenseDateInvalid)) {
+    if(nextProps.validating || nextProps.freeToReadSwitchedOn) {
       this.setState({showSubItem: true})
     }
   }
@@ -72,11 +68,7 @@ export default class License extends Component {
   render () {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, licenseurl, appliesto} = this.props.license;
     const errors = this.props.license.errors || {};
-    const { licenseDate, licenseDateIncomplete, licenseDateInvalid} = errors;
     const thereIsDate = !!(acceptedDateYear || acceptedDateMonth || acceptedDateDay);
-    const yearError = licenseDateInvalid || licenseDate || (licenseDateIncomplete && !acceptedDateYear);
-    const monthError = licenseDateInvalid || licenseDate || (licenseDateIncomplete && !acceptedDateMonth);
-    const dayError = licenseDateInvalid || licenseDate || (licenseDateIncomplete && !acceptedDateDay);
 
     return (
         <div>
@@ -105,27 +97,25 @@ export default class License extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className={'requiredholder' + (this.props.freetoread ? ' dateselectrequire' : ' norequire')}>
-                                        <div className='required height32'>
-                                            {(this.props.freetoread ?  <span>*</span> : '' )}
-                                        </div>
+                                    <div className='requiredholder norequire'>
+                                        <div className='required height32'></div>
                                     </div>
                                     <div className='field'>
                                         <div className='datepickerholder'>
                                             <div className='dateselectholder'>
-                                                <div>Year {(this.props.freetoread ? '(*)' : '')}</div>
-                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', acceptedDateYear, yearError)}</div>
+                                                <div>Year</div>
+                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', acceptedDateYear, errors.licenseYear)}</div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Month</div>
                                                 <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', acceptedDateMonth, monthError)}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', acceptedDateMonth, errors.licenseMonth)}
                                                 </div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Day</div>
                                                 <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', acceptedDateDay, dayError)}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', acceptedDateDay, errors.licenseDay)}
                                                 </div>
                                             </div>
                                             <div>
@@ -148,8 +138,8 @@ export default class License extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!(thereIsDate || appliesto) && 'norequire'}`}>
-                                        <div className='required height32'>{(thereIsDate || appliesto) && <span>*</span>}</div>
+                                    <div className={`requiredholder ${!this.props.freetoread && !(thereIsDate || appliesto) && 'norequire'}`}>
+                                        <div className='required height32'>{(this.props.freetoread || (thereIsDate || appliesto)) && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         <input

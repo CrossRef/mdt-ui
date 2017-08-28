@@ -20,7 +20,7 @@ export default class Funding extends Component {
     super(props)
     const {index, grantNumbers, funding} = this.props
     this.state = {
-      showSubItem: index === 0,
+      showSubItem: true,
       suggestions: [],
       value: funding.funderRegistryID.trim().length ? funding.funderRegistryID : '',
       funderRegistryID: funding.funderRegistryID.trim().length ? funding.funderRegistryID : '',
@@ -36,6 +36,7 @@ export default class Funding extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
+      showSubItem: nextProps.validating ? true : this.state.showSubItem,
       funder_identifier: nextProps.funding.funder_identifier,
       grantNumbers: nextProps.grantNumbers,
     })

@@ -11,17 +11,13 @@ const IdentifierTypes = require('../../../utilities/identifierTypes.json')
 export default class RelatedItems extends Component {
   constructor (props) {
     super(props)
-    const {index} = this.props
-    const {relatedItemIdType, relatedItemRelType, relatedItemDoiInvalid} = props.relateditem.errors || {};
-    const show = !!(props.validating && (relatedItemIdType || relatedItemRelType || relatedItemDoiInvalid))
     this.state = {
-      showSubItem: index === 0 || show,
+      showSubItem: true,
     }
   }
 
   componentWillReceiveProps (nextProps) {
-    const {relatedItemIdType, relatedItemRelType, relatedItemDoiInvalid} = nextProps.relateditem.errors || {};
-    if(nextProps.validating && (relatedItemIdType || relatedItemRelType || relatedItemDoiInvalid)) {
+    if(nextProps.validating) {
       this.setState({showSubItem: true})
     }
   }

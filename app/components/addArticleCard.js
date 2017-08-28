@@ -63,7 +63,6 @@ const defaultState = {
 
     licenseUrl: false,
     licenseUrlInvalid: false,
-    licenseDate: false,
     licenseDateInvalid: false,
     licenseDateIncomplete: false,
 
@@ -316,7 +315,7 @@ export default class AddArticleCard extends Component {
       doi: false,
       invaliddoi: false,
       invalidDoiPrefix: false,
-      licenseDate: false
+      licenseFreeToRead: false
     };
     criticalErrors.title = !title;
 
@@ -380,32 +379,40 @@ export default class AddArticleCard extends Component {
 
 
     if (this.state.addInfo.freetolicense){
-      criticalErrors.licenseDate = true;
+      criticalErrors.licenseFreeToRead = true;
     }
 
     //validate License subItems
     const licenses = getSubmitSubItems(this.state.license).map((license, i) => {
       const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license;
+      if(licenseurl) criticalErrors.licenseFreeToRead = false;
+
       const errors = {
-        licenseUrl: false,
+        licenseUrl: criticalErrors.licenseFreeToRead,
         licenseUrlInvalid: false,
-        licenseDate: false,
         licenseDateIncomplete: false,
         licenseDateInvalid: false,
+        licenseYear: false,
+        licenseMonth: false,
+        licenseDay: false
       };
 
       const thereIsDate = !!(acceptedDateDay || acceptedDateMonth || acceptedDateYear);
       if(thereIsDate) {
-        criticalErrors.licenseDate = false;
-
         if(!(acceptedDateDay && acceptedDateMonth && acceptedDateYear)) {
           errors.licenseDateIncomplete = true;
+          errors.licenseYear = !acceptedDateYear;
+          errors.licenseMonth = !acceptedDateMonth;
+          errors.licenseDay = !acceptedDateDay
           warnings.licenseDateIncomplete = true;
         }
       }
 
       if(!errors.licenseDateIncomplete && !validDate(acceptedDateYear, acceptedDateMonth, acceptedDateDay)) {
         errors.licenseDateInvalid = true;
+        errors.licenseYear = true;
+        errors.licenseMonth = true;
+        errors.licenseDay = true;
         warnings.licenseDateInvalid = true;
       }
 
@@ -423,13 +430,13 @@ export default class AddArticleCard extends Component {
       return {...license, errors}
     })
 
-    if(criticalErrors.licenseDate) {  // if no licenses have a date and free to license is on, make first license require a date
+    if(criticalErrors.licenseFreeToRead) {  // if no licenses have a date and free to license is on, make first license require a date
       if(!licenses.length) {
         licenses[0] = {
           errors: {}
         }
       }
-      licenses[0].errors.licenseDate = true;
+      licenses[0].errors.licenseUrl = true;
     }
 
     //validate contributor subItems
@@ -743,6 +750,7 @@ export default class AddArticleCard extends Component {
                 incomingData={this.state.addInfo}
                 handler={this.boundSetState}
                 showSection={this.state.openItems.addInfo}
+                freetoread={this.state.addInfo.freetolicense}
                 simCheckError={this.state.errors.simCheckUrlInvalid}
               />
               {this.state.crossmark &&

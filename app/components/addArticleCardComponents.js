@@ -87,7 +87,7 @@ export const ErrorBubble = ({errors, crossmarkErrors}) =>
     {errors.contributorGroupRole && requiredMessage()}
     {errors.contributorGroupName && requiredMessage()}
 
-    {(errors.licenseDate) && <div><b>License Date Required.</b><br />Please provide a license date.</div>}
+    {(errors.licenseFreeToRead) && <div><b>License Url Required.</b><br />Please provide a license URL.</div>}
     {errors.licenseDateIncomplete && requiredMessage()}
     {(errors.licenseDateInvalid) && <div><b>Invalid License Date.</b><br />Please check your Date.</div>}
     {errors.licenseUrl && requiredMessage()}
