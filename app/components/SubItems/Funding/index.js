@@ -26,7 +26,7 @@ export default class Funding extends Component {
       funderRegistryID: funding.funderRegistryID.trim().length ? funding.funderRegistryID : '',
       funder_identifier: funding.funder_identifier.trim().length ? funding.funder_identifier : '',
       isLoading: false,
-      grantNumbers: grantNumbers.length > 0 ? funding.grantNumbers : [''],
+      grantNumbers: grantNumbers.length > 0 ? funding.grantNumbers : ['']
     }
   }
 
@@ -38,7 +38,7 @@ export default class Funding extends Component {
     this.setState({
       showSubItem: nextProps.validating ? true : this.state.showSubItem,
       funder_identifier: nextProps.funding.funder_identifier,
-      grantNumbers: nextProps.grantNumbers,
+      grantNumbers: nextProps.grantNumbers
     })
   }
 
@@ -52,7 +52,7 @@ export default class Funding extends Component {
         target: {
           name: 'funderRegistryID',
           id: newValue.id || '',
-          uri: newValue.uri || '',
+          uri: newValue.uri || ''
         }
       }
       this.handleFunding(event)
