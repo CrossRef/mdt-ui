@@ -235,6 +235,7 @@ export class OptionalTitleData extends Component {
 
 export class ArticleDOIField extends Component {
   render() {
+    const {errors, disabled, handleChange, doi} = this.props;
     return(
       <div >
         <div className='fieldinnerholder halflength'>
@@ -251,12 +252,12 @@ export class ArticleDOIField extends Component {
             </div>
             <div className='field'>
               <input
-                className={`height32 ${(this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi) && 'fieldError'} ${this.props.disabled && 'disabledDoi'}`}
+                className={`height32 ${(errors.doi || errors.dupedoi || errors.invaliddoi || errors.invalidDoiPrefix) && 'fieldError'} ${disabled && 'disabledDoi'}`}
                 type='text'
                 name="doi"
-                onChange={this.props.handleChange}
-                value={this.props.doi}
-                disabled={this.props.disabled}
+                onChange={handleChange}
+                value={doi}
+                disabled={disabled}
               />
             </div>
           </div>

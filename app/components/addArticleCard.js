@@ -322,7 +322,7 @@ export default class AddArticleCard extends Component {
     if(!this.state.doiDisabled) {
       criticalErrors.doi = !doi;
       criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi);
-      criticalErrors.invalidDoiPrefix = criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== this.props.ownerPrefix);
+      criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== this.props.ownerPrefix);
     }
 
     const hasDate = !!(printDateYear || onlineDateYear);
