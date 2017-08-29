@@ -22,7 +22,7 @@ export default class License extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble();
+    refreshErrorBubble()
   }
 
   displayAppliesTo () {
