@@ -11,7 +11,7 @@ export default class License extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showSubItem: true,
+      showSubItem: true
     }
   }
 

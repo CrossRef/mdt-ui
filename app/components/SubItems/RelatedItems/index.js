@@ -12,7 +12,7 @@ export default class RelatedItems extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showSubItem: true,
+      showSubItem: true
     }
   }
 

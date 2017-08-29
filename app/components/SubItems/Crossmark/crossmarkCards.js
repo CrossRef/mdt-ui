@@ -28,7 +28,7 @@ function generateCard (name, fields) {
   return class crossmarkCard extends Component {
     static propTypes = {
       number: is.number.isRequired,
-      remove: is.func.isRequired,
+      remove: is.func.isRequired
     }
 
     state={ number: this.props.number || 0 }
