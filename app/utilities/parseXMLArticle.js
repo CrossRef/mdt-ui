@@ -1,6 +1,6 @@
 import React from 'react'
 import _ from 'lodash'
-import { deParseCrossmark } from './crossmarkHelpers'
+import { parseCrossmark } from './crossmarkHelpers'
 
 import xmldoc from './xmldoc'
 import objectSearch from './objectSearch'
@@ -137,14 +137,14 @@ const parseXMLArticle = function (articleXML) {
     }
     const language = objectSearch(parsedArticle, '-language')
 
-    const freeToRead = objectSearch(parsedArticle, 'ai:free_to_read')
+    let freeToRead = objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1
 
     const addInfo = {
         archiveLocation: archive,
         language: language ? language : '',
         publicationType: publicationType ? publicationType : '',
         similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
-        freetolicense: freeToRead ? 'yes' : 'no'
+        freetolicense: !!freeToRead
     }
 
     retObj = _.extend(retObj, {
@@ -179,58 +179,50 @@ const parseXMLArticle = function (articleXML) {
     })
 
     // fundings loading
-    const fundings = objectSearch(parsedArticle, 'fr:assertion')
-    var funders = []
+    let fundings = objectSearch(parsedArticle, 'fr:assertion')
+    const funders = [];
     retObj.openItems.Funding=!!fundings
 
     if (fundings) {
-        if (!Array.isArray(fundings)) {
-          parseFundings(fundings)
-        } else {
-            _.each(fundings, (fund) => {
-              parseFundings(fund)
-            })
-        }
-    }
-
-    function parseFundings (fundParam) {
-      const thefunder = objectSearch(fundParam, 'fr:assertion')
-      let funderName = ''
-      let funderRegId = ''
-      let funderIdent = ''
-      let grants = []
-
-      if(!Array.isArray(thefunder)) {
-        parseTheFunder(thefunder)
-      } else {
-        for(let i = 0; i < thefunder.length; i++) {
-          parseTheFunder(thefunder[i])
-        }
+      if (!Array.isArray(fundings)) {
+        fundings = [fundings]
       }
 
-      function parseTheFunder (funder) {
-        if (funder['-name'] === 'funder_identifier') {
-          funderIdent = funder['#text']
-          funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
-        } else if (funder['-name'] === 'funder_name'){
-          funderName = funder['#text'].trim()
-          // within hte name, there is the funder ID
-          const thefunderReg = objectSearch(funder, 'fr:assertion')
-          if (thefunderReg) {
-            funderIdent = thefunderReg['#text']
+      _.each(fundings, (fund) => {
+        let thefunder = objectSearch(fund, 'fr:assertion')
+        let funderName = ''
+        let funderRegId = ''
+        let funderIdent = ''
+        let grants = []
+
+        if(!Array.isArray(thefunder)) {
+          thefunder = [thefunder];
+        }
+        for(const element of thefunder) {
+          if (element['-name'] === 'funder_identifier') {
+            funderIdent = element['#text']
             funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
+          } else if (element['-name'] === 'funder_name'){
+            funderName = element['#text'].trim()
+            // within the name, there is the funder ID
+            const thefunderId = objectSearch(element, 'fr:assertion')
+            if (thefunderId) {
+              funderIdent = thefunderId['#text']
+              funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
+            }
+
+          } else if (element['-name'] === 'award_number'){
+            grants.push(element['#text'])
           }
-
-        } else if (funder['-name'] === 'award_number'){
-          grants.push(funder['#text'])
         }
-      }
 
-      funders.push({
-        fundername: funderName,
-        funderRegistryID: funderRegId,
-        funder_identifier: funderIdent,
-        grantNumbers: grants.length > 0 ? grants : ['']
+
+        funders.push({
+          fundername: funderName,
+          funderRegistryID: funderRegId,
+          funder_identifier: funderIdent,
+          grantNumbers: grants.length > 0 ? grants : ['']
+        })
       })
     }
 
@@ -308,7 +300,7 @@ const parseXMLArticle = function (articleXML) {
 
     if(parsedArticle.crossref) {
       if(parsedArticle.crossref.journal.journal_article.crossmark) {
-        const {reduxForm, showCards} = deParseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark);
+        const {reduxForm, showCards} = parseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark);
         if(reduxForm && showCards) {
           retObj.crossmark = {reduxForm, showCards};
         }

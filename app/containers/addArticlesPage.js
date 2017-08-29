@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { Link, browserHistory } from 'react-router'
 import { stateTrackerII } from 'my_decorators'
 
-import { controlModal, getPublications, editForm, clearForm, submitArticle, cartUpdate, getItem } from '../actions/application'
+import { controlModal, getPublications, editForm, deleteCard, clearForm, submitArticle, cartUpdate, getItem } from '../actions/application'
 import xmldoc from '../utilities/xmldoc'
 import AddArticleCard from '../components/addArticleCard'
 
@@ -23,6 +23,7 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxEditForm: editForm,
+  reduxDeleteCard: deleteCard,
   reduxClearForm: clearForm,
   asyncGetItem: getItem,
   asyncGetPublications: getPublications,
@@ -38,6 +39,7 @@ export default class AddArticlesPage extends Component {
     reduxControlModal: is.func.isRequired,
     reduxEditForm: is.func.isRequired,
     reduxClearForm: is.func.isRequired,
+    reduxDeleteCard: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
     asyncSubmitArticle: is.func.isRequired,
@@ -77,9 +79,6 @@ export default class AddArticlesPage extends Component {
     if(articleDoi || duplicateFrom) dois.push(pubDoi)
 
     this.props.asyncGetPublications( dois, (publications) => {
-      this.setState({
-        issuePublication: publications[0]
-      })
 
       var publMeta = publications[1] ? publications[1].message.content : undefined
       var article = publications[0]
@@ -96,7 +95,8 @@ export default class AddArticlesPage extends Component {
       this.setState({
         mode: (articleDoi || duplicateFrom) ? 'edit' : 'add',
         publication: article,
-        publicationMetaData: publMeta ? xmldoc(publMeta) : {}
+        publicationMetaData: publMeta ? xmldoc(publMeta) : {},
+        issuePublication: publications[0]
       })
 
     })
@@ -116,6 +116,7 @@ export default class AddArticlesPage extends Component {
         <AddArticleCard
           reduxControlModal = {this.props.reduxControlModal}
           reduxEditForm={this.props.reduxEditForm}
+          reduxDeleteCard={this.props.reduxDeleteCard}
           reduxCartUpdate={this.props.reduxCartUpdate}
           asyncSubmitArticle={this.props.asyncSubmitArticle}
           asyncGetItem={this.props.asyncGetItem}

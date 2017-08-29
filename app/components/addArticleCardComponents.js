@@ -2,6 +2,8 @@ import React, { Component } from 'react'
 import Switch from 'react-toggle-switch'
 
 import { ClassWrapper } from '../utilities/classwrapper'
+import {cardNames} from '../utilities/crossmarkHelpers'
+const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames;
 import {routes} from '../routing'
 
 
@@ -52,44 +54,66 @@ export const InfoBubble = () =>
   </ClassWrapper>
 
 
+
+let requiredMessageInUse = false;
+const requiredMessage = () => {
+  if(!requiredMessageInUse) {
+    requiredMessageInUse = true;
+    return <div><b>Required.</b><br />Please provide required information.</div>
+  } else {
+    return null
+  }
+}
+
 export const ErrorBubble = ({errors, crossmarkErrors}) =>
   <ClassWrapper classNames={['errorHolder talltooltip fullError', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder', 'errormsginnerholder']}>
     <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Caution.svg`} /></div>
-    {(
-      errors.doi ||
-      errors.url ||
-      errors.title ||
-      errors.printDateYear ||
-      errors.onlineDateYear ||
-      errors.licenseStartDate ||
-      crossmarkErrors.update_0_DOI_Missing || crossmarkErrors.update_0_year || crossmarkErrors.clinical_0_registry || crossmarkErrors.clinical_0_trialNumber
-    ) &&
-    <div><b>Required.</b><br />Please provide required informaton.</div>
-    }
-    {(errors.invalidurl) &&
-    <div><b>Invalid URL.</b><br />Please check your URL.</div>
-    }
-    {(errors.invaliddoi) &&
-    <div><b>Invalid DOI.</b><br/>Please check your DOI (10.xxxx/xx...). Record prefix (10.xxxx) must match publication prefix.</div>
-    }
-    {(errors.dupedoi) &&
-    <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>
-    }
-    {(crossmarkErrors.peer_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Peer Review URL.</div>
-    }
-    {(crossmarkErrors.copyright_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Copyright / Licensing URL.</div>
-    }
-    {(crossmarkErrors.supp_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Supplamentary Material URL.</div>
-    }
-    {(crossmarkErrors.other_0_href) &&
-    <div><b>Invalid URL.</b><br />Please check your Crossmark Other URL.</div>
-    }
-    {(crossmarkErrors.update_0_DOI_Invalid) &&
-    <div><b>Invalid DOI.</b><br />Please check your Crossmark Status Update DOI (10.xxxx/xx...).</div>
-    }
+
+    {requiredMessageInUse = false}
+    {errors.title && requiredMessage()}
+    {errors.doi && requiredMessage()}
+    {(errors.invaliddoi) && <div><b>Invalid Article DOI.</b><br/>Please check your DOI (10.xxxx/xx...).</div>}
+    {(errors.invalidDoiPrefix) && <div><b>Invalid Article DOI.</b><br/>DOI prefix needs to match journal DOI prefix.</div>}
+    {(errors.dupedoi) && <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>}
+    {errors.url && requiredMessage()}
+    {(errors.invalidurl) && <div><b>Invalid Article URL.</b><br />Please check your URL.</div>}
+    {(errors.printDateYear || errors.onlineDateYear) && <div><b>Required.</b><br />Please provide either a print or online date.</div>}
+    {(errors.printDateIncomplete || errors.onlineDateIncomplete) && requiredMessage()}
+    {(errors.printDateInvalid || errors.onlineDateInvalid) && <div><b>Invalid Publication Date.</b><br />Please check your date.</div>}
+    {errors.firstPage && requiredMessage()}
+
+    {errors.contributorLastName && requiredMessage()}
+    {errors.contributorRole && requiredMessage()}
+    {errors.contributorGroupRole && requiredMessage()}
+    {errors.contributorGroupName && requiredMessage()}
+
+    {(errors.licenseFreeToRead) && <div><b>License Url Required.</b><br />Please provide a license URL.</div>}
+    {errors.licenseDateIncomplete && requiredMessage()}
+    {(errors.licenseDateInvalid) && <div><b>Invalid License Date.</b><br />Please check your Date.</div>}
+    {errors.licenseUrl && requiredMessage()}
+    {(errors.licenseUrlInvalid) && <div><b>Invalid License URL.</b><br />Please check your URL.</div>}
+
+    {(errors.relatedItemDoiInvalid) && <div><b>Invalid Related Item DOI.</b><br />Please check your DOI (10.xxxx/xx...)..</div>}
+    {errors.relatedItemIdType && requiredMessage()}
+    {errors.relatedItemRelType && requiredMessage()}
+
+    {errors.simCheckUrlInvalid && <div><b>Invalid Similarity Check URL.</b><br />Please check your URL.</div>}
+
+    {errors[`${pubHist} Label`] && requiredMessage()}
+    {errors[`${peer} Label`] && requiredMessage()}
+    {errors[`${peer} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Peer Review URL.</div>}
+    {errors[`${copyright} Label`] && requiredMessage()}
+    {errors[`${copyright} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Copyright / Licensing URL.</div>}
+    {errors[`${other} Label`] && requiredMessage()}
+    {errors[`${other} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Other URL.</div>}
+    {errors[`${supp} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Supplementary Material URL.</div>}
+    {errors[`${update} Type`] && requiredMessage()}
+    {errors[`${update} Date`] && requiredMessage()}
+    {errors[`${update} DOI`] && requiredMessage()}
+    {errors[`${update} DOIinvalid`] && <div><b>Invalid Crossmark DOI.</b><br />Please check your Status Update DOI (10.xxxx/xx...).</div>}
+    {errors[`${clinical} Registry`] && requiredMessage()}
+    {errors[`${clinical} TrialNumber`] && requiredMessage()}
+
   </ClassWrapper>
 
 
@@ -211,6 +235,7 @@ export class OptionalTitleData extends Component {
 
 export class ArticleDOIField extends Component {
   render() {
+    const {errors, disabled, handleChange, doi} = this.props;
     return(
       <div >
         <div className='fieldinnerholder halflength'>
@@ -227,12 +252,12 @@ export class ArticleDOIField extends Component {
             </div>
             <div className='field'>
               <input
-                className={`height32 ${(this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi) && 'fieldError'} ${this.props.disabled && 'disabledDoi'}`}
+                className={`height32 ${(errors.doi || errors.dupedoi || errors.invaliddoi || errors.invalidDoiPrefix) && 'fieldError'} ${disabled && 'disabledDoi'}`}
                 type='text'
                 name="doi"
-                onChange={this.props.handleChange}
-                value={this.props.doi}
-                disabled={this.props.disabled}
+                onChange={handleChange}
+                value={doi}
+                disabled={disabled}
               />
             </div>
           </div>
@@ -260,7 +285,7 @@ export class ArticleUrlField extends Component {
             </div>
             <div className='field'>
               <input
-                className={'height32' + ((this.props.errors.url) ? ' fieldError': '')}
+                className={'height32' + ((this.props.errors.url || this.props.errors.invalidurl) ? ' fieldError': '')}
                 type='text'
                 name="url"
                 onChange={this.props.handleChange}
@@ -275,7 +300,13 @@ export class ArticleUrlField extends Component {
 }
 
 export class DatesRow extends Component {
+
   render() {
+    const errors = this.props.errors;
+    const {printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay} = this.props.article;
+    const {printDateInvalid, printDateIncomplete, onlineDateInvalid, onlineDateIncomplete} = this.props.errors;
+    const printYearError = errors.printDateYear || printDateIncomplete || printDateInvalid;
+    const onlineYearError = errors.onlineDateYear || onlineDateIncomplete || onlineDateInvalid;
     return (
       <div className='row'>
         <div className='fieldHolder'>
@@ -296,19 +327,19 @@ export class DatesRow extends Component {
                   <div className='dateselectholder'>
                     <div>Year {((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateYear', 'y', this.props.article.printDateYear, this.props.errors.printDateYear)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateYear', 'y', printDateYear, printYearError)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', this.props.article.printDateMonth, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', printDateMonth, printDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Day</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateDay', 'd', this.props.article.printDateDay, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateDay', 'd', printDateDay, printDateInvalid)}
                     </div>
                   </div>
                   <div>
@@ -334,18 +365,18 @@ export class DatesRow extends Component {
                 <div className='datepickerholder'>
                   <div className='dateselectholder'>
                     <div>Year {((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0 ? '(*)' : '')}</div>
-                    <div>{this.props.makeDateDropDown(this.props.handleChange, 'onlineDateYear', 'y', this.props.article.onlineDateYear, this.props.errors.onlineDateYear)}</div>
+                    <div>{this.props.makeDateDropDown(this.props.handleChange, 'onlineDateYear', 'y', onlineDateYear, onlineYearError)}</div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', this.props.article.onlineDateMonth, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', onlineDateMonth, onlineDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Day</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateDay', 'd', this.props.article.onlineDateDay, false)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateDay', 'd', onlineDateDay, onlineDateInvalid)}
                     </div>
                   </div>
                   <div>
@@ -415,14 +446,13 @@ export class BottomFields extends Component {
                 </div>
               </div>
               <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height32'>
-                  </div>
+                <div className={`requiredholder ${!this.props.article.lastPage && 'norequire'}`}>
+                  <div className='required height32'>{this.props.article.lastPage && <span>*</span>}</div>
                 </div>
                 <div className='field'>
                   <input
                       name="firstPage"
-                      className='height32'
+                      className={`height32 ${this.props.errors.firstPage && 'fieldError'}`}
                       type='text'
                       onChange={this.props.handleChange}
                       value={this.props.article.firstPage}

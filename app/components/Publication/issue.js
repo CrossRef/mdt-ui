@@ -12,7 +12,7 @@ import update from 'immutability-helper'
 export default class Issue extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
-    triggerModal: is.string.isRequired,
+    triggerModal: is.string,
 
     publication: is.object.isRequired,
     record: is.object.isRequired,

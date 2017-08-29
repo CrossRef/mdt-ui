@@ -60,7 +60,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                 }
             })
             var attributes = <span key={i}>{license.appliesto ? appliesto.name : ''}: {license.licenseurl} ({license.acceptedDateDay}, {months[parseInt(license.acceptedDateMonth)-1]} {license.acceptedDateYear}) {
-                    (reviewData.addInfo.freetolicense) === 'yes' ? ', Free to Read: Yes' : ', Free to Read: No'
+                    reviewData.addInfo.freetolicense ? ', Free to Read: Yes' : ', Free to Read: No'
                 }<br /></span>
             return attributes
         })

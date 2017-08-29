@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history} onUpdate={(a, b, c)=>{
+      <Router history={history} onUpdate={()=>{
         if(!store.getState().routing.locationBeforeTransitions.query.modal) {
           store.dispatch(controlModal({ showModal: false }))
         }
@@ -48,6 +48,7 @@ function version () {
     `
 Merged branches / tickets in this build
 
+MM-70
 MM-58
 MM-79
 MM-40

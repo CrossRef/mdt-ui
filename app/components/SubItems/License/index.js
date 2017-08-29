@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
+import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
 const AppliesTo = require('../../../utilities/appliesTo.json')
 
 
@@ -9,10 +10,19 @@ const AppliesTo = require('../../../utilities/appliesTo.json')
 export default class License extends Component {
   constructor (props) {
     super(props)
-    const {index} = this.props
     this.state = {
-      showSubItem: index === 0 ? true : false,
+      showSubItem: true
     }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if(nextProps.validating || nextProps.freeToReadSwitchedOn) {
+      this.setState({showSubItem: true})
+    }
+  }
+
+  componentDidUpdate () {
+    refreshErrorBubble()
   }
 
   displayAppliesTo () {
@@ -40,20 +50,26 @@ export default class License extends Component {
   }
 
   handleLicense = () => {
-    var license = {}
+    let license = {
+      errors: this.props.license.errors
+    }
     for(var i in this.refs){
       if(this.refs[i]){
         license[i] = this.refs[i].value
       }
     }
 
-    this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
+    this.props.handler({
       license: update(this.props.data, {[this.props.index]: {$set: license }})
     })
 
   }
 
   render () {
+    const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, licenseurl, appliesto} = this.props.license;
+    const errors = this.props.license.errors || {};
+    const thereIsDate = !!(acceptedDateYear || acceptedDateMonth || acceptedDateDay);
+
     return (
         <div>
             <div className='row subItemRow' onClick={this.toggle.bind(this)}>
@@ -81,27 +97,25 @@ export default class License extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className={'requiredholder' + (this.props.freetoread === 'yes' ? ' dateselectrequire' : ' norequire')}>
-                                        <div className='required height32'>
-                                            {(this.props.freetoread === 'yes' ?  <span>*</span> : '' )}
-                                        </div>
+                                    <div className='requiredholder norequire'>
+                                        <div className='required height32'></div>
                                     </div>
                                     <div className='field'>
                                         <div className='datepickerholder'>
                                             <div className='dateselectholder'>
-                                                <div>Year {(this.props.freetoread === 'yes' ? '(*)' : '')}</div>
-                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', this.props.license.acceptedDateYear, this.props.errorLicenseStartDate)}</div>
+                                                <div>Year</div>
+                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', acceptedDateYear, errors.licenseYear)}</div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Month</div>
                                                 <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', this.props.license.acceptedDateMonth, false)}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', acceptedDateMonth, errors.licenseMonth)}
                                                 </div>
                                             </div>
                                             <div className='dateselectholder'>
                                                 <div>Day</div>
                                                 <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', this.props.license.acceptedDateDay, false)}
+                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', acceptedDateDay, errors.licenseDay)}
                                                 </div>
                                             </div>
                                             <div>
@@ -124,17 +138,16 @@ export default class License extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!this.props.freetoread && !(thereIsDate || appliesto) && 'norequire'}`}>
+                                        <div className='required height32'>{(this.props.freetoread || (thereIsDate || appliesto)) && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${(errors.licenseUrl || errors.licenseUrlInvalid) && 'fieldError'}`}
                                             type='text'
                                             ref='licenseurl'
                                             onChange={this.handleLicense}
-                                            value={this.props.license.licenseurl}
+                                            value={licenseurl}
                                         />
                                     </div>
                                 </div>
