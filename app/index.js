@@ -10,7 +10,7 @@ import configure from './store'
 import Routing, { routes } from './routing'
 import { getCRState, controlModal } from './actions/application'
 
-
+window.version=version()
 
 setConfig({
 	showStateTracker: false,
@@ -39,3 +39,51 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </Provider>, document.querySelector('#root'))
 })
+
+
+
+
+function version () {
+  const mergedBranches =
+    `
+Merged branches / tickets in this build
+
+MM-70
+MM-58
+MM-79
+MM-40
+MM-59
+MM-67
+MM-65
+MM-43
+MM-45
+MM-40
+MM-42
+MM-62
+MM-58
+MM-39
+MM-59
+MM-13
+MM-60
+MM-58
+MM-23
+MM-21
+MM-16
+MM-23
+MM-22
+MM-15
+MM-1
+MM-5
+MM-3
+MM-9
+MM-36
+MM-1
+MM-12
+MM-11
+MM-10
+MM-8
+
+`
+  console.log(mergedBranches)
+  return mergedBranches
+}
