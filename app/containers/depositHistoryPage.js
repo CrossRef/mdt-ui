@@ -187,7 +187,7 @@ export default class DepositHistoryPage extends Component {
         date: depositDate,
         doi: doi,
         title: title,
-        status: status === 'OK' ? 'Success' : 'Failed'
+        status: status === 'OK' ? 'Accepted' : 'Failed'
       })
     })
 
