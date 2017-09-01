@@ -366,9 +366,9 @@ export const getIssueXml = (issueObj) => {
     // the online date
     var publicationOnlineDate = ''
     if (issueObj.issue.onlineDateYear.length > 0 || issueObj.issue.onlineDateDay.length > 0 || issueObj.issue.onlineDateMonth.length > 0) {
-      publicationOnlineDate += (issueObj.issue.onlineDateYear.length > 0 ? `<year>${issueObj.issue.onlineDateYear}</year>` : ``)
       publicationOnlineDate += (issueObj.issue.onlineDateMonth.length > 0 ? `<month>${issueObj.issue.onlineDateMonth}</month>` : ``)
       publicationOnlineDate += (issueObj.issue.onlineDateDay.length > 0 ? `<day>${issueObj.issue.onlineDateDay}</day>` : ``)
+      publicationOnlineDate += (issueObj.issue.onlineDateYear.length > 0 ? `<year>${issueObj.issue.onlineDateYear}</year>` : ``)
 
       publicationOnlineDate = `<publication_date media_type="online">${publicationOnlineDate}</publication_date>`
     }
@@ -376,9 +376,9 @@ export const getIssueXml = (issueObj) => {
     // the print date
     var publicationPrintDate = ''
     if (issueObj.issue.printDateYear.length > 0 || issueObj.issue.printDateDay.length > 0 || issueObj.issue.printDateMonth.length > 0) {
-      publicationPrintDate += (issueObj.issue.printDateYear.length > 0 ? `<year>${issueObj.issue.printDateYear}</year>` : ``)
       publicationPrintDate += (issueObj.issue.printDateMonth.length > 0 ? `<month>${issueObj.issue.printDateMonth}</month>` : ``)
       publicationPrintDate += (issueObj.issue.printDateDay.length > 0 ? `<day>${issueObj.issue.printDateDay}</day>` : ``)
+      publicationPrintDate += (issueObj.issue.printDateYear.length > 0 ? `<year>${issueObj.issue.printDateYear}</year>` : ``)
 
       publicationPrintDate = `<publication_date media_type="print">${publicationPrintDate}</publication_date>`
     }
@@ -411,7 +411,6 @@ export const getIssueXml = (issueObj) => {
     if (issueObj.issue.archiveLocation.trim().length > 0) {
       archiveLocation = `<archive_locations><archive name="${issueObj.issue.archiveLocation}"/></archive_locations>`
     }
-
     return `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal_issue>${getContributor(issueObj.optionalIssueInfo)}${titles}${publicationOnlineDate}${publicationPrintDate}${volume}${issue}${specialNumbering}${archiveLocation}${doiData}</journal_issue></crossref>`
     //took out xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd" per Mikes request
 }
