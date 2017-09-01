@@ -78,7 +78,7 @@ const defaultState = {
     subtitle: '',
     originallanguagetitle: '',
     originallanguagetitlesubtitle: '',
-    url: '',
+    url: 'http://',
     printDateYear: '',
     printDateMonth: '',
     printDateDay: '',
@@ -125,7 +125,7 @@ const defaultState = {
       acceptedDateMonth:'',
       acceptedDateYear:'',
       appliesto:'',
-      licenseurl:'',
+      licenseurl:'http://',
       errors: {
         licenseUrl: false,
         licenseUrlInvalid: false,
@@ -151,7 +151,7 @@ const defaultState = {
     archiveLocation:'',
     language:'',
     publicationType:'',
-    similarityCheckURL:'',
+    similarityCheckURL:'http://',
     freetolicense: false
   },
   openItems: {
@@ -363,7 +363,7 @@ export default class AddArticleCard extends Component {
       [`${clinical} Registry`]: false,
       [`${clinical} TrialNumber`]: false
     };
-    warnings.url = !url;
+    warnings.url = !url||url==='http://';
     warnings.invalidurl = !!(url && !isUrl(url));
 
     warnings.printDateYear = hasDate ? false : !printDateYear;
@@ -385,7 +385,7 @@ export default class AddArticleCard extends Component {
     //validate License subItems
     const licenses = getSubmitSubItems(this.state.license).map((license, i) => {
       const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license;
-      if(licenseurl) criticalErrors.licenseFreeToRead = false;
+      if((licenseurl&&licenseurl!='http://')) criticalErrors.licenseFreeToRead = false;
 
       const errors = {
         licenseUrl: criticalErrors.licenseFreeToRead,
@@ -416,7 +416,7 @@ export default class AddArticleCard extends Component {
         warnings.licenseDateInvalid = true;
       }
 
-      if(!licenseurl && (thereIsDate || appliesto)) {
+      if((!licenseurl||licenseurl==='http://') && (thereIsDate || appliesto)) {
         errors.licenseUrl = true;
         warnings.licenseUrl = true;
       }
