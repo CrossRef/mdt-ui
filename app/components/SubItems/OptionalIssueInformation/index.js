@@ -29,24 +29,26 @@ export default class OptionalIssueInformation extends Component {
   }
 
   displayRoles (ref) {
-      var roles = [
-        <option key='-1'></option>,
-        ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
-      ]
+    var roles = [
+      <option key='-1'></option>,
+      ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
+    ]
 
-      return (
-          <select
-            ref={ref}
-            className='height32'
-            onChange={() => {this.state.handler(this.state.index, this)}}
-            defaultValue={this.state.optionalIssueInfo.role}
-            >
-              {roles}
-          </select>
-      )
+    return (
+      <select
+        ref={ref}
+        className={`height32 ${this.state.optionalIssueInfo.errors.contributorRole && 'fieldError'}`}
+        onChange={() => {this.state.handler(this.state.index, this)}}
+        defaultValue={this.state.optionalIssueInfo.role}
+        >
+          {roles}
+      </select>
+    )
   }
 
   render () {
+    const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role, errors} = this.state.optionalIssueInfo
+    const hasData = !!(firstName || lastName || suffix || affiliation || orcid || alternativeName || role)
     return (
         <div className='optionalissueiinfo'>
             <div className='innerCardHolder'>
@@ -94,13 +96,12 @@ export default class OptionalIssueInformation extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!firstName && 'norequire'}`}>
+                                        <div className='required height32'>{firstName && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${errors.contributorLastName && 'fieldError'}`}
                                             type='text'
                                             ref='lastName'
                                             onChange={() => {this.state.handler(this.state.index, this)}}
@@ -227,9 +228,8 @@ export default class OptionalIssueInformation extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                    <div className={`requiredholder ${!hasData && 'norequire'}`}>
+                                        <div className='required height32'>{hasData && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         {this.displayRoles('role')}

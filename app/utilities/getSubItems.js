@@ -39,7 +39,7 @@ export const getContributor = (subitem) => {
         }
         })
 
-        var person = `<person_name sequence="${(i===0) ? 'first' : 'additional'}" contributor_role="${(contributor.role && (contributor.role.trim().length > 0)) ? contributor.role : false}">${attributes.join('')}</person_name>`
+        var person = `<person_name sequence="${(i===0) ? 'first' : 'additional'}" ${(contributor.role && contributor.role.trim()) ? `contributor_role="${contributor.role}"` : ''}>${attributes.join('')}</person_name>`
 
     return person
     })
