@@ -115,7 +115,7 @@ export default class AdditionalInformation extends Component {
                                         type='text'
                                         ref='similarityCheckURL'
                                         onChange={this.handleAddInfo}
-                                        value={this.props.addInfo.similarityCheckURL}
+                                        value={!!this.props.addInfo.similarityCheckURL?this.props.addInfo.similarityCheckURL:'http://'}
                                     />
                                 </div>
                             </div>
