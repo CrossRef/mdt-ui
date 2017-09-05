@@ -310,7 +310,12 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getCollectionXML () {
     // similarity check
-    return state.addInfo.similarityCheckURL.trim().length > 0 ? `<collection property="crawler-based"><item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item></collection>` : ``
+    if(state.addInfo.similarityCheckURL === 'http://' || state.addInfo.similarityCheckURL.trim().length === 0) {
+      return ''
+    } else {
+      return `<collection property="crawler-based"><item crawler="iParadigms"><resource>${state.addInfo.similarityCheckURL}</resource></item></collection>`
+
+    }
   }
 
   function getPagesXML () {

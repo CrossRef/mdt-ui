@@ -155,7 +155,6 @@ const defaultState = {
     freetolicense: false
   },
   openItems: {
-    apiReturned: false,
     Contributors:false,
     Funding:false,
     Licenses:false,
@@ -364,7 +363,7 @@ export default class AddArticleCard extends Component {
       [`${clinical} TrialNumber`]: false
     };
     warnings.url = !url||url==='http://';
-    warnings.invalidurl = !!(url && !isUrl(url));
+    warnings.invalidurl = !!(!warnings.url && !isUrl(url));
 
     warnings.printDateYear = hasDate ? false : !printDateYear;
     warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay));
@@ -375,7 +374,7 @@ export default class AddArticleCard extends Component {
     warnings.onlineDateInvalid = warnings.onlineDateIncomplete ? false : !validDate(onlineDateYear, onlineDateMonth, onlineDateDay);
 
     warnings.firstPage = !!(lastPage && !firstPage);
-    warnings.simCheckUrlInvalid = !!(this.state.addInfo.similarityCheckURL && !isUrl(this.state.addInfo.similarityCheckURL));
+    warnings.simCheckUrlInvalid = !!(this.state.addInfo.similarityCheckURL !== 'http://' && this.state.addInfo.similarityCheckURL && !isUrl(this.state.addInfo.similarityCheckURL));
 
 
     if (this.state.addInfo.freetolicense){
