@@ -478,8 +478,8 @@ export default class DepositCartItemCard extends Component {
     const { cartItem } = this.props;
     const parsedArticle = cartItem.content ? xmldoc(cartItem.content) : ''
     const cartType = cartItem.type
-    const status = cartItem.status
-    const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume}, `}Issue ${cartItem.title.issue}` : cartItem.title.title;
+    const status =  cartItem.status.charAt(0).toUpperCase() + cartItem.status.slice(1).toLowerCase()
+    const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume}, `}Issue ${cartItem.title.issue}` : cartItem.title.title
     return (
       <tr className='item'>
         <td className={'stateIcon' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
@@ -492,7 +492,7 @@ export default class DepositCartItemCard extends Component {
           {status}
         </td>
         <td className={'action' + (this.props.showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '')}>
-          {(cartType !== 'issue') && <a onClick={() => {this.remove()}}>remove</a>}
+          {(cartType !== 'issue') && <a onClick={() => {this.remove()}}>Remove</a>}
         </td>
         <td className='errorholder'>
           {
