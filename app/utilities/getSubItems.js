@@ -3,7 +3,7 @@ import _ from 'lodash'
 export const getSubmitSubItems = (items) => {
     return _.filter(items, (item) => {
         for(var key in item) { // checking all the properties of errors to see if there is a true
-            if(item[key]){
+            if(item[key] && item[key] !== 'http://'){
                 try {
                     if (item[key].trim().length > 0) {
                         return item

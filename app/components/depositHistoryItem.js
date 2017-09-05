@@ -27,7 +27,7 @@ export default class DepositHistoryItem extends Component {
           <td className='firstTd'>{this.props.history.id}</td>
           <td>{this.props.history.title}</td>
           <td><Moment format="MMM DD">{this.props.history.date}</Moment></td>
-          <td>article</td>
+          <td>Article</td>
           <td>{this.props.history.status}</td>
           <td>{this.props.history.doi}</td>
         </tr>

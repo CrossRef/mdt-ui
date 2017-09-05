@@ -109,13 +109,13 @@ export default class AddIssueCard extends Component {
           var theVolume = objectSearch(journal_volume, 'volume') || '';
           var volumeDoiData = objectSearch(journal_volume, 'doi_data') || ''
           var volumeDoi = objectSearch(volumeDoiData, 'doi') || ''
-          var volumeUrl = objectSearch(volumeDoiData, 'resource') || ''
+          var volumeUrl = objectSearch(volumeDoiData, 'resource') || 'http://'
         }
 
         const issueTitle = objectSearch(journal_issue, 'title') || ''
         const issue = objectSearch(journal_issue, 'issue') || ''
         const issueDoi = objectSearch(journal_issue, 'doi') || ''
-        const issueUrl = objectSearch(journal_issue, 'resource') || ''
+        const issueUrl = objectSearch(journal_issue, 'resource') || 'http://'
         const special_numbering = objectSearch(parsedIssue, 'special_numbering') || ''
         let publication_date = objectSearch(journal_issue, 'publication_date');
 
@@ -164,7 +164,7 @@ export default class AddIssueCard extends Component {
           issue: issue,
           issueTitle: issueTitle,
           issueDoi: this.props.duplicate ? this.props.ownerPrefix + '/' : issueDoi,
-          issueUrl: this.props.duplicate ?  '' : issueUrl,
+          issueUrl: this.props.duplicate ?  'http://' : issueUrl,
           printDateYear: printDateYear,
           printDateMonth: printDateMonth,
           printDateDay: printDateDay,
@@ -175,7 +175,7 @@ export default class AddIssueCard extends Component {
           specialIssueNumber: special_numbering,
           volume: theVolume || '',
           volumeDoi: volumeDoi || '',
-          volumeUrl: volumeUrl || ''
+          volumeUrl: volumeUrl || 'http://'
         }
 
         // contributor loading

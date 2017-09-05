@@ -289,7 +289,7 @@ export class ArticleUrlField extends Component {
                 type='text'
                 name="url"
                 onChange={this.props.handleChange}
-                value={this.props.url}
+                value={!!this.props.url?this.props.url:'http://'}
               />
             </div>
           </div>
