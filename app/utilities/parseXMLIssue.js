@@ -101,7 +101,7 @@ const parseXMLIssue = function (xml) {
     }
 
     // contributor loading
-    const contributors = objectSearch(parsedIssue, 'contributors');
+    const contributors = objectSearch(parsedIssue, 'contributors')
     var contributee = []
     // contributors are divied into 2 types
     // person_name and organization

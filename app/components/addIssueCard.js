@@ -224,7 +224,7 @@ export default class AddIssueCard extends Component {
         }
 
         if (contributee.length <= 0) {
-          showSection = false;
+          showSection = false
           contributee.push(
             {
               firstName: '',
@@ -305,8 +305,8 @@ export default class AddIssueCard extends Component {
     }
 
     if(!this.state.issueDoiDisabled) {
-      criticalErrors.dupeDois = issueDoi === volumeDoi;
-      criticalErrors.issuedoi = !issueDoi;
+      criticalErrors.dupeDois = issueDoi === volumeDoi
+      criticalErrors.issuedoi = !issueDoi
       criticalErrors.invalidissuedoi = !criticalErrors.issuedoi ? !isDOI(this.state.issue.issueDoi) : false;
       criticalErrors.invalidIssueDoiPrefix = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== this.props.ownerPrefix;
     }
@@ -327,7 +327,7 @@ export default class AddIssueCard extends Component {
       invalidvolumeurl: false,
 
       contributorLastName: false,
-      contributorRole: false,
+      contributorRole: false
     }
 
     warnings.printDateIncomplete = !warnings.printDateYear && !!((printDateMonth || printDateDay) && !printDateYear);
@@ -337,24 +337,24 @@ export default class AddIssueCard extends Component {
     warnings.onlineDateInvalid = !warnings.onlineDateYear && !warnings.onlineDateIncomplete && !validDate(onlineDateYear, onlineDateMonth, onlineDateDay);
 
     if(volume || volumeDoi || volumeUrl) {
-      warnings.volume = !volume;
-      warnings.volumedoi = !volumeDoi;
-      warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi);
-      warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== this.props.ownerPrefix;
-      warnings.volumeUrl = !volumeUrl;
-      warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl);
+      warnings.volume = !volume
+      warnings.volumedoi = !volumeDoi
+      warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
+      warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== this.props.ownerPrefix
+      warnings.volumeUrl = !volumeUrl
+      warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
     }
 
 
     //validate contributor subItems
     const contributors = getSubmitSubItems(this.state.optionalIssueInfo).map( contributor => {
-      const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role} = contributor;
+      const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role} = contributor
       const errors = {
         contributorLastName: firstName && !lastName,
         contributorRole: (lastName || firstName || suffix || affiliation || alternativeName || orcid) && !role,
       }
-      if(errors.contributorLastName) warnings.contributorLastName = true;
-      if(errors.contributorRole) warnings.contributorRole = true;
+      if(errors.contributorLastName) warnings.contributorLastName = true
+      if(errors.contributorRole) warnings.contributorRole = true
 
       return {...contributor, errors}
     })
@@ -364,7 +364,7 @@ export default class AddIssueCard extends Component {
         validating: true,
         error: false,
         errors: {...criticalErrors, ...warnings},
-        optionalIssueInfo: contributors.length ? contributors : this.state.optionalIssueInfo,
+        optionalIssueInfo: contributors.length ? contributors : this.state.optionalIssueInfo
       }
       let valid = true;
 
@@ -376,7 +376,7 @@ export default class AddIssueCard extends Component {
 
       for(const key in criticalErrors) {
         if(criticalErrors[key]) {
-          setStatePayload.error = true;
+          setStatePayload.error = true
           valid = false;
         }
       }
