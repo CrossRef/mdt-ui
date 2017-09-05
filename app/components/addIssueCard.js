@@ -51,7 +51,7 @@ const defaultState = {
     issue: '',
     issueTitle: '',
     issueDoi: '',
-    issueUrl: '',
+    issueUrl: 'http://',
     printDateYear: '',
     printDateMonth: '',
     printDateDay: '',
@@ -62,7 +62,7 @@ const defaultState = {
     specialIssueNumber: '',
     volume: '',
     volumeDoi: '',
-    volumeUrl: ''
+    volumeUrl: 'http://'
   },
   optionalIssueInfo: [{
     firstName: '',
@@ -300,7 +300,7 @@ export default class AddIssueCard extends Component {
       invalidissuedoi: false,
       invalidIssueDoiPrefix: false,
       dupeissuedoi: false,
-      issueUrl: !issueUrl,
+      issueUrl: !issueUrl || issueUrl === 'http://',
       dupeDois: false
     }
 
@@ -336,12 +336,12 @@ export default class AddIssueCard extends Component {
     warnings.onlineDateIncomplete = !warnings.onlineDateYear && !!((onlineDateMonth || onlineDateDay) && !onlineDateYear);
     warnings.onlineDateInvalid = !warnings.onlineDateYear && !warnings.onlineDateIncomplete && !validDate(onlineDateYear, onlineDateMonth, onlineDateDay);
 
-    if(volume || volumeDoi || volumeUrl) {
+    if(volume || volumeDoi || (volumeUrl && volumeUrl !== 'http://')) {
       warnings.volume = !volume
       warnings.volumedoi = !volumeDoi
       warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
       warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== this.props.ownerPrefix
-      warnings.volumeUrl = !volumeUrl
+      warnings.volumeUrl = !volumeUrl || volumeUrl === 'http://'
       warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
     }
 
@@ -461,7 +461,7 @@ export default class AddIssueCard extends Component {
 
   render () {
     const { errors } = this.state;
-    const volumeSectionRequired =  !!(this.state.issue.volume || this.state.issue.volumeDoi || this.state.issue.volumeUrl);
+    const volumeSectionRequired =  !!(this.state.issue.volume || this.state.issue.volumeDoi || (this.state.issue.volumeUrl && this.state.issue.volumeUrl !== 'http://'));
      return (
       <div className='addIssueCard'>
         <div>

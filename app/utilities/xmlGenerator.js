@@ -390,21 +390,25 @@ export const getIssueXml = (issueObj) => {
 
     //doi_data
     var doiData = ''
-    if (issueObj.issue.issueDoi.trim().length > 0 || issueObj.issue.issueUrl.trim().length > 0 ) {
+    if (issueObj.issue.issueDoi.trim().length > 0 || (issueObj.issue.issueUrl.trim().length > 0 && issueObj.issue.issueUrl !== 'http://')) {
       doiData += (issueObj.issue.issueDoi.trim().length > 0 ? `<doi>${issueObj.issue.issueDoi}</doi>` : ``)
-      doiData += (issueObj.issue.issueUrl.trim().length > 0 ? `<resource>${issueObj.issue.issueUrl}</resource>` : ``)
+      doiData += ((issueObj.issue.issueUrl.trim().length > 0 && issueObj.issue.issueUrl !== 'http://')? `<resource>${issueObj.issue.issueUrl}</resource>` : ``)
       doiData = `<doi_data>${doiData}</doi_data>`
     }
 
     // volume
     var volume = ''
-    if ((issueObj.issue.volumeDoi ? issueObj.issue.volumeDoi : '').trim().length > 0 || (issueObj.issue.volumeUrl ? issueObj.issue.volumeUrl : '').trim().length > 0 || (issueObj.issue.volume ? issueObj.issue.volume : '').trim().length > 0) {
+    if (
+      (issueObj.issue.volumeDoi ? issueObj.issue.volumeDoi : '').trim().length > 0 ||
+      ((issueObj.issue.volumeUrl && issueObj.issue.volumeUrl !== 'http://') ? issueObj.issue.volumeUrl : '').trim().length > 0 ||
+      (issueObj.issue.volume ? issueObj.issue.volume : '').trim().length > 0
+    ) {
       volume += ((issueObj.issue.volume ? issueObj.issue.volume : '').trim().length > 0 ? `<volume>${issueObj.issue.volume}</volume>` : ``)
 
       var volumeDoiData = ''
       if ((issueObj.issue.volumeDoi ? issueObj.issue.volumeDoi : '').trim().length > 0 || (issueObj.issue.volumeUrl ? issueObj.issue.volumeUrl : '').trim().length > 0 ) {
         volumeDoiData += ((issueObj.issue.volumeDoi ? issueObj.issue.volumeDoi : '').trim().length > 0 ? `<doi>${issueObj.issue.volumeDoi}</doi>` : ``)
-        volumeDoiData += ((issueObj.issue.volumeUrl ? issueObj.issue.volumeUrl : '').trim().length > 0 ? `<resource>${issueObj.issue.volumeUrl}</resource>` : ``)
+        volumeDoiData += (((issueObj.issue.volumeUrl && issueObj.issue.volumeUrl !== 'http://') ? issueObj.issue.volumeUrl : '').trim().length > 0 ? `<resource>${issueObj.issue.volumeUrl}</resource>` : ``)
         volumeDoiData = `<doi_data>${volumeDoiData}</doi_data>`
       }
 
