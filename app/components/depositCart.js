@@ -26,52 +26,17 @@ export default class DepositCart extends Component {
     fullCart: is.array.isRequired
   };
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      depositerrors: true,
-      errors: []
-    }
-  }
-
-  updateError (index, pubDoi, pubIndex) {
-
-    var errorState = this.state.errors
-
-    errorState.push({
-      errorIndex: index,
-      errorPubDoi: pubDoi,
-      errorPubIndex: pubIndex
-    })
-
-    this.setState({
-      errors: update(this.state.errors, {$set: errorState})
-    })
-  }
-
   render () {
-
-    var errors = _.orderBy(
-        _.filter(this.state.errors, (error) => {
-          return (typeof error.errorIndex !== 'undefined')
-        }), ['errorIndex', 'errorPubIndex']
-    ) // ordering, the reporting of errors are not always 1 to 1, there are time it will lag
-
     var items = []
     _.each(this.props.fullCart, (cartItem, i) => {
       items.push(
         <DepositCartItem
             cartItem={cartItem}
             key={i}
-            index={i}
             reduxCartUpdate={this.props.reduxCartUpdate}
             reduxCart={this.props.reduxCart}
             reduxControlModal={this.props.reduxControlModal}
             reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-            updateError={this.updateError.bind(this)}
-            errorIndex={errors.length > 0 ? errors[0].errorIndex : -1}
-            errorPubIndex={errors.length > 0 ? errors[0].errorPubIndex : -1}
-            errorPubDoi={errors.length > 0 ?  errors[0].errorPubDoi : ''}
             toggleDeposit={this.props.toggleDeposit}
         />
       )

@@ -47,7 +47,6 @@ export default class DepositCartPage extends Component {
     this.state = {
       showDeposit: true,
       fullCart: [],
-      falseCnt: 0,
       status: 'cart',
       result: {
         resultData: '',
@@ -163,12 +162,6 @@ export default class DepositCartPage extends Component {
     if (this.props.cart !== nextProps.cart) {
       this.getFullCart(nextProps.cart)
     }
-
-    if ((this.state.falseCnt !== nextState.falseCnt) && (nextState.falseCnt > 0)) {
-      this.setState({
-        showDeposit: false
-      })
-    }
   }
 
   review = () => {
@@ -267,13 +260,7 @@ export default class DepositCartPage extends Component {
   }
 
   toggleDeposit = (showDeposit) => {
-    if (!showDeposit) {
-      var falseCnt = this.state.falseCnt
-      this.setState({
-        falseCnt: falseCnt + 1,
-        showDeposit: false
-      })
-    }
+    this.setState({showDeposit})
   }
 
   render () {
