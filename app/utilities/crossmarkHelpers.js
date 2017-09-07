@@ -47,6 +47,9 @@ export function parseCrossmark (data) {
         reduxForm[card][i] = {};
 
         for (let key in assertion) {
+          if(key==='-href' && !assertion[key] ){
+            assertion[key]='http://'
+          }
           reduxForm[card][i][key.slice(1)] = assertion[key] || '';
         }
       }
