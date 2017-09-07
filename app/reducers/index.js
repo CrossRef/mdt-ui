@@ -200,8 +200,7 @@ function cartReducer (state = [], action) {
       })
       if(removeIndex !== -1) {
         var newState = [...state];
-        newState.splice(removeIndex, 1);
-        console.log(state, newState);
+        newState.splice(removeIndex, 1)
         return newState
       } else return state
     case 'CLEAR_CART':

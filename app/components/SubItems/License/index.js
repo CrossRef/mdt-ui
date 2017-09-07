@@ -147,7 +147,7 @@ export default class License extends Component {
                                             type='text'
                                             ref='licenseurl'
                                             onChange={this.handleLicense}
-                                            value={licenseurl}
+                                            value={!!licenseurl?licenseurl:'http://'}
                                         />
                                     </div>
                                 </div>

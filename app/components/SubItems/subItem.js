@@ -134,6 +134,7 @@ export default class SubtItem extends Component {
               remove={remove}
               handler={handler}
               data={incomingData}
+              errors={this.props.errors}
               index={i}/>
             break
         }

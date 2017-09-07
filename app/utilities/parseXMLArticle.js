@@ -307,7 +307,6 @@ const parseXMLArticle = function (articleXML) {
       }
     }
 
-    retObj.openItems.apiReturned = true;
     return retObj
 }
 export default parseXMLArticle

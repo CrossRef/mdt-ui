@@ -10,7 +10,7 @@ import xmldoc from './xmldoc'
 import objectSearch from './objectSearch'
 
 const parseXMLIssue = function (xml) {
-    var retObj = {}
+    var retObj = {showSection: false}
     const parsedIssue = xmldoc(xml)
 
     // article loading
@@ -107,52 +107,54 @@ const parseXMLIssue = function (xml) {
     // person_name and organization
     var person_name = undefined
     if (contributors) {
-    person_name = objectSearch(contributors, 'person_name')
+        retObj.showSection = true;
+        person_name = objectSearch(contributors, 'person_name')
 
-    if (person_name) { // if exist
-        if (!Array.isArray(person_name)) {
-        // there is ONE funder
-        contributee.push(
-            {
-            firstName: person_name.given_name ? person_name.given_name : '',
-            lastName: person_name.surname ? person_name.surname : '',
-            suffix: person_name.suffix ? person_name.suffix : '',
-            affiliation: person_name.affiliation ? person_name.affiliation : '',
-            orcid: person_name.ORCID ? person_name.ORCID : '',
-            alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
-            role: person_name['-contributor_role'] ? person_name['-contributor_role'] : ''
-            }
-        )
-        } else { // its an array
-        _.each(person_name, (person) => {
+        if (person_name) { // if exist
+            if (!Array.isArray(person_name)) {
+            // there is ONE funder
             contributee.push(
-            {
-                firstName: person.given_name ? person.given_name : '',
-                lastName: person.surname ? person.surname : '',
-                suffix: person.suffix ? person.suffix : '',
-                affiliation: person.affiliation ? person.affiliation : '',
-                orcid: person.ORCID ? person.ORCID : '',
-                alternativeName: person['alt-name'] ? person['alt-name'] : '',
-                role: person['-contributor_role'] ? person['-contributor_role'] : ''
-            }
+                {
+                firstName: person_name.given_name ? person_name.given_name : '',
+                lastName: person_name.surname ? person_name.surname : '',
+                suffix: person_name.suffix ? person_name.suffix : '',
+                affiliation: person_name.affiliation ? person_name.affiliation : '',
+                orcid: person_name.ORCID ? person_name.ORCID : '',
+                alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
+                role: person_name['-contributor_role'] ? person_name['-contributor_role'] : ''
+                }
             )
-        })
+            } else { // its an array
+            _.each(person_name, (person) => {
+                contributee.push(
+                {
+                    firstName: person.given_name ? person.given_name : '',
+                    lastName: person.surname ? person.surname : '',
+                    suffix: person.suffix ? person.suffix : '',
+                    affiliation: person.affiliation ? person.affiliation : '',
+                    orcid: person.ORCID ? person.ORCID : '',
+                    alternativeName: person['alt-name'] ? person['alt-name'] : '',
+                    role: person['-contributor_role'] ? person['-contributor_role'] : ''
+                }
+                )
+            })
+            }
         }
-    }
     }
 
     if (contributee.length <= 0) {
-    contributee.push(
-        {
-        firstName: '',
-        lastName: '',
-        suffix: '',
-        affiliation: '',
-        orcid: '',
-        role: '',
-        alternativeName: ''
-        }
-    )
+      retObj.showSection = false;
+      contributee.push(
+          {
+          firstName: '',
+          lastName: '',
+          suffix: '',
+          affiliation: '',
+          orcid: '',
+          role: '',
+          alternativeName: ''
+          }
+      )
     }
 
     var issueDoiDisabled = false
