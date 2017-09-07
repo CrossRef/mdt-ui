@@ -47,7 +47,7 @@ function version () {
   const mergedBranches =
     `
 Merged branches / tickets in this build
-
+MM-56
 MM-70
 MM-58
 MM-79
