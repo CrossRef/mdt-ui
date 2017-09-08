@@ -45,7 +45,7 @@ export default class DepositCartPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showDeposit: true,
+      showDeposit: false,
       fullCart: [],
       status: 'cart',
       result: {
@@ -244,14 +244,17 @@ export default class DepositCartPage extends Component {
 
       resultCount[resultStatus]++;
 
-      resultData[pubTitle] = [...(resultData[pubTitle] || []), {
-        title: resultTitle,
-        status:resultStatus,
-        type:resultType,
-        doi: result['DOI:'],
-        pubDoi: pubDoi,
-        ...error
-      }];
+      resultData[pubTitle] = [
+        ...(resultData[pubTitle] || []),
+        {
+          title: resultTitle,
+          status:resultStatus,
+          type:resultType,
+          doi: result['DOI:'],
+          pubDoi: pubDoi,
+          ...error
+        }
+      ];
     });
 
     depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0];
@@ -279,13 +282,11 @@ export default class DepositCartPage extends Component {
 
         {this.state.status !== 'result' &&
           <div className={this.state.status === 'processing' ? "opacity" : ''} >
-            {(this.props.cart.length > 0) ?
+            {(this.props.cart.length) ?
                 <DepositCart
-                  reduxCartUpdate={this.props.reduxCartUpdate}
-                  reduxControlModal={this.props.reduxControlModal}
-                  reduxCart={this.props.cart}
                   reduxRemoveFromCart={this.props.reduxRemoveFromCart}
                   fullCart={this.state.fullCart}
+                  showDeposit={this.state.showDeposit}
                   toggleDeposit={this.toggleDeposit}
                 />
               : <EmptyCart/>

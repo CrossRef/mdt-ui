@@ -5,21 +5,16 @@ import update from 'immutability-helper'
 import _ from 'lodash'
 import {stateTrackerII} from 'my_decorators'
 
-import checkDupeDOI from '../utilities/dupeDOI'
 import ReviewArticle from './reviewArticle'
 import SubItem from './SubItems/subItem'
 import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
 import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
 import JSesc from '../utilities/jsesc'
-import $ from 'jquery'
 import parseXMLArticle from '../utilities/parseXMLArticle'
-import { makeDateDropDown, validDate } from '../utilities/date'
-import isUrl from '../utilities/isURL'
-import isDOI from '../utilities/isDOI'
+import { makeDateDropDown } from '../utilities/date'
 import {routes} from '../routing'
-import { getSubmitSubItems } from '../utilities/getSubItems'
-import {cardNames} from '../utilities/crossmarkHelpers'
 import refreshErrorBubble from '../utilities/refreshErrorBubble'
+import {asyncValidateArticle} from '../utilities/validation'
 
 
 const defaultState = {
@@ -197,7 +192,7 @@ export default class AddArticleCard extends Component {
     this.state.article.doi = props.ownerPrefix
   }
 
-  componentWillReceiveProps (nextProps) {
+  async componentWillReceiveProps (nextProps) {
     if(nextProps.reduxForm !== this.props.reduxForm) {
       return;
     }
@@ -207,373 +202,145 @@ export default class AddArticleCard extends Component {
     if(nextProps.crossmarkPrefixes.length && !this.state.crossmark) {
       if (nextProps.publication) {
         const thisPrefix = nextProps.publication.message ? nextProps.publication.message.doi.split('/')[0] : null;
-        if(thisPrefix && nextProps.crossmarkPrefixes.includes(thisPrefix)) {
+        if(thisPrefix && nextProps.crossmarkPrefixes.indexOf(thisPrefix) !== -1) {
           setStatePayload.crossmark = true
         }
       }
     }
 
     const { publication } = nextProps
-    if ((publication.message) && (nextProps.mode === 'edit')) {
-      if (publication.message.contains.length > 0) { // its an edit of article, else its new, also checks if its empty before doing any xml conversion
+    if (nextProps.mode === 'edit' && publication.message && publication.message.contains.length) {
 
-        const parsedArticle = parseXMLArticle(publication.message.contains[0].content);
+      const parsedArticle = parseXMLArticle(publication.message.contains[0].content);
 
-        if(parsedArticle.crossmark) {
-          this.props.reduxEditForm([], parsedArticle.crossmark.reduxForm);
-          setStatePayload.showCards = parsedArticle.crossmark.showCards;
-        }
+      let reduxForm;
+      if(parsedArticle.crossmark) {
+        reduxForm = parsedArticle.crossmark.reduxForm;
+        setStatePayload.showCards = parsedArticle.crossmark.showCards;
+      }
 
-        if(this.props.isDuplicate) {
-          parsedArticle.article.doi = this.props.ownerPrefix
-        }
+      let doiDisabled = true
+      if(this.props.isDuplicate) {
+        parsedArticle.article.doi = this.props.ownerPrefix
+        doiDisabled = false
+      }
 
-        setStatePayload = {...setStatePayload, ...{
-          doiDisabled: !this.props.isDuplicate,
-          version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
-          addInfo: parsedArticle.addInfo,
-          article: parsedArticle.article,
-          contributors: parsedArticle.contributors,
-          funding: parsedArticle.funding,
-          license: parsedArticle.license,
-          relatedItems: parsedArticle.relatedItems,
-          openItems: parsedArticle.openItems
-        }}
+      const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
+
+      setStatePayload = {...setStatePayload, ...{
+        doiDisabled: doiDisabled,
+        version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
+        addInfo: parsedArticle.addInfo,
+        article: parsedArticle.article,
+        contributors: parsedArticle.contributors,
+        funding: parsedArticle.funding,
+        license: parsedArticle.license,
+        relatedItems: parsedArticle.relatedItems,
+        openItems: parsedArticle.openItems
+      }, ...validatedPayload}
+
+      this.setState(setStatePayload, () => this.state.validating = false)
+    } else {
+      this.setState(setStatePayload)
+    }
+  }
+
+
+  async validation (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) {
+
+    const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.props.ownerPrefix, doiDisabled)
+
+    const validatedPayload = {
+      validating: true,
+      error: false,
+      errors: {...criticalErrors, ...warnings},
+      license: licenses.length ? licenses : this.state.license,
+      contributors: contributors.length ? contributors : this.state.contributors,
+      relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems
+    }
+    let valid = true;
+
+    for(const key in warnings) {
+      if (warnings[key]) {
+        validatedPayload.error = true;
       }
     }
-    this.setState(setStatePayload, nextProps.mode === 'edit' ? this.validation : null)
+
+    for(const key in criticalErrors) {
+      if(criticalErrors[key]) {
+        validatedPayload.error = true;
+        valid = false;
+      }
+    }
+
+    if(newReduxForm && newReduxForm.size) this.props.reduxEditForm([], newReduxForm);
+
+    return {valid, validatedPayload}
   }
 
-  componentDidUpdate() {
-    refreshErrorBubble()
-  }
 
-  onSubmit = (e) => {
+  onSubmit = async (e) => {
     e.preventDefault();
 
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
 
-    this.validation((valid) => {
-      if (valid) {
-        const publication = this.props.publication
+    const {valid, validatedPayload} = await this.validation()
 
-        const journalArticle = journalArticleXml(this, crossmark);
-        const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
+    if (valid) {
+      const publication = this.props.publication
 
-        const title = JSesc(this.state.article.title)
+      const journalArticle = journalArticleXml(this, crossmark);
+      const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
 
-        const newRecord = {
-          'title': {'title': title},
-          'date': new Date(),
-          'doi': this.state.article.doi,
-          'owner-prefix': this.state.article.doi.split('/')[0],
-          'type': 'article',
-          'mdt-version': this.state.version,
-          'status': 'draft',
-          'content': journal.replace(/(\r\n|\n|\r)/gm,'')
-        }
+      const title = JSesc(this.state.article.title)
 
-        // check if its part of a issue, the issue props will tell us
-        let savePub;
-
-        if (this.props.issue) { //this is just an issue doi OR undefined
-          // if its an issue, we need to put this newRecord under the issue, NOT the publicaton
-          // need to use the issuePublication, the publication has been mutated to allow reading of the article
-          const issuePublication = this.props.issuePublication
-          const theIssue = _.find(issuePublication.message.contains, (item) => {
-            if ((item.type === 'issue') && (item.doi === this.props.issue)) {
-              return item;
-            }
-          })
-
-          theIssue.contains = [newRecord];
-          issuePublication.message.contains = [theIssue]
-
-          savePub = issuePublication
-        } else { // not issue, so just put directly under the publication
-          publication.message.contains = [newRecord];
-          savePub = publication
-        }
-
-        this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
-
-          newRecord.pubDoi = this.props.publication.message.doi;
-          this.props.reduxCartUpdate([newRecord]);
-
-          browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
-        });
+      const newRecord = {
+        'title': {'title': title},
+        'date': new Date(),
+        'doi': this.state.article.doi,
+        'owner-prefix': this.state.article.doi.split('/')[0],
+        'type': 'article',
+        'mdt-version': this.state.version,
+        'status': 'draft',
+        'content': journal.replace(/(\r\n|\n|\r)/gm,'')
       }
-    })
+
+      // check if its part of a issue, the issue props will tell us
+      let savePub;
+
+      if (this.props.issue) { //this is just an issue doi OR undefined
+        // if its an issue, we need to put this newRecord under the issue, NOT the publicaton
+        // need to use the issuePublication, the publication has been mutated to allow reading of the article
+        const issuePublication = this.props.issuePublication
+        const theIssue = _.find(issuePublication.message.contains, (item) => {
+          if ((item.type === 'issue') && (item.doi === this.props.issue)) {
+            return item;
+          }
+        })
+
+        theIssue.contains = [newRecord];
+        issuePublication.message.contains = [theIssue]
+
+        savePub = issuePublication
+      } else { // not issue, so just put directly under the publication
+        publication.message.contains = [newRecord];
+        savePub = publication
+      }
+
+      this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
+
+        newRecord.pubDoi = this.props.publication.message.doi;
+        this.props.reduxCartUpdate([newRecord]);
+
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
+      });
+    } else {
+      this.setState(validatedPayload, () => this.state.validating = false)
+    }
   }
 
-  validation (callback) {
-    const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage } = this.state.article;
-    const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
-
-    let criticalErrors = {
-      doi: false,
-      invaliddoi: false,
-      invalidDoiPrefix: false,
-      licenseFreeToRead: false
-    };
-    criticalErrors.title = !title;
-
-    if(!this.state.doiDisabled) {
-      criticalErrors.doi = !doi;
-      criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi);
-      criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== this.props.ownerPrefix);
-    }
-
-    const hasDate = !!(printDateYear || onlineDateYear);
-    let warnings = {
-      licenseUrl: false,
-      licenseUrlInvalid: false,
-      licenseDateIncomplete: false,
-      licenseDateInvalid: false,
-
-      contributorLastName: false,
-      contributorRole: false,
-      contributorGroupName: false,
-      contributorGroupRole: false,
-
-      relatedItemIdType: false,
-      relatedItemRelType: false,
-      relatedItemDoiInvalid: false,
-
-      // crossmark errors
-      [`${pubHist} Label`]: false,
-
-      [`${peer} Label`]: false,
-      [`${peer} Href`]: false,
-
-      [`${copyright} Label`]: false,
-      [`${copyright} Href`]: false,
-
-      [`${other} Label`]: false,
-      [`${other} Href`]: false,
-
-      [`${supp} Href`]: false,
-
-      [`${update} Type`]: false,
-      [`${update} DOI`]: false,
-      [`${update} DOIinvalid`]: false,
-      [`${update} Date`]: false,
-
-      [`${clinical} Registry`]: false,
-      [`${clinical} TrialNumber`]: false
-    };
-    warnings.url = !url||url==='http://';
-    warnings.invalidurl = !!(!warnings.url && !isUrl(url));
-
-    warnings.printDateYear = hasDate ? false : !printDateYear;
-    warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay));
-    warnings.printDateInvalid = warnings.printDateIncomplete ? false : !validDate(printDateYear, printDateMonth, printDateDay);
-
-    warnings.onlineDateYear = hasDate ? false : !onlineDateYear;
-    warnings.onlineDateIncomplete = !!(!onlineDateYear && (onlineDateMonth || onlineDateDay));
-    warnings.onlineDateInvalid = warnings.onlineDateIncomplete ? false : !validDate(onlineDateYear, onlineDateMonth, onlineDateDay);
-
-    warnings.firstPage = !!(lastPage && !firstPage);
-    warnings.simCheckUrlInvalid = !!(this.state.addInfo.similarityCheckURL !== 'http://' && this.state.addInfo.similarityCheckURL && !isUrl(this.state.addInfo.similarityCheckURL));
-
-
-    if (this.state.addInfo.freetolicense){
-      criticalErrors.licenseFreeToRead = true;
-    }
-
-    //validate License subItems
-    const licenses = getSubmitSubItems(this.state.license).map((license, i) => {
-      const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license;
-      if((licenseurl&&licenseurl!='http://')) criticalErrors.licenseFreeToRead = false;
-
-      const errors = {
-        licenseUrl: criticalErrors.licenseFreeToRead,
-        licenseUrlInvalid: false,
-        licenseDateIncomplete: false,
-        licenseDateInvalid: false,
-        licenseYear: false,
-        licenseMonth: false,
-        licenseDay: false
-      };
-
-      const thereIsDate = !!(acceptedDateDay || acceptedDateMonth || acceptedDateYear);
-      if(thereIsDate) {
-        if(!(acceptedDateDay && acceptedDateMonth && acceptedDateYear)) {
-          errors.licenseDateIncomplete = true;
-          errors.licenseYear = !acceptedDateYear;
-          errors.licenseMonth = !acceptedDateMonth;
-          errors.licenseDay = !acceptedDateDay
-          warnings.licenseDateIncomplete = true;
-        }
-      }
-
-      if(!errors.licenseDateIncomplete && !validDate(acceptedDateYear, acceptedDateMonth, acceptedDateDay)) {
-        errors.licenseDateInvalid = true;
-        errors.licenseYear = true;
-        errors.licenseMonth = true;
-        errors.licenseDay = true;
-        warnings.licenseDateInvalid = true;
-      }
-
-      if((!licenseurl||licenseurl==='http://') && (thereIsDate || appliesto)) {
-        errors.licenseUrl = true;
-        warnings.licenseUrl = true;
-      }
-
-      if(!errors.licenseUrl) {
-        const urlInvalid = !isUrl(licenseurl);
-        errors.licenseUrlInvalid = urlInvalid;
-        warnings.licenseUrlInvalid = urlInvalid;
-      }
-
-      return {...license, errors}
-    })
-
-    if(criticalErrors.licenseFreeToRead) {  // if no licenses have a date and free to license is on, make first license require a date
-      if(!licenses.length) {
-        licenses[0] = {
-          errors: {}
-        }
-      }
-      licenses[0].errors.licenseUrl = true;
-    }
-
-    //validate contributor subItems
-    const contributors = getSubmitSubItems(this.state.contributors).map( contributor => {
-      const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = contributor;
-      const errors = {
-        contributorLastName: firstName && !lastName,
-        contributorRole: (lastName || firstName || suffix || affiliation || orcid) && !role,
-        contributorGroupName: groupAuthorRole && !groupAuthorName,
-        contributorGroupRole: groupAuthorName && !groupAuthorRole
-      }
-      if(errors.contributorLastName) warnings.contributorLastName = true;
-      if(errors.contributorRole) warnings.contributorRole = true;
-      if(errors.contributorGroupName) warnings.contributorGroupName = true;
-      if(errors.contributorGroupRole) warnings.contributorGroupRole = true;
-
-      return {...contributor, errors}
-    })
-
-    //validate relatedItem subItems
-    const relatedItems = getSubmitSubItems(this.state.relatedItems).map( item => {
-      const errors = {
-        relatedItemIdType: !item.identifierType,
-        relatedItemRelType: !item.relationType,
-        relatedItemDoiInvalid: item.identifierType === 'doi' ? !isDOI(item.relatedItemIdentifier) : false
-      }
-      if(errors.relatedItemIdType) warnings.relatedItemIdType = true;
-      if(errors.relatedItemRelType) warnings.relatedItemRelType = true;
-      if(errors.relatedItemDoiInvalid) warnings.relatedItemDoiInvalid = true;
-
-      return {...item, errors}
-    })
-
-    // crossmark validation
-    let newReduxForm = this.props.reduxForm;
-    if(this.state.crossmark) {
-
-      function validateLabelHref (card) {
-        const map = newReduxForm.get(card);
-        if(map) {
-          map.entrySeq().forEach(([i, attributes])=>{
-            const errors = {
-              label: !attributes.get('label'),
-              href: (()=>{
-                const href = attributes.get('href');
-                return href ? !isUrl(href) : false
-              })()
-            }
-
-            if(errors.label) warnings[`${card} Label`] = true;
-            if(errors.href) warnings[`${card} Href`] = true;
-            newReduxForm = newReduxForm.setIn([card, i, 'errors'], errors)
-          })
-        }
-      }
-
-      validateLabelHref(pubHist)
-      validateLabelHref(peer)
-      validateLabelHref(copyright)
-      validateLabelHref(other)
-      validateLabelHref(supp)
-
-      const updateMap = newReduxForm.get(update);
-      if(updateMap) {
-        updateMap.entrySeq().forEach(([i, attributes])=>{
-          const doi = attributes.get('DOI');
-          const errors = {
-            type: !attributes.get('type'),
-            DOI: !doi || !isDOI((doi)),
-            year: !attributes.get('year'),
-            month: !attributes.get('month'),
-            day: !attributes.get('day')
-          }
-          if(errors.type) warnings[`${update} Type`] = true;
-          if(errors.DOI) !doi ? warnings[`${update} DOI`] = true : warnings[`${update} DOIinvalid`] = true;
-          if(errors.year || errors.month || errors.day) warnings[`${update} Date`] = true;
-
-          newReduxForm = newReduxForm.setIn([update, i, 'errors'], errors)
-        })
-      }
-
-      const clinicalMap =newReduxForm.get(clinical);
-      if(clinicalMap) {
-        clinicalMap.entrySeq().forEach(([i, attributes])=>{
-          const errors = {
-            registry: !attributes.get('registry'),
-            trialNumber: !attributes.get('trialNumber')
-          }
-          if(errors.registry) warnings[`${clinical} Registry`] = true;
-          if(errors.trialNumber) warnings[`${clinical} TrialNumber`] = true;
-          newReduxForm = newReduxForm.setIn([clinical, i, 'errors'], errors)
-        })
-      }
-    }
-
-    const completeValidation = () => {
-      const setStatePayload = {
-        validating: true,
-        error: false,
-        errors: {...criticalErrors, ...warnings},
-        license: licenses.length ? licenses : this.state.license,
-        contributors: contributors.length ? contributors : this.state.contributors,
-        relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems
-      }
-      let valid = true;
-
-      for(const key in warnings) {
-        if (warnings[key]) {
-          setStatePayload.error = true;
-        }
-      }
-
-      for(const key in criticalErrors) {
-        if(criticalErrors[key]) {
-          setStatePayload.error = true;
-          valid = false;
-        }
-      }
-
-      this.props.reduxEditForm([], newReduxForm);
-      if(valid && callback) {
-        callback(true)
-      } else {
-        this.setState(setStatePayload, ()=>{
-          this.state.validating = false;
-          if(callback) callback(false)
-        })
-      }
-    }
-
-    if(this.state.doiDisabled || criticalErrors.doi || criticalErrors.invaliddoi || criticalErrors.invalidDoiPrefix) {
-      completeValidation()
-    } else {
-      return checkDupeDOI(doi, (isDupe) => {
-        criticalErrors.dupedoi = isDupe;
-        completeValidation()
-      })
-    }
+  componentDidUpdate() {
+    refreshErrorBubble()
   }
 
   handleChange = (e) => {

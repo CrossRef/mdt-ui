@@ -3,7 +3,7 @@ import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 import verifyIssn from 'issn-verify'
 
-import fetch from '../utilities/fetch'
+import authorizedFetch from '../utilities/fetch'
 const languages = require('../utilities/language.json')
 import isDOI from '../utilities/isDOI'
 import isURL from '../utilities/isURL'
@@ -95,7 +95,7 @@ export default class AddPublicationCard extends Component {
   }
 
   checkDupeDOI (callback) {
-    return Promise.resolve(fetch(`${apiBaseUrl}/work?doi=${this.state.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
+    return Promise.resolve(authorizedFetch(`${apiBaseUrl}/work?doi=${this.state.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
       .then(data => callback(data.status === 200))
     )
   }
@@ -115,7 +115,7 @@ export default class AddPublicationCard extends Component {
 
 
   validatePrefix () {
-    return this.props.prefixes.includes(this.state.DOI.split('/')[0]) ? true : false
+    return this.props.prefixes.indexOf(this.state.DOI.split('/')[0]) !== -1
   }
 
   validateISSN () {
@@ -198,11 +198,11 @@ export default class AddPublicationCard extends Component {
 
   render () {
 
-    const isSearch = this.props.searchResult ? true : false;
-    const isEdit = (this.state['mdt-version'] && !isSearch) ? true : false;
+    const isSearch = !!this.props.searchResult
+    const isEdit = !!(this.state['mdt-version'] && !isSearch)
     const disabledInput = isEdit ? {disabled: true} : {};
 
-    const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.includes(this.state.DOI.substring(0,7)) : false;
+    const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false;
 
     return (
       <div className='addPublicationCard'>

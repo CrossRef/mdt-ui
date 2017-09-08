@@ -14,6 +14,7 @@ const combinedReducers = combineReducers({
   dois: doiReducer,
   reduxForm: reduxFormReducer,
   cart: cartReducer,
+  cartToast: cartToastReducer
 })
 
 export default (state, action) => {
@@ -56,10 +57,12 @@ function searchReducer (state = {loading:false, searchValue: '', result:[]}, act
 }
 
 
-function reduxFormReducer (state = Map({ submit: false }), action) {
+function reduxFormReducer (state = Map({}), action) {
   switch (action.type) {
     case 'REDUXFORM_ADD':
-      if(typeof action.value === 'object') action.value = fromJS(action.value);
+      if(typeof action.value === 'object' && !Map.isMap(action.value)) {
+        action.value = fromJS(action.value);
+      }
 
       if(action.value === '') {
         const [cardKey, index, fieldKey] = action.keyPath;
@@ -81,7 +84,7 @@ function reduxFormReducer (state = Map({ submit: false }), action) {
     case 'REDUXFORM_DELETE':
       return state.deleteIn(action.keyPath)
     case 'REDUXFORM_CLEAR':
-      return Map({ submit: false })
+      return Map({})
     default:
       return state
   }
@@ -168,7 +171,32 @@ function publicationsReducer (state = {}, action) {
   }
 }
 
-
+function cartToastReducer (state = {
+  doi: '',
+  title: '',
+  recordType: '',
+  updateType: ''
+}, action) {
+  switch (action.type) {
+    case 'CART_UPDATE':
+      const record = action.cart[0]
+      if(record.type === 'article') {
+        return {doi: record.doi, title: record.title.title, recordType: record.type, updateType: 'add'}
+      }
+      else if(record.type === 'issue') {
+        return {
+          title: `${record.title.volume ? `, Volume ${record.title.volume}, ` : ''}Issue ${record.title.issue}`,
+          recordType: record.type,
+          updateType: 'add'
+        }
+      }
+      else return state
+    case 'REMOVE_FROM_CART':
+      return {doi: action.doi, title: action.title, recordType: action.recordType, updateType: 'remove'}
+    default:
+      return state
+  }
+}
 
 function cartReducer (state = [], action) {
   switch (action.type) {

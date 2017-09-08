@@ -15,7 +15,7 @@ export default class DepositResult extends Component{
     const { resultCount, resultData, depositId } = this.props;
     const resultArray = []
 
-    for (var pub in resultData) {
+    for (let pub in resultData) {
       const articleElements = resultData[pub].map((article, index)=> {
         const url = `http://dx.doi.org/${article.doi}`
         return (
@@ -96,7 +96,8 @@ class ErrorBox extends Component {
         <li onClick={this.toggleError}>
           <a className="tooltips">
             {this.state.errorBoxShow &&
-            <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/><p>{this.props.errorMessage}</p></div>}
+              <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/><p>{this.props.errorMessage}</p></div>
+            }
             <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>
           </a>
         </li>

@@ -77,7 +77,7 @@ export default class ActionBar extends Component {
     const types = selections.map((selection) => {
       return selection.article.type
     });
-    return !types.includes('article')
+    return !(types.indexOf('article') !== -1)
   }
 
 

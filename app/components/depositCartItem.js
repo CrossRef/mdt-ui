@@ -1,78 +1,108 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import DepositCartItemCard from './depositCartItemCard'
 import DepositCartRecord from './depositCartRecord'
 
 
 
 export default class DepositCartItem extends Component {
   static propTypes = {
-    reduxCartUpdate: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
     cartItem: is.object.isRequired,
-    reduxCart: is.array.isRequired,
+    showDeposit: is.bool.isRequired,
     toggleDeposit: is.func.isRequired,
+    recordCount: is.number.isRequired,
+    closeErrors: is.func.isRequired,
   };
 
-  render () {
-    var rows = []
-    for(var i = 0; i < this.props.cartItem.contains.length; i++){
-      rows.push(
-        <DepositCartRecord
-          key={i}
-          pubDoi={this.props.cartItem.doi}
-          reduxCartUpdate={this.props.reduxCartUpdate}
-          reduxCart={this.props.reduxCart}
-          reduxControlModal={this.props.reduxControlModal}
-          reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-          cartItem={this.props.cartItem.contains[i]}
-          showError={false}
-        />
-      )
-      if (this.props.cartItem.contains[i].contains) {
-        for(var j = 0; j < this.props.cartItem.contains[i].contains.length; j++){
-          if(j === 0) rows.push(<tr className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
-          rows.push(
-            <DepositCartRecord
-              key={`${i}-${j}`}
-              underIssue={true}
-              issueDoi={this.props.cartItem.contains[i].doi}
-              pubDoi={this.props.cartItem.doi}
-              reduxCartUpdate={this.props.reduxCartUpdate}
-              reduxCart={this.props.reduxCart}
-              reduxControlModal={this.props.reduxControlModal}
-              reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-              cartItem={this.props.cartItem.contains[i].contains[j]}
-              showError={false}
-            />
-          )
-          if(j === this.props.cartItem.contains[i].contains.length - 1) rows.push(<tr className='articleUnderIssueSpace borderBottom'><td/><td/><td/><td className="borderRight"/></tr>)
+  constructor (props) {
+    super(props)
+    this.state = {
+      records: []
+    }
+  }
+
+  renderRecords = (props = this.props) => {
+    const records = []
+    const promises = []
+
+    for(let i = 0; i < props.cartItem.contains.length; i++){
+      const record = props.cartItem.contains[i]
+      const promise = new Promise((resolve)=>{
+        records.push(
+          <DepositCartRecord
+            key={record.doi}
+            pubDoi={props.cartItem.doi}
+            reduxRemoveFromCart={props.reduxRemoveFromCart}
+            cartItem={record}
+            closeErrors={this.props.closeErrors}
+            resolve={resolve}
+          />
+        )
+      })
+      promises.push(promise)
+
+      if (record.contains) {
+        for(let j = 0; j < record.contains.length; j++){
+          const parentIssue = props.cartItem.contains[i]
+          const recordUnderIssue = props.cartItem.contains[i].contains[j]
+          if(j === 0) {
+            records.push(<tr key={parentIssue.doi + '_space1'} className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
+          }
+          const promise = new Promise((resolve)=>{
+            records.push(
+              <DepositCartRecord
+                key={recordUnderIssue.doi}
+                underIssue={true}
+                issueDoi={parentIssue.doi}
+                pubDoi={props.cartItem.doi}
+                reduxRemoveFromCart={props.reduxRemoveFromCart}
+                cartItem={recordUnderIssue}
+                closeErrors={this.props.closeErrors}
+                resolve={resolve}
+              />
+            )
+          })
+          promises.push(promise)
+          if(j === props.cartItem.contains[i].contains.length - 1) {
+            records.push(<tr key={parentIssue.doi + '_space2'} className='articleUnderIssueSpace borderBottom'><td/><td/><td/><td className="borderRight"/></tr>)
+          }
         }
       }
     }
+
+    Promise.all(promises).then((results)=>{
+      if(!this.props.showDeposit && results.indexOf(true) === -1) this.props.toggleDeposit(true)
+    })
+    return records
+  }
+
+  render () {
 
     return (
       <div>
         <div className='depositpage'>
           <table>
-            <tr>
-              <td className='titleHolderTD'>
-                <table className='itemholder'>
-                  <tr>
-                    <td className='stateIcon deposittitle'>&nbsp;</td>
-                    <td className='depositpubtitle' colSpan={3}><a href="">{this.props.cartItem.title}</a></td>
-                    <td className='titlerror errorholder'>&nbsp;</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <table className='itemholder'>
-                {rows}
-              </table>
-            </tr>
+            <tbody>
+              <tr>
+                <td className='titleHolderTD'>
+                  <table className='itemholder'>
+                    <tbody>
+                      <tr>
+                        <td className='stateIcon deposittitle'>&nbsp;</td>
+                        <td className='depositpubtitle' colSpan={3}><a href="">{this.props.cartItem.title}</a></td>
+                        <td className='titlerror errorholder'>&nbsp;</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <table className='itemholder'>
+            <tbody>
+              {this.renderRecords()}
+            </tbody>
           </table>
         </div>
       </div>

@@ -1,69 +1,87 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { browserHistory } from 'react-router'
-import update from 'immutability-helper'
-import Switch from 'react-toggle-switch'
 import _ from 'lodash'
+import $ from 'jquery'
 
-import fetch from '../utilities/fetch'
-import checkDupeDOI from '../utilities/dupeDOI'
-import xmldoc from '../utilities/xmldoc'
-import { stateTrackerII } from 'my_decorators'
-import objectSearch from '../utilities/objectSearch'
 import DepositCartItem from './depositCartItem'
 
 
 
 export default class DepositCart extends Component {
   static propTypes = {
-    reduxCartUpdate: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
-    reduxCart: is.array.isRequired,
+    showDeposit: is.bool.isRequired,
     toggleDeposit: is.func.isRequired,
     fullCart: is.array.isRequired
   };
 
+  componentWillMount(){
+    document.addEventListener('click', this.handleClick, false)
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener('click', this.handleClick, false)
+  }
+
+  handleClick = (e) => {
+    const target = $(e.target)
+    if(!target.parents('.errorButton').length) {
+      if($('.popup').length) {
+        this.setState({})
+      }
+    }
+  }
+
+  closeErrors = () => {
+    return new Promise(resolve=>{
+      this.setState({}, resolve)
+    })
+  }
+
   render () {
-    var items = []
+    const items = []
     _.each(this.props.fullCart, (cartItem, i) => {
+      let recordCount = cartItem.contains.length
+      for(let record in cartItem.contains) {
+        recordCount += cartItem.contains[record].contains.length
+      }
+
       items.push(
         <DepositCartItem
             cartItem={cartItem}
-            key={i}
-            reduxCartUpdate={this.props.reduxCartUpdate}
-            reduxCart={this.props.reduxCart}
-            reduxControlModal={this.props.reduxControlModal}
+            key={cartItem.doi}
             reduxRemoveFromCart={this.props.reduxRemoveFromCart}
+            showDeposit={this.props.showDeposit}
             toggleDeposit={this.props.toggleDeposit}
+            recordCount={recordCount}
+            closeErrors={this.closeErrors}
         />
       )
     })
 
-
     return (
-      <div>
+      <div className="cartContainer">
+        <div className="rightBorderBox">&nbsp;</div>
         <table className='depositTopBorder'>
-          <div className="rightBorderBox">&nbsp;</div>
-          <tr className='item'>
-            <td className='stateIcon'>
-              &nbsp;
-            </td>
-            <td className='aboveTitle'>
-              &nbsp;
-            </td>
-            <td className='status'>
-              Status
-            </td>
-            <td className='action'>
-              &nbsp;
-            </td>
-            <td className='errorholder'>
-              &nbsp;
-            </td>
-          </tr>
+          <tbody>
+            <tr className='item'>
+              <td className='stateIcon'>
+                &nbsp;
+              </td>
+              <td className='aboveTitle'>
+                &nbsp;
+              </td>
+              <td className='status'>
+                Status
+              </td>
+              <td className='action'>
+                &nbsp;
+              </td>
+              <td className='errorholder'>
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
         </table>
         <div className='depositCartRows'>
           {items}

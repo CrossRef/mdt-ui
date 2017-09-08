@@ -1,4 +1,4 @@
-import fetch from './fetch'
+import authorizedFetch from './fetch'
 import _ from 'lodash'
 
 import {apiBaseUrl} from '../actions/application'
@@ -12,7 +12,7 @@ function dupCheck (doi) {
   if(doi) {
     if (doi.length > 0) {
       if (isValidDOI(doi)) {
-        return Promise.resolve(fetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+        return Promise.resolve(authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then((data) => {return data.status === 200}))
       } else {
         return (false, false)
@@ -40,7 +40,12 @@ const checkDupeDOI = function (doi, callback) {
   } else {
     return Promise.resolve(dupCheck(doi)).then((isDupe) => callback(isDupe))
   }
+}
 
+// trying a refactor
+export async function checkDupeDoi (doi) {
+  const response = await authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+  return response.status === 200
 }
 
 export default checkDupeDOI
