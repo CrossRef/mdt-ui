@@ -24,23 +24,27 @@ export default class DepositCartItem extends Component {
 
   renderRecords = (props = this.props) => {
     const records = []
-    const promises = []
+    const errorReports = []
 
     for(let i = 0; i < props.cartItem.contains.length; i++){
       const record = props.cartItem.contains[i]
-      const promise = new Promise((resolve)=>{
-        records.push(
-          <DepositCartRecord
-            key={record.doi}
-            pubDoi={props.cartItem.doi}
-            reduxRemoveFromCart={props.reduxRemoveFromCart}
-            cartItem={record}
-            closeErrors={this.props.closeErrors}
-            resolve={resolve}
-          />
-        )
+
+      let reportErrors
+      const asyncErrorReport = new Promise((resolve)=>{
+        reportErrors = resolve
       })
-      promises.push(promise)
+      errorReports.push(asyncErrorReport)
+
+      records.push(
+        <DepositCartRecord
+          key={record.doi}
+          pubDoi={props.cartItem.doi}
+          reduxRemoveFromCart={props.reduxRemoveFromCart}
+          cartItem={record}
+          closeErrors={this.props.closeErrors}
+          reportErrors={reportErrors}
+        />
+      )
 
       if (record.contains) {
         for(let j = 0; j < record.contains.length; j++){
@@ -49,21 +53,25 @@ export default class DepositCartItem extends Component {
           if(j === 0) {
             records.push(<tr key={parentIssue.doi + '_space1'} className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
           }
-          const promise = new Promise((resolve)=>{
-            records.push(
-              <DepositCartRecord
-                key={recordUnderIssue.doi}
-                underIssue={true}
-                issueDoi={parentIssue.doi}
-                pubDoi={props.cartItem.doi}
-                reduxRemoveFromCart={props.reduxRemoveFromCart}
-                cartItem={recordUnderIssue}
-                closeErrors={this.props.closeErrors}
-                resolve={resolve}
-              />
-            )
+
+          let reportErrors
+          const asyncErrorReport = new Promise((resolve)=>{
+            reportErrors = resolve
           })
-          promises.push(promise)
+          errorReports.push(asyncErrorReport)
+
+          records.push(
+            <DepositCartRecord
+              key={recordUnderIssue.doi}
+              underIssue={true}
+              issueDoi={parentIssue.doi}
+              pubDoi={props.cartItem.doi}
+              reduxRemoveFromCart={props.reduxRemoveFromCart}
+              cartItem={recordUnderIssue}
+              closeErrors={this.props.closeErrors}
+              reportErrors={reportErrors}
+            />
+          )
           if(j === props.cartItem.contains[i].contains.length - 1) {
             records.push(<tr key={parentIssue.doi + '_space2'} className='articleUnderIssueSpace borderBottom'><td/><td/><td/><td className="borderRight"/></tr>)
           }
@@ -71,7 +79,7 @@ export default class DepositCartItem extends Component {
       }
     }
 
-    Promise.all(promises).then((results)=>{
+    Promise.all(errorReports).then((results)=>{  // if none of the error reports resolved true, no errors, turn on deposit
       if(!this.props.showDeposit && results.indexOf(true) === -1) this.props.toggleDeposit(true)
     })
     return records

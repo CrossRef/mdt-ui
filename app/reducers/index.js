@@ -193,6 +193,8 @@ function cartToastReducer (state = {
       else return state
     case 'REMOVE_FROM_CART':
       return {doi: action.doi, title: action.title, recordType: action.recordType, updateType: 'remove'}
+    case 'CLEAR_CART_TOAST':
+      return {doi: '', title: '', recordType: '', updateType: ''}
     default:
       return state
   }

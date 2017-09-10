@@ -1,4 +1,4 @@
-//import 'babel-polyfill'
+import 'babel-polyfill'
 import React from 'react'
 import ReactDOM from 'react-dom'
 import { Router, browserHistory } from 'react-router'
@@ -10,17 +10,18 @@ import configure from './store'
 import Routing, { routes } from './routing'
 import { getCRState, controlModal } from './actions/application'
 
-window.version=version()
+
+window.version = version()
 
 setConfig({
-	showStateTracker: false,
-	updateReports: { mount: false, update:false, pass:false, render: false }
+  showStateTracker: false,
+  updateReports: {mount: false, update: false, pass: false, render: false}
 });
 
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
-if(browserHistory.getCurrentLocation().pathname !== `${routes.base}`) {
+if (browserHistory.getCurrentLocation().pathname !== `${routes.base}`) {
   store.dispatch(getCRState());
 }
 
@@ -28,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       {myDecoratorsConfig.showStateTracker && <STContainer />}
-      <Router history={history} onUpdate={()=>{
-        if(!store.getState().routing.locationBeforeTransitions.query.modal) {
-          store.dispatch(controlModal({ showModal: false }))
+      <Router history={history} onUpdate={() => {
+        if (!store.getState().routing.locationBeforeTransitions.query.modal) {
+          store.dispatch(controlModal({showModal: false}))
         }
         window.scrollTo(0, 0);
       }}>
@@ -39,9 +40,6 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </Provider>, document.querySelector('#root'))
 })
-
-
-
 
 function version () {
   const mergedBranches =

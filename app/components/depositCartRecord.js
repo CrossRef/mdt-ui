@@ -20,7 +20,7 @@ export default class DepositCartRecord extends Component {
     issueDoi: is.string,
     underIssue: is.bool,
     closeErrors: is.func.isRequired,
-    resolve: is.func.isRequired
+    reportErrors: is.func.isRequired
   };
 
   constructor () {
@@ -118,7 +118,7 @@ export default class DepositCartRecord extends Component {
   render () {
     const showError = this.state.status === 'error'
     if(this.state.status !== 'validating') {
-      this.props.resolve(showError)
+      this.props.reportErrors(showError)
     }
     const cartItem = this.props.cartItem
     const cartType = cartItem.type

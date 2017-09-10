@@ -49,7 +49,8 @@ export default store => next => action => {
             if( //scrub data being synced to server
               property !== 'modal' &&
               property !== 'reduxForm' &&
-              property !== 'search'
+              property !== 'search' &&
+              property !== 'cartToast'
             )
               postingState[property] = reduxState[property]
           }

@@ -13,7 +13,8 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 export default class PublicationNav extends Component {
   static propTypes = {
     cart: is.array.isRequired,
-    cartToast: is.object.isRequired
+    cartToast: is.object.isRequired,
+    reduxClearCartToast: is.func.isRequired
   }
 
   constructor (props) {
@@ -36,14 +37,19 @@ export default class PublicationNav extends Component {
       document.removeEventListener('click', this.handleClick, false);
     }
 
-    if ((this.props.cartToast.doi !== nextProps.cartToast.doi) || (this.props.cartToast.updateType !== nextProps.cartToast.updateType)) {
+    if (nextProps.cartToast.title !== '') {
       if(nextProps.cartToast.updateType === 'add') {
         for (let record of this.props.cart) {
           if(record.doi === nextProps.cartToast.doi) nextProps.cartToast.updateType = 'update'
         }
       }
       this.addAlert(nextProps.cartToast)
+      this.props.reduxClearCartToast()
     }
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('click', this.handleClick, false);
   }
 
   addAlert({title, recordType, updateType}) {

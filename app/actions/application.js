@@ -1,4 +1,3 @@
-import { browserHistory } from 'react-router'
 
 import xmlParse from '../utilities/xmldoc'
 import authorizedFetch, {regularFetch} from '../utilities/fetch'
@@ -59,6 +58,10 @@ export function clearCart() {
 
 export function removeFromCart(doi, title, recordType) {
 	return { type: 'REMOVE_FROM_CART', doi, title, recordType }
+}
+
+export function clearCartToast () {
+  return { type: 'CLEAR_CART_TOAST' }
 }
 
 // Async Action Creators
@@ -126,6 +129,7 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
       let scrubbedState = {...state}; //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
       if(type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
+      delete scrubbedState.cartToast
 
       // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
 
@@ -353,8 +357,9 @@ export function getDepositHistory (params, callback, error = (reason) => console
 	}
 }
 
-export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
+export function deleteRecord (record, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
   return function(dispatch) {
+    const {doi, pubDoi, title, type} = record
     authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, {
       method: 'delete',
       headers: {Authorization: localStorage.getItem('auth')}
@@ -363,10 +368,10 @@ export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (
         if(response.status === 200) {
           if(type === 'issue') {
             for(let i in contains) {
-              dispatch(removeFromCart(contains[i].doi))
+              dispatch(removeFromCart(contains[i].doi, contains[i].title.title, contains[i].type))
             }
           } else {
-            dispatch(removeFromCart(doi))
+            dispatch(removeFromCart(doi, title.title, type))
           }
 
           dispatch(getPublications(pubDoi));
@@ -377,3 +382,4 @@ export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (
   }
 }
 
+export default 'poop'
