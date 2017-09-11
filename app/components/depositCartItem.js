@@ -9,8 +9,7 @@ export default class DepositCartItem extends Component {
   static propTypes = {
     reduxRemoveFromCart: is.func.isRequired,
     cartItem: is.object.isRequired,
-    showDeposit: is.bool.isRequired,
-    toggleDeposit: is.func.isRequired,
+    reportErrors: is.func.isRequired,
     recordCount: is.number.isRequired,
     closeErrors: is.func.isRequired,
   };
@@ -80,7 +79,11 @@ export default class DepositCartItem extends Component {
     }
 
     Promise.all(errorReports).then((results)=>{  // if none of the error reports resolved true, no errors, turn on deposit
-      if(!this.props.showDeposit && results.indexOf(true) === -1) this.props.toggleDeposit(true)
+      if(results.indexOf(true) === -1) {
+        this.props.reportErrors(false)
+      } else {
+        this.props.reportErrors(true)
+      }
     })
     return records
   }
