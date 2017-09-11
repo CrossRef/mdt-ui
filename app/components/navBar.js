@@ -38,12 +38,13 @@ export default class PublicationNav extends Component {
     }
 
     if (nextProps.cartToast.title !== '') {
+      let alreadyInCart = false
       if(nextProps.cartToast.updateType === 'add') {
         for (let record of this.props.cart) {
-          if(record.doi === nextProps.cartToast.doi) nextProps.cartToast.updateType = 'update'
+          if(record.doi === nextProps.cartToast.doi) alreadyInCart = true
         }
       }
-      this.addAlert(nextProps.cartToast)
+      if(!alreadyInCart) this.addAlert(nextProps.cartToast)
       this.props.reduxClearCartToast()
     }
   }

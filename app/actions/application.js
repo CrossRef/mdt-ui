@@ -258,7 +258,7 @@ export function submitPublication (form, callback, error = reason => console.err
 export function submitArticle (publication, articleDoi, callback, error = (reason) => console.error('ERROR in submitArticle', reason)) {
   return function(dispatch) {
 
-    authorizedFetch(`${apiBaseUrl}/work`, {
+    return authorizedFetch(`${apiBaseUrl}/work`, {
         method: 'post',
         headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
@@ -266,9 +266,6 @@ export function submitArticle (publication, articleDoi, callback, error = (reaso
     ).then(() =>
       authorizedFetch(`${apiBaseUrl}/work?doi=${articleDoi}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then(article => article.json())
-        .then((article) => {
-          if(callback) callback();
-        })
         .catch(reason => error(reason))
     ).catch(reason => error(reason))
 
