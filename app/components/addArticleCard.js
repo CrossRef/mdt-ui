@@ -344,6 +344,7 @@ export default class AddArticleCard extends Component {
     const addToCart = true
     const newRecord = await this.save(addToCart)
     if(newRecord) {
+      newRecord.doi = newRecord.doi.toLowerCase()
       this.props.reduxCartUpdate([newRecord]);
       browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
     }
