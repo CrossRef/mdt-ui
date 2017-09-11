@@ -400,48 +400,6 @@ export class BottomFields extends Component {
             <div className='fieldinnerholder halflength'>
               <div className='labelholder'>
                 <div className='labelinnerholder'>
-                  <div className='label'>Accepted Date</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className='requiredholder dateselectrequire norequire'>
-                  <div className='required height32'>
-                  </div>
-                </div>
-                <div className='field'>
-                  <div className='datepickerholder'>
-                    <div className='dateselectholder'>
-                      <div>Year</div>
-                      <div>{this.props.makeDateDropDown(this.props.handleChange, 'acceptedDateYear', 'y', this.props.article.acceptedDateYear, false)}</div>
-                    </div>
-                    <div className='dateselectholder'>
-                      <div>Month</div>
-                      <div>
-                        {this.props.makeDateDropDown(this.props.handleChange, 'acceptedDateMonth', 'm', this.props.article.acceptedDateMonth, false)}
-                      </div>
-                    </div>
-                    <div className='dateselectholder'>
-                      <div>Day</div>
-                      <div>
-                        {this.props.makeDateDropDown(this.props.handleChange,'acceptedDateDay', 'd', this.props.article.acceptedDateDay, false)}
-                      </div>
-                    </div>
-                    <div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='errorHolder'>
-          </div>
-        </div>
-
-        <div className='row'>
-          <div className='fieldHolder'>
-            <div className='fieldinnerholder halflength'>
-              <div className='labelholder'>
-                <div className='labelinnerholder'>
                   <div className='label'>First Page</div>
                 </div>
               </div>
