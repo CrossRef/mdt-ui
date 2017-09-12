@@ -33,16 +33,16 @@ export default class AddPublicationCard extends Component {
     reduxStorePublications: is.func,
 
     asyncSubmitPublication: is.func.isRequired
-  };
+  }
 
   constructor(props) {
-    super();
+    super()
 
     if(props.Journal) {
-      const data = props.Journal.journal_metadata;
-      const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {};
-      let version = props['mdt-version'] ? Number(props['mdt-version'])+1 : '0';
-      const doi_data = data.doi_data || {};
+      const data = props.Journal.journal_metadata
+      const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {}
+      let version = props['mdt-version'] ? Number(props['mdt-version'])+1 : '0'
+      const doi_data = data.doi_data || {}
       this.state = {
         'mdt-version': version.toString(),
         title: data.full_title,
@@ -58,12 +58,12 @@ export default class AddPublicationCard extends Component {
       }
     }
     else if (props.searchResult) {
-      const result = props.searchResult;
-      let pissn, eissn;
+      const result = props.searchResult
+      let pissn, eissn
       if(Array.isArray(result.issns)) {
         result.issns.forEach(issn => {
-          if(issn.type === 'pissn') pissn = issn.issn;
-          if(issn.type === 'eissn') eissn = issn.issn;
+          if(issn.type === 'pissn') pissn = issn.issn
+          if(issn.type === 'eissn') eissn = issn.issn
         })
       }
       this.state = {
@@ -119,7 +119,7 @@ export default class AddPublicationCard extends Component {
   }
 
   validateISSN () {
-    const issn = this.state.electISSN;
+    const issn = this.state.electISSN
     if(verifyIssn(issn)) {
       return true
     } else {
@@ -166,13 +166,13 @@ export default class AddPublicationCard extends Component {
   }
 
   onSubmit = (e) => {
-    e.preventDefault();
+    e.preventDefault()
 
-    if(this.state['mdt-version']) {return this.saveEdit()};
+    if(this.state['mdt-version']) {return this.saveEdit()}
     this.validation().then((errors) => {
       if (!errors) { // false = no errors
         this.props.asyncSubmitPublication(this.state, publication => {
-          this.props.reduxAddDOIs(publication.message.doi);
+          this.props.reduxAddDOIs(publication.message.doi)
           this.props.reduxControlModal({showModal:false})
         })
       }
@@ -181,7 +181,7 @@ export default class AddPublicationCard extends Component {
 
   saveEdit () {
     this.props.asyncSubmitPublication(this.state, publication => {
-      if(this.props.searchResult) this.props.reduxAddDOIs(publication.message.doi);
+      if(this.props.searchResult) this.props.reduxAddDOIs(publication.message.doi)
       this.props.reduxControlModal({showModal:false})
     })
   }
@@ -200,9 +200,9 @@ export default class AddPublicationCard extends Component {
 
     const isSearch = !!this.props.searchResult
     const isEdit = !!(this.state['mdt-version'] && !isSearch)
-    const disabledInput = isEdit ? {disabled: true} : {};
+    const disabledInput = isEdit ? {disabled: true} : {}
 
-    const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false;
+    const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
 
     return (
       <div className='addPublicationCard'>

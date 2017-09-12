@@ -7,7 +7,7 @@ import { ToastContainer, ToastMessage } from "react-toastr"
 import pascaleCase from '../utilities/pascaleCase'
 import { routes } from '../routing'
 
-const ToastMessageFactory = React.createFactory(ToastMessage.animation);
+const ToastMessageFactory = React.createFactory(ToastMessage.animation)
 
 
 export default class PublicationNav extends Component {
@@ -32,24 +32,25 @@ export default class PublicationNav extends Component {
   componentWillUpdate(nextProps, nextState) { //need to update this to do cause REACTJS to rerender
 
     if(nextState.profileMenu) {
-      document.addEventListener('click', this.handleClick, false);
+      document.addEventListener('click', this.handleClick, false)
     } else if (this.state.profileMenu && !nextState.profileMenu) {
-      document.removeEventListener('click', this.handleClick, false);
+      document.removeEventListener('click', this.handleClick, false)
     }
 
     if (nextProps.cartToast.title !== '') {
+      let alreadyInCart = false
       if(nextProps.cartToast.updateType === 'add') {
         for (let record of this.props.cart) {
-          if(record.doi === nextProps.cartToast.doi) nextProps.cartToast.updateType = 'update'
+          if(record.doi === nextProps.cartToast.doi) alreadyInCart = true
         }
       }
-      this.addAlert(nextProps.cartToast)
+      if(!alreadyInCart) this.addAlert(nextProps.cartToast)
       this.props.reduxClearCartToast()
     }
   }
 
   componentWillUnmount () {
-    document.removeEventListener('click', this.handleClick, false);
+    document.removeEventListener('click', this.handleClick, false)
   }
 
   addAlert({title, recordType, updateType}) {

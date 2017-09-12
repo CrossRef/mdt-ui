@@ -7,7 +7,7 @@ import {stateTrackerII} from 'my_decorators'
 
 import ReviewArticle from './reviewArticle'
 import SubItem from './SubItems/subItem'
-import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
+import { ActionBar, TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
 import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
 import JSesc from '../utilities/jsesc'
 import parseXMLArticle from '../utilities/parseXMLArticle'
@@ -184,21 +184,21 @@ export default class AddArticleCard extends Component {
   }
 
   constructor (props) {
-    super(props);
-    this.state = defaultState;
+    super(props)
+    this.state = defaultState
     this.state.article.doi = props.ownerPrefix
   }
 
   async componentWillReceiveProps (nextProps) {
     if(nextProps.reduxForm !== this.props.reduxForm) {
-      return;
+      return
     }
 
-    let setStatePayload = {};
+    let setStatePayload = {}
 
     if(nextProps.crossmarkPrefixes.length && !this.state.crossmark) {
       if (nextProps.publication) {
-        const thisPrefix = nextProps.publication.message ? nextProps.publication.message.doi.split('/')[0] : null;
+        const thisPrefix = nextProps.publication.message ? nextProps.publication.message.doi.split('/')[0] : null
         if(thisPrefix && nextProps.crossmarkPrefixes.indexOf(thisPrefix) !== -1) {
           setStatePayload.crossmark = true
         }
@@ -208,12 +208,12 @@ export default class AddArticleCard extends Component {
     const { publication } = nextProps
     if (nextProps.mode === 'edit' && publication.message && publication.message.contains.length) {
 
-      const parsedArticle = parseXMLArticle(publication.message.contains[0].content);
+      const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
 
-      let reduxForm;
+      let reduxForm
       if(parsedArticle.crossmark) {
-        reduxForm = parsedArticle.crossmark.reduxForm;
-        setStatePayload.showCards = parsedArticle.crossmark.showCards;
+        reduxForm = parsedArticle.crossmark.reduxForm
+        setStatePayload.showCards = parsedArticle.crossmark.showCards
       }
 
       let doiDisabled = true
@@ -255,38 +255,36 @@ export default class AddArticleCard extends Component {
       contributors: contributors.length ? contributors : this.state.contributors,
       relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems
     }
-    let valid = true;
+    let valid = true
 
     for(const key in warnings) {
       if (warnings[key]) {
-        validatedPayload.error = true;
+        validatedPayload.error = true
       }
     }
 
     for(const key in criticalErrors) {
       if(criticalErrors[key]) {
-        validatedPayload.error = true;
-        valid = false;
+        validatedPayload.error = true
+        valid = false
       }
     }
 
-    if(newReduxForm && newReduxForm.size) this.props.reduxEditForm([], newReduxForm);
+    if(newReduxForm && newReduxForm.size) this.props.reduxEditForm([], newReduxForm)
 
     return {valid, validatedPayload}
   }
 
 
-  onSubmit = async (e) => {
-    e.preventDefault();
-
-    const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
+  save = async (addToCart) => {
+    const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined
 
     const {valid, validatedPayload} = await this.validation()
 
     if (valid) {
       const publication = this.props.publication
 
-      const journalArticle = journalArticleXml(this, crossmark);
+      const journalArticle = journalArticleXml(this, crossmark)
       const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
 
       const title = JSesc(this.state.article.title)
@@ -303,7 +301,7 @@ export default class AddArticleCard extends Component {
       }
 
       // check if its part of a issue, the issue props will tell us
-      let savePub;
+      let savePub
 
       if (this.props.issue) { //this is just an issue doi OR undefined
         // if its an issue, we need to put this newRecord under the issue, NOT the publicaton
@@ -311,28 +309,41 @@ export default class AddArticleCard extends Component {
         const issuePublication = this.props.issuePublication
         const theIssue = _.find(issuePublication.message.contains, (item) => {
           if ((item.type === 'issue') && (item.doi === this.props.issue)) {
-            return item;
+            return item
           }
         })
 
-        theIssue.contains = [newRecord];
+        theIssue.contains = [newRecord]
         issuePublication.message.contains = [theIssue]
 
         savePub = issuePublication
       } else { // not issue, so just put directly under the publication
-        publication.message.contains = [newRecord];
+        publication.message.contains = [newRecord]
         savePub = publication
       }
 
-      this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
+      await this.props.asyncSubmitArticle(savePub, this.state.article.doi)
 
-        newRecord.pubDoi = this.props.publication.message.doi;
-        this.props.reduxCartUpdate([newRecord]);
+      if(addToCart) {
+        newRecord.pubDoi = this.props.publication.message.doi
+        return newRecord
+      } else {
+        this.setState(validatedPayload, () => this.state.validating = false)
+      }
 
-        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
-      });
     } else {
       this.setState(validatedPayload, () => this.state.validating = false)
+      return false
+    }
+  }
+
+  addToCart = async () => {
+    const addToCart = true
+    const newRecord = await this.save(addToCart)
+    if(newRecord) {
+      newRecord.doi = newRecord.doi.toLowerCase()
+      this.props.reduxCartUpdate([newRecord])
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
     }
   }
 
@@ -384,7 +395,7 @@ export default class AddArticleCard extends Component {
         style: 'defaultModal reviewModal',
         Component: ReviewArticle,
         props: {
-            submit: this.onSubmit,
+            submit: this.addToCart,
             reviewData: this.state,
             publication: this.props.publication,
             publicationMetaData: this.props.publicationMetaData,
@@ -408,14 +419,9 @@ export default class AddArticleCard extends Component {
 
         <div className={'addarticlecard' + (error ? ' invalid' : '')}>
 
-          <form className='addArticleForm' onSubmit={this.onSubmit}>
+          <form className='addArticleForm'>
 
-          <div className="reviewArticleButtonDiv">
-            <button type='button' onClick={this.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
-            <button type='button' onClick={this.openReviewArticleModal} className="addPublication reviewbutton">Review</button>
-            <button type='submit' className={'addPublication saveButton'}>Add To Cart</button>
-          </div>
-
+            <ActionBar back={this.back} addToCart={this.addToCart} save={this.save} openReviewArticleModal={this.openReviewArticleModal}/>
 
             <div className='articleInnerForm'>
 

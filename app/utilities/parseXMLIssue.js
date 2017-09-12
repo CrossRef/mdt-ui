@@ -8,13 +8,13 @@ const parseXMLIssue = function (xml, duplicate = false, ownerPrefix = '') {
   let retObj = {showSection: false}
 
 
-  const parsedIssue = xmldoc(xml);
-  const journal_issue = objectSearch(parsedIssue, 'journal_issue');
-  const journal_volume = objectSearch(parsedIssue, 'journal_volume');
+  const parsedIssue = xmldoc(xml)
+  const journal_issue = objectSearch(parsedIssue, 'journal_issue')
+  const journal_volume = objectSearch(parsedIssue, 'journal_volume')
 
   if (journal_volume) {
-    delete journal_issue['journal_volume'];
-    var theVolume = objectSearch(journal_volume, 'volume') || '';
+    delete journal_issue['journal_volume']
+    var theVolume = objectSearch(journal_volume, 'volume') || ''
     var volumeDoiData = objectSearch(journal_volume, 'doi_data') || ''
     var volumeDoi = objectSearch(volumeDoiData, 'doi') || ''
     var volumeUrl = objectSearch(volumeDoiData, 'resource') || 'http://'
@@ -25,9 +25,9 @@ const parseXMLIssue = function (xml, duplicate = false, ownerPrefix = '') {
   const issueDoi = objectSearch(journal_issue, 'doi') || ''
   const issueUrl = objectSearch(journal_issue, 'resource') || 'http://'
   const special_numbering = objectSearch(parsedIssue, 'special_numbering') || ''
-  let publication_date = objectSearch(journal_issue, 'publication_date');
+  let publication_date = objectSearch(journal_issue, 'publication_date')
 
-  if(!Array.isArray(publication_date)) publication_date = [publication_date]; //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
+  if(!Array.isArray(publication_date)) publication_date = [publication_date] //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
 
   const onlinePubDate = _.find(publication_date, (pubDate) => {
     if (pubDate) {

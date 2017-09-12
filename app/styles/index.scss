@@ -69,6 +69,7 @@ body, #root, .app {
 
   }
   .profileMenu {
+    z-index:99;
     position: absolute;
     width:140px;
     color: #FFFFFF;

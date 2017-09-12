@@ -12,12 +12,12 @@ export default class Header extends Component {
     cart : is.array.isRequired,
     cartToast: is.object.isRequired,
     reduxClearCartToast: is.func.isRequired
-  };
+  }
 
   render () {
     const path = window.location.pathname
     const isOnHome = path === routes.base
-    var showPublicationsNav = false;
+    var showPublicationsNav = false
     if(String(path) !== routes.base) {
       showPublicationsNav = true
     }

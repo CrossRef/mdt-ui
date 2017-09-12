@@ -1,5 +1,5 @@
 import {cardNames} from './crossmarkHelpers'
-const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames;
+const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 
 
 export const IssueMessages = {
