@@ -1,4 +1,7 @@
 // See http://brunch.io for documentation.
+
+exports.sourceMaps = true
+
 exports.files = {
   javascripts: {
     joinTo: {
@@ -36,7 +39,12 @@ exports.plugins = {
   sass: {
     mode: 'native'
   },
-  babel: {presets: ['latest', 'react', 'stage-0'], plugins: ['transform-runtime', 'transform-decorators-legacy']}
+  babel: {
+    presets: [
+      'env', 'stage-0', "react"
+    ],
+    plugins: ['transform-decorators-legacy', 'transform-runtime', 'system-import-transformer']
+  }
 }
 
 exports.server = {

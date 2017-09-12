@@ -1,104 +1,97 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { browserHistory } from 'react-router'
-import update from 'immutability-helper'
-import Switch from 'react-toggle-switch'
 import _ from 'lodash'
+import $ from 'jquery'
 
-import fetch from '../utilities/fetch'
-import checkDupeDOI from '../utilities/dupeDOI'
-import xmldoc from '../utilities/xmldoc'
-import { stateTrackerII } from 'my_decorators'
-import objectSearch from '../utilities/objectSearch'
 import DepositCartItem from './depositCartItem'
+import Deferred from '../utilities/deferred'
 
 
 
 export default class DepositCart extends Component {
   static propTypes = {
-    reduxCartUpdate: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
-    reduxCart: is.array.isRequired,
+    showDeposit: is.bool.isRequired,
     toggleDeposit: is.func.isRequired,
     fullCart: is.array.isRequired
-  };
+  }
 
-  constructor (props) {
-    super(props)
-    this.state = {
-      depositerrors: true,
-      errors: []
+  componentWillMount(){
+    document.addEventListener('click', this.handleClick, false)
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener('click', this.handleClick, false)
+  }
+
+  handleClick = (e) => {
+    const target = $(e.target)
+    if(!target.parents('.errorButton').length) {
+      if($('.popup').length) {
+        this.setState({})
+      }
     }
   }
 
-  updateError (index, pubDoi, pubIndex) {
-
-    var errorState = this.state.errors
-
-    errorState.push({
-      errorIndex: index,
-      errorPubDoi: pubDoi,
-      errorPubIndex: pubIndex
-    })
-
-    this.setState({
-      errors: update(this.state.errors, {$set: errorState})
+  closeErrors = () => {
+    return new Promise(resolve=>{
+      this.setState({}, resolve)
     })
   }
 
   render () {
-
-    var errors = _.orderBy(
-        _.filter(this.state.errors, (error) => {
-          return (typeof error.errorIndex !== 'undefined')
-        }), ['errorIndex', 'errorPubIndex']
-    ) // ordering, the reporting of errors are not always 1 to 1, there are time it will lag
-
-    var items = []
+    const items = []
+    const errorReports = []
     _.each(this.props.fullCart, (cartItem, i) => {
+      let recordCount = cartItem.contains.length
+      for(let record in cartItem.contains) {
+        recordCount += cartItem.contains[record].contains.length
+      }
+
+      let asyncErrorReport = new Deferred()
+      errorReports.push(asyncErrorReport.promise)
+
       items.push(
         <DepositCartItem
             cartItem={cartItem}
-            key={i}
-            index={i}
-            reduxCartUpdate={this.props.reduxCartUpdate}
-            reduxCart={this.props.reduxCart}
-            reduxControlModal={this.props.reduxControlModal}
+            key={cartItem.doi}
             reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-            updateError={this.updateError.bind(this)}
-            errorIndex={errors.length > 0 ? errors[0].errorIndex : -1}
-            errorPubIndex={errors.length > 0 ? errors[0].errorPubIndex : -1}
-            errorPubDoi={errors.length > 0 ?  errors[0].errorPubDoi : ''}
-            toggleDeposit={this.props.toggleDeposit}
+            reportErrors={asyncErrorReport.resolve}
+            recordCount={recordCount}
+            closeErrors={this.closeErrors}
         />
       )
     })
 
+    if(errorReports.length) {
+      Promise.all(errorReports).then((results)=>{  // if none of the error reports resolved true, no errors, turn on deposit
+        if(!this.props.showDeposit && results.indexOf(true) === -1) this.props.toggleDeposit(true)
+      })
+    }
 
     return (
-      <div>
+      <div className="cartContainer">
+        <div className="rightBorderBox">&nbsp;</div>
         <table className='depositTopBorder'>
-          <div className="rightBorderBox">&nbsp;</div>
-          <tr className='item'>
-            <td className='stateIcon'>
-              &nbsp;
-            </td>
-            <td className='aboveTitle'>
-              &nbsp;
-            </td>
-            <td className='status'>
-              Status
-            </td>
-            <td className='action'>
-              &nbsp;
-            </td>
-            <td className='errorholder'>
-              &nbsp;
-            </td>
-          </tr>
+          <tbody>
+            <tr className='item'>
+              <td className='stateIcon'>
+                &nbsp;
+              </td>
+              <td className='aboveTitle'>
+                &nbsp;
+              </td>
+              <td className='status'>
+                Status
+              </td>
+              <td className='action'>
+                &nbsp;
+              </td>
+              <td className='errorholder'>
+                &nbsp;
+              </td>
+            </tr>
+          </tbody>
         </table>
         <div className='depositCartRows'>
           {items}

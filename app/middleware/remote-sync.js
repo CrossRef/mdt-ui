@@ -1,4 +1,4 @@
-import fetch from '../utilities/fetch'
+import authorizedFetch from '../utilities/fetch'
 import {apiBaseUrl} from '../actions/application'
 
 
@@ -26,8 +26,8 @@ export default store => next => action => {
 
   if (action) {
 
-    let actionType = action.type;
-    const authHeader = localStorage.getItem('auth');
+    let actionType = action.type
+    const authHeader = localStorage.getItem('auth')
 
     if (!breakerActionSeen && actionType === BREAKER_ACTION) {
       breakerActionSeen = true
@@ -49,19 +49,20 @@ export default store => next => action => {
             if( //scrub data being synced to server
               property !== 'modal' &&
               property !== 'reduxForm' &&
-              property !== 'search'
+              property !== 'search' &&
+              property !== 'cartToast'
             )
               postingState[property] = reduxState[property]
           }
         }
         //Scrub dois array
         postingState.dois = postingState.dois.filter( element => {
-          return element ? true : false
-        });
-        postingState.dois = removeDuplicates(postingState.dois);
+          return !!element
+        })
+        postingState.dois = removeDuplicates(postingState.dois)
 
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
-        fetch(`${apiBaseUrl}/state`, {
+        authorizedFetch(`${apiBaseUrl}/state`, {
           method: 'POST',
           headers: {Authorization: authHeader},
           body: JSON.stringify(postingState)
@@ -86,16 +87,15 @@ var isEmpty = (obj) => {
 }
 
 function removeDuplicates(a) {
-  var seen = {};
-  var out = [];
-  var len = a.length;
-  var j = 0;
-  for(var i = 0; i < len; i++) {
-    var item = a[i];
+  var seen = {}
+  var out = []
+  var j = 0
+  for(let i in a) {
+    var item = a[i]
     if(seen[item] !== 1) {
-      seen[item] = 1;
-      out[j++] = item;
+      seen[item] = 1
+      out[j++] = item
     }
   }
-  return out;
+  return out
 }

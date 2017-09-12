@@ -1,23 +1,17 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import update from 'immutability-helper'
-import _ from 'lodash'
 import Switch from 'react-toggle-switch'
-import $ from 'jquery'
 
-import {makeDateDropDown , validDate} from  '../utilities/date'
+import {makeDateDropDown} from  '../utilities/date'
 import SubItem from './SubItems/subItem'
-import checkDupeDOI from '../utilities/dupeDOI'
-import isDOI from '../utilities/isDOI'
-import isURL from '../utilities/isURL'
-import xmldoc from '../utilities/xmldoc'
 import JSesc from '../utilities/jsesc'
-import objectSearch from '../utilities/objectSearch'
 import { displayArchiveLocations } from '../utilities/archiveLocations'
 import { getIssueXml } from '../utilities/xmlGenerator'
 import {routes} from '../routing'
-import { getSubmitSubItems } from '../utilities/getSubItems'
 import refreshErrorBubble from '../utilities/refreshErrorBubble'
+import {asyncValidateIssue} from '../utilities/validation'
+import parseXMLIssue from '../utilities/parseXMLIssue'
 import {stateTrackerII} from 'my_decorators'
 
 
@@ -75,7 +69,7 @@ const defaultState = {
   }]
 }
 
-//@stateTrackerII
+
 export default class AddIssueCard extends Component {
 
   static propTypes = {
@@ -92,315 +86,111 @@ export default class AddIssueCard extends Component {
     this.state.issue.issueDoi = props.ownerPrefix + '/'
   }
 
-  componentDidMount () {
+  async componentDidMount () {
     if(this.props.mode === 'edit') {
       const { doi } = this.props.issue
-      this.props.asyncGetItem(doi).then((Publication) => {
-        const message = Publication.message
-        const Issue = message.contains[0]
-        const version = Issue['mdt-version']
 
-        const parsedIssue = xmldoc(Issue.content);
-        const journal_issue = objectSearch(parsedIssue, 'journal_issue');
-        const journal_volume = objectSearch(parsedIssue, 'journal_volume');
+      const Publication = await this.props.asyncGetItem(doi)
 
-        if (journal_volume) {
-          delete journal_issue['journal_volume'];
-          var theVolume = objectSearch(journal_volume, 'volume') || '';
-          var volumeDoiData = objectSearch(journal_volume, 'doi_data') || ''
-          var volumeDoi = objectSearch(volumeDoiData, 'doi') || ''
-          var volumeUrl = objectSearch(volumeDoiData, 'resource') || 'http://'
-        }
+      const message = Publication.message
+      const Issue = message.contains[0]
+      const version = Issue['mdt-version']
 
-        const issueTitle = objectSearch(journal_issue, 'title') || ''
-        const issue = objectSearch(journal_issue, 'issue') || ''
-        const issueDoi = objectSearch(journal_issue, 'doi') || ''
-        const issueUrl = objectSearch(journal_issue, 'resource') || 'http://'
-        const special_numbering = objectSearch(parsedIssue, 'special_numbering') || ''
-        let publication_date = objectSearch(journal_issue, 'publication_date');
+      const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
 
-        if(!Array.isArray(publication_date)) publication_date = [publication_date]; //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
+      const issueDoiDisabled = !this.props.duplicate
+      const volumeDoiDisabeld = issue.volumeDoi && !this.props.duplicate
 
-        const onlinePubDate = _.find(publication_date, (pubDate) => {
-          if (pubDate) {
-            if (pubDate['-media_type'] === 'online') {
-              return pubDate
-            }
-          }
-        })
+      const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabeld)
 
-        const printPubDate = _.find(publication_date, (pubDate) => {
-          if (pubDate) {
-            if (pubDate['-media_type'] === 'print') {
-              return pubDate
-            }
-          }
-        })
-        var printDateYear = ''
-        var printDateMonth = ''
-        var printDateDay = ''
-        if (printPubDate) {
-          printDateYear = printPubDate['year'] ? printPubDate['year'] : ''
-          printDateMonth = printPubDate['month'] ? printPubDate['month'] : ''
-          printDateDay = printPubDate['day'] ? printPubDate['day'] : ''
-        }
+      const setStatePayload = {
+        version: version,
+        issueDoiDisabled: issueDoiDisabled,
+        volumeDoiDisabled: volumeDoiDisabeld,
+        issue:  issue,
+        optionalIssueInfo: optionalIssueInfo,
+        showSection: showSection,
+        ...validatedPayload
+      }
 
-        var onlineDateYear = ''
-        var onlineDateMonth = ''
-        var onlineDateDay = ''
-        if (onlinePubDate) {
-          onlineDateYear = onlinePubDate['year'] ? onlinePubDate['year'] : ''
-          onlineDateMonth = onlinePubDate['month'] ? onlinePubDate['month'] : ''
-          onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : ''
-        }
-
-        const archiveLocations = objectSearch(parsedIssue, 'archive_locations')
-        var archive = ''
-        if (archiveLocations) {
-          archive = archiveLocations.archive['-name']
-        }
-
-        const setIssue = {
-          issue: issue,
-          issueTitle: issueTitle,
-          issueDoi: this.props.duplicate ? this.props.ownerPrefix + '/' : issueDoi,
-          issueUrl: this.props.duplicate ?  'http://' : issueUrl,
-          printDateYear: printDateYear,
-          printDateMonth: printDateMonth,
-          printDateDay: printDateDay,
-          onlineDateYear: onlineDateYear,
-          onlineDateMonth: onlineDateMonth,
-          onlineDateDay: onlineDateDay,
-          archiveLocation: archive,
-          specialIssueNumber: special_numbering,
-          volume: theVolume || '',
-          volumeDoi: volumeDoi || '',
-          volumeUrl: volumeUrl || 'http://'
-        }
-
-        // contributor loading
-        let showSection = false;
-        const contributors = objectSearch(parsedIssue, 'contributors')
-        var contributee = []
-        // contributors are divied into 2 types
-        // person_name and organization
-        var person_name = undefined
-        if (contributors) {
-          showSection = true;
-          person_name = objectSearch(contributors, 'person_name')
-
-          if (person_name) { // if exist
-            if (!Array.isArray(person_name)) {
-              // there is ONE funder
-              contributee.push(
-                {
-                  firstName: person_name.given_name ? person_name.given_name : '',
-                  lastName: person_name.surname ? person_name.surname : '',
-                  suffix: person_name.suffix ? person_name.suffix : '',
-                  affiliation: person_name.affiliation ? person_name.affiliation : '',
-                  orcid: person_name.ORCID ? person_name.ORCID : '',
-                  alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
-                  role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
-                  errors: {}
-                }
-              )
-            } else { // its an array
-              _.each(person_name, (person) => {
-                contributee.push(
-                  {
-                    firstName: person.given_name ? person.given_name : '',
-                    lastName: person.surname ? person.surname : '',
-                    suffix: person.suffix ? person.suffix : '',
-                    affiliation: person.affiliation ? person.affiliation : '',
-                    orcid: person.ORCID ? person.ORCID : '',
-                    alternativeName: person['alt-name'] ? person['alt-name'] : '',
-                    role: person['-contributor_role'] ? person['-contributor_role'] : '',
-                    errors: {}
-                  }
-                )
-              })
-            }
-          }
-        }
-
-        if (contributee.length <= 0) {
-          showSection = false
-          contributee.push(
-            {
-              firstName: '',
-              lastName: '',
-              suffix: '',
-              affiliation: '',
-              orcid: '',
-              role: '',
-              alternativeName: '',
-              errors: {}
-            }
-          )
-        }
-
-        this.setState({
-          version: version,
-          issueDoiDisabled: true,
-          volumeDoiDisabled: !!volumeDoi,
-          issue:  update(this.state.issue, {$set: setIssue }),
-          optionalIssueInfo: update(this.state.optionalIssueInfo, {$set: contributee }),
-          showSection: showSection
-        }, this.props.mode === 'edit' ? this.validation : null)
-      })
+      this.setState(setStatePayload, ()=> this.state.validating = false)
     }
   }
 
-  onSubmit = (e) => {
+
+  async validation (issueData, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled) {
+
+    const { criticalErrors, warnings, contributors, enableVolumeDoi } = await asyncValidateIssue(issueData, optionalIssueInfo, this.props.ownerPrefix, issueDoiDisabled, volumeDoiDisabled)
+
+    const validatedPayload = {
+      validating: true,
+      error: false,
+      errors: {...criticalErrors, ...warnings},
+      optionalIssueInfo: (contributors && contributors.length) ? contributors : optionalIssueInfo
+    }
+    if(enableVolumeDoi) {
+      validatedPayload.volumeDoiDisabled = false
+    }
+    let valid = true;
+
+    for(const key in warnings) {
+      if (warnings[key]) {
+        validatedPayload.error = true;
+      }
+    }
+
+    for(const key in criticalErrors) {
+      if(criticalErrors[key]) {
+        validatedPayload.error = true
+        valid = false;
+      }
+    }
+
+    return {valid, validatedPayload}
+  }
+
+
+  onSubmit = async (e) => {
     e.preventDefault()
 
-    this.validation((valid) => { // need it to be a callback because setting state does not happen right away
-      if (valid) {
-        const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
+    const {valid, validatedPayload} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
-        const issueXML = getIssueXml(this.state)
+    if (valid) {
+      const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
 
-        let version = this.state.version
+      const issueXML = getIssueXml(this.state)
 
-        if (mode === 'edit') {
-          version = String(parseInt(this.state.version) + 1)
-        }
+      let version = this.state.version
 
-        const title = JSesc(this.state.issue.issueTitle);
-        const issue = JSesc(this.state.issue.issue);
-        const volume = JSesc(this.state.issue.volume);
-
-        const newRecord = {
-          'title': {title, issue, volume},
-          'date': new Date(),
-          'doi': this.state.issue.issueDoi,
-          'owner-prefix': this.state.issue.issueDoi.split('/')[0],
-          'type': 'issue',
-          'mdt-version': version,
-          'status': 'draft',
-          'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
-        }
-
-        publication.message.contains = [newRecord]
-        asyncSubmitIssue(publication, () => {
-          asyncGetPublications(publication.message.doi)
-          this.setState({version: version})
-          this.closeModal()
-        })
-      }
-    })
-  }
-
-  validation (callback) {
-    const { issueDoi, issue, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl } = this.state.issue || {};
-
-    let criticalErrors = {
-      issue: !issue,
-      issuedoi: false,
-      invalidissuedoi: false,
-      invalidIssueDoiPrefix: false,
-      dupeissuedoi: false,
-      issueUrl: !issueUrl || issueUrl === 'http://',
-      dupeDois: false
-    }
-
-    if(!this.state.issueDoiDisabled) {
-      criticalErrors.dupeDois = issueDoi === volumeDoi
-      criticalErrors.issuedoi = !issueDoi
-      criticalErrors.invalidissuedoi = !criticalErrors.issuedoi ? !isDOI(this.state.issue.issueDoi) : false;
-      criticalErrors.invalidIssueDoiPrefix = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== this.props.ownerPrefix;
-    }
-
-    const hasDate = !!(printDateYear || onlineDateYear);
-    let warnings = {
-      invalidissueurl: !criticalErrors.issueUrl && !isURL(issueUrl),
-
-      printDateYear: hasDate ? false : !printDateYear,
-      onlineDateYear: hasDate ? false : !onlineDateYear,
-
-      volume: false,
-      volumedoi: false,
-      invalidvolumedoi: false,
-      invalidVolumeDoiPrefix: false,
-      dupevolumedoi: false,
-      volumeUrl: false,
-      invalidvolumeurl: false,
-
-      contributorLastName: false,
-      contributorRole: false
-    }
-
-    warnings.printDateIncomplete = !warnings.printDateYear && !!((printDateMonth || printDateDay) && !printDateYear);
-    warnings.printDateInvalid = !warnings.printDateYear && !warnings.printDateIncomplete && !validDate(printDateYear, printDateMonth, printDateDay);
-
-    warnings.onlineDateIncomplete = !warnings.onlineDateYear && !!((onlineDateMonth || onlineDateDay) && !onlineDateYear);
-    warnings.onlineDateInvalid = !warnings.onlineDateYear && !warnings.onlineDateIncomplete && !validDate(onlineDateYear, onlineDateMonth, onlineDateDay);
-
-    if(volume || volumeDoi || (volumeUrl && volumeUrl !== 'http://')) {
-      warnings.volume = !volume
-      warnings.volumedoi = !volumeDoi
-      warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
-      warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== this.props.ownerPrefix
-      warnings.volumeUrl = !volumeUrl || volumeUrl === 'http://'
-      warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
-    }
-
-
-    //validate contributor subItems
-    const contributors = getSubmitSubItems(this.state.optionalIssueInfo).map( contributor => {
-      const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role} = contributor
-      const errors = {
-        contributorLastName: firstName && !lastName,
-        contributorRole: (lastName || firstName || suffix || affiliation || alternativeName || orcid) && !role,
-      }
-      if(errors.contributorLastName) warnings.contributorLastName = true
-      if(errors.contributorRole) warnings.contributorRole = true
-
-      return {...contributor, errors}
-    })
-
-    const completeValidation = () => {
-      const setStatePayload = {
-        validating: true,
-        error: false,
-        errors: {...criticalErrors, ...warnings},
-        optionalIssueInfo: contributors.length ? contributors : this.state.optionalIssueInfo
-      }
-      let valid = true;
-
-      for(const key in warnings) {
-        if (warnings[key]) {
-          setStatePayload.error = true;
-        }
+      if (mode === 'edit') {
+        version = String(parseInt(this.state.version) + 1)
       }
 
-      for(const key in criticalErrors) {
-        if(criticalErrors[key]) {
-          setStatePayload.error = true
-          valid = false;
-        }
+      const title = JSesc(this.state.issue.issueTitle);
+      const issue = JSesc(this.state.issue.issue);
+      const volume = JSesc(this.state.issue.volume);
+
+      const newRecord = {
+        'title': {title, issue, volume},
+        'date': new Date(),
+        'doi': this.state.issue.issueDoi,
+        'owner-prefix': this.state.issue.issueDoi.split('/')[0],
+        'type': 'issue',
+        'mdt-version': version,
+        'status': 'draft',
+        'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
       }
 
-      if(valid && callback) {
-        callback(true)
-      } else {
-        this.setState(setStatePayload, ()=>{
-          this.state.validating = false;
-          if(callback) callback(false)
-        })
-      }
-    }
-
-    if(this.state.issueDoiDisabled && this.state.volumeDoiDisabled) {
-      completeValidation()
-    } else {
-      return checkDupeDOI([issueDoi, volumeDoi], (isDupe) => {
-        criticalErrors.dupeissuedoi = (!this.state.issueDoiDisabled && !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix) ? isDupe[0] : false;
-        warnings.dupevolumedoi = (!this.state.volumeDoiDisabled && !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix) ? isDupe[1] : false;
-        completeValidation()
+      publication.message.contains = [newRecord]
+      asyncSubmitIssue(publication, () => {
+        asyncGetPublications(publication.message.doi)
+        this.closeModal()
       })
+    } else {
+      this.setState(validatedPayload, () => this.state.validating = false)
     }
   }
+
 
   optionalIssueInfoHandler (index, OptIssueInfo) {
     var optIssueInfo = {}

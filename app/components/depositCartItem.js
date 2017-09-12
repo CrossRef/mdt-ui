@@ -1,113 +1,114 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import DepositCartItemCard from './depositCartItemCard'
+import DepositCartRecord from './depositCartRecord'
+import Deferred from '../utilities/deferred'
 
 
 
 export default class DepositCartItem extends Component {
   static propTypes = {
-    reduxCartUpdate: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
     cartItem: is.object.isRequired,
-    reduxCart: is.array.isRequired,
-    index: is.number.isRequired,
-    updateError: is.func.isRequired,
-    toggleDeposit: is.func.isRequired,
-    errorIndex: is.number.isRequired,
-    errorPubIndex:  is.number.isRequired,
-    errorPubDoi: is.string.isRequired,
-  };
+    reportErrors: is.func.isRequired,
+    recordCount: is.number.isRequired,
+    closeErrors: is.func.isRequired
+  }
 
   constructor (props) {
     super(props)
     this.state = {
-      publication: {},
-      publicationMetaData: {},
+      records: []
     }
   }
 
-  componentWillUpdate(nextProps) {
-    if(this.props.errorIndex !== nextProps.errorIndex) {
-      for(var i = 0; i < nextProps.cartItem.contains.length; i++){
-        if(i===nextProps.errorIndex && nextProps.cartItem.doi === nextProps.errorPubDoi && nextProps.index === nextProps.errorPubIndex){
-          this.props.toggleDeposit(false)
-          break
-        }
-      }
-      this.props.toggleDeposit(true)
-    }
-  }
+  renderRecords = (props = this.props) => {
+    const records = []
+    const errorReports = []
 
+    for(let i = 0; i < props.cartItem.contains.length; i++){
+      const record = props.cartItem.contains[i]
 
-  render () {
-    var row = []
-    var counter = 0
-    for(var i = 0; i < this.props.cartItem.contains.length; i++){
-      row.push(
-        <DepositCartItemCard
-          key={counter}
-          index={counter}
-          pubIndex={this.props.index}
-          pubDoi={this.props.cartItem.doi}
-          reduxCartUpdate={this.props.reduxCartUpdate}
-          reduxCart={this.props.reduxCart}
-          reduxControlModal={this.props.reduxControlModal}
-          reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-          publication={this.state.publication}
-          cartItem={this.props.cartItem.contains[i]}
-          updateError={this.props.updateError}
-          showError={(counter===this.props.errorIndex && this.props.cartItem.doi === this.props.errorPubDoi && this.props.index === this.props.errorPubIndex) ? true : false}
+      const asyncErrorReport = new Deferred()
+      errorReports.push(asyncErrorReport.promise)
+
+      records.push(
+        <DepositCartRecord
+          key={record.doi}
+          pubDoi={props.cartItem.doi}
+          reduxRemoveFromCart={props.reduxRemoveFromCart}
+          cartItem={record}
+          closeErrors={this.props.closeErrors}
+          reportErrors={asyncErrorReport.resolve}
         />
       )
-      if (this.props.cartItem.contains[i].contains) {
-        for(var j = 0; j < this.props.cartItem.contains[i].contains.length; j++){
-          counter++
-          row.push(
-            <DepositCartItemCard
-              className='issueArticle'
-              key={counter}
-              index={counter}
+
+      if (record.contains) {
+        for(let j = 0; j < record.contains.length; j++){
+          const parentIssue = props.cartItem.contains[i]
+          const recordUnderIssue = props.cartItem.contains[i].contains[j]
+          if(j === 0) {
+            records.push(<tr key={parentIssue.doi + '_space1'} className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
+          }
+
+          const asyncErrorReport = new Deferred()
+          errorReports.push(asyncErrorReport.promise)
+
+          records.push(
+            <DepositCartRecord
+              key={recordUnderIssue.doi}
               underIssue={true}
-              issueDoi={this.props.cartItem.contains[i].doi}
-              pubIndex={this.props.index}
-              pubDoi={this.props.cartItem.doi}
-              reduxCartUpdate={this.props.reduxCartUpdate}
-              reduxCart={this.props.reduxCart}
-              reduxControlModal={this.props.reduxControlModal}
-              reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-              publication={this.state.publication}
-              cartItem={this.props.cartItem.contains[i].contains[j]}
-              updateError={this.props.updateError}
-              showError={(counter===this.props.errorIndex && this.props.cartItem.doi === this.props.errorPubDoi && this.props.index === this.props.errorPubIndex) ? true : false}
+              issueDoi={parentIssue.doi}
+              pubDoi={props.cartItem.doi}
+              reduxRemoveFromCart={props.reduxRemoveFromCart}
+              cartItem={recordUnderIssue}
+              closeErrors={this.props.closeErrors}
+              reportErrors={asyncErrorReport.resolve}
             />
           )
+          if(j === props.cartItem.contains[i].contains.length - 1) {
+            records.push(<tr key={parentIssue.doi + '_space2'} className='articleUnderIssueSpace borderBottom'><td/><td/><td/><td className="borderRight"/></tr>)
+          }
         }
       }
-      counter++
     }
+
+    Promise.all(errorReports).then((results)=>{  // if none of the error reports resolved true, report no errors to depositCart
+      if(results.indexOf(true) === -1) {
+        this.props.reportErrors(false)
+      } else {
+        this.props.reportErrors(true)
+      }
+    })
+    return records
+  }
+
+  render () {
 
     return (
       <div>
         <div className='depositpage'>
           <table>
-            <tr>
-              <td className='titleHolderTD'>
-                <table className='itemholder'>
-                  <tr>
-                    <td className='stateIcon deposittitle'>&nbsp;</td>
-                    <td className='depositpubtitle' colSpan={3}>{this.props.cartItem.title}</td>
-                    <td className='titlerror errorholder'>&nbsp;</td>
-                  </tr>
-                </table>
-              </td>
-            </tr>
-            <tr>
-              <table className='itemholder'>
-                {row}
-              </table>
-            </tr>
+            <tbody>
+              <tr>
+                <td className='titleHolderTD'>
+                  <table className='itemholder'>
+                    <tbody>
+                      <tr>
+                        <td className='stateIcon deposittitle'>&nbsp;</td>
+                        <td className='depositpubtitle' colSpan={3}><a href="">{this.props.cartItem.title}</a></td>
+                        <td className='titlerror errorholder'>&nbsp;</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <table className='itemholder'>
+            <tbody>
+              {this.renderRecords()}
+            </tbody>
           </table>
         </div>
       </div>

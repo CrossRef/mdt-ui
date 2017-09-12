@@ -153,11 +153,9 @@
                     position: absolute;
                     width: 400px;
                     color: #FFFFFF;
-                    background: #616B6B;
                     height: auto;
                     line-height: 30px;
                     text-align: left;
-                    visibility: hidden;
                     border-radius: 0px;
                     padding: 10px 0 10px 17px;
                     visibility: visible;
@@ -262,6 +260,20 @@
 
 }
 
+
+.cartContainer {
+  position: relative;
+  .rightBorderBox {
+    position: absolute;
+    top:0;
+    left:0;
+    background-color: transparent;
+    width: 847px;
+    height: 55px;
+    border-right: 1px solid #E3E6E9;
+  }
+}
+
 .depositTopBorder{
     border: 1px solid #E3E6E9;
     border-bottom: 0px;
@@ -270,20 +282,12 @@
     text-align: left;
     width: 960px;
     position: relative;
-    .rightBorderBox {
-        position: absolute;
-        top:0;
-        left:0;
-        background-color: transparent;
-        width: 746px;
-        height: 55px;
-        border-right: 1px solid #E3E6E9;
-    }
+
     .item {
         margin: 0;
         padding: 0;
         .stateIcon{
-            width: 10%;
+            width: 5%;
             .iconHolder {
                 display: inline-block;
                 width: 35%;
@@ -300,7 +304,7 @@
             width: 10%;
         }
         .action {
-            width: 10%;
+            width: 13.5%;
         }
         .errorholder {
             width: 30%;
@@ -308,8 +312,9 @@
     }
 }
 .depositCartRows {
-    border: 1px solid #E3E6E9;
-    border-top: 0px;
+  border: 1px solid #E3E6E9;
+  border-top: 0px;
+  margin-bottom: 50px;
 }
 .depositpage {
     margin: 0 auto;
@@ -322,16 +327,20 @@
         border-collapse: separate;
     }
     table, tr {
-        width: 93%;
-        td {
-            height: initial;
-            padding: 10px 0;
+        width: 100%;
+
+        .tall {padding: 20px 0 15px 0}
+        .short {padding: 3px 0 3px 0}
+        .underIssue {
+          padding-left: 30px;
+          height: 34px;
         }
+
         td:first-child {
             padding: 10px 0 10px 10px;
         }
         .errorholder {
-            width: 10%;
+            width: 11.8%;
         }
     }
 
@@ -340,7 +349,7 @@
             margin: 0;
             padding: 0;        
             .stateIcon{
-                width: 8%;
+                width: 5%;
                 .iconHolder {
                     display: inline-block;
                     width: 35%;
@@ -354,39 +363,108 @@
                 border-bottom: 1px solid #E3E6E9;
             }
             .title {                
-                width: 61.3%;
+                width: 59%;
             }
             .status {
                 width: 10.7%;
             }
             .action {
                 border-right: 1px solid #E3E6E9;
-                width: 10%;
+                width: 13.5%;
                 a {
                     cursor: pointer;
                 }
             }
             .errorholder {
-                width: 30%;
-                position: relative;
-                @extend .errorHolder;
-                .fullError {
-                    height: initial;
-                    right: 70px;
-                }
-                .errorHolder {
-                    .toolTipHolder {
-                        .tooltips {
-                            .toolmsgholder {
-                                top: -70px;
-                                width: 187px;
-                                &:after {
-                                    top: 70px;
-                                }
-                            }
-                        }
+              width: 90%;
+              position: relative;
+              border-bottom: none;
+              @extend .errorHolder;
+              .errorBox {
+                height: 32px;
+                width: 80px;
+                margin-left: 15px;
+                background-color: #ee6068;
+                ul {
+                  height:100%;
+                  padding:0;
+                  margin:0;
+                  list-style: none;
+                  li {
+                    height: 100%;
+                    text-align: center;
+                    img {
+                      margin-top: 2px;
+                      height: 95%;
                     }
+                    a.tooltips {
+                      position: relative !important;
+                      display: inline;
+                    }
+                    a.tooltips .popup {
+                      font-size: .8em;
+                      position: absolute;
+                      width: 336px;
+                      color: #FFFFFF;
+                      height: auto;
+                      line-height: 30px;
+                      text-align: left;
+                      border-radius: 0px;
+                      padding: 30px 0 10px 17px;
+                      visibility: visible;
+                      opacity: 1;
+                      top: -80px;
+                      margin-left: -352px;
+                      z-index: 999;
+                      background-color: #ee6068 !important;
+                      min-height: 112px;
+                      max-height: 352px;
+                      .scrollContainer {
+                        max-height:283px;
+                        width: 312px;
+                        overflow-y: auto;
+                        padding-right: 5px;
+                      }
+                      .closeButton {
+                        position: absolute;
+                        right: 8px;
+                        top: 5px;
+                        width: 13px;
+                        height:13px
+                      }
+                      img {
+                        height:30px;
+                        float: left
+                      }
+                      p {
+                        clear:both;
+                        margin:0 0 0 0;
+                        line-height: 17px;
+                        b {
+                          font-size: 1.1em;
+                        }
+                      }
+                      .errorText {
+                        margin-bottom: 10px;
+                      }
+                    }
+                    a.tooltips .popup:after {
+
+                      -ms-transform: rotate(270deg); /* IE 9 */
+                      -webkit-transform: rotate(270deg); /* Chrome, Safari, Opera */
+                      transform: rotate(270deg);
+                      content: '';
+                      position: absolute;
+                      top: 73px;
+                      left: 97.7%;
+                      width: 0;
+                      border-top: 8px solid #ee6068;
+                      border-right: 12px solid transparent;
+                      border-left: 12px solid transparent;
+                    }
+                  }
                 }
+              }
 
             }
         }
@@ -401,7 +479,11 @@
         
         background: #596565;
         color: #FFF;
-        padding: 10px 0 10px 7px;
+        padding: 20px 0 15px 0px;
+
+        a:visited {
+            color: white;
+        }
     }
 }
 
@@ -412,7 +494,7 @@
 }
 
 .aboveTitle {
-    width: 50%;
+    width: 59%;
 }
 
 .disabledDeposit {
@@ -447,6 +529,37 @@
         }
     }
 }
-.articleUnderIssue {
-    padding: 10px 0 0 30px !important;
+
+.articleUnderIssueSpace {
+  height: 50px;
+}
+
+.borderRight {
+  border-right: 1px solid #dbdbdb;
+}
+
+.borderBottom {
+  td {
+    border-bottom: 1px solid #dbdbdb;
+  }
+}
+
+.scrollContainer::-webkit-scrollbar-track
+{
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+  border-radius: 10px;
+  background-color: rgb(255, 141, 144);
+}
+
+.scrollContainer::-webkit-scrollbar
+{
+  width: 8px;
+  background-color: #ee6068;
+}
+
+.scrollContainer::-webkit-scrollbar-thumb
+{
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+  background-color: #ebebeb;
 }

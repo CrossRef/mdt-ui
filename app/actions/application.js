@@ -1,10 +1,13 @@
-import { browserHistory } from 'react-router'
 
 import xmlParse from '../utilities/xmldoc'
-import fetch from '../utilities/fetch'
+import authorizedFetch, {regularFetch} from '../utilities/fetch'
 import { publicationXml } from '../utilities/xmlGenerator'
 import { routes } from '../routing'
 const withQuery = require('with-query')
+
+
+export const apiBaseUrl = 'http://mdt.crossref.org/mdt/v1'
+
 
 // Action Creators, useless unless dispatched
 
@@ -56,17 +59,20 @@ export function clearCart() {
 	return { type: 'CLEAR_CART'}
 }
 
-export function removeFromCart(doi) {
-	return { type: 'REMOVE_FROM_CART', doi }
+export function removeFromCart(doi, title, recordType) {
+	return { type: 'REMOVE_FROM_CART', doi, title, recordType }
+}
+
+export function clearCartToast () {
+  return { type: 'CLEAR_CART_TOAST' }
 }
 
 // Async Action Creators
 
-export const apiBaseUrl = 'http://mdt.crossref.org/mdt/v1'
 
 export function login (usr, pwd, error = (reason) => console.error('ERROR in login', reason)) {
   return function(dispatch) {
-    fetch(`${apiBaseUrl}/login`, {
+    authorizedFetch(`${apiBaseUrl}/login`, {
       method: 'post',
       body: JSON.stringify({usr, pwd})
     })
@@ -75,34 +81,30 @@ export function login (usr, pwd, error = (reason) => console.error('ERROR in log
       else return response.json()
     })
     .then((response)=>{
-      if(!response) return;
-      const authBearer = `${response.token_type} ${response.access_token}`;
-      localStorage.setItem('auth', authBearer);
-      localStorage.setItem('user', usr);
-      response.error = null;
-      dispatch(loginData(response));
-      dispatch(getCRState('login'));
+      if(!response) return
+      const authBearer = `${response.token_type} ${response.access_token}`
+      localStorage.setItem('auth', authBearer)
+      localStorage.setItem('user', usr)
+      response.error = null
+      dispatch(loginData(response))
+      dispatch(getCRState('login'))
     })
     .catch(reason => error(reason))
   }
 }
 
-export function logout () {
-  browserHistory.push(routes.base)
-}
 
 export function getCRState (type, error = (reason) => console.error('ERROR in getCRState', reason)) {
   return function(dispatch) {
-    fetch(`${apiBaseUrl}/state`, {
+    authorizedFetch(`${apiBaseUrl}/state`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
     })
     .then((response)=> {
-      if(response.status === 401) throw '401 Unauthorized - Not logged in';
-      return response.text();
+      return response.text()
     })
     .then((textResponse)=>{
-      let state;
+      let state
       const blankCRState = {
         routing: {
           locationBeforeTransitions: {
@@ -113,32 +115,33 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
         dois: [],
         cart: [],
         publications: {}
-      };
+      }
 
       if (textResponse) {
         try {
-          state = JSON.parse(textResponse);   // try to parse remote store state, if there are errors, use blank CRState
+          state = JSON.parse(textResponse)   // try to parse remote store state, if there are errors, use blank CRState
         } catch(err) {
           state = blankCRState
         }
         if(!state || !state.routing) state = blankCRState
       } else {
-        state = blankCRState;
+        state = blankCRState
       }
 
-      let scrubbedState = {...state}; //Scrubbed state is used to clear unnecessary or bad data from remote state.
+      let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
-      if(type === 'login') delete scrubbedState.login; //do not retrieve old login state if this is a new login
+      if(type === 'login') delete scrubbedState.login //do not retrieve old login state if this is a new login
+      delete scrubbedState.cartToast
 
-      // delete scrubbedState.cart;  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
+      // delete scrubbedState.cart  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
 
-      const pathname = scrubbedState.routing.locationBeforeTransitions.pathname;
-      const base = routes.base;
-      let match = true;
+      const pathname = scrubbedState.routing.locationBeforeTransitions.pathname
+      const base = routes.base
+      let match = true
 
       // uncomment this checkRoutes function in case the base url has changed to deal with the transition between remote state with old base url to new url
       // match = (function checkRoutes () {
-      //   const matchLength = routes.base.length + 4; // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
+      //   const matchLength = routes.base.length + 4 // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
       //   for (var route in routes) {
       //     if(pathname.substring(0, matchLength) === routes[route].substring(0, matchLength)) return true
       //   }
@@ -150,7 +153,7 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
         scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
       }
 
-      console.warn('Retrieving from remote store: ', scrubbedState);
+      console.warn('Retrieving from remote store: ', scrubbedState)
       dispatch({
         type: 'SET_STATE',
         payload: scrubbedState
@@ -163,16 +166,16 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
 
 export function search (query, error = (reason) => console.error('ERROR in search', reason)) {
   return function (dispatch) {
-    if(!query) return;
-    dispatch(searchValue(query));
-    dispatch(searchLoading(true)); //having 2 dispatches seems to give the initial searchValue time to save to store before the return's searchValue is checked
-    fetch(`${apiBaseUrl}/search?q=${query}`, {
+    if(!query) return
+    dispatch(searchValue(query))
+    dispatch(searchLoading(true)) //having 2 dispatches seems to give the initial searchValue time to save to store before the return's searchValue is checked
+    authorizedFetch(`${apiBaseUrl}/search?q=${query}`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
     })
     .then((response)=> response.json() )
     .then((result)=>{
-      dispatch(searchResult(result.message, query));
+      dispatch(searchResult(result.message, query))
     })
     .catch(reason => error(reason))
   }
@@ -180,16 +183,16 @@ export function search (query, error = (reason) => console.error('ERROR in searc
 
 export function searchRecords (query, pubTitle, type, error = (reason) => console.error('ERROR in searchRecords', reason)) {
   return function (dispatch) {
-    if(!query) return;
-    dispatch(searchValue(query));
-    dispatch(searchLoading(true));
-    fetch(`${apiBaseUrl}/search/works?q=${query}&title=${pubTitle}&type=${type.toLowerCase()}`, {
+    if(!query) return
+    dispatch(searchValue(query))
+    dispatch(searchLoading(true))
+    authorizedFetch(`${apiBaseUrl}/search/works?q=${query}&title=${pubTitle}&type=${type.toLowerCase()}`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
     })
       .then((response)=> response.json() )
       .then((result)=>{
-        dispatch(searchResult(result.message, query));
+        dispatch(searchResult(result.message, query))
       })
       .catch(reason => error(reason))
   }
@@ -198,17 +201,17 @@ export function searchRecords (query, pubTitle, type, error = (reason) => consol
 
 export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
   return function(dispatch) {
-    if(!Array.isArray(DOIs)) DOIs = [DOIs];
+    if(!Array.isArray(DOIs)) DOIs = [DOIs]
     Promise.all(
       DOIs.map(
         (doi) =>
-          fetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')}})
+          regularFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')}})
             .then(publication => publication.json())
             .catch(reason => console.error(`ERROR: publication DOI fetch failed `, reason))
       )
     )
       .then((publications) => {
-        dispatch(storePublications(publications));
+        dispatch(storePublications(publications))
         if(callback) callback(publications)
       })
       .catch((reason) => {
@@ -220,7 +223,7 @@ export function getPublications (DOIs, callback, error = (reason) => console.err
 
 export function submitPublication (form, callback, error = reason => console.error('ERROR in submitPublication', reason)) {
   return function(dispatch) {
-    fetch(`${apiBaseUrl}/work`, {
+    authorizedFetch(`${apiBaseUrl}/work`, {
       method:'post',
       headers: {Authorization: localStorage.getItem('auth')},
       body: JSON.stringify({
@@ -237,10 +240,10 @@ export function submitPublication (form, callback, error = reason => console.err
         }
       })
     }).then(() =>
-      fetch(`${apiBaseUrl}/work?doi=${form.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
+      authorizedFetch(`${apiBaseUrl}/work?doi=${form.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then(publication => publication.json())
         .then(publication => {
-          dispatch(storePublications(publication));
+          dispatch(storePublications(publication))
           if(callback) callback(publication)
         })
         .catch( reason => {
@@ -257,16 +260,16 @@ export function submitPublication (form, callback, error = reason => console.err
 export function submitArticle (publication, articleDoi, callback, error = (reason) => console.error('ERROR in submitArticle', reason)) {
   return function(dispatch) {
 
-    fetch(`${apiBaseUrl}/work`, {
+    authorizedFetch(`${apiBaseUrl}/work`, {
         method: 'post',
         headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
       }
     ).then(() =>
-      fetch(`${apiBaseUrl}/work?doi=${articleDoi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+      authorizedFetch(`${apiBaseUrl}/work?doi=${articleDoi}`, { headers: {Authorization: localStorage.getItem('auth')} })
         .then(article => article.json())
         .then((article) => {
-          if(callback) callback();
+          if(callback) callback()
         })
         .catch(reason => error(reason))
     ).catch(reason => error(reason))
@@ -277,13 +280,13 @@ export function submitArticle (publication, articleDoi, callback, error = (reaso
 
 export function submitIssue (publication, callback, error = (reason) => console.error('ERROR in submitIssue', reason)) {
   return function(dispatch) {
-    fetch(`${apiBaseUrl}/work`, {
+    authorizedFetch(`${apiBaseUrl}/work`, {
         method: 'post',
         headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
       }
     ).then(() => {
-      if(callback) callback();
+      if(callback) callback()
     })
     .catch((reason) => error(reason))
   }
@@ -292,7 +295,7 @@ export function submitIssue (publication, callback, error = (reason) => console.
 
 export function deposit (cartArray, callback, error = (reason) => console.error(reason)) {
   return function(dispatch) {
-    fetch(`${apiBaseUrl}/deposit`, {
+    authorizedFetch(`${apiBaseUrl}/deposit`, {
       method:'post',
       headers: {Authorization: localStorage.getItem('auth')},
       body: JSON.stringify({
@@ -300,22 +303,22 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
       })
     })
     .then(result => {
-      if(result.status > 202) throw `Server Error ${result.status}: ${result.statusText}`;
+      if(result.status > 202) throw `Server Error ${result.status}: ${result.statusText}`
       return result.json()
     })
     .then(result => {
-      let resultArray = result.message;
+      let resultArray = result.message
       resultArray = resultArray.map((item) => {
         try {
-          const getXML = xmlParse(item.result);
-          if(getXML !== undefined) item.result = getXML;
+          const getXML = xmlParse(item.result)
+          if(getXML !== undefined) item.result = getXML
           return item
         } catch (error) {
-          console.error('Error Parsing Deposit result: ' + error);
-          return item;
+          console.error('Error Parsing Deposit result: ' + error)
+          return item
         }
-      });
-      console.log('DEPOSIT RESULT', resultArray);
+      })
+      console.log('DEPOSIT RESULT', resultArray)
       if(callback) callback(resultArray)
     })
     .catch(reason => error(reason))
@@ -327,10 +330,10 @@ export function getItem (doi) {
 	return function(dispatch) {
 		if(doi){
 			return Promise.resolve(
-				fetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+				authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
 				.then(response => {
 				  if(response.status !== 200) {
-				    console.error(`${response.status}: ${response.statusText}`, response);
+				    console.error(`${response.status}: ${response.statusText}`, response)
 				    throw `${response.status}: ${response.statusText}`
 				  }
 				  return response.json()
@@ -343,7 +346,7 @@ export function getItem (doi) {
 export function getDepositHistory (params, callback, error = (reason) => console.error(reason)) {
 	return function(dispatch) {
     return Promise.resolve(
-      fetch(withQuery(`${apiBaseUrl}/history`, params),
+      authorizedFetch(withQuery(`${apiBaseUrl}/history`, params),
       {
         headers: {Authorization: localStorage.getItem('auth')}
       }
@@ -356,9 +359,10 @@ export function getDepositHistory (params, callback, error = (reason) => console
 	}
 }
 
-export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
+export function deleteRecord (record, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
   return function(dispatch) {
-    fetch(`${apiBaseUrl}/work?doi=${doi}`, {
+    const {doi, pubDoi, title, type} = record
+    authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, {
       method: 'delete',
       headers: {Authorization: localStorage.getItem('auth')}
     })
@@ -366,17 +370,16 @@ export function deleteRecord ({doi, pubDoi, type, contains}, callback, error = (
         if(response.status === 200) {
           if(type === 'issue') {
             for(let i in contains) {
-              dispatch(removeFromCart(contains[i].doi))
+              dispatch(removeFromCart(contains[i].doi, contains[i].title.title, contains[i].type))
             }
           } else {
-            dispatch(removeFromCart(doi))
+            dispatch(removeFromCart(doi, title.title, type))
           }
 
-          dispatch(getPublications(pubDoi));
-          if(callback) callback();
+          dispatch(getPublications(pubDoi))
+          if(callback) callback()
         } else throw `delete ${response.url} failed: ${response.status || 'Unknown status'} - ${response.statusText || 'Unknown statusText' }`
       })
       .catch(reason => error(reason))
   }
 }
-

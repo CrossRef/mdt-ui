@@ -17,4 +17,6 @@ const wrappedFetch = function () {
   })
 }
 
+export const regularFetch = fetch
+
 export default wrappedFetch

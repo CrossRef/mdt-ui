@@ -12,10 +12,10 @@ export default class DepositResult extends Component{
   }
 
   render() {
-    const { resultCount, resultData, depositId } = this.props;
+    const { resultCount, resultData, depositId } = this.props
     const resultArray = []
 
-    for (var pub in resultData) {
+    for (let pub in resultData) {
       const articleElements = resultData[pub].map((article, index)=> {
         const url = `http://dx.doi.org/${article.doi}`
         return (
@@ -30,14 +30,14 @@ export default class DepositResult extends Component{
             </tr>
           </div>
         )
-      });
+      })
 
       const pubCard =
         <div key={pub} className="resultCard">
           <div className="publicationTitleBar"><h3>{pub}</h3></div>
           {articleElements}
         </div>
-      resultArray.push(pubCard);
+      resultArray.push(pubCard)
     }
 
     return (
@@ -96,7 +96,8 @@ class ErrorBox extends Component {
         <li onClick={this.toggleError}>
           <a className="tooltips">
             {this.state.errorBoxShow &&
-            <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/><p>{this.props.errorMessage}</p></div>}
+              <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/><p>{this.props.errorMessage}</p></div>
+            }
             <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>
           </a>
         </li>

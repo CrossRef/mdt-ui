@@ -1,92 +1,78 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 
-const Languages = require('./language.json')
-import { ArchiveLocations } from './archiveLocations'
-const PublicationTypes = require('./publicationTypes.json')
-const AppliesTo = require('./appliesTo.json')
-const IdentifierTypes = require('./identifierTypes.json')
 import xmldoc from './xmldoc'
 import objectSearch from './objectSearch'
 
-const parseXMLIssue = function (xml) {
-    var retObj = {showSection: false}
-    const parsedIssue = xmldoc(xml)
+const parseXMLIssue = function (xml, duplicate = false, ownerPrefix = '') {
+  let retObj = {showSection: false}
 
-    // article loading
-    const issueTitle = objectSearch(parsedIssue, 'title') ? objectSearch(parsedIssue, 'title') : ''
-    const issue = objectSearch(parsedIssue, 'issue') ? objectSearch(parsedIssue, 'issue') : ''
-    const issueDoi = objectSearch(parsedIssue, 'doi') ? objectSearch(parsedIssue, 'doi') : ''
-    const issueUrl = objectSearch(parsedIssue, 'resource') ? objectSearch(parsedIssue, 'resource') : ''
-    const special_numbering = objectSearch(parsedIssue, 'special_numbering') ? objectSearch(parsedIssue, 'special_numbering') : ''
-    const publication_date = objectSearch(parsedIssue, 'publication_date')
-    var onlinePubDate = undefined
-    var printPubDate = undefined
 
-    if (publication_date) {
-        if (Array.isArray(publication_date)) {
-            onlinePubDate = _.find(publication_date, (pubDate) => {
-                if (pubDate) {
-                    if (pubDate['-media_type'] === 'online') {
-                        return pubDate
-                    }
-                }
-            })
+  const parsedIssue = xmldoc(xml)
+  const journal_issue = objectSearch(parsedIssue, 'journal_issue')
+  const journal_volume = objectSearch(parsedIssue, 'journal_volume')
 
-            printPubDate = _.find(publication_date, (pubDate) => {
-                if (pubDate) {
-                    if (pubDate['-media_type'] === 'print') {
-                        return pubDate
-                    }
-                }
-            })
-        } else {
-            if(publication_date['-media_type'] === 'print') {
-                printPubDate = publication_date
-            } else if(publication_date['-media_type'] === 'online') {
-                onlinePubDate = publication_date
-            }
-        }
+  if (journal_volume) {
+    delete journal_issue['journal_volume']
+    var theVolume = objectSearch(journal_volume, 'volume') || ''
+    var volumeDoiData = objectSearch(journal_volume, 'doi_data') || ''
+    var volumeDoi = objectSearch(volumeDoiData, 'doi') || ''
+    var volumeUrl = objectSearch(volumeDoiData, 'resource') || 'http://'
+  }
+
+  const issueTitle = objectSearch(journal_issue, 'title') || ''
+  const issue = objectSearch(journal_issue, 'issue') || ''
+  const issueDoi = objectSearch(journal_issue, 'doi') || ''
+  const issueUrl = objectSearch(journal_issue, 'resource') || 'http://'
+  const special_numbering = objectSearch(parsedIssue, 'special_numbering') || ''
+  let publication_date = objectSearch(journal_issue, 'publication_date')
+
+  if(!Array.isArray(publication_date)) publication_date = [publication_date] //Code below wants array of values, but if we accept only 1 date, we get only 1 object, so we transform into array
+
+  const onlinePubDate = _.find(publication_date, (pubDate) => {
+    if (pubDate) {
+      if (pubDate['-media_type'] === 'online') {
+        return pubDate
+      }
     }
+  })
 
-    var printDateYear = ''
-    var printDateMonth = ''
-    var printDateDay = ''
-    if (printPubDate) {
+  const printPubDate = _.find(publication_date, (pubDate) => {
+    if (pubDate) {
+      if (pubDate['-media_type'] === 'print') {
+        return pubDate
+      }
+    }
+  })
+  var printDateYear = ''
+  var printDateMonth = ''
+  var printDateDay = ''
+  if (printPubDate) {
     printDateYear = printPubDate['year'] ? printPubDate['year'] : ''
     printDateMonth = printPubDate['month'] ? printPubDate['month'] : ''
     printDateDay = printPubDate['day'] ? printPubDate['day'] : ''
-    }
+  }
 
-    var onlineDateYear = ''
-    var onlineDateMonth = ''
-    var onlineDateDay = ''
-    if (onlinePubDate) {
+  var onlineDateYear = ''
+  var onlineDateMonth = ''
+  var onlineDateDay = ''
+  if (onlinePubDate) {
     onlineDateYear = onlinePubDate['year'] ? onlinePubDate['year'] : ''
     onlineDateMonth = onlinePubDate['month'] ? onlinePubDate['month'] : ''
     onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : ''
-    }
+  }
 
-    const archiveLocations = objectSearch(parsedIssue, 'archive_locations')
-    var archive = ''
-    if (archiveLocations) {
+  const archiveLocations = objectSearch(parsedIssue, 'archive_locations')
+  var archive = ''
+  if (archiveLocations) {
     archive = archiveLocations.archive['-name']
-    }
+  }
 
-    const journal_volume = objectSearch(parsedIssue, 'journal_volume')
-    if (journal_volume) {
-    var theVolume = objectSearch(journal_volume, 'volume') ? objectSearch(journal_volume, 'volume') : ''
-    var volumeDoiData = objectSearch(journal_volume, 'doi_data') ? objectSearch(journal_volume, 'doi_data') : ''
-    var volumeDoi = objectSearch(volumeDoiData, 'doi') ? objectSearch(volumeDoiData, 'doi') : ''
-    var volumeUrl = objectSearch(volumeDoiData, 'resource') ? objectSearch(volumeDoiData, 'resource') : ''
-
-    }
-
-    const setIssue = {
+  const setIssue = {
     issue: issue,
     issueTitle: issueTitle,
-    issueDoi: issueDoi,
-    issueUrl: issueUrl,
+    issueDoi: duplicate ? ownerPrefix + '/' : issueDoi,
+    issueUrl: duplicate ?  'http://' : issueUrl,
     printDateYear: printDateYear,
     printDateMonth: printDateMonth,
     printDateDay: printDateDay,
@@ -95,83 +81,76 @@ const parseXMLIssue = function (xml) {
     onlineDateDay: onlineDateDay,
     archiveLocation: archive,
     specialIssueNumber: special_numbering,
-    volume: theVolume,
-    volumeDoi: volumeDoi,
-    volumeUrl: volumeUrl
-    }
+    volume: theVolume || '',
+    volumeDoi: duplicate ? ownerPrefix + '/' : (volumeDoi || ''),
+    volumeUrl: volumeUrl || 'http://'
+  }
 
-    // contributor loading
-    const contributors = objectSearch(parsedIssue, 'contributors')
-    var contributee = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    var person_name = undefined
-    if (contributors) {
-        retObj.showSection = true;
-        person_name = objectSearch(contributors, 'person_name')
+  // contributor loading
+  const contributors = objectSearch(parsedIssue, 'contributors')
+  var contributee = []
+  // contributors are divied into 2 types
+  // person_name and organization
+  var person_name = undefined
+  if (contributors) {
+    retObj.showSection = true
+    person_name = objectSearch(contributors, 'person_name')
 
-        if (person_name) { // if exist
-            if (!Array.isArray(person_name)) {
-            // there is ONE funder
-            contributee.push(
-                {
-                firstName: person_name.given_name ? person_name.given_name : '',
-                lastName: person_name.surname ? person_name.surname : '',
-                suffix: person_name.suffix ? person_name.suffix : '',
-                affiliation: person_name.affiliation ? person_name.affiliation : '',
-                orcid: person_name.ORCID ? person_name.ORCID : '',
-                alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
-                role: person_name['-contributor_role'] ? person_name['-contributor_role'] : ''
-                }
-            )
-            } else { // its an array
-            _.each(person_name, (person) => {
-                contributee.push(
-                {
-                    firstName: person.given_name ? person.given_name : '',
-                    lastName: person.surname ? person.surname : '',
-                    suffix: person.suffix ? person.suffix : '',
-                    affiliation: person.affiliation ? person.affiliation : '',
-                    orcid: person.ORCID ? person.ORCID : '',
-                    alternativeName: person['alt-name'] ? person['alt-name'] : '',
-                    role: person['-contributor_role'] ? person['-contributor_role'] : ''
-                }
-                )
-            })
-            }
-        }
-    }
-
-    if (contributee.length <= 0) {
-      retObj.showSection = false;
-      contributee.push(
+    if (person_name) { // if exist
+      if (!Array.isArray(person_name)) {
+        // there is ONE funder
+        contributee.push(
           {
-          firstName: '',
-          lastName: '',
-          suffix: '',
-          affiliation: '',
-          orcid: '',
-          role: '',
-          alternativeName: ''
+            firstName: person_name.given_name ? person_name.given_name : '',
+            lastName: person_name.surname ? person_name.surname : '',
+            suffix: person_name.suffix ? person_name.suffix : '',
+            affiliation: person_name.affiliation ? person_name.affiliation : '',
+            orcid: person_name.ORCID ? person_name.ORCID : '',
+            alternativeName: person_name['alt-name'] ? person_name['alt-name'] : '',
+            role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
+            errors: {}
           }
-      )
+        )
+      } else { // its an array
+        _.each(person_name, (person) => {
+          contributee.push(
+            {
+              firstName: person.given_name ? person.given_name : '',
+              lastName: person.surname ? person.surname : '',
+              suffix: person.suffix ? person.suffix : '',
+              affiliation: person.affiliation ? person.affiliation : '',
+              orcid: person.ORCID ? person.ORCID : '',
+              alternativeName: person['alt-name'] ? person['alt-name'] : '',
+              role: person['-contributor_role'] ? person['-contributor_role'] : '',
+              errors: {}
+            }
+          )
+        })
+      }
     }
+  }
 
-    var issueDoiDisabled = false
-    if (issueDoi) {
-    issueDoiDisabled = issueDoi.length > 0 ? true : false
-    }
+  if (contributee.length <= 0) {
+    retObj.showSection = false
+    contributee.push(
+      {
+        firstName: '',
+        lastName: '',
+        suffix: '',
+        affiliation: '',
+        orcid: '',
+        role: '',
+        alternativeName: '',
+        errors: {}
+      }
+    )
+  }
 
-    var volumeDoiDisabled = false
-    if (volumeDoi) {
-    volumeDoiDisabled = volumeDoi.length > 0 ? true : false
-    }
+  retObj = _.extend(retObj, {
+      issue: setIssue,
+      optionalIssueInfo: contributee
+  })
 
-    retObj = _.extend(retObj, {
-        issue: setIssue,
-        optionalIssueInfo: contributee
-    })
-
-    return retObj
+  return retObj
 }
 export default parseXMLIssue

@@ -65,36 +65,29 @@ export default class Publication extends Component {
   }
 
   handleAddCart = () => {
-    if(this.noneSelected()) return;
-    const selections = this.state.selections;
-    for(let i in selections){
-      if(selections[i].article.type === 'article') this.props.reduxCartUpdate([this.state.selections[i].article])
-    }
-    this.setState({selections:[]});
-  }
+    const selections = this.state.selections
 
-  noneSelected = () => {
-    if(!this.state.selections.length) {
-      this.props.reduxControlModal({
-        showModal:true,
-        style:'defaultModal',
-        title: 'Please make a selection',
-        Component: ({close}) =>
-          <div className="actionModal">
-            <div className="messageHolder">
-              <p>No records are selected.</p>
-            </div>
-            <div className="buttonHolder">
-              <button onClick={close}>Ok</button>
-            </div>
-          </div>,
-      }); return true;
+    const asyncLoop = (i) => {
+      if (selections.length > i) {
+        const cycle = new Promise (resolve=>{
+          if(selections[i].article.type === 'article') {
+            this.props.reduxCartUpdate([selections[i].article])
+            resolve(i+1)
+          } else {
+            resolve(i+1)
+          }
+        })
+        cycle.then((nextIndex)=>{
+          asyncLoop(nextIndex)
+        })
+      } else {
+        this.setState({selections:[]});
+      }
     }
-    else return false
+    asyncLoop(0)
   }
 
   deleteSelections = () => {
-    if(this.noneSelected()) return;
     this.props.reduxControlModal({
       showModal: true,
       title: 'Remove Record',
@@ -114,8 +107,6 @@ export default class Publication extends Component {
   }
 
   duplicateSelection = () => {
-    if(this.noneSelected()) return;
-
     if(this.state.selections.length > 1) return this.props.reduxControlModal({
       showModal: true,
       style: 'defaultModal',
