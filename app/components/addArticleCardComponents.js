@@ -4,7 +4,7 @@ import $ from 'jquery'
 
 import { ClassWrapper } from '../utilities/classwrapper'
 import {cardNames} from '../utilities/crossmarkHelpers'
-const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames;
+const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 import {routes} from '../routing'
 
 
@@ -19,7 +19,7 @@ export class ActionBar extends Component {
   }
 
   handleClick = e => {
-    const element = $(e.target);
+    const element = $(e.target)
     if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
       this.setState({ menuOpen: false })
     }
@@ -27,14 +27,14 @@ export class ActionBar extends Component {
 
   componentWillUpdate (nextProps, nextState) {
     if(nextState.menuOpen) {
-      document.addEventListener('click', this.handleClick, false);
+      document.addEventListener('click', this.handleClick, false)
     } else if (!nextState.menuOpen) {
-      document.removeEventListener('click', this.handleClick, false);
+      document.removeEventListener('click', this.handleClick, false)
     }
   }
 
   componentWillUnmount () {
-    document.removeEventListener('click', this.handleClick, false);
+    document.removeEventListener('click', this.handleClick, false)
   }
 
   render() {
@@ -103,10 +103,10 @@ export const InfoBubble = () =>
 
 
 
-let requiredMessageInUse = false;
+let requiredMessageInUse = false
 const requiredMessage = () => {
   if(!requiredMessageInUse) {
-    requiredMessageInUse = true;
+    requiredMessageInUse = true
     return <div><b>Required.</b><br />Please provide required information.</div>
   } else {
     return null
@@ -283,7 +283,7 @@ export class OptionalTitleData extends Component {
 
 export class ArticleDOIField extends Component {
   render() {
-    const {errors, disabled, handleChange, doi} = this.props;
+    const {errors, disabled, handleChange, doi} = this.props
     return(
       <div >
         <div className='fieldinnerholder halflength'>
@@ -350,11 +350,11 @@ export class ArticleUrlField extends Component {
 export class DatesRow extends Component {
 
   render() {
-    const errors = this.props.errors;
-    const {printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay} = this.props.article;
-    const {printDateInvalid, printDateIncomplete, onlineDateInvalid, onlineDateIncomplete} = this.props.errors;
-    const printYearError = errors.printDateYear || printDateIncomplete || printDateInvalid;
-    const onlineYearError = errors.onlineDateYear || onlineDateIncomplete || onlineDateInvalid;
+    const errors = this.props.errors
+    const {printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay} = this.props.article
+    const {printDateInvalid, printDateIncomplete, onlineDateInvalid, onlineDateIncomplete} = this.props.errors
+    const printYearError = errors.printDateYear || printDateIncomplete || printDateInvalid
+    const onlineYearError = errors.onlineDateYear || onlineDateIncomplete || onlineDateInvalid
     return (
       <div className='row'>
         <div className='fieldHolder'>

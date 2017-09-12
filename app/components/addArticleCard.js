@@ -280,7 +280,7 @@ export default class AddArticleCard extends Component {
 
 
   save = async (addToCart) => {
-    const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined;
+    const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined
 
     const {valid, validatedPayload} = await this.validation()
 
@@ -345,7 +345,7 @@ export default class AddArticleCard extends Component {
     const newRecord = await this.save(addToCart)
     if(newRecord) {
       newRecord.doi = newRecord.doi.toLowerCase()
-      this.props.reduxCartUpdate([newRecord]);
+      this.props.reduxCartUpdate([newRecord])
       browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
     }
   }
