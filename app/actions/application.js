@@ -6,6 +6,9 @@ import { routes } from '../routing'
 const withQuery = require('with-query')
 
 
+export const apiBaseUrl = 'http://mdt.crossref.org/mdt/v1'
+
+
 // Action Creators, useless unless dispatched
 
 export function loginData(data) {
@@ -66,7 +69,6 @@ export function clearCartToast () {
 
 // Async Action Creators
 
-export const apiBaseUrl = 'http://mdt.crossref.org/mdt/v1'
 
 export function login (usr, pwd, error = (reason) => console.error('ERROR in login', reason)) {
   return function(dispatch) {
