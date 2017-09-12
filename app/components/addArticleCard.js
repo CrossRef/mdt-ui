@@ -7,7 +7,7 @@ import {stateTrackerII} from 'my_decorators'
 
 import ReviewArticle from './reviewArticle'
 import SubItem from './SubItems/subItem'
-import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
+import { ActionBar, TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
 import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
 import JSesc from '../utilities/jsesc'
 import parseXMLArticle from '../utilities/parseXMLArticle'
@@ -279,9 +279,7 @@ export default class AddArticleCard extends Component {
   }
 
 
-  onSubmit = async (e) => {
-    e.preventDefault()
-
+  save = async (addToCart) => {
     const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined
 
     const {valid, validatedPayload} = await this.validation()
@@ -327,15 +325,28 @@ export default class AddArticleCard extends Component {
         savePub = publication
       }
 
-      this.props.asyncSubmitArticle(savePub, this.state.article.doi, () => {
+      await this.props.asyncSubmitArticle(savePub, this.state.article.doi)
 
+      if(addToCart) {
         newRecord.pubDoi = this.props.publication.message.doi
-        this.props.reduxCartUpdate([newRecord])
+        return newRecord
+      } else {
+        this.setState(validatedPayload, () => this.state.validating = false)
+      }
 
-        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
-      })
     } else {
       this.setState(validatedPayload, () => this.state.validating = false)
+      return false
+    }
+  }
+
+  addToCart = async () => {
+    const addToCart = true
+    const newRecord = await this.save(addToCart)
+    if(newRecord) {
+      newRecord.doi = newRecord.doi.toLowerCase()
+      this.props.reduxCartUpdate([newRecord])
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
     }
   }
 
@@ -387,7 +398,7 @@ export default class AddArticleCard extends Component {
         style: 'defaultModal reviewModal',
         Component: ReviewArticle,
         props: {
-            submit: this.onSubmit,
+            submit: this.addToCart,
             reviewData: this.state,
             publication: this.props.publication,
             publicationMetaData: this.props.publicationMetaData,
@@ -411,14 +422,9 @@ export default class AddArticleCard extends Component {
 
         <div className={'addarticlecard' + (error ? ' invalid' : '')}>
 
-          <form className='addArticleForm' onSubmit={this.onSubmit}>
+          <form className='addArticleForm'>
 
-          <div className="reviewArticleButtonDiv">
-            <button type='button' onClick={this.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
-            <button type='button' onClick={this.openReviewArticleModal} className="addPublication reviewbutton">Review</button>
-            <button type='submit' className={'addPublication saveButton'}>Add To Cart</button>
-          </div>
-
+            <ActionBar back={this.back} addToCart={this.addToCart} save={this.save} openReviewArticleModal={this.openReviewArticleModal}/>
 
             <div className='articleInnerForm'>
 
