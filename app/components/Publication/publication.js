@@ -65,25 +65,26 @@ export default class Publication extends Component {
   }
 
   handleAddCart = () => {
-    const selections = [...this.state.selections]
+    const selections = this.state.selections
 
     const asyncLoop = (i) => {
-      if(!selections[i]) return
-      const cycle = new Promise (resolve=>{
-        if(selections[i].article.type === 'article') {
-          this.props.reduxCartUpdate([selections[i].article])
-          resolve(i+1)
-        } else {
-          resolve(i+1)
-        }
-      })
-      cycle.then((j)=>{
-        asyncLoop(j)
-      })
+      if (selections.length > i) {
+        const cycle = new Promise (resolve=>{
+          if(selections[i].article.type === 'article') {
+            this.props.reduxCartUpdate([selections[i].article])
+            resolve(i+1)
+          } else {
+            resolve(i+1)
+          }
+        })
+        cycle.then((nextIndex)=>{
+          asyncLoop(nextIndex)
+        })
+      } else {
+        this.setState({selections:[]});
+      }
     }
-
     asyncLoop(0)
-    this.setState({selections:[]});
   }
 
   deleteSelections = () => {

@@ -21,7 +21,7 @@ export default class DepositCartRecord extends Component {
     underIssue: is.bool,
     closeErrors: is.func.isRequired,
     reportErrors: is.func.isRequired
-  };
+  }
 
   constructor () {
     super()
@@ -42,7 +42,7 @@ export default class DepositCartRecord extends Component {
     const {criticalErrors, warnings} = type === 'issue' ? await getIssueErrors() : await getArticleErrors()
 
     function getIssueErrors () {
-      const parsedIssue = parseXMLIssue(record.content);
+      const parsedIssue = parseXMLIssue(record.content)
       return asyncValidateIssue(parsedIssue.issue, parsedIssue.optionalIssueInfo, record['owner-prefix'])
     }
 
@@ -79,8 +79,8 @@ export default class DepositCartRecord extends Component {
 
   displayError = () => {
     const type = this.props.cartItem.type
-    const messages = type === 'issue' ? IssueMessages : ArticleMessages;
-    let hasDateError = false;
+    const messages = type === 'issue' ? IssueMessages : ArticleMessages
+    let hasDateError = false
 
     const errorMessage = this.state.errorMessage.map((error, i)=>{
       if(error === 'printDateYear' || error === 'onlineDateYear') {
@@ -160,7 +160,7 @@ class ErrorBox extends Component {
   }
 
   toggleError = async (e) => {
-    const target = $(e.target);
+    const target = $(e.target)
     if((target.parents('.popup').length || target.hasClass('popup')) && !target.hasClass('closeButton')) {
       return
     }

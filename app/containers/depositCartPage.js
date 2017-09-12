@@ -52,7 +52,7 @@ export default class DepositCartPage extends Component {
         resultData: '',
         resultCount: '',
         depositId: ''
-      },
+      }
     }
   }
 
@@ -62,12 +62,12 @@ export default class DepositCartPage extends Component {
 
   getFullCart (cart = this.props.cart) {
 
-    var promises = [];
-    var _this = this;
+    const promises = []
+    const _this = this
     if(cart.length > 0) {
       _.each(cart, (item) => {
 
-        var doi = item.doi
+        let doi = item.doi
         if (!doi) {
           doi = item.article.doi
         }
@@ -75,8 +75,8 @@ export default class DepositCartPage extends Component {
       })
 
       Promise.all(promises).then((fullData) => {
-        var mergedCart = []
-        for(var i = 0; i < fullData.length; i++){
+        let mergedCart = []
+        for(let i in fullData){
           mergedCart.push({
             date: fullData[i].message.date,
             doi: fullData[i].message.doi,
@@ -89,28 +89,28 @@ export default class DepositCartPage extends Component {
 
 
         mergedCart = _.uniqBy(mergedCart, function (cartItem) { // merging publications
-          return cartItem.doi;
-        });
+          return cartItem.doi
+        })
 
 
         function mergeByDoi(arr) {
           return _(arr)
             .groupBy(function(item) { // group the items using the lower case
-              return item.doi;
+              return item.doi
             })
             .map(function(group) { // map each group
               return _.mergeWith.apply(_, [{}].concat(group, function(obj, src) { // merge all items, and if a property is an array concat the content
                 if (Array.isArray(obj)) {
-                  return obj.concat(src);
+                  return obj.concat(src)
                 }
               }))
             })
             .values() // get the values from the groupBy object
-            .value();
+            .value()
         }
 
-        for(var i = 0; i < mergedCart.length; i++) {
-          for(var j = 0; j < fullData.length; j++) {
+        for(let i in mergedCart) {
+          for(let j in fullData) {
             if(fullData[j]) {
               if (mergedCart[i].doi === fullData[j].message.doi) {
                 mergedCart[i].contains.push(fullData[j].message.contains[0])
@@ -119,28 +119,26 @@ export default class DepositCartPage extends Component {
           }
         }
 
-        for(var k = 0; k < mergedCart.length; k++){
-          var result = mergeByDoi(mergedCart[k].contains)
-          mergedCart[k].contains = result
+        for(let k in mergedCart){
+          mergedCart[k].contains = mergeByDoi(mergedCart[k].contains)
         }
 
         //need to get publication meta data as well
-        var promises = []
+        const promises = []
 
-        for(var i = 0; i < mergedCart.length; i++) {
+        for(let i in mergedCart) {
           promises.push(this.props.asyncGetItem(mergedCart[i].doi).then((data)=>{ // this gets publication content
             return data
           }))
         }
         Promise.all(promises).then((publicationData) => {
-          var issuePromises = []
-          for(var i = 0; i < publicationData.length; i++) {
+          const issuePromises = []
+          for(let i in publicationData) {
             mergedCart[i].content = publicationData[i].message.content
             for(let item of mergedCart[i].contains) {
               if (item.type === 'issue') {
                 issuePromises.push(this.props.asyncGetItem(item.doi).then((data)=>{ // this gets publication content
                   item.content = data.message.contains[0].content
-                  return;
                 }))
               }
             }
@@ -186,17 +184,17 @@ export default class DepositCartPage extends Component {
   }
 
   deposit = () => {
-    if(!this.state.showDeposit || this.state.status === 'processing') return;
+    if(!this.state.showDeposit || this.state.status === 'processing') return
 
     const toDeposit = this.props.cart.map((item) => {
       return { 'doi': item.doi, 'version': item['mdt-version'] }
-    });
+    })
 
     this.setState({status:`processing`})
 
     const errorHandler = (error) => {
-      console.error(error);
-      this.setState({status: 'cart'});
+      console.error(error)
+      this.setState({status: 'cart'})
       this.props.reduxControlModal({
         showModal: true,
         title: error,
@@ -206,43 +204,43 @@ export default class DepositCartPage extends Component {
     }
 
     this.props.asyncDeposit(toDeposit, (depositResult) => {
-      this.setState({status:'result', result: this.processDepositResult(depositResult)});
-      this.props.reduxClearCart();
-    }, errorHandler);
+      this.setState({status:'result', result: this.processDepositResult(depositResult)})
+      this.props.reduxClearCart()
+    }, errorHandler)
   }
 
   processDepositResult = (depositResult) => {
-    const resultCount = {Success: 0, Failure: 0};
-    const resultData = {};
-    let depositId = [];
+    const resultCount = {Success: 0, Failure: 0}
+    const resultData = {}
+    let depositId = []
 
     depositResult.forEach((result, index)=>{
-      let pubDoi, pubTitle, resultTitle, resultStatus, resultType;
-      let error = {};
+      let pubDoi, pubTitle, resultTitle, resultStatus, resultType
+      let error = {}
       const articleInfo = this.props.cart.find((cartItem)=>{
         return cartItem.doi === result['DOI:']
-      });
-      pubDoi = articleInfo.pubDoi;
-      resultType = articleInfo.type;
-      pubTitle = this.props.publications[pubDoi].message.title.title;
-      resultTitle = articleInfo.title.title;
+      })
+      pubDoi = articleInfo.pubDoi
+      resultType = articleInfo.type
+      pubTitle = this.props.publications[pubDoi].message.title.title
+      resultTitle = articleInfo.title.title
 
       if(typeof result.result === 'string') {
-        resultStatus = 'Failure';
-        error.errorMessage = result.result;
+        resultStatus = 'Failure'
+        error.errorMessage = result.result
       } else if (typeof result.result === 'object' && result.result.doi_batch_diagnostic) {
-        depositId.push(result.result.doi_batch_diagnostic.submission_id);
-        const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic;
-        resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status'];
+        depositId.push(result.result.doi_batch_diagnostic.submission_id)
+        const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic
+        resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
         if(resultStatus === 'Failure') {
-          error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg;
+          error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
         }
       } else {
-        resultStatus = 'Failure';
-        error.errorMessage = 'Unknown Error';
+        resultStatus = 'Failure'
+        error.errorMessage = 'Unknown Error'
       }
 
-      resultCount[resultStatus]++;
+      resultCount[resultStatus]++
 
       resultData[pubTitle] = [
         ...(resultData[pubTitle] || []),
@@ -254,10 +252,10 @@ export default class DepositCartPage extends Component {
           pubDoi: pubDoi,
           ...error
         }
-      ];
-    });
+      ]
+    })
 
-    depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0];
+    depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
 
     return {resultData, resultCount, depositId}
   }
@@ -267,7 +265,7 @@ export default class DepositCartPage extends Component {
   }
 
   render () {
-    const {resultData, resultCount, depositId} = this.state.result;
+    const {resultData, resultCount, depositId} = this.state.result
 
     return (
       <div className='depositPage'>

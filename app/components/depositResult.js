@@ -12,7 +12,7 @@ export default class DepositResult extends Component{
   }
 
   render() {
-    const { resultCount, resultData, depositId } = this.props;
+    const { resultCount, resultData, depositId } = this.props
     const resultArray = []
 
     for (let pub in resultData) {
@@ -30,14 +30,14 @@ export default class DepositResult extends Component{
             </tr>
           </div>
         )
-      });
+      })
 
       const pubCard =
         <div key={pub} className="resultCard">
           <div className="publicationTitleBar"><h3>{pub}</h3></div>
           {articleElements}
         </div>
-      resultArray.push(pubCard);
+      resultArray.push(pubCard)
     }
 
     return (
