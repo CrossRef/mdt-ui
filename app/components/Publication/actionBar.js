@@ -33,25 +33,25 @@ export default class ActionBar extends Component {
   }
 
   handleClick = e => {
-    const element = $(e.target);
+    const element = $(e.target)
     if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .tooltips'))) {
       this.setState({ actionMenuOpen: false, addRecordMenuOpen: false })
     }
   }
 
   componentWillUpdate (nextProps, nextState) {
-    const aMenuIsOpen = nextState.actionMenuOpen || nextState.addRecordMenuOpen;
+    const aMenuIsOpen = nextState.actionMenuOpen || nextState.addRecordMenuOpen
     const aMenuClosed = (this.state.actionMenuOpen && !nextState.actionMenuOpen) || (this.state.addRecordMenuOpen && !nextState.addRecordMenuOpen)
 
     if(aMenuIsOpen) {
-      document.addEventListener('click', this.handleClick, false);
+      document.addEventListener('click', this.handleClick, false)
     } else if (aMenuClosed) {
-      document.removeEventListener('click', this.handleClick, false);
+      document.removeEventListener('click', this.handleClick, false)
     }
   }
 
   componentWillUnmount () {
-    document.removeEventListener('click', this.handleClick, false);
+    document.removeEventListener('click', this.handleClick, false)
   }
 
   openAddIssueModal = () => {
@@ -72,17 +72,17 @@ export default class ActionBar extends Component {
   }
 
   onlyIssueSelected = () => {
-    const selections = this.props.selections;
-    if(!selections.length) return false;
+    const selections = this.props.selections
+    if(!selections.length) return false
     const types = selections.map((selection) => {
       return selection.article.type
-    });
+    })
     return !(types.indexOf('article') !== -1)
   }
 
 
   render () {
-    const onlyIssue = this.onlyIssueSelected();
+    const onlyIssue = this.onlyIssueSelected()
     const { doi, publication, handleAddCart, deleteSelections, duplicateSelection } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>

@@ -16,13 +16,13 @@ window.version = version()
 setConfig({
   showStateTracker: false,
   updateReports: {mount: false, update: false, pass: false, render: false}
-});
+})
 
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
 if(browserHistory.getCurrentLocation().pathname !== `${routes.base}`) {
-  store.dispatch(getCRState());
+  store.dispatch(getCRState())
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if(!store.getState().routing.locationBeforeTransitions.query.modal) {
           store.dispatch(controlModal({ showModal: false }))
         }
-        window.scrollTo(0, 0);
+        window.scrollTo(0, 0)
       }}>
         {Routing()}
       </Router>
