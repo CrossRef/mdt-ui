@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
+import Deferred from '../utilities/deferred'
 
 
 
@@ -11,8 +12,8 @@ export default class DepositCartItem extends Component {
     cartItem: is.object.isRequired,
     reportErrors: is.func.isRequired,
     recordCount: is.number.isRequired,
-    closeErrors: is.func.isRequired,
-  };
+    closeErrors: is.func.isRequired
+  }
 
   constructor (props) {
     super(props)
@@ -28,11 +29,8 @@ export default class DepositCartItem extends Component {
     for(let i = 0; i < props.cartItem.contains.length; i++){
       const record = props.cartItem.contains[i]
 
-      let reportErrors
-      const asyncErrorReport = new Promise((resolve)=>{
-        reportErrors = resolve
-      })
-      errorReports.push(asyncErrorReport)
+      const asyncErrorReport = new Deferred()
+      errorReports.push(asyncErrorReport.promise)
 
       records.push(
         <DepositCartRecord
@@ -41,7 +39,7 @@ export default class DepositCartItem extends Component {
           reduxRemoveFromCart={props.reduxRemoveFromCart}
           cartItem={record}
           closeErrors={this.props.closeErrors}
-          reportErrors={reportErrors}
+          reportErrors={asyncErrorReport.resolve}
         />
       )
 
@@ -53,11 +51,8 @@ export default class DepositCartItem extends Component {
             records.push(<tr key={parentIssue.doi + '_space1'} className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
           }
 
-          let reportErrors
-          const asyncErrorReport = new Promise((resolve)=>{
-            reportErrors = resolve
-          })
-          errorReports.push(asyncErrorReport)
+          const asyncErrorReport = new Deferred()
+          errorReports.push(asyncErrorReport.promise)
 
           records.push(
             <DepositCartRecord
@@ -68,7 +63,7 @@ export default class DepositCartItem extends Component {
               reduxRemoveFromCart={props.reduxRemoveFromCart}
               cartItem={recordUnderIssue}
               closeErrors={this.props.closeErrors}
-              reportErrors={reportErrors}
+              reportErrors={asyncErrorReport.resolve}
             />
           )
           if(j === props.cartItem.contains[i].contains.length - 1) {
@@ -78,7 +73,7 @@ export default class DepositCartItem extends Component {
       }
     }
 
-    Promise.all(errorReports).then((results)=>{  // if none of the error reports resolved true, no errors, turn on deposit
+    Promise.all(errorReports).then((results)=>{  // if none of the error reports resolved true, report no errors to depositCart
       if(results.indexOf(true) === -1) {
         this.props.reportErrors(false)
       } else {

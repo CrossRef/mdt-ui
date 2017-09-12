@@ -4,6 +4,7 @@ import _ from 'lodash'
 import $ from 'jquery'
 
 import DepositCartItem from './depositCartItem'
+import Deferred from '../utilities/deferred'
 
 
 
@@ -13,7 +14,7 @@ export default class DepositCart extends Component {
     showDeposit: is.bool.isRequired,
     toggleDeposit: is.func.isRequired,
     fullCart: is.array.isRequired
-  };
+  }
 
   componentWillMount(){
     document.addEventListener('click', this.handleClick, false)
@@ -47,18 +48,15 @@ export default class DepositCart extends Component {
         recordCount += cartItem.contains[record].contains.length
       }
 
-      let reportErrors
-      const asyncErrorReport = new Promise((resolve)=>{
-        reportErrors = resolve
-      })
-      errorReports.push(asyncErrorReport)
+      let asyncErrorReport = new Deferred()
+      errorReports.push(asyncErrorReport.promise)
 
       items.push(
         <DepositCartItem
             cartItem={cartItem}
             key={cartItem.doi}
             reduxRemoveFromCart={this.props.reduxRemoveFromCart}
-            reportErrors={reportErrors}
+            reportErrors={asyncErrorReport.resolve}
             recordCount={recordCount}
             closeErrors={this.closeErrors}
         />
