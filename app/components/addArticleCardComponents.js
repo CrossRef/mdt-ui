@@ -28,6 +28,8 @@ export class ActionBar extends Component {
   componentWillUpdate (nextProps, nextState) {
     if(nextState.menuOpen) {
       document.addEventListener('click', this.handleClick, false);
+    } else if (!nextState.menuOpen) {
+      document.removeEventListener('click', this.handleClick, false);
     }
   }
 
