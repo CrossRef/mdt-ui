@@ -45,7 +45,7 @@ export default class DepositCartPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showDeposit: false,
+      showDeposit: true,
       fullCart: [],
       status: 'cart',
       result: {
@@ -210,20 +210,32 @@ export default class DepositCartPage extends Component {
   }
 
   processDepositResult = (depositResult) => {
+    console.log(depositResult)
     const resultCount = {Success: 0, Failure: 0}
     const resultData = {}
     let depositId = []
 
     depositResult.forEach((result, index)=>{
-      let pubDoi, pubTitle, resultTitle, resultStatus, resultType
+      let pubDoi, pubTitle, resultTitle, resultStatus, resultType, recordInfo
       let error = {}
-      const articleInfo = this.props.cart.find((cartItem)=>{
-        return cartItem.doi === result['DOI:']
-      })
-      pubDoi = articleInfo.pubDoi
-      resultType = articleInfo.type
+      let children1 = []
+      if(!result.contains) {
+        recordInfo = this.props.cart.find((cartItem)=>{
+          return cartItem.doi === result['DOI:']
+        })
+      }
+      resultType = recordInfo ? recordInfo.type : 'publication'
+      pubDoi = resultType === 'publication' ? result['DOI:'] : recordInfo.pubDoi
       pubTitle = this.props.publications[pubDoi].message.title.title
-      resultTitle = articleInfo.title.title
+      resultTitle = do {
+        if(resultType === 'publiction') {
+          pubTitle
+        } else if (resultType === 'issue') {
+          `${recordInfo.title.volume && `Volume ${recordInfo.title.volume}, `}Issue ${recordInfo.title.issue}`
+        } else if (resultType === 'article') {
+          recordInfo.title.title
+        }
+      }
 
       if(typeof result.result === 'string') {
         resultStatus = 'Failure'
@@ -240,22 +252,114 @@ export default class DepositCartPage extends Component {
         error.errorMessage = 'Unknown Error'
       }
 
+      if(resultStatus === 'Failure') resultStatus = 'Failed'
+
       resultCount[resultStatus]++
 
-      resultData[pubTitle] = [
-        ...(resultData[pubTitle] || []),
-        {
-          title: resultTitle,
-          status:resultStatus,
-          type:resultType,
-          doi: result['DOI:'],
-          pubDoi: pubDoi,
-          ...error
-        }
-      ]
+      if(result.contains && result.contains.length) {
+        result.contains.forEach((result, index)=>{
+          let resultTitle, resultStatus, resultType, recordInfo, children2
+          let error = {}
+          recordInfo = this.props.cart.find((cartItem)=>{
+            return cartItem.doi === result['DOI:']
+          })
+
+          resultType = recordInfo.type
+          resultTitle = do {
+            if (resultType === 'issue') {
+              `${recordInfo.title.volume && `Volume ${recordInfo.title.volume}, `}Issue ${recordInfo.title.issue}`
+            } else if (resultType === 'article') {
+              recordInfo.title.title
+            }
+          }
+
+          if(typeof result.result === 'string') {
+            resultStatus = 'Failure'
+            error.errorMessage = result.result
+          } else if (typeof result.result === 'object' && result.result.doi_batch_diagnostic) {
+            depositId.push(result.result.doi_batch_diagnostic.submission_id)
+            const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic
+            resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
+            if(resultStatus === 'Failure') {
+              error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+            }
+          } else {
+            resultStatus = 'Failure'
+            error.errorMessage = 'Unknown Error'
+          }
+
+          if(resultStatus === 'Failure') resultStatus = 'Failed'
+
+          resultCount[resultStatus]++
+
+          if(result.contains && result.contains.length) {
+            result.contains.forEach((result, index)=>{
+              let resultTitle, resultStatus, resultType, recordInfo
+              let error = {}
+              recordInfo = this.props.cart.find((cartItem)=>{
+                return cartItem.doi === result['DOI:']
+              })
+
+              resultType = 'article'
+              resultTitle = recordInfo.title.title
+
+              if(typeof result.result === 'string') {
+                resultStatus = 'Failure'
+                error.errorMessage = result.result
+              } else if (typeof result.result === 'object' && result.result.doi_batch_diagnostic) {
+                depositId.push(result.result.doi_batch_diagnostic.submission_id)
+                const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic
+                resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
+                if(resultStatus === 'Failure') {
+                  error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+                }
+              } else {
+                resultStatus = 'Failure'
+                error.errorMessage = 'Unknown Error'
+              }
+
+              if(resultStatus === 'Failure') resultStatus = 'Failed'
+
+              resultCount[resultStatus]++
+
+              children2[resultTitle] = {
+                title: resultTitle,
+                status:resultStatus,
+                type:resultType,
+                doi: result['DOI:'],
+                pubDoi: pubDoi,
+                ...error
+              }
+            })
+          }
+
+          children1[resultTitle] = {
+            title: resultTitle,
+            status:resultStatus,
+            type:resultType,
+            doi: result['DOI:'],
+            pubDoi: pubDoi,
+            contains: children2,
+            ...error
+          }
+        })
+      }
+
+      resultData[pubTitle] = resultType === 'publication' ? {
+        title: resultTitle,
+        status:resultStatus,
+        type:resultType,
+        doi: result['DOI:'],
+        pubDoi: pubDoi,
+        contains: children1,
+        ...error
+      }
+
     })
 
     depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
+
+    console.log({resultData, resultCount, depositId})
 
     return {resultData, resultCount, depositId}
   }
