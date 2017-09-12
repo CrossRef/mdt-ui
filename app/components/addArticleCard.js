@@ -329,21 +329,20 @@ export default class AddArticleCard extends Component {
 
       if(addToCart) {
         newRecord.pubDoi = this.props.publication.message.doi
-        Promise.resolve(newRecord)
+        return newRecord
       } else {
         this.setState(validatedPayload, () => this.state.validating = false)
       }
 
     } else {
       this.setState(validatedPayload, () => this.state.validating = false)
-      Promise.resolve(false)
+      return false
     }
   }
 
   addToCart = async () => {
     const addToCart = true
     const newRecord = await this.save(addToCart)
-    console.log(newRecord)
     if(newRecord) {
       newRecord.doi = newRecord.doi.toLowerCase()
       this.props.reduxCartUpdate([newRecord]);
