@@ -42,17 +42,6 @@ const parseXMLArticle = function (articleXML) {
         onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : ''
     }
 
-    const acceptedPubDate = objectSearch(parsedArticle, 'acceptance_date')
-
-    var acceptedDateYear = ''
-    var acceptedDateMonth = ''
-    var acceptedDateDay = ''
-    if (acceptedPubDate) {
-        acceptedDateYear = acceptedPubDate['year'] ? acceptedPubDate['year'] : ''
-        acceptedDateMonth = acceptedPubDate['month'] ? acceptedPubDate['month'] : ''
-        acceptedDateDay = acceptedPubDate['day'] ? acceptedPubDate['day'] : ''
-    }
-
     const titles = objectSearch(parsedArticle, 'titles')
     const title = titles.title.trim()
 
@@ -110,9 +99,6 @@ const parseXMLArticle = function (articleXML) {
         onlineDateYear: onlineDateYear,
         onlineDateMonth: onlineDateMonth,
         onlineDateDay: onlineDateDay,
-        acceptedDateYear: acceptedDateYear,
-        acceptedDateMonth: acceptedDateMonth,
-        acceptedDateDay: acceptedDateDay,
         firstPage: firstPage,
         lastPage: lastPage,
         locationId: locationId,
