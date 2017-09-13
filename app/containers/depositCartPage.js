@@ -211,6 +211,7 @@ export default class DepositCartPage extends Component {
 
   processDepositResult = (depositResult) => {
     console.log(depositResult)
+    debugger;
     const resultCount = {Success: 0, Failed: 0}
     const resultData = {}
     let depositId = []
@@ -222,15 +223,15 @@ export default class DepositCartPage extends Component {
       const resultDoi = result['DOI:']
       if(!result.contains) {
         resultInfo = this.props.cart.find((cartItem)=>{
-          return cartItem.doi === resultDoi
+          return cartItem.doi === resultDoi.toLowerCase()
         })
       }
       console.log(resultInfo)
       resultType = resultInfo ? resultInfo.type : 'publication'
       pubDoi = resultType === 'publication' ? resultDoi : resultInfo.pubDoi
-      pubTitle = this.props.publications[pubDoi].message.title.title
+      pubTitle = this.props.publications[pubDoi.toLowerCase()].message.title.title
       resultTitle = do {
-        if(resultType === 'publiction') {
+        if(resultType === 'publication') {
           pubTitle
         } else if (resultType === 'issue') {
           `${resultInfo.title.volume && `Volume ${resultInfo.title.volume}, `}Issue ${resultInfo.title.issue}`
@@ -265,18 +266,13 @@ export default class DepositCartPage extends Component {
           let children2 = {}
           const recordDoi = record['DOI:']
           recordInfo = this.props.cart.find((cartItem)=>{
-            return cartItem.doi === recordDoi
+            return cartItem.doi === recordDoi.toLowerCase()
           })
 
-
           recordType = recordInfo.type
-          recordTitle = do {
-            if (recordType === 'issue') {
-              `${recordInfo.title.volume && `Volume ${recordInfo.title.volume}, `}Issue ${recordInfo.title.issue}`
-            } else if (recordType === 'article') {
-              recordInfo.title.title
-            }
-          }
+          recordTitle = recordType === 'issue' ?
+            `${recordInfo.title.volume && `Volume ${recordInfo.title.volume}, `}Issue ${recordInfo.title.issue}`
+            : recordInfo.title.title
 
           if(typeof record.result === 'string') {
             recordStatus = 'Failure'
@@ -304,7 +300,7 @@ export default class DepositCartPage extends Component {
               let error = {}
               const articleDoi = article['DOI:']
               articleInfo = this.props.cart.find((cartItem)=>{
-                return cartItem.doi === articleDoi
+                return cartItem.doi === articleDoi.toLowerCase()
               })
 
               articleTitle = articleInfo.title.title
