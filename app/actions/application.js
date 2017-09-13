@@ -312,6 +312,20 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
         try {
           const getXML = xmlParse(item.result)
           if(getXML !== undefined) item.result = getXML
+          if(item.contains && item.contains.length) {
+            const recordArray = item.contains
+            recordArray.map((record) => {
+              const getXML = xmlParse(record.result)
+              if(getXML !== undefined) record.result = getXML
+              if(record.contains && record.contains.length) {
+                const articleArray = record.contains
+                articleArray.map((article) => {
+                  const getXML = xmlParse(article.result)
+                  if(getXML !== undefined) article.result = getXML
+                })
+              }
+            })
+          }
           return item
         } catch (error) {
           console.error('Error Parsing Deposit result: ' + error)
