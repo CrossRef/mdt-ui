@@ -157,6 +157,7 @@ export default class Publication extends Component {
   }
 
   render () {
+    console.log(this.state.filterBy)
     const { publication, asyncGetPublications, reduxControlModal, ownerPrefix } = this.props
     const contains = publication.message.contains || emptyArray
     const doi = publication.message.doi
