@@ -226,7 +226,7 @@ function cartReducer (state = [], action) {
       return [...newState]
     case 'REMOVE_FROM_CART':
       var removeIndex = _.findIndex(state, (item) => {
-        return action.doi === item.doi
+        return action.doi.toLowerCase() === item.doi.toLowerCase()
       })
       if(removeIndex !== -1) {
         var newState = [...state]

@@ -86,31 +86,29 @@ export default class DepositCartItem extends Component {
   render () {
 
     return (
-      <div>
-        <div className='depositpage'>
-          <table>
-            <tbody>
-              <tr>
-                <td className='titleHolderTD'>
-                  <table className='itemholder'>
-                    <tbody>
-                      <tr>
-                        <td className='stateIcon deposittitle'>&nbsp;</td>
-                        <td className='depositpubtitle' colSpan={3}><a href="">{this.props.cartItem.title}</a></td>
-                        <td className='titlerror errorholder'>&nbsp;</td>
-                      </tr>
-                    </tbody>
-                  </table>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-          <table className='itemholder'>
-            <tbody>
-              {this.renderRecords()}
-            </tbody>
-          </table>
-        </div>
+      <div className='depositCartItem'>
+        <table>
+          <tbody>
+            <tr>
+              <td className='titleHolderTD'>
+                <table className='itemholder'>
+                  <tbody>
+                    <tr>
+                      <td className='stateIcon deposittitle'>&nbsp;</td>
+                      <td className='depositpubtitle' colSpan={3}><a href="">{this.props.cartItem.title}</a></td>
+                      <td className='titlerror errorholder'>&nbsp;</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <table className='itemholder'>
+          <tbody>
+            {this.renderRecords()}
+          </tbody>
+        </table>
       </div>
     )
   }
