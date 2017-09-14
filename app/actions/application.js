@@ -332,7 +332,6 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
           return item
         }
       })
-      console.log('DEPOSIT RESULT', resultArray)
       if(callback) callback(resultArray)
     })
     .catch(reason => error(reason))

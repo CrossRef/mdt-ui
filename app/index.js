@@ -14,7 +14,7 @@ import { getCRState, controlModal } from './actions/application'
 window.version = version()
 
 setConfig({
-  showStateTracker: true,
+  showStateTracker: false,
   updateReports: {mount: false, update: false, pass: false, render: false}
 })
 

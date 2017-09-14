@@ -1,8 +1,6 @@
 
 
 export default (depositResult, publications, cart) => {
-  console.log(depositResult)
-  debugger;
   const resultCount = {Success: 0, Failed: 0}
   const resultData = {}
   let depositId = []
@@ -24,8 +22,6 @@ export default (depositResult, publications, cart) => {
               if(article.doi = resultDoi) {
                 parentIssue = thisRecord
                 break
-              } else {
-                console.log('CANT FIND RESULT DOI!!!!')
               }
             }
           }
@@ -250,8 +246,6 @@ export default (depositResult, publications, cart) => {
   })
 
   depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
-
-  console.log({resultData, resultCount, depositId})
 
   return {resultData, resultCount, depositId}
 }

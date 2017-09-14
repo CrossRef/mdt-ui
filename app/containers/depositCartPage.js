@@ -46,7 +46,7 @@ export default class DepositCartPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showDeposit: true,
+      showDeposit: false,
       fullCart: [],
       status: 'cart',
       result: {

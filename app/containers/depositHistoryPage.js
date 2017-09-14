@@ -54,7 +54,8 @@ export default class DepositHistoryPage extends Component {
         start: undefined,
         end: undefined,
         count: 20,
-        offset: 0
+        offset: 0,
+        worktype: 'article'
       },
       serverError: ''
     }
