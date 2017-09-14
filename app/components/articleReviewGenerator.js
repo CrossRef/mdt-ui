@@ -193,7 +193,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
 
         const months = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ]
 
-
+        console.log(reviewData.article.onlineDateYear.length)
         return (
             <div className='ReviewArticleCard'>
                 <div>
@@ -216,8 +216,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                     <p>{generalHeading}</p>
                     {
                         (reviewData.article.onlineDateYear.length > 0 || reviewData.article.onlineDateMonth.length > 0  || reviewData.article.onlineDateDay.length > 0) ||
-                        (reviewData.article.printDateYear.length > 0 || reviewData.article.printDateMonth.length > 0  || reviewData.article.printDateDay.length > 0) ||
-                        (reviewData.article.acceptedDateYear.length > 0 || reviewData.article.acceptedDateMonth.length > 0  || reviewData.article.acceptedDateDay.length > 0) ?
+                        (reviewData.article.printDateYear.length > 0 || reviewData.article.printDateMonth.length > 0  || reviewData.article.printDateDay.length > 0) ?
                         <p>
                         {
                             (reviewData.article.printDateYear.length > 0 || reviewData.article.printDateMonth.length > 0  || reviewData.article.printDateDay.length > 0) ?
@@ -242,19 +241,6 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                                 (reviewData.article.onlineDateMonth.length > 0) ? ' ' + months[parseInt(reviewData.article.onlineDateMonth) - 1] : ''
                             }${
                                 (reviewData.article.onlineDateYear.length > 0) ? ' ' + reviewData.article.onlineDateYear : ''
-                            }` : ``
-                        }
-                        {(reviewData.article.acceptedDateYear.length > 0 || reviewData.article.acceptedDateMonth.length > 0  || reviewData.article.acceptedDateDay.length > 0) && <br />}
-                        {
-                            (reviewData.article.acceptedDateYear.length > 0 || reviewData.article.acceptedDateMonth.length > 0  || reviewData.article.acceptedDateDay.length > 0) ?
-                            `Accepted: ${
-                                (reviewData.article.acceptedDateDay.length > 0) ? reviewData.article.acceptedDateDay : ''
-                            }${
-                                ((reviewData.article.acceptedDateMonth.length > 0) && (reviewData.article.acceptedDateYear.length > 0)) ? ', ' : ''
-                            }${
-                                (reviewData.article.acceptedDateMonth.length > 0) ? ' ' + months[parseInt(reviewData.article.acceptedDateMonth) - 1] : ''
-                            }${
-                                (reviewData.article.acceptedDateYear.length > 0) ? ' ' + reviewData.article.acceptedDateYear : ''
                             }` : ``
                         }
                         </p>
