@@ -15,6 +15,7 @@ export default class Search extends Component {
     asyncSearchRecords: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
     pubTitle: is.string.isRequired,
+    ownerPrefix: is.string.isRequired,
     search: is.object.isRequired,
     asyncSubmitIssue: is.func.isRequired,
     publication: is.object.isRequired,
@@ -43,7 +44,7 @@ export default class Search extends Component {
     const publication = this.props.publication;
     const publicationContains = this.props.publication.message.contains;
     const pubDoi = this.props.publication.message.doi;
-    const ownerPrefix = pubDoi.split('/')[0];
+    const ownerPrefix = this.props.ownerPrefix;
 
 
     this.setState({ searchingFor: '', loading: false, forceClose:true });
@@ -85,18 +86,18 @@ export default class Search extends Component {
         if(!issue.doi) {
           return this.props.reduxControlModal({
             showModal: true,
-            title: 'Issue missing DOI, please add to continue.',
+            title: 'Edit Issue/Volume',
             style: 'addIssueModal',
             Component: AddIssueCard,
             props: {
-              mode: 'edit',
+              mode: 'search',
+              ownerPrefix: ownerPrefix,
               issue: issue,
               savedArticle: savedArticle,
               publication: publication,
-              publicationMessage: publication.message,
-              doiMessage: publication.message.doi,
-              handle: this.props.asyncGetPublications,
+              asyncGetPublications: this.props.asyncGetPublications,
               asyncSubmitIssue: this.props.asyncSubmitIssue,
+              asyncGetItem: this.props.asyncGetItem
             }
           })
         }

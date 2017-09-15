@@ -73,6 +73,7 @@ const defaultState = {
 export default class AddIssueCard extends Component {
 
   static propTypes = {
+    ownerPrefix: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
 
     asyncSubmitIssue: is.func.isRequired,
@@ -87,26 +88,35 @@ export default class AddIssueCard extends Component {
   }
 
   async componentDidMount () {
-    if(this.props.mode === 'edit') {
-      const { doi } = this.props.issue
+    const isSearch = this.props.mode === 'search'
+    if(this.props.mode === 'edit' || isSearch) {
+      let doi, Publication, message, Issue;
 
-      const Publication = await this.props.asyncGetItem(doi)
+      if (!isSearch) {
+        doi = this.props.issue.doi
+        Publication = await this.props.asyncGetItem(doi)
+        message = Publication.message
+        Issue = message.contains[0]
 
-      const message = Publication.message
-      const Issue = message.contains[0]
+      } else {
+        Issue = this.props.issue
+      }
+
       const version = Issue['mdt-version']
 
       const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
 
-      const issueDoiDisabled = !this.props.duplicate
-      const volumeDoiDisabeld = issue.volumeDoi && !this.props.duplicate
+      if(isSearch) issue.issueDoi = this.props.ownerPrefix
 
-      const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabeld)
+      const issueDoiDisabled = !this.props.duplicate && !isSearch
+      const volumeDoiDisabled = issue.volumeDoi && !this.props.duplicate
+
+      const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled)
 
       const setStatePayload = {
         version: version,
         issueDoiDisabled: issueDoiDisabled,
-        volumeDoiDisabled: volumeDoiDisabeld,
+        volumeDoiDisabled: volumeDoiDisabled,
         issue:  issue,
         optionalIssueInfo: optionalIssueInfo,
         showSection: showSection,
@@ -174,15 +184,22 @@ export default class AddIssueCard extends Component {
         'title': {title, issue, volume},
         'date': new Date(),
         'doi': this.state.issue.issueDoi,
-        'owner-prefix': this.state.issue.issueDoi.split('/')[0],
+        'owner-prefix': this.props.ownerPrefix,
         'type': 'issue',
         'mdt-version': version,
         'status': 'draft',
-        'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
+        'content': issueXML.replace(/(\r\n|\n|\r)/gm,''),
       }
 
       publication.message.contains = [newRecord]
       asyncSubmitIssue(publication, () => {
+        if(this.props.mode === 'search') {
+          newRecord.contains = [this.props.savedArticle]
+          asyncSubmitIssue(publication, () => {
+            asyncGetPublications(publication.message.doi)
+            return this.closeModal()
+          })
+        }
         asyncGetPublications(publication.message.doi)
         this.closeModal()
       })
