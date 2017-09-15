@@ -3,17 +3,17 @@ import moment from 'moment'
 
 import { getContributor, getSubmitSubItems } from './getSubItems'
 import {cardNames, registryDois} from './crossmarkHelpers'
-const { pubHist, peer, copyright, supp, clinical, other, update} = cardNames;
+const { pubHist, peer, copyright, supp, clinical, other, update} = cardNames
 
 
 
 export const journalArticleXml = (component, crossmark) => {
-  const state = component.state;
-  const article = state.article;
+  const state = component.state
+  const article = state.article
   const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
-    printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay;
-  const language = state.addInfo.language;
-  const publicationType = state.addInfo.publicationType;
+    printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay
+  const language = state.addInfo.language
+  const publicationType = state.addInfo.publicationType
 
   const funderElement = getFunderXML()
   const licenseElement = getLicenseXML()
@@ -114,25 +114,25 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getFunderXML () {
     var funders = getSubmitSubItems(state.funding).map( funder => {
-      let funderName;
+      let funderName
       if (funder.fundername) {
         funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
       }
 
-      let funder_identifier;
+      let funder_identifier
       if (funder.funder_identifier) {
         funder_identifier = funder.funder_identifier.trim().length > 0 ? funder.funder_identifier : undefined
       }
 
       let grants = funder.grantNumbers ? funder.grantNumbers.map( awardNumber => {
         return (awardNumber && awardNumber.trim()) ? `<fr:assertion name="award_number">${awardNumber}</fr:assertion>` : ''
-      }) : [];
+      }) : []
 
       grants = _.filter(grants, (grant) => {
         return grant !== ''
       })
 
-      let attributes = '';
+      let attributes = ''
 
       if (funderName) {
         attributes = `<fr:assertion name="funder_name">${funderName}${funder_identifier ? `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>` : ``}</fr:assertion>`
@@ -140,7 +140,7 @@ export const journalArticleXml = (component, crossmark) => {
         attributes = `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>`
       }
 
-      return ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined;
+      return ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined
     })
 
     funders = _.filter(funders, (funder) => {
@@ -153,7 +153,7 @@ export const journalArticleXml = (component, crossmark) => {
 
   function getLicenseXML () {
     var licenses = getSubmitSubItems(state.license).map((license, i) => {
-      const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay;
+      const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay
       const dayHolder = []
       if (year) {
         dayHolder.push(year)
@@ -166,9 +166,9 @@ export const journalArticleXml = (component, crossmark) => {
       }
 
       let attributes = ``
-      const isDate = dayHolder.length > 0;
+      const isDate = dayHolder.length > 0
       if (isDate || license.licenseurl || license.appliesto) {
-        const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : '';
+        const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : ''
         let freetolicense = ``
         if (i===0 && state.addInfo.freetolicense) {
           freetolicense = `<ai:free_to_read${isDate ? ` start_date="${date}"` : ''}/>`
@@ -212,19 +212,19 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function crossmarkXml () {
-    const JSform = component.props.reduxForm.toJS();
-    const crossmarkForm = {};
-    if(JSform[pubHist]) crossmarkForm[pubHist] = JSform[pubHist];
-    if(JSform[peer]) crossmarkForm[peer] = JSform[peer];
-    if(JSform[copyright]) crossmarkForm[copyright] = JSform[copyright];
-    if(JSform[supp]) crossmarkForm[supp] = JSform[supp];
-    if(JSform[other]) crossmarkForm[other] = JSform[other];
-    if(JSform[clinical]) crossmarkForm[clinical] = JSform[clinical];
-    if(JSform[update]) crossmarkForm[update] = JSform[update];
+    const JSform = component.props.reduxForm.toJS()
+    const crossmarkForm = {}
+    if(JSform[pubHist]) crossmarkForm[pubHist] = JSform[pubHist]
+    if(JSform[peer]) crossmarkForm[peer] = JSform[peer]
+    if(JSform[copyright]) crossmarkForm[copyright] = JSform[copyright]
+    if(JSform[supp]) crossmarkForm[supp] = JSform[supp]
+    if(JSform[other]) crossmarkForm[other] = JSform[other]
+    if(JSform[clinical]) crossmarkForm[clinical] = JSform[clinical]
+    if(JSform[update]) crossmarkForm[update] = JSform[update]
 
-    const size = Object.keys(crossmarkForm).length;
+    const size = Object.keys(crossmarkForm).length
 
-    if(!size) return '';
+    if(!size) return ''
 
     const customMetadata = (!crossmarkForm[update] || size > 1) ?
       [
@@ -263,10 +263,10 @@ export const journalArticleXml = (component, crossmark) => {
 
 
     function generateUpdate (card) {
-      let array = [`<updates>`];
+      let array = [`<updates>`]
       for (let number in card) {
-        const { type, DOI, day, month, year } = card[number];
-        const date = `${year || ''}-${month || ''}-${day || ''}`;
+        const { type, DOI, day, month, year } = card[number]
+        const date = `${year || ''}-${month || ''}-${day || ''}`
         array.push(`<update${type ? ` type="${type.toLowerCase().replace(/\s+/g, '_')}"`:''}${year || month || day ? ` date="${date}"`:''}>${DOI ? DOI:''}</update>`)
       }
       array.push(`</updates>`)
@@ -274,42 +274,42 @@ export const journalArticleXml = (component, crossmark) => {
     }
 
     function generateOther (card) {
-      let array = [];
+      let array = []
       for (let number in card) {
-        const { label, explanation, href } = card[number];
+        const { label, explanation, href } = card[number]
         array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''}${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
       } return array.join('')
     }
 
     function generatePubHist (card) {
-      let array = [];
+      let array = []
       for (let number in card) {
-        const { label, day, month, year } = card[number];
-        const date = `${year || ''}-${month || ''}-${day || ''}`;
+        const { label, day, month, year } = card[number]
+        const date = `${year || ''}-${month || ''}-${day || ''}`
         array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''} group_name="publication_history" group_label="Publication History"${number ? ` order="${number}"`:''}>${year || month || day ? date : ''}</assertion>`)
       } return array.join('')
     }
 
     function generatePeer (card) {
-      let array = [];
+      let array = []
       for (let number in card) {
-        const { label, explanation, href } = card[number];
+        const { label, explanation, href } = card[number]
         array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''} group_name="peer_review" group_label="Peer review"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
       } return array.join('')
     }
 
     function generateSupp (card) {
-      let array = [];
+      let array = []
       for (let number in card) {
-        const { explanation, href } = card[number];
+        const { explanation, href } = card[number]
         array.push(`<assertion name="supplementary_Material" label="Supplementary Material"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
       } return array.join('')
     }
 
     function generateCopyright (card) {
-      let array = [];
+      let array = []
       for (let number in card) {
-        const { label, explanation, href } = card[number];
+        const { label, explanation, href } = card[number]
         if (label === 'Copyright Statement') {
           array.push(`<assertion name="copyright_statement"${label ? ` label="${label}"` : ''} group_name="copyright_licensing" group_label="Copyright $amp; Licensing"${explanation ? ` explanation="${explanation}"` : ''}${href ? ` href="${href}"` : ''}${number ? ` order="${number}"` : ''}/>`)
         } else if (label === 'Licensing Information') {
@@ -322,12 +322,12 @@ export const journalArticleXml = (component, crossmark) => {
     }
 
     function generateClinical (card) {
-      let array = [`<program xmlns="http://www.crossref.org/clinicaltrials.xsd">`];
+      let array = [`<program xmlns="http://www.crossref.org/clinicaltrials.xsd">`]
       for (let number in card) {
-        const { registry, trialNumber, type } = card[number];
+        const { registry, trialNumber, type } = card[number]
         array.push(`<clinical-trial-number${registry ? ` registry="${registryDois[registry]}"`:''}${type ? ` type="${lowerCaseFirst(type).replace(/-/g, '')}"`:''}>${trialNumber ? trialNumber : ''}</clinical-trial-number>`)
       }
-      array.push(`</program>`);
+      array.push(`</program>`)
       return array.join('')
     }
   }
@@ -437,5 +437,5 @@ export const getIssueXml = (issueObj) => {
 
 
 function lowerCaseFirst (string) {
-  return string.charAt(0).toLowerCase() + string.slice(1);
+  return string.charAt(0).toLowerCase() + string.slice(1)
 }
