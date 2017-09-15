@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import moment from 'moment'
 
-import { getContributor, getSubmitSubItems } from './getSubItems'
+import { getContributor, getSubItems } from './getSubItems'
 import {cardNames, registryDois} from './crossmarkHelpers'
 const { pubHist, peer, copyright, supp, clinical, other, update} = cardNames
 
@@ -83,7 +83,7 @@ export const journalArticleXml = (component, crossmark) => {
 
 
   function getContributorXML () {
-    var contributors = getSubmitSubItems(state.contributors).map((contributor, i) => {
+    var contributors = getSubItems(state.contributors).map((contributor, i) => {
       // cause the type "ROLE" is shared name
       var attributes = [
         (contributor.firstName && (contributor.firstName.trim().length>0)) ? `<given_name>${contributor.firstName}</given_name>` : undefined,
@@ -113,7 +113,7 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getFunderXML () {
-    var funders = getSubmitSubItems(state.funding).map( funder => {
+    var funders = getSubItems(state.funding).map( funder => {
       let funderName
       if (funder.fundername) {
         funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
@@ -152,7 +152,7 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getLicenseXML () {
-    var licenses = getSubmitSubItems(state.license).map((license, i) => {
+    var licenses = getSubItems(state.license).map((license, i) => {
       const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay
       const dayHolder = []
       if (year) {
@@ -182,7 +182,7 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getRelatedItemsXML () {
-    const relatedItems = getSubmitSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}) => {
+    const relatedItems = getSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}) => {
 
       const interWorkRelation = (relationType || identifierType || relatedItemIdentifier) ?
         `<inter_work_relation${relationType ? ` relationship-type="${relationType}"`:''}${identifierType ? ` identifier-type="${identifierType}"`:''}>${relatedItemIdentifier || ''}</inter_work_relation>`

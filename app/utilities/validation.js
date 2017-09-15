@@ -2,7 +2,7 @@ import {Map, fromJS} from 'immutable'
 
 import isURL from './isURL'
 import isDOI from './isDOI'
-import { getSubmitSubItems } from './getSubItems'
+import { getSubItems } from './getSubItems'
 import {cardNames} from './crossmarkHelpers'
 import { validDate } from './date'
 import {checkDupeDoi} from './dupeDOI'
@@ -87,7 +87,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
   //validate License subItems
-  const licenses = getSubmitSubItems(data.license).map((license, i) => {
+  const licenses = getSubItems(data.license).map((license, i) => {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license
     if((licenseurl&&licenseurl!=='http://')) criticalErrors.licenseFreeToRead = false
 
@@ -144,7 +144,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   }
 
   //validate contributor subItems
-  const contributors = getSubmitSubItems(data.contributors).map( contributor => {
+  const contributors = getSubItems(data.contributors).map( contributor => {
     const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = contributor
     const errors = {
       contributorLastName: firstName && !lastName,
@@ -161,7 +161,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   })
 
   //validate relatedItem subItems
-  const relatedItems = getSubmitSubItems(data.relatedItems).map( item => {
+  const relatedItems = getSubItems(data.relatedItems).map( item => {
     const errors = {
       relatedItemIdType: !item.identifierType,
       relatedItemRelType: !item.relationType,
@@ -320,7 +320,7 @@ export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPre
   const enableVolumeDoi = warnings.volumedoi || warnings.invalidvolumedoi || warnings.invalidVolumeDoiPrefix
 
   //validate contributor subItems
-  const contributors = getSubmitSubItems(optionalIssueInfo).map( contributor => {
+  const contributors = getSubItems(optionalIssueInfo).map( contributor => {
     const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role} = contributor
     const errors = {
       contributorLastName: firstName && !lastName,
