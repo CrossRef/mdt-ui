@@ -286,9 +286,9 @@ const parseXMLArticle = function (articleXML) {
 
     if(parsedArticle.crossref) {
       if(parsedArticle.crossref.journal.journal_article.crossmark) {
-        const {reduxForm, showCards} = parseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark);
+        const {reduxForm, showCards} = parseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark)
         if(reduxForm && showCards) {
-          retObj.crossmark = {reduxForm, showCards};
+          retObj.crossmark = {reduxForm, showCards}
         }
       }
     }

@@ -277,14 +277,13 @@ export default class AddArticleCard extends Component {
 
 
   save = async (addToCart) => {
-    const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined
 
     const {valid, validatedPayload} = await this.validation()
 
     if (valid) {
       const publication = this.props.publication
 
-      const journalArticle = journalArticleXml(this, crossmark)
+      const journalArticle = journalArticleXml(this)
       const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
 
       const title = JSesc(this.state.article.title)
