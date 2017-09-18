@@ -106,7 +106,9 @@ export default class AddIssueCard extends Component {
 
       const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
 
-      if(isSearch) issue.issueDoi = this.props.ownerPrefix
+      if(isSearch) {
+        issue.issueDoi = this.props.ownerPrefix
+      }
 
       const issueDoiDisabled = !this.props.duplicate && !isSearch
       const volumeDoiDisabled = issue.volumeDoi && !this.props.duplicate
