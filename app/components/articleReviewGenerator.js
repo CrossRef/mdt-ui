@@ -8,7 +8,7 @@ const AppliesTo = require('../utilities/appliesTo.json')
 const IdentifierTypes = require('../utilities/identifierTypes.json')
 import objectSearch from '../utilities/objectSearch'
 import parseXMLArticle from '../utilities/parseXMLArticle'
-import { getSubmitSubItems } from '../utilities/getSubItems'
+import { getSubItems } from '../utilities/getSubItems'
 import xmldoc from '../utilities/xmldoc'
 
 const articleReviewGenerator = (publication, article, parentIssue, parsedAlready, func) => {
@@ -23,7 +23,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
     }
 
     const getFunding = () => {
-        var funders = getSubmitSubItems(reviewData.funding).map((funder, i) => {
+        var funders = getSubItems(reviewData.funding).map((funder, i) => {
             var funderName = undefined
             if (funder.fundername) {
                 funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
@@ -52,7 +52,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
 
     const getLicense = () => {
         const months = [ 'January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December' ]
-        var licenses = getSubmitSubItems(reviewData.license).map((license, i) => {
+        var licenses = getSubItems(reviewData.license).map((license, i) => {
 
             const appliesto = _.find(AppliesTo, (applyto) => {
                 if (applyto.value.trim().toLowerCase() === license.appliesto.trim().toLowerCase()){
@@ -68,7 +68,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
     }
 
     const getRelatedItems = () => {
-        var relatedItems = getSubmitSubItems(reviewData.relatedItems).map((relatedItem, i) => {
+        var relatedItems = getSubItems(reviewData.relatedItems).map((relatedItem, i) => {
             var identifiertype = _.find(IdentifierTypes, (identtype) => {
                 if (identtype.name.trim().toLowerCase() === relatedItem.identifierType.trim().toLowerCase()){
                 return identtype
@@ -145,7 +145,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
         }
         }
 
-        var contributors = getSubmitSubItems(reviewData.contributors).map((contributor) => {
+        var contributors = getSubItems(reviewData.contributors).map((contributor) => {
         const contributorName = contributor.firstName + ' ' + contributor.lastName
         const contributorGroupName = contributor.groupAuthorName
         if (contributorName.trim().length > 0 || contributorGroupName.trim().length) {

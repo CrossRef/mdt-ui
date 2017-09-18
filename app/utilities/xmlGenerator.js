@@ -1,138 +1,23 @@
 import _ from 'lodash'
 import moment from 'moment'
 
-import { getContributor, getSubmitSubItems } from './getSubItems'
+import { getContributor, getSubItems } from './getSubItems'
 import {cardNames, registryDois} from './crossmarkHelpers'
-const { pubHist, peer, copyright, supp, clinical, other, update} = cardNames;
-
-
-export const crossmarkXml = (immutableForm, crossmarkPrefix) => {
-  const JSform = immutableForm.toJS();
-  const crossmarkForm = {};
-  if(JSform[pubHist]) crossmarkForm[pubHist] = JSform[pubHist];
-  if(JSform[peer]) crossmarkForm[peer] = JSform[peer];
-  if(JSform[copyright]) crossmarkForm[copyright] = JSform[copyright];
-  if(JSform[supp]) crossmarkForm[supp] = JSform[supp];
-  if(JSform[other]) crossmarkForm[other] = JSform[other];
-  if(JSform[clinical]) crossmarkForm[clinical] = JSform[clinical];
-  if(JSform[update]) crossmarkForm[update] = JSform[update];
-
-  const size = Object.keys(crossmarkForm).length;
-
-  if(!size) return undefined;
-
-  const customMetadata = (!crossmarkForm[update] || size > 1) ?
-    [
-      `<custom_metadata>`,
-
-        crossmarkForm[other] ? generateOther(crossmarkForm[other]) : '',
-
-        crossmarkForm[pubHist] ? generatePubHist(crossmarkForm[pubHist]) : '',
-
-        crossmarkForm[peer] ? generatePeer(crossmarkForm[peer]) : '',
-
-        crossmarkForm[supp] ? generateSupp(crossmarkForm[supp]) : '',
-
-        crossmarkForm[copyright] ? generateCopyright(crossmarkForm[copyright]) : '',
-
-        crossmarkForm[clinical] ? generateClinical(crossmarkForm[clinical]) : '',
-
-      `</custom_metadata>`
-    ].join('')
-  : null
-
-  return [
-    `<crossmark>`, `<crossmark_policy>${crossmarkPrefix}/something</crossmark_policy>`, //TODO Needs to be looked at
-
-      `<crossmark_domains><crossmark_domain><domain>psychoceramics.labs.crossref.org</domain></crossmark_domain></crossmark_domains>`, //TEMPORARY, Crossref team said they will be removing this requirement
-
-      crossmarkForm[update] ? generateUpdate(crossmarkForm[update]) : '',
-
-      customMetadata ? customMetadata : '',
-    `</crossmark>`
-  ].join('')
-
-
-  function generateUpdate (card) {
-    let array = [`<updates>`];
-    for (let number in card) {
-      const { type, DOI, day, month, year } = card[number];
-      const date = `${year || ''}-${month || ''}-${day || ''}`;
-      array.push(`<update${type ? ` type="${type.toLowerCase().replace(/\s+/g, '_')}"`:''}${year || month || day ? ` date="${date}"`:''}>${DOI ? DOI:''}</update>`)
-    }
-    array.push(`</updates>`)
-    return array.join('')
-  }
-
-  function generateOther (card) {
-    let array = [];
-    for (let number in card) {
-      const { label, explanation, href } = card[number];
-      array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''}${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
-    } return array.join('')
-  }
-
-  function generatePubHist (card) {
-    let array = [];
-    for (let number in card) {
-      const { label, day, month, year } = card[number];
-      const date = `${year || ''}-${month || ''}-${day || ''}`;
-      array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''} group_name="publication_history" group_label="Publication History"${number ? ` order="${number}"`:''}>${year || month || day ? date : ''}</assertion>`)
-    } return array.join('')
-  }
-
-  function generatePeer (card) {
-    let array = [];
-    for (let number in card) {
-      const { label, explanation, href } = card[number];
-      array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''} group_name="peer_review" group_label="Peer review"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
-    } return array.join('')
-  }
-
-  function generateSupp (card) {
-    let array = [];
-    for (let number in card) {
-      const { explanation, href } = card[number];
-      array.push(`<assertion name="supplementary_Material" label="Supplementary Material"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
-    } return array.join('')
-  }
-
-  function generateCopyright (card) {
-    let array = [];
-    for (let number in card) {
-      const { label, explanation, href } = card[number];
-      if (label === 'Copyright Statement') {
-        array.push(`<assertion name="copyright_statement"${label ? ` label="${label}"` : ''} group_name="copyright_licensing" group_label="Copyright $amp; Licensing"${explanation ? ` explanation="${explanation}"` : ''}${href ? ` href="${href}"` : ''}${number ? ` order="${number}"` : ''}/>`)
-      } else if (label === 'Licensing Information') {
-        array.push(`<assertion name="licensing"${label ? ` label="${label}"`:''} group_name="copyright_licensing" group_label="Copyright $amp; Licensing"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
-      } else {
-        array.push(`<assertion group_name="copyright_licensing" group_label="Copyright $amp; Licensing"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
-      }
-
-    } return array.join('')
-  }
-
-  function generateClinical (card) {
-    let array = [`<program xmlns="http://www.crossref.org/clinicaltrials.xsd">`];
-    for (let number in card) {
-      const { registry, trialNumber, type } = card[number];
-      array.push(`<clinical-trial-number${registry ? ` registry="${registryDois[registry]}"`:''}${type ? ` type="${lowerCaseFirst(type).replace(/-/g, '')}"`:''}>${trialNumber ? trialNumber : ''}</clinical-trial-number>`)
-    }
-    array.push(`</program>`);
-    return array.join('')
-  }
-}
-
+const { pubHist, peer, copyright, supp, clinical, other, update} = cardNames
 
 
 
 export const journalArticleXml = (component, crossmark) => {
-  const state = component.state;
-  const article = state.article;
+  const state = component.state
+  const article = state.article
   const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
-    printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay;
-  const language = state.addInfo.language;
-  const publicationType = state.addInfo.publicationType;
+    printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay
+  const language = state.addInfo.language
+  const publicationType = state.addInfo.publicationType
+
+  const funderElement = getFunderXML()
+  const licenseElement = getLicenseXML()
+  const crossmarkElement = state.crossmark ? crossmarkXml() : ''
 
   const array = [
     `<journal_article`,
@@ -173,11 +58,11 @@ export const journalArticleXml = (component, crossmark) => {
 
       `${(getPublisherItems().length > 0) ? getPublisherItems() : ``}`,
 
-      crossmark ? crossmark : '',
+      crossmarkElement,
 
-      `${(getFunderXML().length > 0) ? getFunderXML() : ``}`,
+      `${(!crossmarkElement && funderElement.length) ? funderElement : ``}`,
 
-      `${(getLicenseXML().length > 0) ? getLicenseXML() : ``}`,
+      `${(!crossmarkElement && licenseElement.length) ? licenseElement : ``}`,
 
       `${(getRelatedItemsXML().length > 0) ? getRelatedItemsXML() : ``}`,
 
@@ -191,14 +76,14 @@ export const journalArticleXml = (component, crossmark) => {
       `</doi_data>`,
 
     `</journal_article>`
-  ];
+  ]
   return array.join('')
 
 
 
 
   function getContributorXML () {
-    var contributors = getSubmitSubItems(state.contributors).map((contributor, i) => {
+    var contributors = getSubItems(state.contributors).map((contributor, i) => {
       // cause the type "ROLE" is shared name
       var attributes = [
         (contributor.firstName && (contributor.firstName.trim().length>0)) ? `<given_name>${contributor.firstName}</given_name>` : undefined,
@@ -228,26 +113,26 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getFunderXML () {
-    var funders = getSubmitSubItems(state.funding).map( funder => {
-      let funderName;
+    var funders = getSubItems(state.funding).map( funder => {
+      let funderName
       if (funder.fundername) {
         funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
       }
 
-      let funder_identifier;
+      let funder_identifier
       if (funder.funder_identifier) {
         funder_identifier = funder.funder_identifier.trim().length > 0 ? funder.funder_identifier : undefined
       }
 
       let grants = funder.grantNumbers ? funder.grantNumbers.map( awardNumber => {
         return (awardNumber && awardNumber.trim()) ? `<fr:assertion name="award_number">${awardNumber}</fr:assertion>` : ''
-      }) : [];
+      }) : []
 
       grants = _.filter(grants, (grant) => {
         return grant !== ''
       })
 
-      let attributes = '';
+      let attributes = ''
 
       if (funderName) {
         attributes = `<fr:assertion name="funder_name">${funderName}${funder_identifier ? `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>` : ``}</fr:assertion>`
@@ -255,7 +140,7 @@ export const journalArticleXml = (component, crossmark) => {
         attributes = `<fr:assertion name="funder_identifier">${funder_identifier}</fr:assertion>`
       }
 
-      return ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined;
+      return ( attributes || grants.length ) ? `<fr:assertion name="fundgroup">${attributes}${grants.join('')}</fr:assertion>` : undefined
     })
 
     funders = _.filter(funders, (funder) => {
@@ -267,8 +152,8 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getLicenseXML () {
-    var licenses = getSubmitSubItems(state.license).map((license, i) => {
-      const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay;
+    var licenses = getSubItems(state.license).map((license, i) => {
+      const year = license.acceptedDateYear, month = license.acceptedDateMonth, day = license.acceptedDateDay
       const dayHolder = []
       if (year) {
         dayHolder.push(year)
@@ -281,9 +166,9 @@ export const journalArticleXml = (component, crossmark) => {
       }
 
       let attributes = ``
-      const isDate = dayHolder.length > 0;
+      const isDate = dayHolder.length > 0
       if (isDate || license.licenseurl || license.appliesto) {
-        const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : '';
+        const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : ''
         let freetolicense = ``
         if (i===0 && state.addInfo.freetolicense) {
           freetolicense = `<ai:free_to_read${isDate ? ` start_date="${date}"` : ''}/>`
@@ -297,7 +182,7 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function getRelatedItemsXML () {
-    const relatedItems = getSubmitSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}) => {
+    const relatedItems = getSubItems(state.relatedItems).map(({description, relationType, identifierType, relatedItemIdentifier}) => {
 
       const interWorkRelation = (relationType || identifierType || relatedItemIdentifier) ?
         `<inter_work_relation${relationType ? ` relationship-type="${relationType}"`:''}${identifierType ? ` identifier-type="${identifierType}"`:''}>${relatedItemIdentifier || ''}</inter_work_relation>`
@@ -325,7 +210,132 @@ export const journalArticleXml = (component, crossmark) => {
   function getPublisherItems () {
     return (article.locationId.trim().length > 0) ? `<publisher_item><item_number item_number_type="article_number">${article.locationId.trim()}</item_number></publisher_item>` : ``
   }
+
+  function crossmarkXml () {
+    const JSform = component.props.reduxForm.toJS()
+    const crossmarkForm = {}
+    if(JSform[pubHist]) crossmarkForm[pubHist] = JSform[pubHist]
+    if(JSform[peer]) crossmarkForm[peer] = JSform[peer]
+    if(JSform[copyright]) crossmarkForm[copyright] = JSform[copyright]
+    if(JSform[supp]) crossmarkForm[supp] = JSform[supp]
+    if(JSform[other]) crossmarkForm[other] = JSform[other]
+    if(JSform[clinical]) crossmarkForm[clinical] = JSform[clinical]
+    if(JSform[update]) crossmarkForm[update] = JSform[update]
+
+    const size = Object.keys(crossmarkForm).length
+
+    if(!size) return ''
+
+    const customMetadata = (!crossmarkForm[update] || size > 1) ?
+      [
+        `<custom_metadata>`,
+
+          crossmarkForm[other] ? generateOther(crossmarkForm[other]) : '',
+
+          crossmarkForm[pubHist] ? generatePubHist(crossmarkForm[pubHist]) : '',
+
+          crossmarkForm[peer] ? generatePeer(crossmarkForm[peer]) : '',
+
+          crossmarkForm[supp] ? generateSupp(crossmarkForm[supp]) : '',
+
+          crossmarkForm[copyright] ? generateCopyright(crossmarkForm[copyright]) : '',
+
+          crossmarkForm[clinical] ? generateClinical(crossmarkForm[clinical]) : '',
+
+          funderElement.length ? funderElement : '',
+
+          licenseElement.length ? licenseElement : '',
+
+        `</custom_metadata>`
+      ].join('')
+      : null
+
+    return [
+      `<crossmark>`, `<crossmark_policy>${component.props.ownerPrefix}/something</crossmark_policy>`, //TODO Needs to be looked at
+
+      `<crossmark_domains><crossmark_domain><domain>psychoceramics.labs.crossref.org</domain></crossmark_domain></crossmark_domains>`, //TEMPORARY, Crossref team said they will be removing this requirement
+
+      crossmarkForm[update] ? generateUpdate(crossmarkForm[update]) : '',
+
+      customMetadata ? customMetadata : '',
+      `</crossmark>`
+    ].join('')
+
+
+    function generateUpdate (card) {
+      let array = [`<updates>`]
+      for (let number in card) {
+        const { type, DOI, day, month, year } = card[number]
+        const date = `${year || ''}-${month || ''}-${day || ''}`
+        array.push(`<update${type ? ` type="${type.toLowerCase().replace(/\s+/g, '_')}"`:''}${year || month || day ? ` date="${date}"`:''}>${DOI ? DOI:''}</update>`)
+      }
+      array.push(`</updates>`)
+      return array.join('')
+    }
+
+    function generateOther (card) {
+      let array = []
+      for (let number in card) {
+        const { label, explanation, href } = card[number]
+        array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''}${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
+      } return array.join('')
+    }
+
+    function generatePubHist (card) {
+      let array = []
+      for (let number in card) {
+        const { label, day, month, year } = card[number]
+        const date = `${year || ''}-${month || ''}-${day || ''}`
+        array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''} group_name="publication_history" group_label="Publication History"${number ? ` order="${number}"`:''}>${year || month || day ? date : ''}</assertion>`)
+      } return array.join('')
+    }
+
+    function generatePeer (card) {
+      let array = []
+      for (let number in card) {
+        const { label, explanation, href } = card[number]
+        array.push(`<assertion${label ? ` name="${label.toLowerCase().replace(/\s+/g, '_')}" label="${label}"` : ''} group_name="peer_review" group_label="Peer review"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
+      } return array.join('')
+    }
+
+    function generateSupp (card) {
+      let array = []
+      for (let number in card) {
+        const { explanation, href } = card[number]
+        array.push(`<assertion name="supplementary_Material" label="Supplementary Material"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
+      } return array.join('')
+    }
+
+    function generateCopyright (card) {
+      let array = []
+      for (let number in card) {
+        const { label, explanation, href } = card[number]
+        if (label === 'Copyright Statement') {
+          array.push(`<assertion name="copyright_statement"${label ? ` label="${label}"` : ''} group_name="copyright_licensing" group_label="Copyright $amp; Licensing"${explanation ? ` explanation="${explanation}"` : ''}${href ? ` href="${href}"` : ''}${number ? ` order="${number}"` : ''}/>`)
+        } else if (label === 'Licensing Information') {
+          array.push(`<assertion name="licensing"${label ? ` label="${label}"`:''} group_name="copyright_licensing" group_label="Copyright $amp; Licensing"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
+        } else {
+          array.push(`<assertion group_name="copyright_licensing" group_label="Copyright $amp; Licensing"${explanation ? ` explanation="${explanation}"`:''}${href ? ` href="${href}"`:''}${number ? ` order="${number}"`:''}/>`)
+        }
+
+      } return array.join('')
+    }
+
+    function generateClinical (card) {
+      let array = [`<program xmlns="http://www.crossref.org/clinicaltrials.xsd">`]
+      for (let number in card) {
+        const { registry, trialNumber, type } = card[number]
+        array.push(`<clinical-trial-number${registry ? ` registry="${registryDois[registry]}"`:''}${type ? ` type="${lowerCaseFirst(type).replace(/-/g, '')}"`:''}>${trialNumber ? trialNumber : ''}</clinical-trial-number>`)
+      }
+      array.push(`</program>`)
+      return array.join('')
+    }
+  }
 }
+
+
+
+
 
 
 
@@ -427,5 +437,5 @@ export const getIssueXml = (issueObj) => {
 
 
 function lowerCaseFirst (string) {
-  return string.charAt(0).toLowerCase() + string.slice(1);
+  return string.charAt(0).toLowerCase() + string.slice(1)
 }

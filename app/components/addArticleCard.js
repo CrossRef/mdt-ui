@@ -15,6 +15,7 @@ import { makeDateDropDown } from '../utilities/date'
 import {routes} from '../routing'
 import refreshErrorBubble from '../utilities/refreshErrorBubble'
 import {asyncValidateArticle} from '../utilities/validation'
+import {getSubItems} from '../utilities/getSubItems'
 
 
 const defaultState = {
@@ -209,7 +210,6 @@ export default class AddArticleCard extends Component {
     if (nextProps.mode === 'edit' && publication.message && publication.message.contains.length) {
 
       const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
-
       let reduxForm
       if(parsedArticle.crossmark) {
         reduxForm = parsedArticle.crossmark.reduxForm
@@ -243,7 +243,7 @@ export default class AddArticleCard extends Component {
   }
 
 
-  async validation (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) {
+  validation = async (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) => {
 
     const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.props.ownerPrefix, doiDisabled)
 
@@ -253,7 +253,14 @@ export default class AddArticleCard extends Component {
       errors: {...criticalErrors, ...warnings},
       license: licenses.length ? licenses : this.state.license,
       contributors: contributors.length ? contributors : this.state.contributors,
-      relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems
+      relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems,
+      openItems: {
+        Contributors: !!contributors.length,
+        Funding: !!getSubItems(data.funding).length,
+        Licenses: !!licenses.length,
+        relatedItems: !!relatedItems.length,
+        addInfo: !!getSubItems(data.addInfo).length
+      }
     }
     let valid = true
 
@@ -277,14 +284,13 @@ export default class AddArticleCard extends Component {
 
 
   save = async (addToCart) => {
-    const crossmark = this.state.crossmark ? crossmarkXml(this.props.reduxForm, this.props.ownerPrefix) : undefined
 
     const {valid, validatedPayload} = await this.validation()
 
     if (valid) {
       const publication = this.props.publication
 
-      const journalArticle = journalArticleXml(this, crossmark)
+      const journalArticle = journalArticleXml(this)
       const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
 
       const title = JSesc(this.state.article.title)

@@ -105,7 +105,6 @@ export default class Search extends Component {
         //check for duplicate
         for (var i in publicationContains) {
           if(publicationContains[i].doi === issue.doi) {
-            console.log('ISSUE ALREADY IN PUBLICATION MDT')
 
             //try to add article, reset issue metadata
             issue.contains = [savedArticle]

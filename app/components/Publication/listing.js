@@ -130,7 +130,13 @@ export default class Listing extends Component {
 
     if (this.props.filterBy !== 'all') {
       itemlist = _.filter(itemlist, (item) => {
-        return item.props.doi.status.toLowerCase() === this.props.filterBy
+        const match = item.props.record.status.toLowerCase() === this.props.filterBy
+        if(!match && item.props.record.type === 'issue' && item.props.record.contains && item.props.record.contains.length) {
+          for (let article in item.props.record.contains) {
+            return item.props.record.contains[article].status === this.props.filterBy
+          }
+        }
+        return match
       })
     }
 
