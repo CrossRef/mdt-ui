@@ -94,7 +94,7 @@ export function login (usr, pwd, error = (reason) => console.error('ERROR in log
 }
 
 
-export function getCRState (type, error = (reason) => console.error('ERROR in getCRState', reason)) {
+export function getCRState (type, currentLocation, error = (reason) => console.error('ERROR in getCRState', reason)) {
   return function(dispatch) {
     authorizedFetch(`${apiBaseUrl}/state`, {
       method: 'get',
@@ -151,6 +151,10 @@ export function getCRState (type, error = (reason) => console.error('ERROR in ge
 
       if(!match || pathname === base) {   // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
         scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
+      }
+
+      if(type === 'newLoad') {
+        scrubbedState.routing.locationBeforeTransitions.pathname = currentLocation
       }
 
       console.warn('Retrieving from remote store: ', scrubbedState)

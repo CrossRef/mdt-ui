@@ -21,8 +21,9 @@ setConfig({
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
-if(browserHistory.getCurrentLocation().pathname !== `${routes.base}`) {
-  store.dispatch(getCRState())
+const currentLocation = browserHistory.getCurrentLocation().pathname;
+if(currentLocation !== `${routes.base}`) {
+  store.dispatch(getCRState('newLoad', currentLocation))
 }
 
 document.addEventListener('DOMContentLoaded', () => {

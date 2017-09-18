@@ -10,7 +10,7 @@ const wrappedFetch = function () {
       console.log([response.status, arguments, response]);
       if(browserHistory.getCurrentLocation().pathname !== routes.base) {
         browserHistory.push(routes.base);
-        console.error('Authorization failed, kicking back to HomePage')
+        return console.error('Authorization failed, kicking back to HomePage')
       }
     }
     return response
