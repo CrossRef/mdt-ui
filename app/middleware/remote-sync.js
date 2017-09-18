@@ -25,7 +25,6 @@ let breakerActionSeen = false
 export default store => next => action => {
   var nextState = next(action) // update store to next state first
 
-  console.log(action)
   if (action) {
 
     if(action.type === '@@router/LOCATION_CHANGE' && action.payload.pathname === routes.base) {
