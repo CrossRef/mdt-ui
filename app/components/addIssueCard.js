@@ -188,7 +188,7 @@ export default class AddIssueCard extends Component {
         'type': 'issue',
         'mdt-version': version,
         'status': 'draft',
-        'content': issueXML.replace(/(\r\n|\n|\r)/gm,''),
+        'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
       }
 
       publication.message.contains = [newRecord]
