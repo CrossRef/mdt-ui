@@ -179,6 +179,14 @@
                   clear:both;
                   margin:0;
                 }
+
+                .closeButton {
+                  position: absolute;
+                  right: 8px;
+                  top: 5px;
+                  width: 13px;
+                  height:13px
+                }
               }
 
               a.tooltips div:after {
