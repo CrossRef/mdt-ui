@@ -19,9 +19,16 @@ export default class ArticleContainer extends Component {
   }
 
   render () {
-    const articles = this.props.record.contains
+    let articles = this.props.record.contains
     const  issueDoi = this.props.record.doi
     const padding = articles.length ? {padding:"48px 0",height: "32px"} : {padding: "0px 0", height: "0px"}
+
+    if(this.props.filterBy !== 'all') {
+      articles = articles.filter((thisArticle)=>{
+        return thisArticle.status === this.props.filterBy.toLowerCase()
+      })
+    }
+
 
     return (<tr>
       <td colSpan={6} className='issue-articles' style={padding}>
