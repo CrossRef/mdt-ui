@@ -2,11 +2,11 @@
 var presets = {
   production: {
     baseUrl: '/metadatamanager/',
-    apiBaseUrl: 'http://mdt.crossref.org/mdt/v1'
+    apiBaseUrl: 'https://apps.crossref.org/mdt/v1/'
   },
 
   staging: {
-    baseUrl: '/mmstaging',
+    baseUrl: '/mmstaging/',
     apiBaseUrl: 'https://apps.crossref.org/mdt-staging/'
   }
 }
