@@ -179,7 +179,8 @@ class ErrorBox extends Component {
         <li onClick={this.toggleError}>
           <a className="tooltips">
             {this.state.errorBoxShow && <div className="popup">
-              <div className="scrollContainer">{this.props.errorMessage}</div><img className='closeButton' src={`${routes.images}/Deposit/x.png`}/>
+              <div className="scrollContainer">{this.props.errorMessage}</div>
+              <img className='closeButton' src={`${routes.images}/Deposit/x.png`}/>
             </div>}
 
             <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>

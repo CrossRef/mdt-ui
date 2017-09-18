@@ -1,6 +1,7 @@
 import React, {Component} from 'react'
 import is from 'prop-types'
 import moment from 'moment'
+import $ from 'jquery'
 
 import {routes} from '../routing'
 
@@ -16,8 +17,27 @@ export default class DepositResult extends Component{
     ]).isRequired,
   }
 
-  closeErrors = (callback) => { //just need to force an update for all errors to close, then callback will open clicked error
-    this.setState({}, callback)
+  componentWillMount () {
+    document.addEventListener('click', this.handleClick, false)
+  }
+
+  componentWillUnmount(){
+    document.removeEventListener('click', this.handleClick, false)
+  }
+
+  handleClick = (e) => {
+    const target = $(e.target)
+    if(!target.parents('.errorBox').length) {
+      if($('.popup').length) {
+        this.setState({})
+      }
+    }
+  }
+
+  closeErrors = () => {
+    return new Promise(resolve=>{
+      this.setState({}, resolve)
+    })
   }
 
   render() {
@@ -125,9 +145,18 @@ class ErrorBox extends Component {
     this.setState({errorBoxShow: false})
   }
 
-  toggleError = () => {
-    if(this.state.errorBoxShow) {this.setState({errorBoxShow: false})}
-    else this.props.closeErrors(() => this.setState({errorBoxShow: true}))
+  toggleError = async (e) => {
+    const target = $(e.target)
+    if((target.parents('.popup').length || target.hasClass('popup')) && !target.hasClass('closeButton')) {
+      return
+    }
+
+    if(!this.state.errorBoxShow) {
+      await this.props.closeErrors()
+      this.setState({errorBoxShow: true})
+    } else {
+      this.setState({errorBoxShow: false})
+    }
   }
 
   render () {
@@ -136,8 +165,11 @@ class ErrorBox extends Component {
         <li onClick={this.toggleError}>
           <a className="tooltips">
             {this.state.errorBoxShow &&
-              <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/><p>{this.props.errorMessage}</p></div>
-            }
+              <div className="popup">
+                <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>
+                <p>{this.props.errorMessage}</p>
+                <img className='closeButton' src={`${routes.images}/Deposit/x.png`}/>
+              </div>}
             <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>
           </a>
         </li>
