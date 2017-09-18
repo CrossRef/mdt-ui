@@ -1,4 +1,5 @@
 // See http://brunch.io for documentation.
+var config = require('./deployConfig')
 
 exports.sourceMaps = true
 
@@ -49,6 +50,6 @@ exports.plugins = {
 
 exports.server = {
   hostname: '0.0.0.0',
-  base: '/metadatamanager/'
+  base: config.baseUrl
 }
 

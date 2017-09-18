@@ -6,7 +6,7 @@ import { routes } from '../routing'
 const withQuery = require('with-query')
 
 
-export const apiBaseUrl = 'http://mdt.crossref.org/mdt/v1'
+export const apiBaseUrl = require('../../deployConfig').apiBaseUrl
 
 
 // Action Creators, useless unless dispatched
@@ -200,6 +200,7 @@ export function searchRecords (query, pubTitle, type, error = (reason) => consol
 
 
 export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
+  console.log(document.baseUrl)
   return function(dispatch) {
     if(!Array.isArray(DOIs)) DOIs = [DOIs]
     Promise.all(
