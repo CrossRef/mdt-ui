@@ -15,6 +15,7 @@ export default class Search extends Component {
     asyncSearchRecords: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
     pubTitle: is.string.isRequired,
+    ownerPrefix: is.string.isRequired,
     search: is.object.isRequired,
     asyncSubmitIssue: is.func.isRequired,
     publication: is.object.isRequired,
@@ -34,34 +35,34 @@ export default class Search extends Component {
 
   onChange = (e, value) => {
     value ? this.setState({ forceClose:false }) : this.setState({ forceClose:true })
-    this.setState({searchingFor: value});
-    this.props.asyncSearchRecords(value, this.props.pubTitle, this.state.searchType);
+    this.setState({searchingFor: value})
+    this.props.asyncSearchRecords(value, this.props.pubTitle, this.state.searchType)
   }
 
 
   onSelect = (value, item) => {
-    const publication = this.props.publication;
-    const publicationContains = this.props.publication.message.contains;
-    const pubDoi = this.props.publication.message.doi;
-    const ownerPrefix = pubDoi.split('/')[0];
+    const publication = this.props.publication
+    const publicationContains = this.props.publication.message.contains
+    const pubDoi = this.props.publication.message.doi
+    const ownerPrefix = this.props.ownerPrefix
 
 
-    this.setState({ searchingFor: '', loading: false, forceClose:true });
+    this.setState({ searchingFor: '', loading: false, forceClose:true })
 
     this.props.asyncGetItem(item.doi)
     .then((result) => {
 
       //clean up returned publication metadata
-      result.message.doi = publication.message.doi;
-      result.message['owner-prefix'] = ownerPrefix;
-      delete result.message.content;
+      result.message.doi = publication.message.doi
+      result.message['owner-prefix'] = ownerPrefix
+      delete result.message.content
 
       //Is lone record:
       if(result.message.contains[0].type === item.type) {
 
         //Prepare record metadata
-        const record = result.message.contains[0];
-        record['mdt-version'] = '0';
+        const record = result.message.contains[0]
+        record['mdt-version'] = '0'
 
         this.props.asyncSubmitIssue(result, () => {
           this.props.asyncGetPublications(pubDoi) //gets updated publication data and refreshes page
@@ -71,32 +72,32 @@ export default class Search extends Component {
       } else if (result.message.contains[0].contains[0].type === item.type) {
 
         //Separate article
-        const savedArticle = result.message.contains[0].contains[0];
-        savedArticle['owner-prefix'] = ownerPrefix;
-        savedArticle['mdt-version'] = '0';
+        const savedArticle = result.message.contains[0].contains[0]
+        savedArticle['owner-prefix'] = ownerPrefix
+        savedArticle['mdt-version'] = '0'
 
         //Prepare issue metadata
-        const issue = result.message.contains[0];
-        issue['mdt-version'] = '0';
-        issue['owner-prefix'] = ownerPrefix;
-        issue.contains = [];
+        const issue = result.message.contains[0]
+        issue['mdt-version'] = '0'
+        issue['owner-prefix'] = ownerPrefix
+        issue.contains = []
 
         //check for issue Doi
         if(!issue.doi) {
           return this.props.reduxControlModal({
             showModal: true,
-            title: 'Issue missing DOI, please add to continue.',
+            title: 'Edit Issue/Volume',
             style: 'addIssueModal',
             Component: AddIssueCard,
             props: {
-              mode: 'edit',
+              mode: 'search',
+              ownerPrefix: ownerPrefix,
               issue: issue,
               savedArticle: savedArticle,
               publication: publication,
-              publicationMessage: publication.message,
-              doiMessage: publication.message.doi,
-              handle: this.props.asyncGetPublications,
+              asyncGetPublications: this.props.asyncGetPublications,
               asyncSubmitIssue: this.props.asyncSubmitIssue,
+              asyncGetItem: this.props.asyncGetItem
             }
           })
         }
@@ -106,21 +107,21 @@ export default class Search extends Component {
           if(publicationContains[i].doi === issue.doi) {
 
             //try to add article, reset issue metadata
-            issue.contains = [savedArticle];
-            delete issue.content;
+            issue.contains = [savedArticle]
+            delete issue.content
             delete issue['mdt-version']
 
             this.props.asyncSubmitIssue(result, () => {
               this.props.asyncGetPublications(pubDoi)
             })
-            return;
+            return
           }
         }
         
         this.props.asyncSubmitIssue(result, () => {
           //reset issue metadata
           issue.contains = [savedArticle]
-          delete issue['mdt-version'];
+          delete issue['mdt-version']
 
           this.props.asyncSubmitIssue(result, () => {
             this.props.asyncGetPublications(pubDoi)
@@ -141,7 +142,7 @@ export default class Search extends Component {
 
 
   render () {
-    const results = this.props.search.result.works || [];
+    const results = this.props.search.result.works || []
     const { searchingFor, forceClose } = this.state
 
     return (
@@ -163,10 +164,10 @@ export default class Search extends Component {
             onSelect={this.onSelect}
             onChange={this.onChange}
             renderItem={(item, isHighlighted) => {
-              const { title, issue, volume } = item.title;
+              const { title, issue, volume } = item.title
               if(item.type === 'issue') {
-                let display;
-                if(!title && (issue || volume)) display = `Issue ${issue || 'NA'}, Volume ${volume || 'NA'}`;
+                let display
+                if(!title && (issue || volume)) display = `Issue ${issue || 'NA'}, Volume ${volume || 'NA'}`
                 return (
                   <div key={item.doi} className='search-result-holder'>
                     <div className='search-result'>

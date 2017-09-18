@@ -8,6 +8,7 @@ import SearchRecords from '../searchRecords'
 export default class TitleBar extends Component {
 
   static propTypes = {
+    ownerPrefix: is.string.isRequired,
     publication: is.shape({
       title: is.shape({
         title: is.string.isRequired
@@ -34,6 +35,7 @@ export default class TitleBar extends Component {
     return (<div className='publication-title'>
       <h1>{title}</h1>
       <SearchRecords
+        ownerPrefix={this.props.ownerPrefix}
         search={this.props.search}
         pubTitle={title}
         publication={this.props.publication}
