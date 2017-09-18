@@ -168,10 +168,12 @@ export default class Publication extends Component {
 
         <TitleBar
           publication={publication}
-          search={this.props.search} asyncGetItem={this.props.asyncGetItem}
+          search={this.props.search}
+          ownerPrefix={ownerPrefix}
 
           reduxControlModal={this.props.reduxControlModal}
 
+          asyncGetItem={this.props.asyncGetItem}
           asyncSearchRecords={this.props.asyncSearchRecords}
           asyncSubmitIssue={this.props.asyncSubmitIssue}
           asyncGetPublications={this.props.asyncGetPublications}/>

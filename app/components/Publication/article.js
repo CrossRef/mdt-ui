@@ -30,7 +30,10 @@ export default class Article extends Component {
     const issue = this.props.issue
     date = moment(date || undefined).format('MMM Do YYYY')
     title = title.title
-    const url = doi && `http://doi.org/${doi}`
+    if(title.length > 35) {
+      title = title.substring(0, 35) + '...'
+    }
+    const url = (doi && doi.length > 25) ? `http://doi.org/${doi.substr(0,25)}...` : (doi ? `http://doi.org/${doi}` : '')
 
     const checked = !this.props.selections.length ? {checked:false} : {};
 

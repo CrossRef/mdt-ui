@@ -200,7 +200,6 @@ export function searchRecords (query, pubTitle, type, error = (reason) => consol
 
 
 export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
-  console.log(document.baseUrl)
   return function(dispatch) {
     if(!Array.isArray(DOIs)) DOIs = [DOIs]
     Promise.all(
@@ -313,13 +312,26 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
         try {
           const getXML = xmlParse(item.result)
           if(getXML !== undefined) item.result = getXML
+          if(item.contains && item.contains.length) {
+            const recordArray = item.contains
+            recordArray.map((record) => {
+              const getXML = xmlParse(record.result)
+              if(getXML !== undefined) record.result = getXML
+              if(record.contains && record.contains.length) {
+                const articleArray = record.contains
+                articleArray.map((article) => {
+                  const getXML = xmlParse(article.result)
+                  if(getXML !== undefined) article.result = getXML
+                })
+              }
+            })
+          }
           return item
         } catch (error) {
           console.error('Error Parsing Deposit result: ' + error)
           return item
         }
       })
-      console.log('DEPOSIT RESULT', resultArray)
       if(callback) callback(resultArray)
     })
     .catch(reason => error(reason))
