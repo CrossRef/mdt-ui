@@ -11,6 +11,7 @@ import DepositCart from '../components/depositCart'
 import reviewDepositCart from '../components/reviewDepositCart'
 import DepositResult from '../components/depositResult'
 import {routes} from '../routing'
+import processDepositResult from '../utilities/processDepositResult'
 
 
 
@@ -204,61 +205,12 @@ export default class DepositCartPage extends Component {
     }
 
     this.props.asyncDeposit(toDeposit, (depositResult) => {
-      this.setState({status:'result', result: this.processDepositResult(depositResult)})
+      this.setState({status:'result', result: processDepositResult(depositResult, this.props.publications, this.props.cart)})
       this.props.reduxClearCart()
     }, errorHandler)
   }
 
-  processDepositResult = (depositResult) => {
-    const resultCount = {Success: 0, Failure: 0}
-    const resultData = {}
-    let depositId = []
 
-    depositResult.forEach((result, index)=>{
-      let pubDoi, pubTitle, resultTitle, resultStatus, resultType
-      let error = {}
-      const articleInfo = this.props.cart.find((cartItem)=>{
-        return cartItem.doi === result['DOI:']
-      })
-      pubDoi = articleInfo.pubDoi
-      resultType = articleInfo.type
-      pubTitle = this.props.publications[pubDoi].message.title.title
-      resultTitle = articleInfo.title.title
-
-      if(typeof result.result === 'string') {
-        resultStatus = 'Failure'
-        error.errorMessage = result.result
-      } else if (typeof result.result === 'object' && result.result.doi_batch_diagnostic) {
-        depositId.push(result.result.doi_batch_diagnostic.submission_id)
-        const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic
-        resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
-        if(resultStatus === 'Failure') {
-          error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
-        }
-      } else {
-        resultStatus = 'Failure'
-        error.errorMessage = 'Unknown Error'
-      }
-
-      resultCount[resultStatus]++
-
-      resultData[pubTitle] = [
-        ...(resultData[pubTitle] || []),
-        {
-          title: resultTitle,
-          status:resultStatus,
-          type:resultType,
-          doi: result['DOI:'],
-          pubDoi: pubDoi,
-          ...error
-        }
-      ]
-    })
-
-    depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
-
-    return {resultData, resultCount, depositId}
-  }
 
   toggleDeposit = (showDeposit) => {
     this.setState({showDeposit})

@@ -1,0 +1,92 @@
+@import 'mixins.scss';
+@import 'switch.min.css';
+@import 'AddArticle.scss';
+
+
+.waitMessage {
+  text-align: center;
+  position:fixed;
+  width: 400px;
+  height: 100px;
+  left: 34%;
+  top: 46%;
+  img {
+    height: 100px;
+    animation: spin 2s linear infinite;
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.opacity {
+  opacity: .1;
+
+}
+
+.depositPage {
+  margin: 0 auto;
+  text-align: left;
+  width: 960px;
+
+  .pageTitle {
+    font-size: 26px;
+    text-align: left;
+    margin: 0;
+    color: #4f5858;
+    padding: 35px 0;
+  }
+
+  .buttonHolder {
+    display: block;
+    padding: 0 0 35px 0;
+    width: 100%;
+    .buttonInnerHolder {
+      width: 100%;
+      display: block;
+      padding: 0 0 35px 0;
+      .ReviewButtonHolder {
+        float: left;
+        a {
+          cursor: pointer;
+          color: black;
+          background: #FFF;
+          border: 1px solid #4f5858;
+          display: inline-block;
+          width: 192px;
+          height: 48px;
+          line-height: 48px;
+          font-size: 16px;
+          text-decoration: none;
+          text-align: center;
+        }
+      }
+      .DepositButtonHolder {
+        float: right;
+        a {
+          cursor: pointer;
+          display: inline-block;
+          width: 192px;
+          height: 48px;
+          line-height: 48px;
+          background: #3eb1c8;
+          color: #fff;
+          font-size: 16px;
+          text-decoration: none;
+          text-align: center;
+        }
+
+        .disabledDeposit {
+          background: #A6D8E5 !important;
+        }
+
+        .emptycartbutton {
+          background: #FFF !important;
+          pointer-events: none;
+        }
+      }
+    }
+  }
+}
