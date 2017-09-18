@@ -6,7 +6,7 @@ import { routes } from '../routing'
 const withQuery = require('with-query')
 
 
-export const apiBaseUrl = 'https://apps.crossref.org/mdt-staging'
+export const apiBaseUrl = require('../../deployConfig').apiBaseUrl
 
 
 // Action Creators, useless unless dispatched

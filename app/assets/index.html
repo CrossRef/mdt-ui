@@ -3,7 +3,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width">
   <title>Crossref</title>
-  <base href="/metadatamanager/">
+  <script type="text/javascript">
+    document.head.innerHTML = document.head.innerHTML + "<base href='/" + document.location.href.split('/')[3] + "/' />"
+  </script>
   <link rel="stylesheet" href="assets/app.css">
   <script src="assets/js/libs.js"></script>
   <script src="assets/js/app.js"></script>
