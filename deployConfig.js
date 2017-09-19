@@ -11,4 +11,4 @@ var presets = {
   }
 }
 
-module.exports = presets.production
+module.exports = presets.staging
