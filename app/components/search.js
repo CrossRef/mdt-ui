@@ -70,7 +70,7 @@ export default class Search extends Component {
           onSelect={this.onSelect}
           onChange={this.onChange}
           renderItem={(item, isHighlighted) => (
-            <div key={item.doi} className='search-result-holder'>
+            <div key={item.title + '-' + item.doi} className='search-result-holder'>
               <div className='search-result'>{item.title}</div>
               <div className="add">Add</div>
             </div>
