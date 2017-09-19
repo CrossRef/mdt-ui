@@ -330,10 +330,20 @@ export default class AddArticleCard extends Component {
 
       await this.props.asyncSubmitArticle(savePub, this.state.article.doi)
 
+      newRecord.pubDoi = this.props.publication.message.doi
+
       if(addToCart) {
-        newRecord.pubDoi = this.props.publication.message.doi
         return newRecord
       } else {
+        // Save: check if article is already in cart, if so, update cart, otherwise just validate
+        for (let record of this.props.reduxCart) {
+          if (record.doi.toLowerCase() === this.state.article.doi.toLowerCase()) {
+            console.log('matched dois')
+            newRecord.doi = newRecord.doi.toLowerCase()
+            this.props.reduxCartUpdate([newRecord])
+            break
+          }
+        }
         this.setState(validatedPayload, () => this.state.validating = false)
       }
 
