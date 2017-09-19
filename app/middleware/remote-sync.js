@@ -55,7 +55,7 @@ export default store => next => action => {
               property !== 'modal' &&
               property !== 'reduxForm' &&
               property !== 'search' &&
-              property !== 'cartToast'
+              property !== 'toast'
             )
               postingState[property] = reduxState[property]
           }
