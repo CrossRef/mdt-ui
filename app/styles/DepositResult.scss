@@ -75,13 +75,14 @@
 
     .publicationTitleBar {
       height: 48px;
-      width: 100%;
+      width: 1000px;
       background-color: rgb(89, 101, 101);
       color:white;
 
       .publicationTitle {
         vertical-align: middle;
         padding-left: 60px;
+        width: 100%;
       }
     }
 

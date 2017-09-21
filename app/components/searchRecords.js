@@ -165,11 +165,12 @@ export default class Search extends Component {
             onChange={this.onChange}
             renderItem={(item, isHighlighted) => {
               const { title, issue, volume } = item.title
+              const recordTitle = (!title && (issue || volume)) ? `Issue ${issue || 'NA'}, Volume ${volume || 'NA'}` : title
               if(item.type === 'issue') {
                 let display
                 if(!title && (issue || volume)) display = `Issue ${issue || 'NA'}, Volume ${volume || 'NA'}`
                 return (
-                  <div key={item.doi} className='search-result-holder'>
+                  <div key={recordTitle + '-' + item.doi} className='search-result-holder'>
                     <div className='search-result'>
                       {title || display || item.doi || 'Error retrieving metadata'}
                     </div>
@@ -178,7 +179,7 @@ export default class Search extends Component {
                 )
               } else {
                 return (
-                  <div key={item.doi} className='record-search-result-holder'>
+                  <div key={recordTitle + '-' + item.doi} className='record-search-result-holder'>
                     <div className='record-search-result'>
                       {title || item.doi || 'Error retrieving metadata'}
                     </div>
