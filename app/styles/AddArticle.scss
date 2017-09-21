@@ -684,7 +684,8 @@ input.height64, textarea.height64, select.height64 {
   width: 960px;
   margin-right: auto;
   margin-left: auto;
-  margin-bottom: 40px;
+  margin-bottom: 7px;
+
   .actionTooltip {
     position: relative;
     float: right;
@@ -724,6 +725,28 @@ input.height64, textarea.height64, select.height64 {
       border-left: 8px solid transparent;
     }
   }
+}
+
+.saveConfirmation {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin-bottom: 7px;
+  background-color: white;
+  clear: both;
+  height: 25px;
+
+  p {
+    color: white
+  }
+}
+
+.saveSuccess {
+  background-color: #3AAFC6;
+}
+
+.saveFailed {
+  background-color: #EE6068;
 }
 
 .backbutton, .reviewbutton {

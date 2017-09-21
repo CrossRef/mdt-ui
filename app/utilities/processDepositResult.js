@@ -10,6 +10,8 @@ export default (depositResult, publications, cart) => {
     let error = {}
     let contains1 = {}
     const resultDoi = result['DOI:']
+
+    //If result isn't necessarily a publication, search cart for info, and if not found, search stored publications
     if(!result.contains) {
       resultInfo = cart.find((cartItem)=>{
         return cartItem.doi.toLowerCase() === resultDoi.toLowerCase()
@@ -28,6 +30,8 @@ export default (depositResult, publications, cart) => {
         }
       }
     }
+
+    //Identify resultType and assign data to variables accordingly
     resultType = resultInfo ? resultInfo.type : 'publication'
     pubDoi = resultType === 'publication' ? resultDoi : resultInfo.pubDoi
     pubTitle = publications[pubDoi.toLowerCase()].message.title.title
@@ -59,12 +63,16 @@ export default (depositResult, publications, cart) => {
 
     if(resultType === 'article') resultCount[resultStatus]++
 
+
+    //Check contains for records and assign data
     if(result.contains && result.contains.length) {
       result.contains.forEach((record, index)=>{
         let recordTitle, recordStatus, recordType, recordInfo
         let error = {}
         let contains2 = {}
         const recordDoi = record['DOI:']
+
+        //Check cart for record, if not found, must be an issue, get data from stored publications
         recordInfo = cart.find((cartItem)=>{
           return cartItem.doi.toLowerCase() === recordDoi.toLowerCase()
         })
@@ -72,6 +80,7 @@ export default (depositResult, publications, cart) => {
           recordInfo = publications[pubDoi.toLowerCase()].normalizedRecords[recordDoi.toLowerCase()]
         }
 
+        //Assign data to vars
         recordType = recordInfo.type
         recordTitle = recordType === 'issue' ?
           `${recordInfo.title.volume && `Volume ${recordInfo.title.volume}, `}Issue ${recordInfo.title.issue}`
@@ -95,6 +104,8 @@ export default (depositResult, publications, cart) => {
 
         if(recordType === 'article') resultCount[recordStatus]++
 
+
+        //Check record for contains, if found, must be articlesUnderIssue, assign data to vars
         if(record.contains && record.contains.length) {
           const issueDoi = recordDoi
           record.contains.forEach((article, index)=>{
@@ -140,6 +151,7 @@ export default (depositResult, publications, cart) => {
               ...error
             }
 
+            //Check if article's parentIssue already exists in resultData, if so, merge contains2 with parentIssue contains
             if(resultData[pubTitle] && resultData[pubTitle].contains[issueDoi]) {
               contains2 = {
                 ...resultData[pubTitle].contains[issueDoi].contains,
@@ -149,8 +161,10 @@ export default (depositResult, publications, cart) => {
               contains2[articleDoi] = articleResult
             }
           })
-        }
+        } //Finished processing articleUnderIssue
 
+
+        //Continue processing record
         if (depositId.indexOf(record.submissionid) === -1) {
           depositId.push(record.submissionid)
         }
@@ -166,6 +180,7 @@ export default (depositResult, publications, cart) => {
           ...error
         }
 
+        //Check if parent Publication exists in resultData, if so merge contains1 with parent publication contains
         if(resultData[pubTitle]) {
           contains1 = {
             ...resultData[pubTitle].contains,
@@ -175,8 +190,10 @@ export default (depositResult, publications, cart) => {
           contains1[recordDoi] = recordResult
         }
       })
-    }
+    } //Finished processing records
 
+
+    //Continue processing result
     if (depositId.indexOf(result.submissionid) === -1) {
       depositId.push(result.submissionid)
     }
@@ -192,22 +209,23 @@ export default (depositResult, publications, cart) => {
       ...error
     }
 
-    let newContains = parentIssue ? {
-      [parentIssue.doi]: {
-        title: `${parentIssue.title.volume && `Volume ${parentIssue.title.volume}, `}Issue ${parentIssue.title.issue}`,
-        status: 'Undeposited',
-        type: 'issue',
-        doi: parentIssue.doi,
-        pubDoi: pubDoi,
-        submissionId: result.submissionid,
-        contains: {[resultDoi]: thisResult},
-      }
-    }
-      : {
-        [resultDoi]: thisResult
-      }
 
+    //If result is a record, the parents didn't get deposited, so have to create a representation of the undeposited parents in resultData
     if (resultType !== 'publication') {
+      let newContains = parentIssue ? {
+        [parentIssue.doi]: {
+          title: `${parentIssue.title.volume && `Volume ${parentIssue.title.volume}, `}Issue ${parentIssue.title.issue}`,
+          status: 'Undeposited',
+          type: 'issue',
+          doi: parentIssue.doi,
+          pubDoi: pubDoi,
+          submissionId: result.submissionid,
+          contains: {[resultDoi]: thisResult},
+        }
+      }
+        : { [resultDoi]: thisResult }
+
+      //Check if parent publication and parentIssue was already created by another deposit and merge the newContains with their contains
       if(!resultData[pubTitle]) {
         resultData[pubTitle] = {
           title: pubTitle,
@@ -232,6 +250,9 @@ export default (depositResult, publications, cart) => {
         }
 
       }
+
+    //Result is a publication so write it to resultData. Publication may have already been created by previous deposit
+    // but we dont need to merge because only contains would be different in new deposit and contains already merged above
     } else {
       resultData[pubTitle] = {
         title: pubTitle,

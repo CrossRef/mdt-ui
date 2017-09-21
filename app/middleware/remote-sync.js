@@ -15,7 +15,8 @@ var blacklistActions = [
   'SEARCH_RESULT',
   'SEARCH_STATUS',
   'SEARCH_VALUE',
-  'LOGIN'
+  'LOGIN',
+  'CLEAR_TOAST'
 ]
 
 const BREAKER_ACTION = 'SET_STATE'

@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import is from 'prop-types'
 import Switch from 'react-toggle-switch'
 import $ from 'jquery'
 
@@ -10,8 +11,21 @@ import {routes} from '../routing'
 
 export class ActionBar extends Component {
 
+  static propTypes = {
+    back: is.func.isRequired,
+    addToCart: is.func.isRequired,
+    save: is.func.isRequired,
+    openReviewArticleModal: is.func.isRequired,
+    saving: is.bool.isRequired,
+    criticalErrors: is.object.isRequired
+  }
+
   state = {
-    menuOpen: false
+    menuOpen: false,
+    confirmationPayload: {
+      status: '',
+      message: ''
+    }
   }
 
   toggleMenu = () => {
@@ -37,18 +51,59 @@ export class ActionBar extends Component {
     document.removeEventListener('click', this.handleClick, false)
   }
 
+  componentWillReceiveProps (nextProps) {
+    if(nextProps.saving) this.confirmSave(nextProps.criticalErrors)
+  }
+
+  confirmSave = (criticalErrors) => {
+    const confirmationPayload = {
+      status: 'saveSuccess',
+      message: 'Save Complete'
+    }
+
+    const criticalErrorMsg = {
+      title: 'Title Required.',
+      doi: 'Valid DOI Required.',
+      invaliddoi: 'Valid DOI Required.',
+      invalidDoiPrefix: 'Valid DOI Required.',
+      licenseFreeToRead: 'License URL Required.',
+      dupedoi: 'Valid DOI Required.'
+    }
+    const errorMessageArray = ['Save Failed:']
+
+    for (let error in criticalErrors) {
+      if(criticalErrors[error] === true) {
+        confirmationPayload.status = 'saveFailed'
+        errorMessageArray.push(criticalErrorMsg[error])
+      }
+    }
+
+    if(confirmationPayload.status === 'saveFailed') {
+      confirmationPayload.message = errorMessageArray.join(' ')
+    }
+    this.setState({confirmationPayload}, ()=>{
+      setTimeout(()=>{
+        this.setState({confirmationPayload: {status: '', message: ''}})
+      }, 7000)
+    })
+  }
+
+
   render() {
     return (
-      <div className="reviewArticleButtonDiv">
-        <button type='button' onClick={this.props.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
-        <div onClick={this.toggleMenu} className={'addPublication saveButton actionTooltip'}>
-          Action
-          {this.state.menuOpen && <div className='actionBarDropDown'>
-            <p onClick={this.props.addToCart}>Add to Cart</p>
-            <p onClick={()=>this.props.save()}>Save</p>
-            <p onClick={this.props.openReviewArticleModal}>Review</p>
-          </div>}
+      <div>
+        <div className="reviewArticleButtonDiv">
+          <button type='button' onClick={this.props.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
+          <div onClick={this.toggleMenu} className={'addPublication saveButton actionTooltip'}>
+            Action
+            {this.state.menuOpen && <div className='actionBarDropDown'>
+              <p onClick={this.props.addToCart}>Add to Cart</p>
+              <p onClick={()=>this.props.save()}>Save</p>
+              <p onClick={this.props.openReviewArticleModal}>Review</p>
+            </div>}
+          </div>
         </div>
+        <div className={`saveConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
       </div>
     )
   }
