@@ -345,9 +345,14 @@ export default class AddArticleCard extends Component {
           if (record.doi.toLowerCase() === this.state.article.doi.toLowerCase()) {
             newRecord.doi = newRecord.doi.toLowerCase()
             this.props.reduxCartUpdate([newRecord])
+            validatedPayload.saving = false
             break
           }
         }
+
+        validatedPayload.doiDisabled = true
+        validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+
         this.setState(validatedPayload, () => {
           this.state.validating = false
           this.state.saving = false

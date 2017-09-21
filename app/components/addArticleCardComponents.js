@@ -25,7 +25,8 @@ export class ActionBar extends Component {
     confirmationPayload: {
       status: '',
       message: ''
-    }
+    },
+    timeOut: ''
   }
 
   toggleMenu = () => {
@@ -49,6 +50,7 @@ export class ActionBar extends Component {
 
   componentWillUnmount () {
     document.removeEventListener('click', this.handleClick, false)
+    clearTimeout(this.state.timeOut)
   }
 
   componentWillReceiveProps (nextProps) {
@@ -56,6 +58,7 @@ export class ActionBar extends Component {
   }
 
   confirmSave = (criticalErrors) => {
+    clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
       message: 'Save Complete'
@@ -81,11 +84,12 @@ export class ActionBar extends Component {
     if(confirmationPayload.status === 'saveFailed') {
       confirmationPayload.message = errorMessageArray.join(' ')
     }
-    this.setState({confirmationPayload}, ()=>{
-      setTimeout(()=>{
-        this.setState({confirmationPayload: {status: '', message: ''}})
-      }, 7000)
-    })
+
+    const timeOut = setTimeout(()=>{
+      this.setState({confirmationPayload: {status: '', message: ''}})
+    }, 7000)
+
+    this.setState({confirmationPayload, timeOut})
   }
 
 
