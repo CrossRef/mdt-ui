@@ -15,7 +15,8 @@ var blacklistActions = [
   'SEARCH_RESULT',
   'SEARCH_STATUS',
   'SEARCH_VALUE',
-  'LOGIN'
+  'LOGIN',
+  'CLEAR_TOAST'
 ]
 
 const BREAKER_ACTION = 'SET_STATE'
@@ -55,7 +56,7 @@ export default store => next => action => {
               property !== 'modal' &&
               property !== 'reduxForm' &&
               property !== 'search' &&
-              property !== 'cartToast'
+              property !== 'toast'
             )
               postingState[property] = reduxState[property]
           }

@@ -10,8 +10,8 @@ import { routes } from '../routing'
 export default class Header extends Component {
   static propTypes = {
     cart : is.array.isRequired,
-    cartToast: is.object.isRequired,
-    reduxClearCartToast: is.func.isRequired
+    toast: is.object.isRequired,
+    reduxClearToast: is.func.isRequired
   }
 
   render () {
@@ -28,7 +28,7 @@ export default class Header extends Component {
           <a target='_blank' href="https://www.crossref.org/services/content-registration/"><img src={`${routes.images}/App/crossref-content-registration-logo-200.svg`} /></a>
           <img className='second-logo-img' src={`${routes.images}/App/crossref-depositor-logo-200.svg`} />
         </div>
-        { (showPublicationsNav) && <PublicationsNav cart={this.props.cart} cartToast={this.props.cartToast} reduxClearCartToast={this.props.reduxClearCartToast}/> }
+        { (showPublicationsNav) && <PublicationsNav cart={this.props.cart} toast={this.props.toast} reduxClearToast={this.props.reduxClearToast}/> }
       </div>
     )
   }

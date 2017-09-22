@@ -7,18 +7,18 @@ import { stateTrackerII } from 'my_decorators'
 import Header from '../components/header'
 import Footer from '../components/footer'
 import Modal from './modal'
-import {clearCartToast} from '../actions/application'
+import {clearToast} from '../actions/application'
 
 
 const mapStateToProps = (state) => {
   return {
     cart: state.cart,
-    cartToast: state.cartToast
+    toast: state.toast
   }
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  reduxClearCartToast: clearCartToast
+  reduxClearToast: clearToast
 }, dispatch)
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -30,7 +30,7 @@ export default class App extends Component {
     return (
       <div className='app'>
         <div className='app-contents'>
-          <Header cart={this.props.cart} cartToast={this.props.cartToast} reduxClearCartToast={this.props.reduxClearCartToast}/>
+          <Header cart={this.props.cart} toast={this.props.toast} reduxClearToast={this.props.reduxClearToast}/>
           <div className='page-contents'>
             {this.props.children}
           </div>
