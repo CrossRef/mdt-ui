@@ -13,8 +13,8 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation)
 export default class PublicationNav extends Component {
   static propTypes = {
     cart: is.array.isRequired,
-    cartToast: is.object.isRequired,
-    reduxClearCartToast: is.func.isRequired
+    toast: is.object.isRequired,
+    reduxClearToast: is.func.isRequired
   }
 
   constructor (props) {
@@ -37,28 +37,40 @@ export default class PublicationNav extends Component {
       document.removeEventListener('click', this.handleClick, false)
     }
 
-    if (nextProps.cartToast.title !== '') {
+    if (nextProps.toast.title !== '') {
       let alreadyInCart = false
-      if(nextProps.cartToast.updateType === 'add') {
-        for (let record of this.props.cart) {
-          if(record.doi === nextProps.cartToast.doi) alreadyInCart = true
+      if(nextProps.toast.updateType === 'addToCart') {
+        const matchingItem = this.props.cart.find((cartItem) => {
+          return cartItem.doi === nextProps.toast.doi
+        })
+
+        if (matchingItem) {
+          alreadyInCart = true
+          const updatedItem = nextProps.cart.find((nextCartItem) => {
+            return (nextCartItem.doi === matchingItem.doi && nextCartItem['mdt-version'] !== matchingItem['mdt-version'])
+          })
+          if (updatedItem) {
+            nextProps.toast.updateType = 'updateCart'
+          }
         }
       }
-      if(!alreadyInCart) this.addAlert(nextProps.cartToast)
-      this.props.reduxClearCartToast()
+
+      if(!alreadyInCart || nextProps.toast.updateType === 'updateCart') this.addAlert(nextProps.toast)
+      this.props.reduxClearToast()
     }
   }
+
 
   componentWillUnmount () {
     document.removeEventListener('click', this.handleClick, false)
   }
 
   addAlert({title, recordType, updateType}) {
-    this.setState({type: updateType !== 'remove' ? 'add' : 'remove'})
+    this.setState({type: updateType !== 'removeFromCart' ? 'add' : 'remove'})
     const messages = {
-      add: 'Added to Deposit Cart',
-      remove: 'Removed From Deposit Cart',
-      update: 'Updated in Deposit Cart'
+      addToCart: 'Added to Deposit Cart',
+      removeFromCart: 'Removed From Deposit Cart',
+      updateCart: 'Updated in Deposit Cart'
     }
     this.refs.container.success(
       <div className='toastMessage'>

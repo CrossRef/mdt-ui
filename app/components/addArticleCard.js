@@ -19,6 +19,7 @@ import {getSubItems} from '../utilities/getSubItems'
 
 
 const defaultState = {
+  saving: false,
   validating: false,
   crossmark: false,
   showCards: {},
@@ -32,6 +33,7 @@ const defaultState = {
   error: false,
   doiDisabled: false,
   version: '1',
+  criticalErrors: {},
   errors: {
     title: false,
 
@@ -251,6 +253,7 @@ export default class AddArticleCard extends Component {
       validating: true,
       error: false,
       errors: {...criticalErrors, ...warnings},
+      criticalErrors: criticalErrors,
       license: licenses.length ? licenses : this.state.license,
       contributors: contributors.length ? contributors : this.state.contributors,
       relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems,
@@ -286,6 +289,8 @@ export default class AddArticleCard extends Component {
   save = async (addToCart) => {
 
     const {valid, validatedPayload} = await this.validation()
+
+    validatedPayload.saving = true
 
     if (valid) {
       const publication = this.props.publication
@@ -338,17 +343,27 @@ export default class AddArticleCard extends Component {
         // Save: check if article is already in cart, if so, update cart, otherwise just validate
         for (let record of this.props.reduxCart) {
           if (record.doi.toLowerCase() === this.state.article.doi.toLowerCase()) {
-            console.log('matched dois')
             newRecord.doi = newRecord.doi.toLowerCase()
             this.props.reduxCartUpdate([newRecord])
+            validatedPayload.saving = false
             break
           }
         }
-        this.setState(validatedPayload, () => this.state.validating = false)
+
+        validatedPayload.doiDisabled = true
+        validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+
+        this.setState(validatedPayload, () => {
+          this.state.validating = false
+          this.state.saving = false
+        })
       }
 
     } else {
-      this.setState(validatedPayload, () => this.state.validating = false)
+      this.setState(validatedPayload, () => {
+        this.state.validating = false
+        this.state.saving = false
+      })
       return false
     }
   }
@@ -437,7 +452,13 @@ export default class AddArticleCard extends Component {
 
           <form className='addArticleForm'>
 
-            <ActionBar back={this.back} addToCart={this.addToCart} save={this.save} openReviewArticleModal={this.openReviewArticleModal}/>
+            <ActionBar
+              back={this.back}
+              addToCart={this.addToCart}
+              save={this.save}
+              openReviewArticleModal={this.openReviewArticleModal}
+              saving={this.state.saving}
+              criticalErrors={this.state.criticalErrors}/>
 
             <div className='articleInnerForm'>
 

@@ -63,8 +63,12 @@ export function removeFromCart(doi, title, recordType) {
 	return { type: 'REMOVE_FROM_CART', doi, title, recordType }
 }
 
-export function clearCartToast () {
-  return { type: 'CLEAR_CART_TOAST' }
+export function newToast (toast) {
+  return { type: 'NEW_TOAST', toast}
+}
+
+export function clearToast () {
+  return { type: 'CLEAR_TOAST' }
 }
 
 // Async Action Creators
@@ -131,7 +135,7 @@ export function getCRState (type, currentLocation, error = (reason) => console.e
       let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
       if(type === 'login') delete scrubbedState.login //do not retrieve old login state if this is a new login
-      delete scrubbedState.cartToast
+      delete scrubbedState.toast
 
       // delete scrubbedState.cart  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
 
