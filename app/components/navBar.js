@@ -39,6 +39,7 @@ export default class PublicationNav extends Component {
 
     if (nextProps.toast.title !== '') {
       let alreadyInCart = false
+      let nothingRemoved = false
       if(nextProps.toast.updateType === 'addToCart') {
         const matchingItem = this.props.cart.find((cartItem) => {
           return cartItem.doi === nextProps.toast.doi
@@ -55,7 +56,11 @@ export default class PublicationNav extends Component {
         }
       }
 
-      if(!alreadyInCart || nextProps.toast.updateType === 'updateCart') this.addAlert(nextProps.toast)
+      if(nextProps.toast.updateType === 'removeFromCart' && this.props.cart.length === nextProps.cart.length) {
+        nothingRemoved = true
+      }
+
+      if(!nothingRemoved && (!alreadyInCart || nextProps.toast.updateType === 'updateCart')) this.addAlert(nextProps.toast)
       this.props.reduxClearToast()
     }
   }
