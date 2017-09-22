@@ -220,7 +220,7 @@ export default (depositResult, publications, cart) => {
           doi: parentIssue.doi,
           pubDoi: pubDoi,
           submissionId: result.submissionid,
-          contains: {[resultDoi]: thisResult},
+          contains: {[resultDoi]: thisResult}
         }
       }
         : { [resultDoi]: thisResult }
