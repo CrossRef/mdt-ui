@@ -190,6 +190,9 @@ export function searchRecords (query, pubTitle, type, error = (reason) => consol
     if(!query) return
     dispatch(searchValue(query))
     dispatch(searchLoading(true))
+    if(type === 'Issue') {
+      type = 'allissues'
+    }
     authorizedFetch(`${apiBaseUrl}/search/works?q=${query}&title=${pubTitle}&type=${type.toLowerCase()}`, {
       method: 'get',
       headers: {Authorization: localStorage.getItem('auth')}
@@ -378,7 +381,7 @@ export function getDepositHistory (params, callback, error = (reason) => console
 
 export function deleteRecord (record, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
   return function(dispatch) {
-    const {doi, pubDoi, title, type} = record
+    const {doi, pubDoi, title, type, contains} = record
     authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, {
       method: 'delete',
       headers: {Authorization: localStorage.getItem('auth')}
