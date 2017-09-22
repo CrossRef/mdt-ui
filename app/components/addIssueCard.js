@@ -83,7 +83,10 @@ export default class AddIssueCard extends Component {
 
   constructor (props) {
     super(props);
-    this.state = defaultState;
+    this.state = {...defaultState};
+    if(props.preFilledData) {
+      this.state.issue = {...this.state.issue, ...props.preFilledData}
+    }
     this.state.issue.issueDoi = props.ownerPrefix + '/'
   }
 
@@ -107,7 +110,7 @@ export default class AddIssueCard extends Component {
       const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
 
       if(isSearch) {
-        issue.issueDoi = this.props.ownerPrefix
+        issue.issueDoi = this.props.ownerPrefix + '/'
       }
 
       const issueDoiDisabled = !this.props.duplicate && !isSearch
