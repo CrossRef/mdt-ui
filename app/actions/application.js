@@ -5,6 +5,8 @@ import { publicationXml } from '../utilities/xmlGenerator'
 import { routes } from '../routing'
 const withQuery = require('with-query')
 
+import {SearchableRecords} from '../reducers/publicationsReducer'
+
 
 export const apiBaseUrl = require('../../deployConfig').apiBaseUrl
 
@@ -132,10 +134,15 @@ export function getCRState (type, currentLocation, error = (reason) => console.e
         state = blankCRState
       }
 
+      if(state.dois.length) {
+        dispatch(getPublications(state.dois))
+      }
+
       let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
       if(type === 'login') delete scrubbedState.login //do not retrieve old login state if this is a new login
       delete scrubbedState.toast
+      delete scrubbedState.publications
 
       // delete scrubbedState.cart  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
 

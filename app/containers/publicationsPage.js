@@ -45,10 +45,6 @@ export default class PublicationsPage extends Component {
     prefixes: is.array.isRequired
   }
 
-  componentWillMount() { //Usually you don't want async actions in WillMount because they could ask this component to reRender before its mounted, but I know this comp isn't subscribed to publications data
-    if(this.props.DOIs.length) this.props.asyncGetPublications(this.props.DOIs)
-  }
-
   componentWillReceiveProps(nextProps) {
     if(this.props.DOIs.length !== nextProps.DOIs.length) this.props.asyncGetPublications(nextProps.DOIs)
   }

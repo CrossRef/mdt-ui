@@ -1,3 +1,10 @@
+function compareDois (doi1, doi2) {
+  if(typeof doi1 !== 'string' || typeof doi2 !== 'string') {
+    return false
+  } else {
+    return doi1.toLowerCase() === doi2.toLowerCase()
+  }
+}
 
 
 export default (depositResult, publications, cart) => {
@@ -11,32 +18,29 @@ export default (depositResult, publications, cart) => {
     let contains1 = {}
     const resultDoi = result['DOI:']
 
-    //If result isn't necessarily a publication, search cart for info, and if not found, search stored publications
-    if(!result.contains) {
-      resultInfo = cart.find((cartItem)=>{
-        return cartItem.doi.toLowerCase() === resultDoi.toLowerCase()
-      })
-      if( publications[resultInfo.pubDoi] && !publications[resultInfo.pubDoi].normalizedRecords[resultDoi] ) {
-        for (let record in publications[resultInfo.pubDoi].normalizedRecords) {
-          const thisRecord = publications[resultInfo.pubDoi].normalizedRecords[record]
-          if(thisRecord.type === 'issue') {
-            for(let article of thisRecord.contains) {
-              if(article.doi = resultDoi) {
-                parentIssue = thisRecord
-                break
-              }
-            }
-          }
-        }
-      }
+    resultInfo = cart.find( cartItem => compareDois(cartItem.doi, resultDoi) )
+
+    if(!resultInfo) {
+      resultInfo = publications.find( record => compareDois(record.doi, resultDoi) )
     }
 
-    //Identify resultType and assign data to variables accordingly
-    resultType = resultInfo ? resultInfo.type : 'publication'
-    pubDoi = resultType === 'publication' ? resultDoi : resultInfo.pubDoi
+    resultType = resultInfo.type
+
+    //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
+    if( resultType === 'article' && !publications[resultInfo.pubDoi].normalizedRecords[resultDoi] ) {
+      publications[resultInfo.pubDoi].normalizedRecords.find( record => {
+        if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
+          parentIssue = record
+          return true
+        }
+      })
+    }
+
+    //Assign data to variables
+    pubDoi = resultType === 'Publication' ? resultDoi : resultInfo.pubDoi
     pubTitle = publications[pubDoi.toLowerCase()].message.title.title
     resultTitle = do {
-      if(resultType === 'publication') {
+      if(resultType === 'Publication') {
         pubTitle
       } else if (resultType === 'issue') {
         `${resultInfo.title.volume && `Volume ${resultInfo.title.volume}, `}Issue ${resultInfo.title.issue}`
@@ -59,9 +63,13 @@ export default (depositResult, publications, cart) => {
       error.errorMessage = 'Unknown Error'
     }
 
-    if(resultStatus === 'Failure') resultStatus = 'Failed'
+    if(resultStatus === 'Failure') {
+      resultStatus = 'Failed'
+    }
 
-    if(resultType === 'article') resultCount[resultStatus]++
+    if(resultType === 'article') {
+      resultCount[resultStatus]++
+    }
 
 
     //Check contains for records and assign data
@@ -73,9 +81,7 @@ export default (depositResult, publications, cart) => {
         const recordDoi = record['DOI:']
 
         //Check cart for record, if not found, must be an issue, get data from stored publications
-        recordInfo = cart.find((cartItem)=>{
-          return cartItem.doi.toLowerCase() === recordDoi.toLowerCase()
-        })
+        recordInfo = cart.find( cartItem => compareDois(cartItem.doi, resultDoi) )
         if(!recordInfo) {
           recordInfo = publications[pubDoi.toLowerCase()].normalizedRecords[recordDoi.toLowerCase()]
         }
@@ -112,9 +118,7 @@ export default (depositResult, publications, cart) => {
             let articleTitle, articleStatus, articleInfo
             let error = {}
             const articleDoi = article['DOI:']
-            articleInfo = cart.find((cartItem)=>{
-              return cartItem.doi.toLowerCase() === articleDoi.toLowerCase()
-            })
+            articleInfo = cart.find( cartItem => compareDois(cartItem.doi, articleDoi) )
 
             articleTitle = articleInfo.title.title
 
@@ -211,7 +215,7 @@ export default (depositResult, publications, cart) => {
 
 
     //If result is a record, the parents didn't get deposited, so have to create a representation of the undeposited parents in resultData
-    if (resultType !== 'publication') {
+    if (resultType !== 'Publication') {
       let newContains = parentIssue ? {
         [parentIssue.doi]: {
           title: `${parentIssue.title.volume && `Volume ${parentIssue.title.volume}, `}Issue ${parentIssue.title.issue}`,
@@ -230,7 +234,7 @@ export default (depositResult, publications, cart) => {
         resultData[pubTitle] = {
           title: pubTitle,
           status: 'Undeposited',
-          type: 'publication',
+          type: 'Publication',
           doi: pubDoi,
           pubDoi: pubDoi,
           contains: newContains,
@@ -257,7 +261,7 @@ export default (depositResult, publications, cart) => {
       resultData[pubTitle] = {
         title: pubTitle,
         status: resultStatus,
-        type: 'publication',
+        type: 'Publication',
         doi: pubDoi,
         pubDoi: pubDoi,
         contains: contains1,

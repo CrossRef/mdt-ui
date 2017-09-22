@@ -1,14 +1,17 @@
-import { routerReducer as routing } from 'react-router-redux'
+import { routerReducer } from 'react-router-redux'
 import { combineReducers } from 'redux'
-import _ from 'lodash'
-import {Map, fromJS} from 'immutable'
+
+import publicationsReducer from './publicationsReducer'
+import reduxFormReducer from './reduxFormReducer'
+import toastReducer from './toastReducer'
+import cartReducer from './cartReducer'
 
 
 
 const combinedReducers = combineReducers({
   search: searchReducer,
   login: loginReducer,
-  routing: routing,
+  routing: routerReducer,
   modal: modalReducer,
   publications: publicationsReducer,
   dois: doiReducer,
@@ -57,40 +60,6 @@ function searchReducer (state = {loading:false, searchValue: '', result:[]}, act
 }
 
 
-function reduxFormReducer (state = Map({}), action) {
-  switch (action.type) {
-    case 'REDUXFORM_ADD':
-      if(typeof action.value === 'object' && !Map.isMap(action.value)) {
-        action.value = fromJS(action.value)
-      }
-
-      if(action.value === '') {
-        const [cardKey, index, fieldKey] = action.keyPath
-        const fieldGroup = state.getIn([cardKey, index])
-
-        if(fieldGroup.size === 1 && fieldGroup.get(fieldKey)) {  // if this property is the last one, delete parent
-          const card = state.get(cardKey)
-          if(card.size === 1 && card.get(index)) {
-            return state.delete(cardKey)
-          } else {
-            return state.deleteIn([cardKey, index])
-          }
-        } else {
-          return state.deleteIn(action.keyPath)
-        }
-      } else {
-        return state.setIn(action.keyPath, action.value)
-      }
-    case 'REDUXFORM_DELETE':
-      return state.deleteIn(action.keyPath)
-    case 'REDUXFORM_CLEAR':
-      return Map({})
-    default:
-      return state
-  }
-}
-
-
 
 function doiReducer (state = [], action) {
   switch (action.type) {
@@ -108,7 +77,6 @@ function doiReducer (state = [], action) {
       return state
   }
 }
-
 
 
 function modalReducer ( state = {
@@ -130,117 +98,7 @@ function modalReducer ( state = {
 
 
 
-function publicationsReducer (state = {}, action) {
-  switch (action.type) {
-    case 'PUBLICATIONS':
 
-      function normalize (publications) {  //Redux likes normalized state: store items in an object, with the IDs of the items as keys and the items themselves as the values.
-        let normalizedData = {}
 
-        if(Array.isArray(publications)) {
-          publications.forEach( eachPublication => {
-            if(!eachPublication || !eachPublication.message || !eachPublication.message.doi) return console.warn(`Had trouble retrieving data for a Publication`, eachPublication || 'Empty Array Value')
-            const normalizedRecords = {}
-
-            if((eachPublication.message.contains || []).length) {
-              eachPublication.message.contains.forEach(eachRecord => {
-                if (!eachRecord || !eachRecord.doi) return console.warn(`Had trouble retrieving data for a Record`, eachRecord || 'Empty Array Value')
-                normalizedRecords[eachRecord.doi] = eachRecord
-              })
-            }
-            normalizedData[eachPublication.message.doi] = {...eachPublication, normalizedRecords}
-          })
-
-        } else if(publications.message.contains.length) {
-          const normalizedRecords = {}
-
-          publications.message.contains.forEach(eachRecord => {
-            if(!eachRecord || !eachRecord.doi) return console.warn(`Had trouble retrieving data for a Record`, eachRecord || 'Empty Array Value')
-            normalizedRecords[eachRecord.doi] = eachRecord
-          })
-          normalizedData[publications.message.doi] = {...publications, normalizedRecords}
-
-        } else normalizedData[publications.message.doi] = publications
-
-        return normalizedData
-      }
-
-      return {...state, ...normalize(action.publications)}
-    default:
-      return state
-  }
-}
-
-function toastReducer (state = {
-  doi: '',
-  title: '',
-  recordType: '',
-  updateType: ''
-}, action) {
-  switch (action.type) {
-    case 'CART_UPDATE':
-      const record = action.cart[0]
-      if(record.type === 'article') {
-        return {doi: record.doi, title: record.title.title, recordType: record.type, updateType: 'addToCart'}
-      }
-      else if(record.type === 'issue') {
-        return {
-          title: `${record.title.volume ? `, Volume ${record.title.volume}, ` : ''}Issue ${record.title.issue}`,
-          recordType: record.type,
-          updateType: 'addToCart'
-        }
-      }
-      else return state
-    case 'REMOVE_FROM_CART':
-      return {doi: action.doi, title: action.title, recordType: action.recordType, updateType: 'removeFromCart'}
-    case 'NEW_TOAST':
-      return action.toast
-    case 'CLEAR_TOAST':
-      return {doi: '', title: '', recordType: '', updateType: ''}
-    default:
-      return state
-  }
-}
-
-function cartReducer (state = [], action) {
-  switch (action.type) {
-    case 'CART_UPDATE':
-      var newState = [...state]
-
-      function mergeByDoi(arr) {
-        return _(arr)
-          .groupBy(function(item) { // group the items using the lower case
-            return item.doi
-          })
-          .map(function(group) { // map each group
-            return _.mergeWith.apply(_, [{}].concat(group, function(obj, src) { // merge all items, and if a property is an array concat the content
-              if (Array.isArray(obj)) {
-                return obj.concat(src)
-              }
-            }))
-          })
-          .values() // get the values from the groupBy object
-          .value()
-      }
-      newState.push(action.cart[0])
-      newState = mergeByDoi(newState) //does 2 things, removes dupes and also merge the content if there was 2 of the same that way there is more info if there is more info
-
-      return [...newState]
-    case 'REMOVE_FROM_CART':
-      var removeIndex = _.findIndex(state, (item) => {
-        return action.doi.toLowerCase() === item.doi.toLowerCase()
-      })
-      if(removeIndex !== -1) {
-        var newState = [...state]
-        newState.splice(removeIndex, 1)
-        return newState
-      } else return state
-    case 'CLEAR_CART':
-      var cart = []
-      return [...cart]
-    default:
-      return state
-  }
-}
 
 
