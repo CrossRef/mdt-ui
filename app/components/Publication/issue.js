@@ -11,7 +11,7 @@ export default class Issue extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
     triggerModal: is.string,
-    cart: is.array.isRequired,
+    cart: is.array,
 
     publication: is.object.isRequired,
     record: is.object.isRequired,

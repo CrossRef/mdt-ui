@@ -16,6 +16,7 @@ import {stateTrackerII} from 'my_decorators'
 
 
 const defaultState = {
+  menuOpen: false,
   validating: false,
   saving: false,
   showSection: false,
@@ -201,8 +202,6 @@ export default class AddIssueCard extends Component {
 
       await asyncSubmitIssue(publication)
 
-
-
       if(this.props.mode === 'search') {
         newRecord.contains = [this.props.savedArticle]
         await asyncSubmitIssue(publication)
@@ -242,11 +241,13 @@ export default class AddIssueCard extends Component {
   addToCart = async () => {
     const addToCart = true
     const newRecord = await this.save(addToCart)
+    console.log(newRecord)
     if(newRecord) {
+      this.closeModal()
       newRecord.doi = newRecord.doi.toLowerCase()
       this.props.reduxCartUpdate([newRecord])
-      this.props.asyncGetPublications(publication.message.doi)
-      this.closeModal()
+      this.props.asyncGetPublications(this.props.publication.message.doi)
+
     }
   }
 
@@ -299,12 +300,16 @@ export default class AddIssueCard extends Component {
     })
   }
 
-  closeModal () {
+  closeModal = () => {
     this.props.reduxControlModal({showModal:false})
   }
 
   componentDidUpdate() {
     refreshErrorBubble()
+  }
+
+  toggleMenu = () => {
+    this.setState({menuOpen: !this.state.menuOpen})
   }
 
 
@@ -741,7 +746,13 @@ export default class AddIssueCard extends Component {
                 showSection={this.state.showSection}
               />
               <div className='saveButtonAddIssueHolder'>
-                <button onClick={this.save} className='saveButton addIssue'>Action</button>
+                <div onClick={this.toggleMenu} className='saveButton addIssue actionTooltip'>
+                  Action
+                  {this.state.menuOpen && <div className='actionBarDropDown'>
+                    <p onClick={()=>this.save()}>Save</p>
+                    <p onClick={this.addToCart}>Add to Cart</p>
+                  </div>}
+                </div>
                 <button onClick={this.closeModal} type='button' className='cancelButton addIssue'>Cancel</button>
               </div>
             </div>
