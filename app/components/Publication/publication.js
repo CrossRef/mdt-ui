@@ -70,12 +70,8 @@ export default class Publication extends Component {
     const asyncLoop = (i) => {
       if (selections.length > i) {
         const cycle = new Promise (resolve=>{
-          if(selections[i].article.type === 'article') {
-            this.props.reduxCartUpdate([selections[i].article])
-            resolve(i+1)
-          } else {
-            resolve(i+1)
-          }
+          this.props.reduxCartUpdate([selections[i].article])
+          resolve(i+1)
         })
         cycle.then((nextIndex)=>{
           asyncLoop(nextIndex)
