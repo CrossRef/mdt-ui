@@ -11,10 +11,8 @@ import $ from 'jquery'
 import ReactPaginate from 'react-paginate';
 import { getDepositHistory } from '../actions/application'
 import DepositHistoryItem from '../components/depositHistoryItem'
-import objectSearch from '../utilities/objectSearch'
-import xmldoc from '../utilities/xmldoc'
+import {objectSearch, xmldoc, cleanObj} from '../utilities/helpers'
 import {makeDateDropDown} from '../utilities/date'
-import cleanObj from '../utilities/cleanObj'
 
 import {routes} from '../routing'
 

@@ -1,4 +1,4 @@
-import {cardNames} from './crossmarkHelpers'
+import {cardNames} from '../crossmarkHelpers'
 const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 
 

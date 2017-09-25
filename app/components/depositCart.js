@@ -4,7 +4,7 @@ import _ from 'lodash'
 import $ from 'jquery'
 
 import DepositCartItem from './depositCartItem'
-import Deferred from '../utilities/deferred'
+import {Deferred} from '../utilities/helpers'
 
 
 

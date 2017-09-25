@@ -1,11 +1,9 @@
 import {Map, fromJS} from 'immutable'
 
-import isURL from './isURL'
-import isDOI from './isDOI'
 import { getSubItems } from './getSubItems'
 import {cardNames} from './crossmarkHelpers'
 import { validDate } from './date'
-import {checkDupeDoi} from './dupeDOI'
+import {asyncCheckDupeDoi, isDOI, isURL} from './helpers'
 
 
 
@@ -26,7 +24,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     criticalErrors.doi = !doi
     criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi)
     criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== ownerPrefix)
-    criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await checkDupeDoi(doi)
+    criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 
   if (data.addInfo.freetolicense){
@@ -279,7 +277,7 @@ export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPre
     criticalErrors.issuedoi = !issueDoi
     criticalErrors.invalidissuedoi = !criticalErrors.issuedoi ? !isDOI(issueDoi) : false
     criticalErrors.invalidIssueDoiPrefix = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== ownerPrefix
-    criticalErrors.dupeissuedoi = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && await checkDupeDoi(issueDoi)
+    criticalErrors.dupeissuedoi = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && await asyncCheckDupeDoi(issueDoi)
   }
 
   const hasDate = !!(printDateYear || onlineDateYear)
@@ -312,7 +310,7 @@ export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPre
     warnings.volumedoi = !volumeDoi
     warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
     warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== ownerPrefix
-    warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && await checkDupeDoi(volumeDoi)
+    warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && await asyncCheckDupeDoi(volumeDoi)
     warnings.volumeUrl = !volumeUrl || volumeUrl === 'http://'
     warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
   }

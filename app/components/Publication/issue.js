@@ -1,18 +1,17 @@
 import React, { Component } from 'react'
-import { Link, browserHistory } from 'react-router'
+import { Link } from 'react-router'
 import moment from 'moment'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 import {routes} from '../../routing'
 import AddIssueCard from '../addIssueCard'
-import xmldoc from '../../utilities/xmldoc'
-import objectSearch from '../../utilities/objectSearch'
-import update from 'immutability-helper'
+
 
 export default class Issue extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
     triggerModal: is.string,
+    cart: is.array.isRequired,
 
     publication: is.object.isRequired,
     record: is.object.isRequired,
@@ -57,6 +56,7 @@ export default class Issue extends Component {
         triggerModal: this.props.triggerModal,
         ownerPrefix: this.props.ownerPrefix,
         publication: this.props.publication,
+        cart: this.props.cart,
 
         handleAddCart: this.props.handleAddCart,
         handleAddToList: this.props.handleAddToList,

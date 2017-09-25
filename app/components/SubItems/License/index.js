@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
-import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
-const AppliesTo = require('../../../utilities/appliesTo.json')
+import {refreshErrorBubble} from '../../../utilities/helpers'
+const AppliesTo = require('../../../utilities/lists/appliesTo.json')
 
 
 

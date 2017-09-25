@@ -15,6 +15,7 @@ export default class Listing extends Component {
     ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired,
     publication: is.object,
+    cart: is.array.isRequired,
 
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,

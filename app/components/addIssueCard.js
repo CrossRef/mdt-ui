@@ -5,11 +5,10 @@ import Switch from 'react-toggle-switch'
 
 import {makeDateDropDown} from  '../utilities/date'
 import SubItem from './SubItems/subItem'
-import JSesc from '../utilities/jsesc'
-import { displayArchiveLocations } from '../utilities/archiveLocations'
+import {jsEscape, refreshErrorBubble, compareDois} from '../utilities/helpers'
+import { displayArchiveLocations } from '../utilities/lists/archiveLocations'
 import { getIssueXml } from '../utilities/xmlGenerator'
 import {routes} from '../routing'
-import refreshErrorBubble from '../utilities/refreshErrorBubble'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
 import {stateTrackerII} from 'my_decorators'
@@ -18,6 +17,7 @@ import {stateTrackerII} from 'my_decorators'
 
 const defaultState = {
   validating: false,
+  saving: false,
   showSection: false,
   showIssueDoiReq: false,
   showHelper: false,
@@ -165,10 +165,11 @@ export default class AddIssueCard extends Component {
   }
 
 
-  onSubmit = async (e) => {
-    e.preventDefault()
+  save = async (addToCart) => {
 
     const {valid, validatedPayload} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
+
+    validatedPayload.saving = true
 
     if (valid) {
       const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
@@ -181,9 +182,9 @@ export default class AddIssueCard extends Component {
         version = String(parseInt(this.state.version) + 1)
       }
 
-      const title = JSesc(this.state.issue.issueTitle);
-      const issue = JSesc(this.state.issue.issue);
-      const volume = JSesc(this.state.issue.volume);
+      const title = jsEscape(this.state.issue.issueTitle);
+      const issue = jsEscape(this.state.issue.issue);
+      const volume = jsEscape(this.state.issue.volume);
 
       const newRecord = {
         'title': {title, issue, volume},
@@ -197,19 +198,55 @@ export default class AddIssueCard extends Component {
       }
 
       publication.message.contains = [newRecord]
-      asyncSubmitIssue(publication, () => {
-        if(this.props.mode === 'search') {
-          newRecord.contains = [this.props.savedArticle]
-          asyncSubmitIssue(publication, () => {
-            asyncGetPublications(publication.message.doi)
-            return this.closeModal()
-          })
+
+      await asyncSubmitIssue(publication)
+
+
+
+      if(this.props.mode === 'search') {
+        newRecord.contains = [this.props.savedArticle]
+        await asyncSubmitIssue(publication)
+      }
+
+      newRecord.pubDoi = publication.message.doi
+
+      if(addToCart) {
+        return newRecord
+      } else {
+        // Save: check if issue is already in cart, if so, update cart, otherwise just validate
+        for (let record of this.props.cart) {
+          if (compareDois(record.doi, this.state.issue.issueDoi)) {
+            newRecord.doi = newRecord.doi.toLowerCase()
+            this.props.reduxCartUpdate([newRecord])
+            validatedPayload.saving = false
+            break
+          }
         }
-        asyncGetPublications(publication.message.doi)
-        this.closeModal()
+        validatedPayload.issueDoiDisabled = true
+        validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+
+        this.setState(validatedPayload, () => {
+          this.state.validating = false
+          this.state.saving = false
+        })
+      }
+
+    } else /*if not valid*/ {
+      this.setState(validatedPayload, () => {
+        this.state.validating = false
+        this.state.saving = false
       })
-    } else {
-      this.setState(validatedPayload, () => this.state.validating = false)
+    }
+  }
+
+  addToCart = async () => {
+    const addToCart = true
+    const newRecord = await this.save(addToCart)
+    if(newRecord) {
+      newRecord.doi = newRecord.doi.toLowerCase()
+      this.props.reduxCartUpdate([newRecord])
+      this.props.asyncGetPublications(publication.message.doi)
+      this.closeModal()
     }
   }
 
@@ -277,7 +314,7 @@ export default class AddIssueCard extends Component {
      return (
       <div className='addIssueCard'>
         <div>
-          <form onSubmit={this.onSubmit} className='addIssues'>
+          <form className='addIssues'>
             <div className='articleInnerForm'>
               <div className='body'>
                 <div className='row infohelper'>
@@ -704,8 +741,8 @@ export default class AddIssueCard extends Component {
                 showSection={this.state.showSection}
               />
               <div className='saveButtonAddIssueHolder'>
-                <button type='submit' className='saveButton addIssue'>Submit</button>
-                <button onClick={() => this.closeModal()} type='button' className='cancelButton addIssue'>Cancel</button>
+                <button onClick={this.save} className='saveButton addIssue'>Action</button>
+                <button onClick={this.closeModal} type='button' className='cancelButton addIssue'>Cancel</button>
               </div>
             </div>
           </form>

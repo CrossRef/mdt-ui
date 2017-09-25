@@ -6,7 +6,7 @@ import { connect } from 'react-redux'
 
 
 import {routes} from '../routing'
-import xmlDoc from '../utilities/xmldoc'
+import {xmldoc} from '../utilities/helpers'
 import { controlModal, submitPublication } from '../actions/application'
 import AddPublicationCard from '../components/addPublicationCard'
 
@@ -49,7 +49,7 @@ export default class PublicationCardContainer extends Component {
   openEditPublicationModal = () => {
     const publication = this.props.publication;
     if(!publication) return console.error(`${this.props.doi} is not fetching from server`);
-    const parsedXMLContent = xmlDoc(publication.message.content)
+    const parsedXMLContent = xmldoc(publication.message.content)
     const savedMetaData = {
       ...parsedXMLContent, 'mdt-version': publication.message['mdt-version']
     };

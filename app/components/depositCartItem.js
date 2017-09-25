@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
-import Deferred from '../utilities/deferred'
+import {Deferred} from '../utilities/helpers'
 
 
 

@@ -6,7 +6,7 @@ import { Link, browserHistory } from 'react-router'
 import { stateTrackerII } from 'my_decorators'
 
 import { controlModal, getPublications, editForm, deleteCard, clearForm, submitArticle, cartUpdate, getItem } from '../actions/application'
-import xmldoc from '../utilities/xmldoc'
+import {xmldoc} from '../utilities/helpers'
 import AddArticleCard from '../components/addArticleCard'
 
 

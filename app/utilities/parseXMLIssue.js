@@ -1,8 +1,8 @@
-import React, { Component } from 'react'
+import React from 'react'
 import _ from 'lodash'
 
-import xmldoc from './xmldoc'
-import objectSearch from './objectSearch'
+import {objectSearch, xmldoc} from './helpers'
+
 
 const parseXMLIssue = function (xml, duplicate = false, ownerPrefix = '') {
   let retObj = {showSection: false}

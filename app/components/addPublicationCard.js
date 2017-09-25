@@ -3,12 +3,8 @@ import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 import verifyIssn from 'issn-verify'
 
-import authorizedFetch from '../utilities/fetch'
-const languages = require('../utilities/language.json')
-import isDOI from '../utilities/isDOI'
-import isURL from '../utilities/isURL'
-import {apiBaseUrl} from '../actions/application'
-
+import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
+const languages = require('../utilities/lists/language.json')
 
 
 export default class AddPublicationCard extends Component {
@@ -94,11 +90,6 @@ export default class AddPublicationCard extends Component {
     }
   }
 
-  checkDupeDOI (callback) {
-    return Promise.resolve(authorizedFetch(`${apiBaseUrl}/work?doi=${this.state.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
-      .then(data => callback(data.status === 200))
-    )
-  }
 
   getLanguages () {
     var lgOpt = [
@@ -127,7 +118,7 @@ export default class AddPublicationCard extends Component {
     }
   }
 
-  validation () {
+  validation = async () => {
     var errorCnt = 0
     this.setState({
       showURLError: false,
@@ -143,26 +134,26 @@ export default class AddPublicationCard extends Component {
       showDOIPrefixError: false
     })
 
-    return this.checkDupeDOI((isDupe) => {
-      const errorStates = {
-        showTitleEmptyError: (this.state.title.length <= 0),
-        showISSNEmptyError: (this.state.electISSN.length <= 0),
-        showISSNInvalidError: !this.validateISSN() && (this.state.electISSN.length > 0),
-        showURLEmptyError: (this.state.url.length <= 0),
-        showURLError: !isURL(this.state.url) && (this.state.url.length > 0),
-        showDOIEmptyError: (this.state.DOI.length <= 0),
-        showDOIInvalidError: !isDOI(this.state.DOI) && (this.state.DOI.length > 0),
-        showDOIPrefixError: ((this.state.DOI.length > 0) && isDOI(this.state.DOI)) ? !this.validatePrefix() : false,
-        showDOIError: isDupe
-      }
+    await asyncCheckDupeDoi(this.state.DOI)
 
-      this.setState(errorStates)
-      for (var key in errorStates) { // checking all the properties of errorStates to see if there is a true
-        if (errorStates[key]) {
-            return errorStates[key]
-          }
+    const errorStates = {
+      showTitleEmptyError: (this.state.title.length <= 0),
+      showISSNEmptyError: (this.state.electISSN.length <= 0),
+      showISSNInvalidError: !this.validateISSN() && (this.state.electISSN.length > 0),
+      showURLEmptyError: (this.state.url.length <= 0),
+      showURLError: !isURL(this.state.url) && (this.state.url.length > 0),
+      showDOIEmptyError: (this.state.DOI.length <= 0),
+      showDOIInvalidError: !isDOI(this.state.DOI) && (this.state.DOI.length > 0),
+      showDOIPrefixError: ((this.state.DOI.length > 0) && isDOI(this.state.DOI)) ? !this.validatePrefix() : false,
+      showDOIError: isDupe
+    }
+
+    this.setState(errorStates)
+    for (var key in errorStates) { // checking all the properties of errorStates to see if there is a true
+      if (errorStates[key]) {
+        return errorStates[key]
       }
-    })
+    }
   }
 
   onSubmit = (e) => {

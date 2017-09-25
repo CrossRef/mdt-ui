@@ -3,7 +3,7 @@ import is from 'prop-types'
 import Switch from 'react-toggle-switch'
 import $ from 'jquery'
 
-import { ClassWrapper } from '../utilities/classwrapper'
+import { ClassWrapper } from '../utilities/helpers'
 import {cardNames} from '../utilities/crossmarkHelpers'
 const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 import {routes} from '../routing'

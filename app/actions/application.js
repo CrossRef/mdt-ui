@@ -1,5 +1,5 @@
 
-import xmlParse from '../utilities/xmldoc'
+import {xmldoc} from '../utilities/helpers'
 import authorizedFetch, {regularFetch} from '../utilities/fetch'
 import { publicationXml } from '../utilities/xmlGenerator'
 import { routes } from '../routing'
@@ -321,17 +321,17 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
       let resultArray = result.message
       resultArray = resultArray.map((item) => {
         try {
-          const getXML = xmlParse(item.result)
+          const getXML = xmldoc(item.result)
           if(getXML !== undefined) item.result = getXML
           if(item.contains && item.contains.length) {
             const recordArray = item.contains
             recordArray.map((record) => {
-              const getXML = xmlParse(record.result)
+              const getXML = xmldoc(record.result)
               if(getXML !== undefined) record.result = getXML
               if(record.contains && record.contains.length) {
                 const articleArray = record.contains
                 articleArray.map((article) => {
-                  const getXML = xmlParse(article.result)
+                  const getXML = xmldoc(article.result)
                   if(getXML !== undefined) article.result = getXML
                 })
               }

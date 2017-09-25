@@ -8,7 +8,7 @@ import {routes} from '../routing'
 import {asyncValidateArticle, asyncValidateIssue} from '../utilities/validation'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import parseXMLIssue from '../utilities/parseXMLIssue'
-import {ArticleMessages, IssueMessages} from '../utilities/validationMessages'
+import {ArticleMessages, IssueMessages} from '../utilities/lists/validationMessages'
 
 
 

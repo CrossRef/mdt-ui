@@ -1,9 +1,10 @@
 import React from 'react'
 import _ from 'lodash'
-import { parseCrossmark } from './crossmarkHelpers'
 
-import xmldoc from './xmldoc'
-import objectSearch from './objectSearch'
+import { parseCrossmark } from './crossmarkHelpers'
+import {objectSearch, xmldoc} from './helpers'
+
+
 
 const parseXMLArticle = function (articleXML) {
     var retObj = {}

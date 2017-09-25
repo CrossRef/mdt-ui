@@ -10,7 +10,7 @@ import AdditionalInformation from './AdditionalInformation'
 import OptionalIssueInformation from './OptionalIssueInformation'
 import { CrossmarkCards, CrossmarkAddButton } from './Crossmark/crossmark'
 import {routes} from '../../routing'
-import refreshErrorBubble from '../../utilities/refreshErrorBubble'
+import {refreshErrorBubble} from '../../utilities/helpers'
 
 
 

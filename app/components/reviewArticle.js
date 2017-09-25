@@ -3,9 +3,8 @@ import is from 'prop-types'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import update from 'immutability-helper'
 
-import objectSearch from '../utilities/objectSearch'
+import {objectSearch, xmldoc} from '../utilities/helpers'
 import articleReviewGenerator from './articleReviewGenerator'
-import xmldoc from '../utilities/xmldoc'
 
 
 export default class ArticleReview extends Component {

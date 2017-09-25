@@ -177,7 +177,6 @@ export default class Publication extends Component {
         <ActionBar
           ownerPrefix={ownerPrefix}
           doi={doi}
-
           selections={this.state.selections}
           publication={publication}
 
@@ -199,6 +198,7 @@ export default class Publication extends Component {
               publication={publication}
               triggerModal={this.props.triggerModal}
               selections={this.state.selections}
+              cart={this.props.cart}
 
               handleRemoveFromList={this.handleRemoveFromList}
               handleAddToList={this.handleAddToList}
