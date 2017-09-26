@@ -291,12 +291,15 @@ export function submitArticle (publication, articleDoi, callback, error = (reaso
 
 export function submitIssue (publication, callback, error = (reason) => console.error('ERROR in submitIssue', reason)) {
   return function(dispatch) {
-    authorizedFetch(`${apiBaseUrl}/work`, {
+    return authorizedFetch(`${apiBaseUrl}/work`, {
         method: 'post',
         headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
       }
-    ).then(() => {
+    ).then((response) => {
+      if(response.status !== 202) {
+        throw response.statusText
+      }
       if(callback) callback()
     })
     .catch((reason) => error(reason))
@@ -353,16 +356,14 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
 export function getItem (doi) {
 	return function(dispatch) {
 		if(doi){
-			return Promise.resolve(
-				authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
-				.then(response => {
-				  if(response.status !== 200) {
-				    console.error(`${response.status}: ${response.statusText}`, response)
-				    throw `${response.status}: ${response.statusText}`
-				  }
-				  return response.json()
-				})
-			)
+      return authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
+      .then(response => {
+        if(response.status !== 200) {
+          console.error(`${response.status}: ${response.statusText}`, response)
+          throw `${response.status}: ${response.statusText}`
+        }
+        return response.json()
+      })
 		}
 	}
 }

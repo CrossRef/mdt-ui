@@ -236,6 +236,7 @@ export default class DepositCartPage extends Component {
                 <DepositCart
                   reduxRemoveFromCart={this.props.reduxRemoveFromCart}
                   fullCart={this.state.fullCart}
+                  cart={this.props.cart}
                   showDeposit={this.state.showDeposit}
                   toggleDeposit={this.toggleDeposit}
                 />

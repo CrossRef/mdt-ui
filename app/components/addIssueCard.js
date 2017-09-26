@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import update from 'immutability-helper'
 import Switch from 'react-toggle-switch'
+import $ from 'jquery'
 
 import {makeDateDropDown} from  '../utilities/date'
 import SubItem from './SubItems/subItem'
@@ -18,13 +19,18 @@ import {stateTrackerII} from 'my_decorators'
 const defaultState = {
   menuOpen: false,
   validating: false,
-  saving: false,
+  timeOut: '',
+  confirmationPayload: {
+    status: '',
+    message: ''
+  },
   showSection: false,
   showIssueDoiReq: false,
   showHelper: false,
   on: false,
   error: false,
   version: '1',
+  criticalErrors: {},
   errors: {
     issueUrl: false,
     printDateYear: false,
@@ -142,6 +148,7 @@ export default class AddIssueCard extends Component {
       validating: true,
       error: false,
       errors: {...criticalErrors, ...warnings},
+      criticalErrors,
       optionalIssueInfo: (contributors && contributors.length) ? contributors : optionalIssueInfo
     }
     if(enableVolumeDoi) {
@@ -170,8 +177,6 @@ export default class AddIssueCard extends Component {
 
     const {valid, validatedPayload} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
-    validatedPayload.saving = true
-
     if (valid) {
       const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
 
@@ -198,14 +203,22 @@ export default class AddIssueCard extends Component {
         'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
       }
 
-      publication.message.contains = [newRecord]
+      const submissionPayload = {
+        ...publication,
+        message: {
+          ...publication.message,
+          contains: [newRecord]
+        }
+      }
 
-      await asyncSubmitIssue(publication)
+      await asyncSubmitIssue(submissionPayload)
 
       if(this.props.mode === 'search') {
         newRecord.contains = [this.props.savedArticle]
-        await asyncSubmitIssue(publication)
+        await asyncSubmitIssue(submissionPayload)
       }
+
+     this.props.asyncGetPublications(this.props.publication.message.doi)
 
       newRecord.pubDoi = publication.message.doi
 
@@ -213,27 +226,34 @@ export default class AddIssueCard extends Component {
         return newRecord
       } else {
         // Save: check if issue is already in cart, if so, update cart, otherwise just validate
-        for (let record of this.props.cart) {
-          if (compareDois(record.doi, this.state.issue.issueDoi)) {
-            newRecord.doi = newRecord.doi.toLowerCase()
-            this.props.reduxCartUpdate([newRecord])
-            validatedPayload.saving = false
-            break
+        if(this.props.mode === 'edit') {
+          for (let record of this.props.cart) {
+            if (compareDois(record.doi, this.state.issue.issueDoi)) {
+              newRecord.doi = newRecord.doi.toLowerCase()
+              this.props.reduxCartUpdate([newRecord])
+              validatedPayload.saving = false
+              break
+            }
           }
         }
         validatedPayload.issueDoiDisabled = true
-        validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+        validatedPayload.version = String(parseInt(this.state.version) + 1)
+        const { confirmationPayload, timeOut } = this.confirmSave(validatedPayload.criticalErrors)
+        validatedPayload.confirmationPayload = confirmationPayload
+        validatedPayload.timeOut = timeOut
 
         this.setState(validatedPayload, () => {
           this.state.validating = false
-          this.state.saving = false
         })
+
       }
 
     } else /*if not valid*/ {
+      const { confirmationPayload, timeOut } = this.confirmSave(validatedPayload.criticalErrors)
+      validatedPayload.confirmationPayload = confirmationPayload
+      validatedPayload.timeOut = timeOut
       this.setState(validatedPayload, () => {
         this.state.validating = false
-        this.state.saving = false
       })
     }
   }
@@ -241,13 +261,10 @@ export default class AddIssueCard extends Component {
   addToCart = async () => {
     const addToCart = true
     const newRecord = await this.save(addToCart)
-    console.log(newRecord)
     if(newRecord) {
       this.closeModal()
       newRecord.doi = newRecord.doi.toLowerCase()
       this.props.reduxCartUpdate([newRecord])
-      this.props.asyncGetPublications(this.props.publication.message.doi)
-
     }
   }
 
@@ -308,8 +325,69 @@ export default class AddIssueCard extends Component {
     refreshErrorBubble()
   }
 
+  componentWillUnmount () {
+    clearTimeout(this.state.timeOut)
+  }
+
   toggleMenu = () => {
     this.setState({menuOpen: !this.state.menuOpen})
+  }
+
+  handleClick = e => {
+    const element = $(e.target)
+    if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
+      this.setState({ menuOpen: false })
+    }
+  }
+
+  componentWillUpdate (nextProps, nextState) {
+    if(nextState.menuOpen) {
+      document.addEventListener('click', this.handleClick, false)
+    } else if (!nextState.menuOpen) {
+      document.removeEventListener('click', this.handleClick, false)
+    }
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('click', this.handleClick, false)
+    clearTimeout(this.state.timeOut)
+  }
+
+  confirmSave = (criticalErrors) => {
+    clearTimeout(this.state.timeOut)
+    const confirmationPayload = {
+      status: 'saveSuccess',
+      message: 'Save Complete'
+    }
+
+    const criticalErrorMsg = {
+      issue: 'Issue # Required.',
+      issuedoi: 'Valid Issue DOI Required.',
+      invalidissuedoi: 'Valid Issue DOI Required.',
+      invalidIssueDoiPrefix: 'Valid Issue DOI Required.',
+      dupeissuedoi: 'Valid Issue DOI Required.',
+      dupeDois: 'Duplicate Issue & Volume DOIs.',
+      issueUrl: 'Issue Url is Required.'
+    }
+
+    const errorMessageArray = ['Save Failed:']
+
+    for (let error in criticalErrors) {
+      if(criticalErrors[error] === true) {
+        confirmationPayload.status = 'saveFailed'
+        errorMessageArray.push(criticalErrorMsg[error])
+      }
+    }
+
+    if(confirmationPayload.status === 'saveFailed') {
+      confirmationPayload.message = errorMessageArray.join(' ')
+    }
+
+    const timeOut = setTimeout(()=>{
+      this.setState({confirmationPayload: {status: '', message: ''}})
+    }, 7000)
+
+    return {confirmationPayload, timeOut}
   }
 
 
@@ -323,6 +401,7 @@ export default class AddIssueCard extends Component {
             <div className='articleInnerForm'>
               <div className='body'>
                 <div className='row infohelper'>
+                  <div className={`saveConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
                   <div className='errorHolder'>
                     <div className='switchOuterHolder'>
                         <div className='switchInnerHolder'>

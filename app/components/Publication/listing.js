@@ -71,7 +71,6 @@ export default class Listing extends Component {
   render () {
     const publication = this.props.publication
     let contains = this.props.publication.message.contains || []
-
     contains = this.sortRecords(contains);
 
     var itemlist = _.flatten(contains.map((child, i) => {
@@ -86,6 +85,7 @@ export default class Listing extends Component {
                 record={child}
                 selections={this.props.selections}
                 publication={publication}
+                cart={this.props.cart}
 
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}

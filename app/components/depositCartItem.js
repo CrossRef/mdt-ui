@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
-import {Deferred} from '../utilities/helpers'
+import {Deferred, compareDois} from '../utilities/helpers'
 
 
 
@@ -10,6 +10,7 @@ export default class DepositCartItem extends Component {
   static propTypes = {
     reduxRemoveFromCart: is.func.isRequired,
     cartItem: is.object.isRequired,
+    cart: is.array.isRequired,
     reportErrors: is.func.isRequired,
     recordCount: is.number.isRequired,
     closeErrors: is.func.isRequired
@@ -38,6 +39,7 @@ export default class DepositCartItem extends Component {
           pubDoi={props.cartItem.doi}
           reduxRemoveFromCart={props.reduxRemoveFromCart}
           cartItem={record}
+          inCart={record.type === 'issue' ? !!this.props.cart.find( cartRecord => compareDois(cartRecord.doi, record.doi) ) : true}
           closeErrors={this.props.closeErrors}
           reportErrors={asyncErrorReport.resolve}
         />
@@ -62,6 +64,7 @@ export default class DepositCartItem extends Component {
               pubDoi={props.cartItem.doi}
               reduxRemoveFromCart={props.reduxRemoveFromCart}
               cartItem={recordUnderIssue}
+              inCart={true}
               closeErrors={this.props.closeErrors}
               reportErrors={asyncErrorReport.resolve}
             />

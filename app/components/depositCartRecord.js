@@ -15,6 +15,7 @@ import {ArticleMessages, IssueMessages} from '../utilities/lists/validationMessa
 export default class DepositCartRecord extends Component {
   static propTypes = {
     cartItem: is.object.isRequired,
+    inCart: is.bool.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
     pubDoi: is.string.isRequired,
     issueDoi: is.string,
@@ -137,7 +138,7 @@ export default class DepositCartRecord extends Component {
           {status}
         </td>
         <td className={'action' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + height}>
-          {(cartType !== 'issue') && <a onClick={() => {this.remove()}}>Remove</a>}
+          {this.props.inCart && <a onClick={() => {this.remove()}}>Remove</a>}
         </td>
         <td className={'errorholder'}>
           {

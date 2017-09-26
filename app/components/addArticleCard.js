@@ -208,7 +208,7 @@ export default class AddArticleCard extends Component {
     }
 
     const { publication } = nextProps
-    if (nextProps.mode === 'edit' && publication.message && publication.message.contains.length) {
+    if (nextProps.mode === 'edit' && this.props.mode !== 'edit') {
 
       const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
       let reduxForm
@@ -236,6 +236,7 @@ export default class AddArticleCard extends Component {
         relatedItems: parsedArticle.relatedItems,
         openItems: parsedArticle.openItems
       }, ...validatedPayload}
+
 
       this.setState(setStatePayload, () => this.state.validating = false)
     } else {

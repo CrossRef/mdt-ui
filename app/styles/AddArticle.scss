@@ -731,8 +731,8 @@ input.height64, textarea.height64, select.height64 {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   margin-bottom: 7px;
-  background-color: white;
   clear: both;
   height: 25px;
 
@@ -740,6 +740,10 @@ input.height64, textarea.height64, select.height64 {
     color: white
   }
 }
+
+//.saveConfirmationArticle {
+//  background-color: white;
+//}
 
 .saveSuccess {
   background-color: #3AAFC6;

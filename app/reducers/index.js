@@ -185,6 +185,7 @@ function toastReducer (state = {
       }
       else if(record.type === 'issue') {
         return {
+          doi: record.doi,
           title: `${record.title.volume ? `, Volume ${record.title.volume}, ` : ''}Issue ${record.title.issue}`,
           recordType: record.type,
           updateType: 'addToCart'
@@ -215,7 +216,7 @@ function cartReducer (state = [], action) {
           .map(function(group) { // map each group
             return _.mergeWith.apply(_, [{}].concat(group, function(obj, src) { // merge all items, and if a property is an array concat the content
               if (Array.isArray(obj)) {
-                return obj.concat(src)
+                return mergeByDoi(obj.concat(src))
               }
             }))
           })
@@ -224,7 +225,6 @@ function cartReducer (state = [], action) {
       }
       newState.push(action.cart[0])
       newState = mergeByDoi(newState) //does 2 things, removes dupes and also merge the content if there was 2 of the same that way there is more info if there is more info
-
       return [...newState]
     case 'REMOVE_FROM_CART':
       var removeIndex = _.findIndex(state, (item) => {

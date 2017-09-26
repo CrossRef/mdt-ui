@@ -166,8 +166,10 @@ export default class Publication extends Component {
           publication={publication}
           search={this.props.search}
           ownerPrefix={ownerPrefix}
+          cart={this.props.cart}
 
           reduxControlModal={this.props.reduxControlModal}
+          reduxCartUpdate={this.props.reduxCartUpdate}
 
           asyncGetItem={this.props.asyncGetItem}
           asyncSearchRecords={this.props.asyncSearchRecords}
