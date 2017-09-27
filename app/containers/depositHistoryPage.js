@@ -364,7 +364,7 @@ export default class DepositHistoryPage extends Component {
         <Pagination className="pagination"
         total={this.state.total} 
         itemRender={textItemRender}
-        defaultPageSize={10}
+        defaultPageSize={20}
         showTitle={false}
         //locale={en_US}
         
