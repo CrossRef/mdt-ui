@@ -1,9 +1,9 @@
-
-import xmlParse from '../utilities/xmldoc'
+import {xmldoc, recordTitle} from '../utilities/helpers'
 import authorizedFetch, {regularFetch} from '../utilities/fetch'
-import { publicationXml } from '../utilities/xmlGenerator'
 import { routes } from '../routing'
 const withQuery = require('with-query')
+
+
 
 
 export const apiBaseUrl = require('../../deployConfig').apiBaseUrl
@@ -132,10 +132,15 @@ export function getCRState (type, currentLocation, error = (reason) => console.e
         state = blankCRState
       }
 
+      if(state.dois.length) {
+        dispatch(getPublications(state.dois))
+      }
+
       let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
       if(type === 'login') delete scrubbedState.login //do not retrieve old login state if this is a new login
       delete scrubbedState.toast
+      delete scrubbedState.publications
 
       // delete scrubbedState.cart  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
 
@@ -232,35 +237,23 @@ export function getPublications (DOIs, callback, error = (reason) => console.err
 }
 
 
-export function submitPublication (form, callback, error = reason => console.error('ERROR in submitPublication', reason)) {
+export function submitPublication (publication, error = reason => console.error('ERROR in submitPublication', reason)) {
   return function(dispatch) {
-    authorizedFetch(`${apiBaseUrl}/work`, {
+    return authorizedFetch(`${apiBaseUrl}/work`, {
       method:'post',
       headers: {Authorization: localStorage.getItem('auth')},
       body: JSON.stringify({
-        message: {
-          'title': {'title': form.title},
-          'doi': form.DOI,
-          'date': new Date(),
-          'owner-prefix': form.DOI.split('/')[0],
-          'type': 'Publication',
-          'mdt-version': form['mdt-version'] || '0',
-          'status': 'draft',
-          'content': publicationXml(form),
-          'contains': []
-        }
+        message: publication
       })
-    }).then(() =>
-      authorizedFetch(`${apiBaseUrl}/work?doi=${form.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
-        .then(publication => publication.json())
-        .then(publication => {
-          dispatch(storePublications(publication))
-          if(callback) callback(publication)
-        })
-        .catch( reason => {
-          error(reason)
-        })
-    )
+    }).then((response) => {
+      dispatch(addDOIs(publication.doi))
+      dispatch(getPublications(publication.doi))
+      if(response.status === 202) {
+        return true
+      } else {
+        throw `${response.status}: ${response.statusText}`
+      }
+    })
     .catch( reason => {
       error(reason)
     })
@@ -291,12 +284,15 @@ export function submitArticle (publication, articleDoi, callback, error = (reaso
 
 export function submitIssue (publication, callback, error = (reason) => console.error('ERROR in submitIssue', reason)) {
   return function(dispatch) {
-    authorizedFetch(`${apiBaseUrl}/work`, {
+    return authorizedFetch(`${apiBaseUrl}/work`, {
         method: 'post',
         headers: {Authorization: localStorage.getItem('auth')},
         body: JSON.stringify(publication)
       }
-    ).then(() => {
+    ).then((response) => {
+      if(response.status !== 202) {
+        throw response.statusText
+      }
       if(callback) callback()
     })
     .catch((reason) => error(reason))
@@ -321,17 +317,17 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
       let resultArray = result.message
       resultArray = resultArray.map((item) => {
         try {
-          const getXML = xmlParse(item.result)
+          const getXML = xmldoc(item.result)
           if(getXML !== undefined) item.result = getXML
           if(item.contains && item.contains.length) {
             const recordArray = item.contains
             recordArray.map((record) => {
-              const getXML = xmlParse(record.result)
+              const getXML = xmldoc(record.result)
               if(getXML !== undefined) record.result = getXML
               if(record.contains && record.contains.length) {
                 const articleArray = record.contains
                 articleArray.map((article) => {
-                  const getXML = xmlParse(article.result)
+                  const getXML = xmldoc(article.result)
                   if(getXML !== undefined) article.result = getXML
                 })
               }
@@ -350,19 +346,17 @@ export function deposit (cartArray, callback, error = (reason) => console.error(
 }
 
 
-export function getItem (doi) {
+export function getItem (doi, forced) {
 	return function(dispatch) {
 		if(doi){
-			return Promise.resolve(
-				authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
-				.then(response => {
-				  if(response.status !== 200) {
-				    console.error(`${response.status}: ${response.statusText}`, response)
-				    throw `${response.status}: ${response.statusText}`
-				  }
-				  return response.json()
-				})
-			)
+      return authorizedFetch(`${apiBaseUrl}/work?doi=${doi}${forced ? `&forced=true` : ''}`, { headers: {Authorization: localStorage.getItem('auth')} })
+      .then(response => {
+        if(response.status !== 200) {
+          console.error(`${response.status}: ${response.statusText}`, response)
+          throw `${response.status}: ${response.statusText}`
+        }
+        return response.json()
+      })
 		}
 	}
 }
@@ -394,11 +388,11 @@ export function deleteRecord (record, callback, error = (reason) => console.erro
         if(response.status === 200) {
           if(type === 'issue') {
             for(let i in contains) {
-              dispatch(removeFromCart(contains[i].doi, contains[i].title.title, contains[i].type))
+              dispatch(deleteRecord(contains[i]))
             }
-          } else {
-            dispatch(removeFromCart(doi, title.title, type))
           }
+
+          dispatch(removeFromCart(doi, recordTitle(type, title), type))
 
           dispatch(getPublications(pubDoi))
           if(callback) callback()

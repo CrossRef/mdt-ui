@@ -12,6 +12,7 @@ export default class Search extends Component {
 
   static propTypes = {
     reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
     pubTitle: is.string.isRequired,
@@ -19,6 +20,7 @@ export default class Search extends Component {
     search: is.object.isRequired,
     asyncSubmitIssue: is.func.isRequired,
     publication: is.object.isRequired,
+    cart: is.array.isRequired,
     asyncGetPublications: is.func.isRequired
   }
 
@@ -115,6 +117,8 @@ export default class Search extends Component {
               issue: issue,
               savedArticle: savedArticle,
               publication: publication,
+              cart: this.props.cart,
+              reduxCartUpdate: this.props.reduxCartUpdate,
               asyncGetPublications: this.props.asyncGetPublications,
               asyncSubmitIssue: this.props.asyncSubmitIssue,
               asyncGetItem: this.props.asyncGetItem

@@ -73,6 +73,11 @@
         border: 0 !important;
     }
     .body {
+
+        .infohelper {
+          padding-top: 7px !important;
+        }
+
         .row {
             width: 100% !important;
             .fieldHolder {
@@ -140,4 +145,47 @@
 
 .disabledDoi {
     background-color: lightgrey;
+}
+
+.actionTooltip {
+    position: relative;
+    float: right;
+    padding-top: 9px;
+    text-align: center;
+    div {
+        position: absolute;
+        width: 174px;
+        color: #FFFFFF;
+        background: #616B6B;
+        height: 90px;
+        line-height: 30px;
+        text-align: left;
+        border-radius: 0px;
+        padding: 10px 0 10px 30px;
+        visibility: visible;
+        opacity: 1;
+        bottom: 57px;
+        right: 0;
+        z-index: 999;
+        border-left: solid 1px rgb(84, 84, 84);
+        p {
+            font-size:.88em;
+            margin-top:3px;
+            margin-bottom:3px;
+        }
+    }
+    div:after {
+      -ms-transform: rotate(180deg); /* IE 9 */
+      -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+      transform: rotate(180deg);
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 46%;
+      width: 0;
+      height: 0;
+      border-bottom: 8px solid #616B6B;
+      border-right: 8px solid transparent;
+      border-left: 8px solid transparent;
+    }
 }

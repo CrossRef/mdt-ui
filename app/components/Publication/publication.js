@@ -70,12 +70,8 @@ export default class Publication extends Component {
     const asyncLoop = (i) => {
       if (selections.length > i) {
         const cycle = new Promise (resolve=>{
-          if(selections[i].article.type === 'article') {
-            this.props.reduxCartUpdate([selections[i].article])
-            resolve(i+1)
-          } else {
-            resolve(i+1)
-          }
+          this.props.reduxCartUpdate([selections[i].article])
+          resolve(i+1)
         })
         cycle.then((nextIndex)=>{
           asyncLoop(nextIndex)
@@ -170,8 +166,10 @@ export default class Publication extends Component {
           publication={publication}
           search={this.props.search}
           ownerPrefix={ownerPrefix}
+          cart={this.props.cart}
 
           reduxControlModal={this.props.reduxControlModal}
+          reduxCartUpdate={this.props.reduxCartUpdate}
 
           asyncGetItem={this.props.asyncGetItem}
           asyncSearchRecords={this.props.asyncSearchRecords}
@@ -181,7 +179,6 @@ export default class Publication extends Component {
         <ActionBar
           ownerPrefix={ownerPrefix}
           doi={doi}
-
           selections={this.state.selections}
           publication={publication}
 
@@ -203,6 +200,7 @@ export default class Publication extends Component {
               publication={publication}
               triggerModal={this.props.triggerModal}
               selections={this.state.selections}
+              cart={this.props.cart}
 
               handleRemoveFromList={this.handleRemoveFromList}
               handleAddToList={this.handleAddToList}

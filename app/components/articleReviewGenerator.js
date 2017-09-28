@@ -1,15 +1,14 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 
-const Languages = require('../utilities/language.json')
-import { ArchiveLocations } from '../utilities/archiveLocations'
-const PublicationTypes = require('../utilities/publicationTypes.json')
-const AppliesTo = require('../utilities/appliesTo.json')
-const IdentifierTypes = require('../utilities/identifierTypes.json')
-import objectSearch from '../utilities/objectSearch'
+const Languages = require('../utilities/lists/language.json')
+import { ArchiveLocations } from '../utilities/lists/archiveLocations'
+const PublicationTypes = require('../utilities/lists/publicationTypes.json')
+const AppliesTo = require('../utilities/lists/appliesTo.json')
+const IdentifierTypes = require('../utilities/lists/identifierTypes.json')
+import {objectSearch, xmldoc} from '../utilities/helpers'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import { getSubItems } from '../utilities/getSubItems'
-import xmldoc from '../utilities/xmldoc'
 
 const articleReviewGenerator = (publication, article, parentIssue, parsedAlready, func) => {
     var publicationMetaData = publication

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
-import Deferred from '../utilities/deferred'
+import {Deferred, compareDois, recordTitle, pascaleCase} from '../utilities/helpers'
 
 
 
@@ -10,6 +10,7 @@ export default class DepositCartItem extends Component {
   static propTypes = {
     reduxRemoveFromCart: is.func.isRequired,
     cartItem: is.object.isRequired,
+    cart: is.array.isRequired,
     reportErrors: is.func.isRequired,
     recordCount: is.number.isRequired,
     closeErrors: is.func.isRequired
@@ -17,6 +18,7 @@ export default class DepositCartItem extends Component {
 
   constructor (props) {
     super(props)
+
     this.state = {
       records: []
     }
@@ -38,6 +40,7 @@ export default class DepositCartItem extends Component {
           pubDoi={props.cartItem.doi}
           reduxRemoveFromCart={props.reduxRemoveFromCart}
           cartItem={record}
+          inCart={record.type === 'issue' ? !!this.props.cart.find( cartRecord => compareDois(cartRecord.doi, record.doi) ) : true}
           closeErrors={this.props.closeErrors}
           reportErrors={asyncErrorReport.resolve}
         />
@@ -62,6 +65,7 @@ export default class DepositCartItem extends Component {
               pubDoi={props.cartItem.doi}
               reduxRemoveFromCart={props.reduxRemoveFromCart}
               cartItem={recordUnderIssue}
+              inCart={true}
               closeErrors={this.props.closeErrors}
               reportErrors={asyncErrorReport.resolve}
             />
@@ -83,6 +87,12 @@ export default class DepositCartItem extends Component {
     return records
   }
 
+  remove = () => {
+    const cartItem = this.props.cartItem
+    const cartType = this.props.cartItem.type
+    this.props.reduxRemoveFromCart(cartItem.doi, cartItem.title, cartType)
+  }
+
   render () {
 
     return (
@@ -93,9 +103,11 @@ export default class DepositCartItem extends Component {
               <td className='titleHolderTD'>
                 <table className='itemholder'>
                   <tbody>
-                    <tr>
+                    <tr className="borderBottom">
                       <td className='stateIcon deposittitle'>&nbsp;</td>
-                      <td className='depositpubtitle' colSpan={3}><a href="">{this.props.cartItem.title}</a></td>
+                      <td className='depositpubtitle'><a href="">{this.props.cartItem.title}</a></td>
+                      <td className="status">{pascaleCase(this.props.cartItem.status)}</td>
+                      <td className="action">{this.props.inCart && <a onClick={this.remove}>Remove</a>}</td>
                       <td className='titlerror errorholder'>&nbsp;</td>
                     </tr>
                   </tbody>
