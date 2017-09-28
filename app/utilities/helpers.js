@@ -8,6 +8,19 @@ import {apiBaseUrl} from '../actions/application'
 
 
 
+
+export function recordTitle (type, title) {
+  if(type === 'issue') {
+    return `${title.volume ? `Volume ${title.volume} ` : ''}Issue ${title.issue}`
+  } else {
+    return title.title
+  }
+}
+
+
+
+
+
 export function refreshErrorBubble () {
   var firstError = $(".fieldError").first()
   if (firstError.length > 0) {
@@ -165,8 +178,18 @@ export function objectSearch (object, search, returnVal) {
 }
 
 
-
-
+export function objectDelete (object, search) {
+  return Object.keys(object).some(function (k) {
+    if (object[k]) {
+      if (k === search) {
+        delete object[k]
+        return true
+      } else if (typeof object[k] === 'object') {
+        return objectDelete(object[k], search)
+      } else return false
+    }
+  });
+}
 
 
 

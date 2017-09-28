@@ -4,7 +4,7 @@ import _ from 'lodash'
 import $ from 'jquery'
 
 import DepositCartItem from './depositCartItem'
-import {Deferred} from '../utilities/helpers'
+import {Deferred, compareDois} from '../utilities/helpers'
 
 
 
@@ -61,6 +61,7 @@ export default class DepositCart extends Component {
             reportErrors={asyncErrorReport.resolve}
             recordCount={recordCount}
             closeErrors={this.closeErrors}
+            inCart={!!this.props.cart.find( cartRecord => compareDois(cartRecord.doi, cartItem.doi) )}
         />
       )
     })

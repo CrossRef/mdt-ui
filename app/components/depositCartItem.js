@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
-import {Deferred, compareDois} from '../utilities/helpers'
+import {Deferred, compareDois, recordTitle, pascaleCase} from '../utilities/helpers'
 
 
 
@@ -18,6 +18,7 @@ export default class DepositCartItem extends Component {
 
   constructor (props) {
     super(props)
+
     this.state = {
       records: []
     }
@@ -86,6 +87,13 @@ export default class DepositCartItem extends Component {
     return records
   }
 
+  remove = () => {
+    const cartItem = this.props.cartItem
+    const cartType = this.props.cartItem.type
+    const title = recordTitle(cartType, cartItem.title)
+    this.props.reduxRemoveFromCart(cartItem.doi, title, cartType)
+  }
+
   render () {
 
     return (
@@ -96,9 +104,11 @@ export default class DepositCartItem extends Component {
               <td className='titleHolderTD'>
                 <table className='itemholder'>
                   <tbody>
-                    <tr>
+                    <tr className="borderBottom">
                       <td className='stateIcon deposittitle'>&nbsp;</td>
-                      <td className='depositpubtitle' colSpan={3}><a href="">{this.props.cartItem.title}</a></td>
+                      <td className='depositpubtitle'><a href="">{this.props.cartItem.title}</a></td>
+                      <td className="status">{pascaleCase(this.props.cartItem.status)}</td>
+                      <td className="action">{this.props.inCart && <a onClick={this.remove}>Remove</a>}</td>
                       <td className='titlerror errorholder'>&nbsp;</td>
                     </tr>
                   </tbody>

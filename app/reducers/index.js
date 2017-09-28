@@ -100,10 +100,10 @@ function doiReducer (state = [], action) {
         filteredDois = action.doi.filter( element => {
           return !!element
         })
-        return [...state, ...filteredDois]
+        return [ ...new Set([...state, ...filteredDois])]
       }
 
-        else return [...state, action.doi]
+        else return [ ...new Set(state).add(action.doi)]
     default:
       return state
   }
@@ -207,6 +207,8 @@ function cartReducer (state = [], action) {
   switch (action.type) {
     case 'CART_UPDATE':
       var newState = [...state]
+
+      if(!Array.isArray(action.cart)) action.cart = [action.cart]
 
       function mergeByDoi(arr) {
         return _(arr)

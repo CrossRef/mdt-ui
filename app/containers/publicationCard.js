@@ -6,20 +6,22 @@ import { connect } from 'react-redux'
 
 
 import {routes} from '../routing'
-import {xmldoc} from '../utilities/helpers'
-import { controlModal, submitPublication } from '../actions/application'
+import {xmldoc, compareDois} from '../utilities/helpers'
+import { controlModal, submitPublication, cartUpdate } from '../actions/application'
 import AddPublicationCard from '../components/addPublicationCard'
 
 
 
 const mapStateToProps = (state, props) => ({
   publication: state.publications[props.doi] || state.publications[props.doi.toLowerCase()],
-  crossmarkPrefixes: state.login['crossmark-prefixes']
+  crossmarkPrefixes: state.login['crossmark-prefixes'],
+  inCart: !!state.cart.find( cartItem => compareDois(cartItem.doi, props.doi) )
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
-  asyncSubmitPublication: submitPublication
+  reduxCartUpdate: cartUpdate,
+  asyncSubmitPublication: submitPublication,
 }, dispatch)
 
 
@@ -28,10 +30,12 @@ export default class PublicationCardContainer extends Component {
 
   static propTypes = {
     reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object,
-    crossmarkPrefixes: is.array.isRequired
+    crossmarkPrefixes: is.array.isRequired,
+    inCart: is.bool.isRequired
   }
 
   constructor() {
@@ -59,9 +63,12 @@ export default class PublicationCardContainer extends Component {
       title:'Edit Journal Record',
       Component: AddPublicationCard,
       props:{
+        mode: 'edit',
         ...savedMetaData,
         asyncSubmitPublication: this.props.asyncSubmitPublication,
-        crossmarkPrefixes: this.props.crossmarkPrefixes
+        reduxCartUpdate: this.props.reduxCartUpdate,
+        crossmarkPrefixes: this.props.crossmarkPrefixes,
+        inCart: this.props.inCart,
       }
     })
   }

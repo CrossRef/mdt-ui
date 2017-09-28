@@ -8,6 +8,7 @@ import {routes} from '../routing'
 import {asyncValidateArticle, asyncValidateIssue} from '../utilities/validation'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import parseXMLIssue from '../utilities/parseXMLIssue'
+import {recordTitle} from '../utilities/helpers'
 import {ArticleMessages, IssueMessages} from '../utilities/lists/validationMessages'
 
 
@@ -109,10 +110,10 @@ export default class DepositCartRecord extends Component {
     }
   }
 
-  remove () {
+  remove = () => {
     const cartItem = this.props.cartItem
     const cartType = this.props.cartItem.type
-    const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume}, `}Issue ${cartItem.title.issue}` : cartItem.title.title
+    const title = recordTitle(cartType, cartItem.title)
     this.props.reduxRemoveFromCart(cartItem.doi, title, cartType)
   }
 
@@ -135,10 +136,10 @@ export default class DepositCartRecord extends Component {
           <Link to={this.getLink()}>{title}</Link>
         </td>
         <td className={'status' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + height}>
-          {status}
+          {this.props.inCart && status}
         </td>
         <td className={'action' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + height}>
-          {this.props.inCart && <a onClick={() => {this.remove()}}>Remove</a>}
+          {this.props.inCart && <a onClick={this.remove}>Remove</a>}
         </td>
         <td className={'errorholder'}>
           {

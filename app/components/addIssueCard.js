@@ -30,7 +30,6 @@ const defaultState = {
   on: false,
   error: false,
   version: '1',
-  criticalErrors: {},
   errors: {
     issueUrl: false,
     printDateYear: false,
@@ -82,6 +81,7 @@ export default class AddIssueCard extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
+    cart: is.array.isRequired,
 
     asyncSubmitIssue: is.func.isRequired,
     asyncGetItem: is.func,
@@ -148,7 +148,6 @@ export default class AddIssueCard extends Component {
       validating: true,
       error: false,
       errors: {...criticalErrors, ...warnings},
-      criticalErrors,
       optionalIssueInfo: (contributors && contributors.length) ? contributors : optionalIssueInfo
     }
     if(enableVolumeDoi) {
@@ -169,13 +168,13 @@ export default class AddIssueCard extends Component {
       }
     }
 
-    return {valid, validatedPayload}
+    return {valid, validatedPayload, criticalErrors}
   }
 
 
   save = async (addToCart) => {
 
-    const {valid, validatedPayload} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
+    const {valid, validatedPayload, criticalErrors} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
     if (valid) {
       const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
@@ -185,7 +184,7 @@ export default class AddIssueCard extends Component {
       let version = this.state.version
 
       if (mode === 'edit') {
-        version = String(parseInt(this.state.version) + 1)
+        version = String(Number(this.state.version) + 1)
       }
 
       const title = jsEscape(this.state.issue.issueTitle);
@@ -218,27 +217,25 @@ export default class AddIssueCard extends Component {
         await asyncSubmitIssue(submissionPayload)
       }
 
-     this.props.asyncGetPublications(this.props.publication.message.doi)
+      this.props.asyncGetPublications(this.props.publication.message.doi)
 
       newRecord.pubDoi = publication.message.doi
 
-      if(addToCart) {
-        return newRecord
+      const inCart = (!addToCart && this.props.mode === 'edit') ? this.props.cart.find( cartItem => compareDois(cartItem.doi, this.state.issue.issueDoi)) : false
+
+      if(addToCart || inCart) {
+        newRecord.doi = newRecord.doi.toLowerCase()
+        this.props.reduxCartUpdate([newRecord])
+      }
+
+      if (addToCart) {
+        this.closeModal()
+
       } else {
-        // Save: check if issue is already in cart, if so, update cart, otherwise just validate
-        if(this.props.mode === 'edit') {
-          for (let record of this.props.cart) {
-            if (compareDois(record.doi, this.state.issue.issueDoi)) {
-              newRecord.doi = newRecord.doi.toLowerCase()
-              this.props.reduxCartUpdate([newRecord])
-              validatedPayload.saving = false
-              break
-            }
-          }
-        }
+
         validatedPayload.issueDoiDisabled = true
-        validatedPayload.version = String(parseInt(this.state.version) + 1)
-        const { confirmationPayload, timeOut } = this.confirmSave(validatedPayload.criticalErrors)
+        validatedPayload.version = String(Number(this.state.version) + 1)
+        const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
         validatedPayload.confirmationPayload = confirmationPayload
         validatedPayload.timeOut = timeOut
 
@@ -249,7 +246,7 @@ export default class AddIssueCard extends Component {
       }
 
     } else /*if not valid*/ {
-      const { confirmationPayload, timeOut } = this.confirmSave(validatedPayload.criticalErrors)
+      const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
       validatedPayload.confirmationPayload = confirmationPayload
       validatedPayload.timeOut = timeOut
       this.setState(validatedPayload, () => {
@@ -258,14 +255,9 @@ export default class AddIssueCard extends Component {
     }
   }
 
-  addToCart = async () => {
+  addToCart = () => {
     const addToCart = true
-    const newRecord = await this.save(addToCart)
-    if(newRecord) {
-      this.closeModal()
-      newRecord.doi = newRecord.doi.toLowerCase()
-      this.props.reduxCartUpdate([newRecord])
-    }
+    this.save(addToCart)
   }
 
 

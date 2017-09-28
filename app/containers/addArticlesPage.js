@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { Link, browserHistory } from 'react-router'
 import { stateTrackerII } from 'my_decorators'
 
 import { controlModal, getPublications, editForm, deleteCard, clearForm, submitArticle, cartUpdate, getItem } from '../actions/application'
@@ -64,6 +63,7 @@ export default class AddArticlesPage extends Component {
     this.state = {
       publication: {},
       publicationMetaData: {},
+      publicationXml: '',
       issuePublication: undefined,
       mode: 'add'
     }
@@ -73,34 +73,36 @@ export default class AddArticlesPage extends Component {
     const { duplicateFrom } = this.props.location.state || {};
     const { pubDoi, articleDoi, issueDoi } = this.props.routeParams;
 
-    const dois = [articleDoi || duplicateFrom || pubDoi];
+    const getItems = []
 
-    if(issueDoi) dois.push(issueDoi)
-    if(articleDoi || duplicateFrom) dois.push(pubDoi)
+    if(articleDoi || duplicateFrom) getItems.push(articleDoi ? this.props.asyncGetItem(articleDoi) : this.props.asyncGetItem(duplicateFrom))
+    if(issueDoi) getItems.push(this.props.asyncGetItem(issueDoi))
 
-    this.props.asyncGetPublications( dois, (publications) => {
+    const getOldPub = !!articleDoi || !!duplicateFrom
+    getItems.push(this.props.asyncGetItem(pubDoi, getOldPub).catch(e => this.props.asyncGetItem(pubDoi)))
 
-      var publMeta = publications[1] ? publications[1].message.content : undefined
-      var article = publications[0]
-      if (issueDoi) {
-        publMeta = publications[2] ? publications[2].message.content : undefined
-        //doing logic here so we don't have to change the addArticles page any further
-        var unwrappedPub = publications[1]
+    Promise.all(getItems)
+      .then((publications)=>{
+        let publMeta = publications[1] ? publications[1].message.content : publications[0].message.content
+        let article = publications[0]
+        if (issueDoi) {
+          publMeta = publications[2] ? publications[2].message.content : undefined
+          //doing logic here so we don't have to change the addArticles page any further
+          let unwrappedPub = publications[1]
 
-        unwrappedPub.message.contains = [publications[0].message.contains[0].contains[0]]
+          unwrappedPub.message.contains = [publications[0].message.contains[0].contains[0]]
 
-        article = unwrappedPub
-      }
+          article = unwrappedPub
+        }
 
-      this.setState({
-        mode: (articleDoi || duplicateFrom) ? 'edit' : 'add',
-        publication: article,
-        publicationMetaData: publMeta ? xmldoc(publMeta) : {},
-        issuePublication: publications[0]
+        this.setState({
+          mode: (articleDoi || duplicateFrom) ? 'edit' : 'add',
+          publication: article,
+          publicationMetaData: publMeta ? xmldoc(publMeta) : {},
+          publicationXml: publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>')),
+          issuePublication: publications[0]
+        })
       })
-
-    })
-
   }
 
   componentWillUnmount () {
@@ -108,7 +110,7 @@ export default class AddArticlesPage extends Component {
   }
 
   render () {
-    const { publication, mode, publicationMetaData } = this.state
+    const { publication, mode, publicationMetaData, publicationXml } = this.state
     const { pubDoi, doi, issueDoi } = this.props.routeParams
     const ownerPrefix = this.props.publication ? this.props.publication.message['owner-prefix'] : pubDoi.split('/')[0];
     return (
@@ -124,6 +126,7 @@ export default class AddArticlesPage extends Component {
           ownerPrefix={ownerPrefix}
           publication = { publication }
           publicationMetaData = { publicationMetaData }
+          publicationXml = {publicationXml}
           issuePublication = {this.state.issuePublication}
           mode = { mode }
           issue = { issueDoi }

@@ -54,6 +54,7 @@ export default store => next => action => {
           if (reduxState.hasOwnProperty(property) && !reduxState[property].hasOwnProperty('sync')) {
             if( //scrub data being synced to server
               property !== 'modal' &&
+              property !== 'publications' &&
               property !== 'reduxForm' &&
               property !== 'search' &&
               property !== 'toast'

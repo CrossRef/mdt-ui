@@ -2,13 +2,16 @@ import React from 'react'
 import _ from 'lodash'
 
 import { parseCrossmark } from './crossmarkHelpers'
-import {objectSearch, xmldoc} from './helpers'
+import {objectSearch, objectDelete, xmldoc} from './helpers'
 
 
 
 const parseXMLArticle = function (articleXML) {
     var retObj = {}
     const parsedArticle = xmldoc(articleXML)
+
+    objectDelete(parsedArticle, 'journal_metadata')
+
     // article loading
     let publication_date = objectSearch(parsedArticle, 'publication_date');
     if(publication_date && !Array.isArray(publication_date)) publication_date = [publication_date];

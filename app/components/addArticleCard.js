@@ -165,6 +165,7 @@ export default class AddArticleCard extends Component {
     isDuplicate: is.bool.isRequired,
     issue: is.string,
     ownerPrefix: is.string.isRequired,
+    publicationXml: is.string.isRequired,
 
     crossmarkPrefixes: is.array.isRequired,
     reduxForm: is.object.isRequired,
@@ -209,7 +210,6 @@ export default class AddArticleCard extends Component {
 
     const { publication } = nextProps
     if (nextProps.mode === 'edit' && this.props.mode !== 'edit') {
-
       const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
       let reduxForm
       if(parsedArticle.crossmark) {
@@ -246,7 +246,6 @@ export default class AddArticleCard extends Component {
 
 
   validation = async (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) => {
-
     const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.props.ownerPrefix, doiDisabled)
 
     const validatedPayload = {
@@ -296,7 +295,7 @@ export default class AddArticleCard extends Component {
       const publication = this.props.publication
 
       const journalArticle = journalArticleXml(this)
-      const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
+      const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.props.publicationXml}${journalArticle}</journal></crossref>`
 
       const title = jsEscape(this.state.article.title)
 
@@ -440,8 +439,7 @@ export default class AddArticleCard extends Component {
   }
 
   back = () => {
-    var publication = this.props.publication
-    browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
+    browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
   }
 
 

@@ -46,7 +46,7 @@ export default class DepositCartPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showDeposit: false,
+      showDeposit: true,
       fullCart: [],
       status: 'cart',
       result: {
@@ -62,17 +62,21 @@ export default class DepositCartPage extends Component {
   }
 
   getFullCart (cart = this.props.cart) {
-
     const promises = []
     const _this = this
     if(cart.length > 0) {
       _.each(cart, (item) => {
 
         let doi = item.doi
-        if (!doi) {
-          doi = item.article.doi
+
+        if(item.type !== 'Publication') {
+          promises.push(this.props.asyncGetItem(doi).then((data)=>{return data}))
+        } else {
+          promises.push(Promise.resolve({
+            message: item
+          }))
         }
-        promises.push(this.props.asyncGetItem(doi).then((data)=>{return data}))
+
       })
 
       Promise.all(promises).then((fullData) => {
@@ -93,7 +97,6 @@ export default class DepositCartPage extends Component {
           return cartItem.doi
         })
 
-
         function mergeByDoi(arr) {
           return _(arr)
             .groupBy(function(item) { // group the items using the lower case
@@ -113,7 +116,7 @@ export default class DepositCartPage extends Component {
         for(let i in mergedCart) {
           for(let j in fullData) {
             if(fullData[j]) {
-              if (mergedCart[i].doi === fullData[j].message.doi) {
+              if (mergedCart[i].doi === fullData[j].message.doi && fullData[j].message.contains.length) {
                 mergedCart[i].contains.push(fullData[j].message.contains[0])
               }
             }
