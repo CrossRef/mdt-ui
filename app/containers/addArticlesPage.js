@@ -83,10 +83,10 @@ export default class AddArticlesPage extends Component {
 
     Promise.all(getItems)
       .then((publications)=>{
-        let publMeta = publications[1] ? publications[1].message.content : publications[0].message.content
+        let publMeta = publications[publications.length-1].message.content
+
         let article = publications[0]
         if (issueDoi) {
-          publMeta = publications[2] ? publications[2].message.content : undefined
           //doing logic here so we don't have to change the addArticles page any further
           let unwrappedPub = publications[1]
 

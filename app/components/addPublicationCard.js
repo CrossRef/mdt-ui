@@ -200,7 +200,10 @@ export default class AddPublicationCard extends Component {
 
         this.props.asyncSubmitPublication(publication)
           .then(() => {
-            if(addToCart || this.props.inCart) this.props.reduxCartUpdate(publication)
+            if(addToCart || this.props.inCart) {
+              publication.doi = publication.doi.toLowerCase()
+              this.props.reduxCartUpdate(publication)
+            }
             if(addToCart) {
               this.props.reduxControlModal({showModal:false})
             } else {

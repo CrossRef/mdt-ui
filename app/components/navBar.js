@@ -48,7 +48,7 @@ export default class PublicationNav extends Component {
           const updatedItem = nextProps.cart.find((nextCartItem) => {
             return (nextCartItem.doi === matchingItem.doi && nextCartItem['mdt-version'] !== matchingItem['mdt-version'])
           })
-          if (updatedItem) {
+          if (updatedItem && nextProps.toast.recordType === 'article') {
             nextProps.toast.updateType = 'updateCart'
           }
         }

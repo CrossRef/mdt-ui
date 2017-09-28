@@ -90,8 +90,7 @@ export default class DepositCartItem extends Component {
   remove = () => {
     const cartItem = this.props.cartItem
     const cartType = this.props.cartItem.type
-    const title = recordTitle(cartType, cartItem.title)
-    this.props.reduxRemoveFromCart(cartItem.doi, title, cartType)
+    this.props.reduxRemoveFromCart(cartItem.doi, cartItem.title, cartType)
   }
 
   render () {

@@ -3,6 +3,8 @@ import { combineReducers } from 'redux'
 import _ from 'lodash'
 import {Map, fromJS} from 'immutable'
 
+import {recordTitle} from '../utilities/helpers'
+
 
 
 const combinedReducers = combineReducers({
@@ -180,18 +182,12 @@ function toastReducer (state = {
   switch (action.type) {
     case 'CART_UPDATE':
       const record = action.cart[0]
-      if(record.type === 'article') {
-        return {doi: record.doi, title: record.title.title, recordType: record.type, updateType: 'addToCart'}
+      return {
+        doi: record.doi,
+        title: recordTitle(record.type, record.title),
+        recordType: record.type,
+        updateType: 'addToCart'
       }
-      else if(record.type === 'issue') {
-        return {
-          doi: record.doi,
-          title: `${record.title.volume ? `, Volume ${record.title.volume}, ` : ''}Issue ${record.title.issue}`,
-          recordType: record.type,
-          updateType: 'addToCart'
-        }
-      }
-      else return state
     case 'REMOVE_FROM_CART':
       return {doi: action.doi, title: action.title, recordType: action.recordType, updateType: 'removeFromCart'}
     case 'NEW_TOAST':
