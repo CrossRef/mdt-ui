@@ -8,7 +8,8 @@ import _ from 'lodash'
 import DatePicker from 'react-datepicker'
 import $ from 'jquery'
 
-import ReactPaginate from 'react-paginate';
+//import ReactPaginate from 'react-paginate';
+import Pagination from 'rc-pagination';
 import { getDepositHistory } from '../actions/application'
 import DepositHistoryItem from '../components/depositHistoryItem'
 import {objectSearch, xmldoc, cleanObj} from '../utilities/helpers'
@@ -83,11 +84,11 @@ export default class DepositHistoryPage extends Component {
     }
   }
 
-  handlePageClick (data) {
-    let selected = data.selected
+  handlePageClick (current,pageSize) {
+    var selected = current
     let offset = Math.ceil(selected * this.state.query.count)
     this.setState({
-      query: update(this.state.query, {offset: {$set: offset}})
+     query: update(this.state.query, {offset: {$set: offset}})
     })
   }
 
@@ -168,7 +169,7 @@ export default class DepositHistoryPage extends Component {
     }
 
   }
-
+  
   listDeposityHistory () {
     var depositHistory = []
     _.each(this.state.depositHistory, (historyItem, i) => {
@@ -206,7 +207,18 @@ export default class DepositHistoryPage extends Component {
 
   render () {
     const { order, 'sort-field': sortField } = this.state.query;
-
+    const textItemRender = (current, type, element) => {
+      if (type === 'prev') {
+        return (<img className='prev' src={`${routes.images}/AddArticle/DarkTriangle.svg`} />)
+      }
+      if (type === 'next') {
+        return (<img className='nex' src={`${routes.images}/AddArticle/DarkTriangle.svg`} />)
+      }
+      if (type === 'jump-prev' || type==='jump-next'){
+        return (<a>...</a>)
+      }
+      return element
+    };
     return (
       <div className='depositHistory'>
         <div className='pageTitle'>
@@ -347,22 +359,20 @@ export default class DepositHistoryPage extends Component {
             this.listDeposityHistory()
           }
         </table>
-        <ReactPaginate previousLabel={<img className='prev' src={`${routes.images}/AddArticle/DarkTriangle.svg`} />}
-                       nextLabel={<img className='nex' src={`${routes.images}/AddArticle/DarkTriangle.svg`} />}
-                       breakLabel={<a href="">...</a>}
-                       breakClassName={"break-me"}
-                       pageCount={this.state.total > 0 ? (this.state.total/20) : 0}
-                       marginPagesDisplayed={2}
-                       pageRangeDisplayed={5}
-                       onPageChange={this.handlePageClick.bind(this)}
-                       containerClassName={"pagination"}
-                       subContainerClassName={"pages pagination"}
-                       activeClassName={"active"} />
+        <Pagination className="pagination"
+        total={this.state.total} 
+        itemRender={textItemRender}
+        defaultPageSize={20}
+        showTitle={false}
+        //locale={en_US}
+        
+        onChange={this.handlePageClick.bind(this)}
+        />
+
       </div>
     )
   }
 }
-
 
 
 class Calendar extends Component {

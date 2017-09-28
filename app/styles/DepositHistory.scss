@@ -131,9 +131,9 @@
                 border: 1px solid #000;
             }
         }
-        .next {
-            a{
-                margin: 0;
+
+        .rc-pagination-next {
+           
                 .nex {
                     -webkit-transform: rotate(90deg);
                     -moz-transform: rotate(90deg);
@@ -145,13 +145,13 @@
                     padding: 0;
                     margin: 0;
                     position: relative;
-                    top: 3px;
+                    top: 8px;
                     right: 1px;
                 }
-            }
+            
         }
-        .previous {
-            a {
+        .rc-pagination-prev {
+          
                 .prev {
                     -webkit-transform: rotate(270deg);
                     -moz-transform: rotate(270deg);
@@ -163,10 +163,10 @@
                     padding: 0;
                     margin: 0;
                     position: relative;
-                    top: 3px;
+                    top: 8px;
                     right: 1px;
                 }
-            }
+            
         }
     }
 }
