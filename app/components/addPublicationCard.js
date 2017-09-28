@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 import verifyIssn from 'issn-verify'
+import $ from 'jquery'
 
 import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
 import { publicationXml } from '../utilities/xmlGenerator'
