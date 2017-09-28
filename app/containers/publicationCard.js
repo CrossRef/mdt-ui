@@ -21,7 +21,7 @@ const mapStateToProps = (state, props) => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxCartUpdate: cartUpdate,
-  asyncSubmitPublication: submitPublication,
+  asyncSubmitPublication: submitPublication
 }, dispatch)
 
 
@@ -43,16 +43,18 @@ export default class PublicationCardContainer extends Component {
     const backgrounds = [
       `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 1.svg`,
       `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 2.svg`,
-      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 3.svg`,
+      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 3.svg`
     ]
     const backgroundIndex = (Math.floor(Math.random() * backgrounds.length) % backgrounds.length)
-    const background = backgrounds[backgroundIndex];
+    const background = backgrounds[backgroundIndex]
     this.state = { mouseOver: false, overEdit: false, background }
   }
 
   openEditPublicationModal = () => {
-    const publication = this.props.publication;
-    if(!publication) return console.error(`${this.props.doi} is not fetching from server`);
+    const publication = this.props.publication
+    if(!publication) {
+      return console.error(`${this.props.doi} is not fetching from server`)
+    }
     const parsedXMLContent = xmldoc(publication.message.content)
     const savedMetaData = {
       ...parsedXMLContent, 'mdt-version': publication.message['mdt-version']
@@ -68,7 +70,7 @@ export default class PublicationCardContainer extends Component {
         asyncSubmitPublication: this.props.asyncSubmitPublication,
         reduxCartUpdate: this.props.reduxCartUpdate,
         crossmarkPrefixes: this.props.crossmarkPrefixes,
-        inCart: this.props.inCart,
+        inCart: this.props.inCart
       }
     })
   }
@@ -77,20 +79,20 @@ export default class PublicationCardContainer extends Component {
     message: {
       type: '',
       doi: this.props.doi,
-      title: {title:`loading...`},
+      title: {title:`loading...`}
     }
   })
 
   render () {
-    const publication = this.props.publication || this.renderLoadingCard();
-    const publicationContents = publication.message;
-    const type = publicationContents.type;
+    const publication = this.props.publication || this.renderLoadingCard()
+    const publicationContents = publication.message
+    const type = publicationContents.type
     const title = publicationContents.title.title
     const style = this.state.mouseOver ? { backgroundColor: '#3f4746' } : {
       background: `url('${this.state.background}') no-repeat center center`,
       backgroundSize: 'contain'
-    };
-    const whiteText = this.state.mouseOver ? { color: 'white' } : null;
+    }
+    const whiteText = this.state.mouseOver ? { color: 'white' } : null
     return (
       <Link to={this.state.overEdit ? null : `${routes.publications}/${encodeURIComponent(this.props.doi)}`} className='publication-card'>
         <div className='card'

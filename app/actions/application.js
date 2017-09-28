@@ -250,7 +250,9 @@ export function submitPublication (publication, error = reason => console.error(
       dispatch(getPublications(publication.doi))
       if(response.status === 202) {
         return true
-      } else throw `${response.status}: ${response.statusText}`
+      } else {
+        throw `${response.status}: ${response.statusText}`
+      }
     })
     .catch( reason => {
       error(reason)

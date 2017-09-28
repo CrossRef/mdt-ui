@@ -177,7 +177,7 @@ export default class AddIssueCard extends Component {
     const {valid, validatedPayload, criticalErrors} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
     if (valid) {
-      const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
+      const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props
 
       const issueXML = getIssueXml(this.state)
 
@@ -187,9 +187,9 @@ export default class AddIssueCard extends Component {
         version = String(Number(this.state.version) + 1)
       }
 
-      const title = jsEscape(this.state.issue.issueTitle);
-      const issue = jsEscape(this.state.issue.issue);
-      const volume = jsEscape(this.state.issue.volume);
+      const title = jsEscape(this.state.issue.issueTitle)
+      const issue = jsEscape(this.state.issue.issue)
+      const volume = jsEscape(this.state.issue.volume)
 
       const newRecord = {
         'title': {title, issue, volume},
