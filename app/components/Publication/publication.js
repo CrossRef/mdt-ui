@@ -31,9 +31,7 @@ export default class Publication extends Component {
 
     asyncDeleteRecord: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
   }
 
   constructor (props) {
@@ -139,8 +137,6 @@ export default class Publication extends Component {
           issue: this.state.selections[0].article,
           publication: this.props.publication,
           handle: this.props.handle,
-          asyncGetItem: this.props.asyncGetItem,
-          asyncSubmitIssue: this.props.asyncSubmitIssue,
           ownerPrefix: this.props.ownerPrefix,
           duplicate: true
         }
@@ -174,9 +170,7 @@ export default class Publication extends Component {
           reduxControlModal={this.props.reduxControlModal}
           reduxCartUpdate={this.props.reduxCartUpdate}
 
-          asyncGetItem={this.props.asyncGetItem}
           asyncSearchRecords={this.props.asyncSearchRecords}
-          asyncSubmitIssue={this.props.asyncSubmitIssue}
           asyncGetPublications={this.props.asyncGetPublications}/>
 
         <ActionBar
@@ -192,8 +186,7 @@ export default class Publication extends Component {
           reduxControlModal={reduxControlModal}
           reduxCartUpdate={this.props.reduxCartUpdate}
 
-          asyncGetPublications={asyncGetPublications}
-          asyncSubmitIssue={this.props.asyncSubmitIssue} />
+          asyncGetPublications={asyncGetPublications}/>
 
         <div className='publication-children'>
           {contains.length ?
@@ -211,8 +204,6 @@ export default class Publication extends Component {
               reduxControlModal={this.props.reduxControlModal}
               reduxCartUpdate={this.props.reduxCartUpdate}
 
-              asyncGetItem={this.props.asyncGetItem}
-              asyncSubmitIssue={this.props.asyncSubmitIssue}
               asyncGetPublications={asyncGetPublications}
             /> : <div className='empty-message'>No articles, please create one!</div>}
         </div>

@@ -14,8 +14,6 @@ export default class ArticleContainer extends Component {
 
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,
-
-    asyncGetItem: is.func.isRequired,
   }
 
   render () {
@@ -45,8 +43,6 @@ export default class ArticleContainer extends Component {
                 handleAddCart={this.props.handleAddCart}
                 handleRemoveFromList={this.props.handleRemoveFromList}
                 handleAddToList={this.props.handleAddToList}
-
-                asyncGetItem={this.props.asyncGetItem}
               />)
             }
           </tbody>

@@ -1,8 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'react-redux'
 import update from 'immutability-helper'
-import { bindActionCreators } from 'redux'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 import DatePicker from 'react-datepicker'
@@ -10,27 +8,17 @@ import $ from 'jquery'
 
 //import ReactPaginate from 'react-paginate';
 import Pagination from 'rc-pagination';
-import { getDepositHistory } from '../actions/application'
 import DepositHistoryItem from '../components/depositHistoryItem'
 import {objectSearch, xmldoc, cleanObj} from '../utilities/helpers'
 import {makeDateDropDown} from '../utilities/date'
+import * as api from '../actions/api'
 
 import {routes} from '../routing'
 
 
-const mapStateToProps = state => ({})
 
-const mapDispatchToProps = dispatch => bindActionCreators({
-  asyncGetDepositHistory: getDepositHistory
-}, dispatch)
 
-@connect(mapStateToProps, mapDispatchToProps)
 export default class DepositHistoryPage extends Component {
-
-  static propTypes = {
-    asyncGetDepositHistory: is.func.isRequired
-  }
-
   constructor (props) {
     super(props)
     this.state = {
@@ -61,26 +49,24 @@ export default class DepositHistoryPage extends Component {
   }
 
   componentWillMount () {
-    this.props.asyncGetDepositHistory(cleanObj(this.state.query), results => {
+    api.getDepositHistory(cleanObj(this.state.query)).then( results => {
       this.setState({
         total: results['total-count'],
         depositHistory: results.message
       })
-    }, error => {
-      this.setState({ serverError: error })
     })
+    .catch( e => this.setState({ serverError: error }) )
   }
 
   componentWillUpdate (nextProps, nextState) {
     if (this.state.query !== nextState.query) {
-      this.props.asyncGetDepositHistory(cleanObj(nextState.query), results => {
+      api.getDepositHistory(cleanObj(nextState.query)).then( results => {
         this.setState({
           total: results['total-count'],
           depositHistory: results.message
         })
-      }, error => {
-        this.setState({ serverError: error })
       })
+      .catch( e => this.setState({ serverError: error }) )
     }
   }
 

@@ -1,4 +1,4 @@
-
+import {recordTitle} from '../utilities/helpers'
 
 
 export default function toastReducer (state = {
@@ -10,17 +10,16 @@ export default function toastReducer (state = {
   switch (action.type) {
     case 'CART_UPDATE':
       const record = action.cart[0]
-      if(record.type === 'article') {
-        return {doi: record.doi, title: record.title.title, recordType: record.type, updateType: 'addToCart'}
+      if (record.type !== 'article' && action.inCart && !action.addToCart) {
+        //If issue or title are saved but already in cart, dont show a toast
+        return state
       }
-      else if(record.type === 'issue') {
-        return {
-          title: `${record.title.volume ? `, Volume ${record.title.volume}, ` : ''}Issue ${record.title.issue}`,
-          recordType: record.type,
-          updateType: 'addToCart'
-        }
+      return {
+        doi: record.doi,
+        title: recordTitle(record.type, record.title),
+        recordType: record.type,
+        updateType: action.inCart ? 'updateCart' : 'addToCart'
       }
-      else return state
     case 'REMOVE_FROM_CART':
       return {doi: action.doi, title: action.title, recordType: action.recordType, updateType: 'removeFromCart'}
     case 'NEW_TOAST':

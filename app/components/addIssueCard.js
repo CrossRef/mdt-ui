@@ -13,6 +13,7 @@ import {routes} from '../routing'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
 import {stateTrackerII} from 'my_decorators'
+import * as api from '../actions/api'
 
 
 
@@ -83,8 +84,6 @@ export default class AddIssueCard extends Component {
     reduxControlModal: is.func.isRequired,
     cart: is.array.isRequired,
 
-    asyncSubmitIssue: is.func.isRequired,
-    asyncGetItem: is.func,
     asyncGetPublications: is.func.isRequired
   }
 
@@ -104,7 +103,7 @@ export default class AddIssueCard extends Component {
 
       if (!isSearch) {
         doi = this.props.issue.doi
-        Publication = await this.props.asyncGetItem(doi)
+        Publication = await api.getItem(doi)
         message = Publication.message
         Issue = message.contains[0]
 
@@ -177,7 +176,7 @@ export default class AddIssueCard extends Component {
     const {valid, validatedPayload, criticalErrors} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
     if (valid) {
-      const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props
+      const { publication, mode } = this.props
 
       const issueXML = getIssueXml(this.state)
 
@@ -210,11 +209,19 @@ export default class AddIssueCard extends Component {
         }
       }
 
-      await asyncSubmitIssue(submissionPayload)
+      try {
+        await api.submitItem(submissionPayload)
+      } catch (e) {
+        console.error('ERROR in save Issue: ', e)
+      }
 
       if(this.props.mode === 'search') {
         newRecord.contains = [this.props.savedArticle]
-        await asyncSubmitIssue(submissionPayload)
+        try {
+          await api.submitItem(submissionPayload)
+        } catch (e) {
+          console.error('ERROR in save Issue search: ', e)
+        }
       }
 
       this.props.asyncGetPublications(this.props.publication.message.doi)

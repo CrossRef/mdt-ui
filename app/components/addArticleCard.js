@@ -15,6 +15,7 @@ import { makeDateDropDown } from '../utilities/date'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
 import {getSubItems} from '../utilities/getSubItems'
+import * as api from '../actions/api'
 
 
 const defaultState = {
@@ -182,9 +183,6 @@ export default class AddArticleCard extends Component {
     reduxControlModal: is.func.isRequired,
     reduxEditForm: is.func.isRequired,
     reduxDeleteCard: is.func.isRequired,
-
-    asyncSubmitArticle: is.func.isRequired,
-    asyncGetItem: is.func.isRequired
   }
 
   constructor (props) {
@@ -333,7 +331,11 @@ export default class AddArticleCard extends Component {
         savePub = publication
       }
 
-      await this.props.asyncSubmitArticle(savePub, this.state.article.doi)
+      try {
+        await api.submitItem(savePub)
+      } catch (e) {
+        console.error('Error in save article: ', e)
+      }
 
       newRecord.pubDoi = this.props.publication.message.doi
       if(this.props.issue) {
@@ -428,7 +430,6 @@ export default class AddArticleCard extends Component {
             publication: this.props.publication,
             publicationMetaData: this.props.publicationMetaData,
             issue: this.props.issuePublication ? this.props.issuePublication.message.contains[0] : undefined,
-            asyncGetItem: this.props.asyncGetItem
         }
     })
   }

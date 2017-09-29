@@ -1,19 +1,4 @@
-import objectSearch, {objectFind} from '../utilities/objectSearch'
-
-
-export class SearchableRecords {
-  constructor (records) {
-    Object.assign(this, records)
-
-    this.find = (finder) => {
-      return objectFind(this, finder)
-    }
-
-    this.searchKey = (key) => {
-      return objectSearch(this, key)
-    }
-  }
-}
+import {SearchableRecords} from '../utilities/helpers'
 
 
 

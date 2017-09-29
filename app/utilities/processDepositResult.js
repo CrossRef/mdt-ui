@@ -1,10 +1,4 @@
-function compareDois (doi1, doi2) {
-  if(typeof doi1 !== 'string' || typeof doi2 !== 'string') {
-    return false
-  } else {
-    return doi1.toLowerCase() === doi2.toLowerCase()
-  }
-}
+import {compareDois} from '../utilities/helpers'
 
 
 export default (depositResult, publications, cart) => {
@@ -272,6 +266,7 @@ export default (depositResult, publications, cart) => {
 
   depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
 
+  console.log({resultData, resultCount, depositId})
   return {resultData, resultCount, depositId}
 }
 

@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 
-import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, getItem, submitIssue } from '../actions/application'
+import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords } from '../actions/application'
 import Publication from '../components/Publication/publication'
 
 
@@ -22,8 +22,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
   asyncDeleteRecord: deleteRecord,
   asyncSearchRecords: searchRecords,
-  asyncGetItem: getItem,
-  asyncSubmitIssue: submitIssue
 }, dispatch)
 
 
@@ -46,8 +44,6 @@ export default class PublicationPage extends Component {
 
     asyncGetPublications: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
     asyncDeleteRecord: is.func.isRequired,
   }
 
@@ -77,9 +73,7 @@ export default class PublicationPage extends Component {
 
             asyncDeleteRecord={this.props.asyncDeleteRecord}
             asyncSearchRecords={this.props.asyncSearchRecords}
-            asyncGetItem={this.props.asyncGetItem}
             asyncGetPublications={this.props.asyncGetPublications}
-            asyncSubmitIssue={this.props.asyncSubmitIssue}
           />
           :<div>
               <br/><br/><br/> {/*TEMPORARY STYLING, SHOULD USE CSS*/}
