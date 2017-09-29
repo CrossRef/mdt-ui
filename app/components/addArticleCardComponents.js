@@ -101,7 +101,7 @@ export class ActionBar extends Component {
       <div>
         <div className="reviewArticleButtonDiv">
           <button type='button' onClick={this.props.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
-          <div onClick={this.toggleMenu} className={'addPublication saveButton actionTooltip'}>
+          <div onClick={this.toggleMenu} className={'addPublication saveButton articleTooltip'}>
             Action
             {this.state.menuOpen && <div className='actionBarDropDown'>
               <p onClick={this.props.addToCart}>Add to Cart</p>
