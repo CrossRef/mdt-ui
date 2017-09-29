@@ -25,7 +25,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
   asyncSubmitPublication: submitPublication,
   asyncSearch: search,
-  cartUpdate: cartUpdate
+  reduxCartUpdate: cartUpdate
 }, dispatch)
 
 
@@ -40,13 +40,9 @@ export default class PublicationsPage extends Component {
     asyncGetPublications: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
     asyncSearch: is.func.isRequired,
-    cartUpdate: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
     crossmarkPrefixes: is.array.isRequired,
     prefixes: is.array.isRequired
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if(this.props.DOIs.length !== nextProps.DOIs.length) this.props.asyncGetPublications(nextProps.DOIs)
   }
 
   openAddPublicationModal = () => this.props.reduxControlModal({
@@ -54,7 +50,9 @@ export default class PublicationsPage extends Component {
     title:'Create Journal Record',
     Component: AddPublicationCard,
     props:{
+      mode: 'add',
       reduxAddDOIs: this.props.reduxAddDOIs,
+      reduxCartUpdate: this.props.reduxCartUpdate,
       asyncSubmitPublication: this.props.asyncSubmitPublication,
       crossmarkPrefixes: this.props.crossmarkPrefixes,
       prefixes: this.props.prefixes
@@ -62,7 +60,7 @@ export default class PublicationsPage extends Component {
   })
 
   render () {
-    const { searchResults, asyncSearch, loading, DOIs, reduxAddDOIs, reduxControlModal , asyncSubmitPublication} = this.props;
+    const { searchResults, asyncSearch, loading, DOIs, reduxAddDOIs, reduxControlModal , asyncSubmitPublication, reduxCartUpdate} = this.props;
     return (
       <div className='publications'>
         <div className='management-bar'>
@@ -72,7 +70,9 @@ export default class PublicationsPage extends Component {
             loading={loading}
             reduxAddDOIs={reduxAddDOIs}
             reduxControlModal={reduxControlModal}
+            reduxCartUpdate={reduxCartUpdate}
             asyncSubmitPublication={asyncSubmitPublication}
+            prefixes={this.props.prefixes}
             crossmarkPrefixes={this.props.crossmarkPrefixes}/>
           <button
             className='addPublication'

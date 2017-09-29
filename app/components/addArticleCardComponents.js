@@ -3,7 +3,7 @@ import is from 'prop-types'
 import Switch from 'react-toggle-switch'
 import $ from 'jquery'
 
-import { ClassWrapper } from '../utilities/classwrapper'
+import { ClassWrapper } from '../utilities/helpers'
 import {cardNames} from '../utilities/crossmarkHelpers'
 const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 import {routes} from '../routing'
@@ -17,6 +17,7 @@ export class ActionBar extends Component {
     save: is.func.isRequired,
     openReviewArticleModal: is.func.isRequired,
     saving: is.bool.isRequired,
+    inCart: is.bool,
     criticalErrors: is.object.isRequired
   }
 
@@ -54,10 +55,10 @@ export class ActionBar extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.saving) this.confirmSave(nextProps.criticalErrors)
+    if(nextProps.saving) this.confirmSave(nextProps.criticalErrors, nextProps.inCart)
   }
 
-  confirmSave = (criticalErrors) => {
+  confirmSave = (criticalErrors, inCart) => {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
@@ -83,6 +84,8 @@ export class ActionBar extends Component {
 
     if(confirmationPayload.status === 'saveFailed') {
       confirmationPayload.message = errorMessageArray.join(' ')
+    } else if (inCart) {
+      return
     }
 
     const timeOut = setTimeout(()=>{
@@ -98,7 +101,7 @@ export class ActionBar extends Component {
       <div>
         <div className="reviewArticleButtonDiv">
           <button type='button' onClick={this.props.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
-          <div onClick={this.toggleMenu} className={'addPublication saveButton actionTooltip'}>
+          <div onClick={this.toggleMenu} className={'addPublication saveButton articleTooltip'}>
             Action
             {this.state.menuOpen && <div className='actionBarDropDown'>
               <p onClick={this.props.addToCart}>Add to Cart</p>

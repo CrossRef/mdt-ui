@@ -1,11 +1,13 @@
 import { routerReducer } from 'react-router-redux'
 import { combineReducers } from 'redux'
+import _ from 'lodash'
+import {Map, fromJS} from 'immutable'
+import {recordTitle} from '../utilities/helpers'
 
 import publicationsReducer from './publicationsReducer'
 import reduxFormReducer from './reduxFormReducer'
 import toastReducer from './toastReducer'
 import cartReducer from './cartReducer'
-
 
 
 const combinedReducers = combineReducers({
@@ -69,14 +71,15 @@ function doiReducer (state = [], action) {
         filteredDois = action.doi.filter( element => {
           return !!element
         })
-        return [...state, ...filteredDois]
+        return [ ...new Set([...state, ...filteredDois])]
       }
 
-        else return [...state, action.doi]
+        else return [ ...new Set(state).add(action.doi)]
     default:
       return state
   }
 }
+
 
 
 function modalReducer ( state = {
@@ -99,6 +102,77 @@ function modalReducer ( state = {
 
 
 
+function toastReducer (state = {
+  doi: '',
+  title: '',
+  recordType: '',
+  updateType: ''
+}, action) {
+  switch (action.type) {
+    case 'CART_UPDATE':
+      const record = action.cart[0]
+      if(record.type === 'article') {
+        return {doi: record.doi, title: record.title.title, recordType: record.type, updateType: 'addToCart'}
+      }
+      else if(record.type === 'issue') {
+        return {
+          title: `${record.title.volume ? `, Volume ${record.title.volume}, ` : ''}Issue ${record.title.issue}`,
+          recordType: record.type,
+          updateType: 'addToCart'
+        }
+      }
+      else return state
+    case 'REMOVE_FROM_CART':
+      return {doi: action.doi, title: action.title, recordType: action.recordType, updateType: 'removeFromCart'}
+    case 'NEW_TOAST':
+      return action.toast
+    case 'CLEAR_TOAST':
+      return {doi: '', title: '', recordType: '', updateType: ''}
+    default:
+      return state
+  }
+}
 
+function cartReducer (state = [], action) {
+  switch (action.type) {
+    case 'CART_UPDATE':
+      var newState = [...state]
+
+      if(!Array.isArray(action.cart)) action.cart = [action.cart]
+
+    function mergeByDoi(arr) {
+      return _(arr)
+        .groupBy(function(item) { // group the items using the lower case
+          return item.doi
+        })
+        .map(function(group) { // map each group
+          return _.mergeWith.apply(_, [{}].concat(group, function(obj, src) { // merge all items, and if a property is an array concat the content
+            if (Array.isArray(obj)) {
+              return mergeByDoi(obj.concat(src))
+            }
+          }))
+        })
+        .values() // get the values from the groupBy object
+        .value()
+    }
+      newState.push(action.cart[0])
+      newState = mergeByDoi(newState) //does 2 things, removes dupes and also merge the content if there was 2 of the same that way there is more info if there is more info
+      return [...newState]
+    case 'REMOVE_FROM_CART':
+      var removeIndex = _.findIndex(state, (item) => {
+        return action.doi.toLowerCase() === item.doi.toLowerCase()
+      })
+      if(removeIndex !== -1) {
+        var newState = [...state]
+        newState.splice(removeIndex, 1)
+        return newState
+      } else return state
+    case 'CLEAR_CART':
+      var cart = []
+      return [...cart]
+    default:
+      return state
+  }
+}
 
 

@@ -4,7 +4,7 @@ import _ from 'lodash'
 import $ from 'jquery'
 
 import DepositCartItem from './depositCartItem'
-import Deferred from '../utilities/deferred'
+import {Deferred, compareDois} from '../utilities/helpers'
 
 
 
@@ -13,7 +13,8 @@ export default class DepositCart extends Component {
     reduxRemoveFromCart: is.func.isRequired,
     showDeposit: is.bool.isRequired,
     toggleDeposit: is.func.isRequired,
-    fullCart: is.array.isRequired
+    fullCart: is.array.isRequired,
+    cart: is.array.isRequired
   }
 
   componentWillMount(){
@@ -54,11 +55,13 @@ export default class DepositCart extends Component {
       items.push(
         <DepositCartItem
             cartItem={cartItem}
+            cart={this.props.cart}
             key={cartItem.doi}
             reduxRemoveFromCart={this.props.reduxRemoveFromCart}
             reportErrors={asyncErrorReport.resolve}
             recordCount={recordCount}
             closeErrors={this.closeErrors}
+            inCart={!!this.props.cart.find( cartRecord => compareDois(cartRecord.doi, cartItem.doi) )}
         />
       )
     })

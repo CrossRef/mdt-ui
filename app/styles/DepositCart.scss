@@ -34,6 +34,7 @@
       }
       .errorholder {
         width: 11.8%;
+        border-bottom: none;
       }
     }
   }
@@ -99,6 +100,22 @@
         padding: 0 !important;
         left: -1px;
         position:relative;
+
+        .status {
+          background: #596565;
+          width: 10.7%;
+          color: white;
+        }
+
+        .action {
+          background: #596565;
+          width: 13.7%;
+          color: white;
+
+          a {
+            cursor: pointer;
+          }
+        }
       }
 
       .itemholder {
@@ -113,6 +130,7 @@
           background: #596565;
           color: #FFF;
           padding: 20px 0 15px 0px;
+          width: 61%;
 
           a:visited {
             color: white;

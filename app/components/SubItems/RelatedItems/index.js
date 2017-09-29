@@ -3,9 +3,9 @@ import { stateTrackerII } from 'my_decorators'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
-import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
-const RelationTypes = require('../../../utilities/relationTypes.json')
-const IdentifierTypes = require('../../../utilities/identifierTypes.json')
+import {refreshErrorBubble} from '../../../utilities/helpers'
+const RelationTypes = require('../../../utilities/lists/relationTypes.json')
+const IdentifierTypes = require('../../../utilities/lists/identifierTypes.json')
 
 
 export default class RelatedItems extends Component {

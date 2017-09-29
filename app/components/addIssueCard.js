@@ -2,14 +2,14 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import update from 'immutability-helper'
 import Switch from 'react-toggle-switch'
+import $ from 'jquery'
 
 import {makeDateDropDown} from  '../utilities/date'
 import SubItem from './SubItems/subItem'
-import JSesc from '../utilities/jsesc'
-import { displayArchiveLocations } from '../utilities/archiveLocations'
+import {jsEscape, refreshErrorBubble, compareDois} from '../utilities/helpers'
+import { displayArchiveLocations } from '../utilities/lists/archiveLocations'
 import { getIssueXml } from '../utilities/xmlGenerator'
 import {routes} from '../routing'
-import refreshErrorBubble from '../utilities/refreshErrorBubble'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
 import {stateTrackerII} from 'my_decorators'
@@ -17,7 +17,13 @@ import {stateTrackerII} from 'my_decorators'
 
 
 const defaultState = {
+  menuOpen: false,
   validating: false,
+  timeOut: '',
+  confirmationPayload: {
+    status: '',
+    message: ''
+  },
   showSection: false,
   showIssueDoiReq: false,
   showHelper: false,
@@ -75,6 +81,7 @@ export default class AddIssueCard extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
+    cart: is.array.isRequired,
 
     asyncSubmitIssue: is.func.isRequired,
     asyncGetItem: is.func,
@@ -83,7 +90,10 @@ export default class AddIssueCard extends Component {
 
   constructor (props) {
     super(props);
-    this.state = defaultState;
+    this.state = {...defaultState};
+    if(props.preFilledData) {
+      this.state.issue = {...this.state.issue, ...props.preFilledData}
+    }
     this.state.issue.issueDoi = props.ownerPrefix + '/'
   }
 
@@ -107,7 +117,7 @@ export default class AddIssueCard extends Component {
       const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
 
       if(isSearch) {
-        issue.issueDoi = this.props.ownerPrefix
+        issue.issueDoi = this.props.ownerPrefix + '/'
       }
 
       const issueDoiDisabled = !this.props.duplicate && !isSearch
@@ -158,29 +168,28 @@ export default class AddIssueCard extends Component {
       }
     }
 
-    return {valid, validatedPayload}
+    return {valid, validatedPayload, criticalErrors}
   }
 
 
-  onSubmit = async (e) => {
-    e.preventDefault()
+  save = async (addToCart) => {
 
-    const {valid, validatedPayload} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
+    const {valid, validatedPayload, criticalErrors} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
     if (valid) {
-      const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props;
+      const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props
 
       const issueXML = getIssueXml(this.state)
 
       let version = this.state.version
 
       if (mode === 'edit') {
-        version = String(parseInt(this.state.version) + 1)
+        version = String(Number(this.state.version) + 1)
       }
 
-      const title = JSesc(this.state.issue.issueTitle);
-      const issue = JSesc(this.state.issue.issue);
-      const volume = JSesc(this.state.issue.volume);
+      const title = jsEscape(this.state.issue.issueTitle)
+      const issue = jsEscape(this.state.issue.issue)
+      const volume = jsEscape(this.state.issue.volume)
 
       const newRecord = {
         'title': {title, issue, volume},
@@ -193,21 +202,62 @@ export default class AddIssueCard extends Component {
         'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
       }
 
-      publication.message.contains = [newRecord]
-      asyncSubmitIssue(publication, () => {
-        if(this.props.mode === 'search') {
-          newRecord.contains = [this.props.savedArticle]
-          asyncSubmitIssue(publication, () => {
-            asyncGetPublications(publication.message.doi)
-            return this.closeModal()
-          })
+      const submissionPayload = {
+        ...publication,
+        message: {
+          ...publication.message,
+          contains: [newRecord]
         }
-        asyncGetPublications(publication.message.doi)
+      }
+
+      await asyncSubmitIssue(submissionPayload)
+
+      if(this.props.mode === 'search') {
+        newRecord.contains = [this.props.savedArticle]
+        await asyncSubmitIssue(submissionPayload)
+      }
+
+      this.props.asyncGetPublications(this.props.publication.message.doi)
+
+      newRecord.pubDoi = publication.message.doi
+
+      const inCart = this.props.mode === 'edit' ? !!this.props.cart.find( cartItem => compareDois(cartItem.doi, this.state.issue.issueDoi)) : false
+
+      if(addToCart || inCart) {
+        newRecord.doi = newRecord.doi.toLowerCase()
+        this.props.reduxCartUpdate(newRecord, addToCart, inCart)
+      }
+
+      if (addToCart) {
         this.closeModal()
+
+      } else {
+
+        validatedPayload.issueDoiDisabled = true
+        validatedPayload.version = String(Number(this.state.version) + 1)
+        const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors, inCart)
+        validatedPayload.confirmationPayload = confirmationPayload
+        validatedPayload.timeOut = timeOut
+
+        this.setState(validatedPayload, () => {
+          this.state.validating = false
+        })
+
+      }
+
+    } else /*if not valid*/ {
+      const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+      validatedPayload.confirmationPayload = confirmationPayload
+      validatedPayload.timeOut = timeOut
+      this.setState(validatedPayload, () => {
+        this.state.validating = false
       })
-    } else {
-      this.setState(validatedPayload, () => this.state.validating = false)
     }
+  }
+
+  addToCart = () => {
+    const addToCart = true
+    this.save(addToCart)
   }
 
 
@@ -259,12 +309,80 @@ export default class AddIssueCard extends Component {
     })
   }
 
-  closeModal () {
+  closeModal = () => {
     this.props.reduxControlModal({showModal:false})
   }
 
   componentDidUpdate() {
     refreshErrorBubble()
+  }
+
+  componentWillUnmount () {
+    clearTimeout(this.state.timeOut)
+  }
+
+  toggleMenu = () => {
+    this.setState({menuOpen: !this.state.menuOpen})
+  }
+
+  handleClick = e => {
+    const element = $(e.target)
+    if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
+      this.setState({ menuOpen: false })
+    }
+  }
+
+  componentWillUpdate (nextProps, nextState) {
+    if(nextState.menuOpen) {
+      document.addEventListener('click', this.handleClick, false)
+    } else if (!nextState.menuOpen) {
+      document.removeEventListener('click', this.handleClick, false)
+    }
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('click', this.handleClick, false)
+    clearTimeout(this.state.timeOut)
+  }
+
+  confirmSave = (criticalErrors, inCart) => {
+    clearTimeout(this.state.timeOut)
+    const confirmationPayload = {
+      status: 'saveSuccess',
+      message: 'Save Complete'
+    }
+
+    const criticalErrorMsg = {
+      issue: 'Issue # Required.',
+      issuedoi: 'Valid Issue DOI Required.',
+      invalidissuedoi: 'Valid Issue DOI Required.',
+      invalidIssueDoiPrefix: 'Valid Issue DOI Required.',
+      dupeissuedoi: 'Valid Issue DOI Required.',
+      dupeDois: 'Duplicate Issue & Volume DOIs.',
+      issueUrl: 'Issue Url is Required.'
+    }
+
+    const errorMessageArray = ['Save Failed:']
+
+    for (let error in criticalErrors) {
+      if(criticalErrors[error] === true) {
+        confirmationPayload.status = 'saveFailed'
+        errorMessageArray.push(criticalErrorMsg[error])
+      }
+    }
+
+    if(confirmationPayload.status === 'saveFailed') {
+      confirmationPayload.message = errorMessageArray.join(' ')
+    } else if (inCart) {
+      confirmationPayload.message = 'Save Complete. Issue updated in cart.'
+    }
+
+
+    const timeOut = setTimeout(()=>{
+      this.setState({confirmationPayload: {status: '', message: ''}})
+    }, 7000)
+
+    return {confirmationPayload, timeOut}
   }
 
 
@@ -274,10 +392,11 @@ export default class AddIssueCard extends Component {
      return (
       <div className='addIssueCard'>
         <div>
-          <form onSubmit={this.onSubmit} className='addIssues'>
+          <form className='addIssues'>
             <div className='articleInnerForm'>
               <div className='body'>
                 <div className='row infohelper'>
+                  <div className={`saveConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
                   <div className='errorHolder'>
                     <div className='switchOuterHolder'>
                         <div className='switchInnerHolder'>
@@ -701,8 +820,14 @@ export default class AddIssueCard extends Component {
                 showSection={this.state.showSection}
               />
               <div className='saveButtonAddIssueHolder'>
-                <button type='submit' className='saveButton addIssue'>Submit</button>
-                <button onClick={() => this.closeModal()} type='button' className='cancelButton addIssue'>Cancel</button>
+                <div onClick={this.toggleMenu} className='saveButton addIssue actionTooltip'>
+                  Action
+                  {this.state.menuOpen && <div className='actionBarDropDown'>
+                    <p onClick={()=>this.save()}>Save</p>
+                    <p onClick={this.addToCart}>Add to Cart</p>
+                  </div>}
+                </div>
+                <button onClick={this.closeModal} type='button' className='cancelButton addIssue'>Cancel</button>
               </div>
             </div>
           </form>

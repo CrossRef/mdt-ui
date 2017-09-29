@@ -9,17 +9,17 @@ import ReviewArticle from './reviewArticle'
 import SubItem from './SubItems/subItem'
 import { ActionBar, TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './addArticleCardComponents'
 import { journalArticleXml, crossmarkXml } from '../utilities/xmlGenerator'
-import JSesc from '../utilities/jsesc'
+import {jsEscape, refreshErrorBubble, compareDois} from '../utilities/helpers'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import { makeDateDropDown } from '../utilities/date'
 import {routes} from '../routing'
-import refreshErrorBubble from '../utilities/refreshErrorBubble'
 import {asyncValidateArticle} from '../utilities/validation'
 import {getSubItems} from '../utilities/getSubItems'
 
 
 const defaultState = {
   saving: false,
+  inCart: undefined,
   validating: false,
   crossmark: false,
   showCards: {},
@@ -166,6 +166,7 @@ export default class AddArticleCard extends Component {
     isDuplicate: is.bool.isRequired,
     issue: is.string,
     ownerPrefix: is.string.isRequired,
+    publicationXml: is.string.isRequired,
 
     crossmarkPrefixes: is.array.isRequired,
     reduxForm: is.object.isRequired,
@@ -209,8 +210,7 @@ export default class AddArticleCard extends Component {
     }
 
     const { publication } = nextProps
-    if (nextProps.mode === 'edit' && publication.message && publication.message.contains.length) {
-
+    if (nextProps.mode === 'edit' && this.props.mode !== 'edit') {
       const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
       let reduxForm
       if(parsedArticle.crossmark) {
@@ -238,6 +238,7 @@ export default class AddArticleCard extends Component {
         openItems: parsedArticle.openItems
       }, ...validatedPayload}
 
+
       this.setState(setStatePayload, () => this.state.validating = false)
     } else {
       this.setState(setStatePayload)
@@ -246,7 +247,6 @@ export default class AddArticleCard extends Component {
 
 
   validation = async (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) => {
-
     const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.props.ownerPrefix, doiDisabled)
 
     const validatedPayload = {
@@ -296,9 +296,9 @@ export default class AddArticleCard extends Component {
       const publication = this.props.publication
 
       const journalArticle = journalArticleXml(this)
-      const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${journalArticle}</journal></crossref>`
+      const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.props.publicationXml}${journalArticle}</journal></crossref>`
 
-      const title = JSesc(this.state.article.title)
+      const title = jsEscape(this.state.article.title)
 
       const newRecord = {
         'title': {'title': title},
@@ -336,22 +336,24 @@ export default class AddArticleCard extends Component {
       await this.props.asyncSubmitArticle(savePub, this.state.article.doi)
 
       newRecord.pubDoi = this.props.publication.message.doi
+      if(this.props.issue) {
+        newRecord.issueDoi = this.props.issue
+      }
 
-      if(addToCart) {
-        return newRecord
+      const inCart = this.props.mode === 'edit' ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi)) : false
+
+      if(addToCart || inCart) {
+        newRecord.doi = newRecord.doi.toLowerCase()
+        this.props.reduxCartUpdate(newRecord, addToCart, inCart)
+
+      }
+      if (addToCart) {
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
       } else {
-        // Save: check if article is already in cart, if so, update cart, otherwise just validate
-        for (let record of this.props.reduxCart) {
-          if (record.doi.toLowerCase() === this.state.article.doi.toLowerCase()) {
-            newRecord.doi = newRecord.doi.toLowerCase()
-            this.props.reduxCartUpdate([newRecord])
-            validatedPayload.saving = false
-            break
-          }
-        }
 
         validatedPayload.doiDisabled = true
         validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+        validatedPayload.inCart = inCart
 
         this.setState(validatedPayload, () => {
           this.state.validating = false
@@ -359,7 +361,7 @@ export default class AddArticleCard extends Component {
         })
       }
 
-    } else {
+    } else /*if not valid */{
       this.setState(validatedPayload, () => {
         this.state.validating = false
         this.state.saving = false
@@ -368,14 +370,9 @@ export default class AddArticleCard extends Component {
     }
   }
 
-  addToCart = async () => {
+  addToCart = () => {
     const addToCart = true
-    const newRecord = await this.save(addToCart)
-    if(newRecord) {
-      newRecord.doi = newRecord.doi.toLowerCase()
-      this.props.reduxCartUpdate([newRecord])
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
-    }
+    this.save(addToCart)
   }
 
   componentDidUpdate() {
@@ -437,8 +434,7 @@ export default class AddArticleCard extends Component {
   }
 
   back = () => {
-    var publication = this.props.publication
-    browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
+    browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
   }
 
 
@@ -458,6 +454,7 @@ export default class AddArticleCard extends Component {
               save={this.save}
               openReviewArticleModal={this.openReviewArticleModal}
               saving={this.state.saving}
+              inCart={this.state.inCart}
               criticalErrors={this.state.criticalErrors}/>
 
             <div className='articleInnerForm'>

@@ -4,7 +4,7 @@ import Autosuggest from 'react-autosuggest'
 import {stateTrackerII} from 'my_decorators'
 
 import {routes} from '../../../routing'
-import refreshErrorBubble from '../../../utilities/refreshErrorBubble'
+import {refreshErrorBubble} from '../../../utilities/helpers'
 
 
 function renderSuggestion(suggestion) {

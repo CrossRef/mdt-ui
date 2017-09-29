@@ -3,10 +3,10 @@ import Switch from 'react-toggle-switch'
 import { stateTrackerII } from 'my_decorators'
 import update from 'immutability-helper'
 
-const Languages = require('../../../utilities/language.json')
-import { ArchiveLocations } from '../../../utilities/archiveLocations'
+const Languages = require('../../../utilities/lists/language.json')
+import { ArchiveLocations } from '../../../utilities/lists/archiveLocations'
 
-const PublicationTypes = require('../../../utilities/publicationTypes.json')
+const PublicationTypes = require('../../../utilities/lists/publicationTypes.json')
 
 
 export default class AdditionalInformation extends Component {

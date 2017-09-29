@@ -12,6 +12,7 @@ export default class Search extends Component {
 
   static propTypes = {
     reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
     pubTitle: is.string.isRequired,
@@ -19,13 +20,14 @@ export default class Search extends Component {
     search: is.object.isRequired,
     asyncSubmitIssue: is.func.isRequired,
     publication: is.object.isRequired,
+    cart: is.array.isRequired,
     asyncGetPublications: is.func.isRequired
   }
 
   constructor (props) {
     super(props)
     this.state = {
-      searchType: 'all',
+      searchType: 'All',
       searchingFor: '',
       loading: false,
       forceClose: true
@@ -46,8 +48,28 @@ export default class Search extends Component {
     const pubDoi = this.props.publication.message.doi
     const ownerPrefix = this.props.ownerPrefix
 
-
     this.setState({ searchingFor: '', loading: false, forceClose:true })
+
+
+    if(typeof item === 'string') {
+      const [type, number] = item.split(' ')
+      return this.props.reduxControlModal({
+        showModal: true,
+        title: 'Edit Issue/Volume',
+        style: 'addIssueModal',
+        Component: AddIssueCard,
+        props: {
+          mode: 'add',
+          ownerPrefix: ownerPrefix,
+          preFilledData: type === 'Issue' ? {issue: number} : {volume: number},
+          publication: publication,
+          asyncGetPublications: this.props.asyncGetPublications,
+          asyncSubmitIssue: this.props.asyncSubmitIssue,
+          asyncGetItem: this.props.asyncGetItem
+        }
+      })
+    }
+
 
     this.props.asyncGetItem(item.doi)
     .then((result) => {
@@ -95,6 +117,8 @@ export default class Search extends Component {
               issue: issue,
               savedArticle: savedArticle,
               publication: publication,
+              cart: this.props.cart,
+              reduxCartUpdate: this.props.reduxCartUpdate,
               asyncGetPublications: this.props.asyncGetPublications,
               asyncSubmitIssue: this.props.asyncSubmitIssue,
               asyncGetItem: this.props.asyncGetItem
@@ -140,9 +164,18 @@ export default class Search extends Component {
 
   }
 
+  packageIssues = () => {
+    if(this.props.search.result['journal-issue'] || this.props.search.result['journal-volume']) {
+      return [
+        ...(this.props.search.result['journal-issue'] ? this.props.search.result['journal-issue'].sort( (a,b) => b-a ).map( e => `Issue ${e}` ) : []),
+        ...(this.props.search.result['journal-volume'] ? this.props.search.result['journal-volume'].sort( (a,b) => b-a ).map( e => `Volume ${e}` ) : [])
+      ]
+    }
+  }
+
 
   render () {
-    const results = this.props.search.result.works || []
+    const results = this.state.searchType === 'Issue' ? this.packageIssues() || [] : this.props.search.result.works || []
     const { searchingFor, forceClose } = this.state
 
     return (
@@ -159,11 +192,24 @@ export default class Search extends Component {
             value={this.state.searchingFor}
             items={results}
             getItemValue={(item) => {
+              if(typeof item === 'string') {
+                return item
+              }
               return item.doi || null
             }}
             onSelect={this.onSelect}
             onChange={this.onChange}
             renderItem={(item, isHighlighted) => {
+
+              if(typeof item === 'string') {
+                return <div key={item} className='search-result-holder'>
+                  <div className='search-result'>
+                    {item}
+                  </div>
+                  <div className="add">Add</div>
+                </div>
+              }
+
               const { title, issue, volume } = item.title
               const recordTitle = (!title && (issue || volume)) ? `Issue ${issue || 'NA'}, Volume ${volume || 'NA'}` : title
               if(item.type === 'issue') {
@@ -188,8 +234,8 @@ export default class Search extends Component {
                 )
               }
             }}
-            renderMenu={(items, value, style) => (
-              <div className='record-search-results'>
+            renderMenu={(items, value, style) => {
+              return <div className='record-search-results'>
                 {this.props.search.loading ? (
                   <div>Loading...</div>
                 ) : searchingFor === '' ? (
@@ -198,7 +244,7 @@ export default class Search extends Component {
                   <div>No matches for {value}</div>
                 ) : items}
               </div>
-            )}
+            }}
             placeholder='Search'
             className='record-search'
           />

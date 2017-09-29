@@ -2,19 +2,19 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 import verifyIssn from 'issn-verify'
+import $ from 'jquery'
 
-import authorizedFetch from '../utilities/fetch'
-const languages = require('../utilities/language.json')
-import isDOI from '../utilities/isDOI'
-import isURL from '../utilities/isURL'
-import {apiBaseUrl} from '../actions/application'
-
+import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
+import { publicationXml } from '../utilities/xmlGenerator'
+const languages = require('../utilities/lists/language.json')
 
 
 export default class AddPublicationCard extends Component {
 
   static propTypes = {
+    mode: is.string.isRequired,
     crossmarkPrefixes: is.array.isRequired,
+    inCart: is.bool,
 
     Journal: is.shape({
       journal_metadata: is.object.isRequired
@@ -28,6 +28,7 @@ export default class AddPublicationCard extends Component {
       title: is.string
     }),
 
+    reduxCartUpdate: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
     reduxAddDOIs: is.func,
     reduxStorePublications: is.func,
@@ -38,12 +39,45 @@ export default class AddPublicationCard extends Component {
   constructor(props) {
     super()
 
-    if(props.Journal) {
+    const defaultState = {
+      mode: props.mode,
+      menuOpen: false,
+      timeOut: '',
+      confirmationPayload: {
+        status: '',
+        message: ''
+      },
+
+      'mdt-version': '0',
+      title: '',
+      abbreviation: '',
+      DOI: '',
+      url: '',
+      printISSN: '',
+      electISSN: '',
+      language: '',
+      archivelocation: '',
+      crossmarkDoi: '',
+      errors: {
+        showURLError: false,
+        showURLEmptyError: false,
+        showTitleEmptyError: false,
+        showISSNInvalidError: false,
+        showISSNEmptyError: false,
+        showDOIError: false,
+        showDOIEmptyError: false,
+        showDOIInvalidError: false,
+        showDOIPrefixError: false
+      }
+    }
+
+    if(props.mode === 'edit') {
       const data = props.Journal.journal_metadata
       const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {}
-      let version = props['mdt-version'] ? Number(props['mdt-version'])+1 : '0'
+      let version = props['mdt-version'] ? String(Number(props['mdt-version'])+1) : '0'
       const doi_data = data.doi_data || {}
       this.state = {
+        ...defaultState,
         'mdt-version': version.toString(),
         title: data.full_title,
         abbreviation: data.abbrev_title,
@@ -54,10 +88,9 @@ export default class AddPublicationCard extends Component {
         language: data['-language'],
         archivelocation: archive['-name'],
         crossmarkDoi: '',
-        ...inactiveErrors
       }
     }
-    else if (props.searchResult) {
+    else if (props.mode === 'search') {
       const result = props.searchResult
       let pissn, eissn
       if(Array.isArray(result.issns)) {
@@ -67,6 +100,7 @@ export default class AddPublicationCard extends Component {
         })
       }
       this.state = {
+        ...defaultState,
         'mdt-version': '1',
         title: result.title,
         abbreviation: '',
@@ -77,28 +111,13 @@ export default class AddPublicationCard extends Component {
         language: '',
         archivelocation: '',
         crossmarkDoi: '',
-        ...inactiveErrors
       }
     }
-    else this.state = {
-      title: '',
-      abbreviation: '',
-      DOI: '',
-      url: '',
-      printISSN: '',
-      electISSN: '',
-      language: '',
-      archivelocation: '',
-      crossmarkDoi: '',
-      ...inactiveErrors
+    else if (props.mode === 'add') {
+      this.state = defaultState
     }
   }
 
-  checkDupeDOI (callback) {
-    return Promise.resolve(authorizedFetch(`${apiBaseUrl}/work?doi=${this.state.DOI}`, { headers: {Authorization: localStorage.getItem('auth')} })
-      .then(data => callback(data.status === 200))
-    )
-  }
 
   getLanguages () {
     var lgOpt = [
@@ -127,63 +146,93 @@ export default class AddPublicationCard extends Component {
     }
   }
 
-  validation () {
-    var errorCnt = 0
-    this.setState({
-      showURLError: false,
-      showURLEmptyError: false,
-      showTitleError: false,
-      showTitleEmptyError: false,
-      showISSNError: false,
-      showISSNEmptyError: false,
-      showISSNInvalidError: false,
-      showDOIError: false,
-      showDOIEmptyError: false,
-      showDOIInvalidError: false,
-      showDOIPrefixError: false
-    })
+  validation = async () => {
+    let valid = true
 
-    return this.checkDupeDOI((isDupe) => {
-      const errorStates = {
-        showTitleEmptyError: (this.state.title.length <= 0),
-        showISSNEmptyError: (this.state.electISSN.length <= 0),
-        showISSNInvalidError: !this.validateISSN() && (this.state.electISSN.length > 0),
-        showURLEmptyError: (this.state.url.length <= 0),
-        showURLError: !isURL(this.state.url) && (this.state.url.length > 0),
-        showDOIEmptyError: (this.state.DOI.length <= 0),
-        showDOIInvalidError: !isDOI(this.state.DOI) && (this.state.DOI.length > 0),
-        showDOIPrefixError: ((this.state.DOI.length > 0) && isDOI(this.state.DOI)) ? !this.validatePrefix() : false,
-        showDOIError: isDupe
-      }
+    const criticalErrors = {
+      showTitleEmptyError: !this.state.title.length,
+    }
+    const warnings = {}
 
-      this.setState(errorStates)
-      for (var key in errorStates) { // checking all the properties of errorStates to see if there is a true
-        if (errorStates[key]) {
-            return errorStates[key]
-          }
+    criticalErrors.showISSNEmptyError = !this.state.electISSN.length
+    criticalErrors.showISSNInvalidError = !criticalErrors.showISSNEmptyError ? !this.validateISSN(): false
+
+    criticalErrors.showURLEmptyError = !this.state.url.length
+    warnings.showURLError = !criticalErrors.showURLEmptyError ? !isURL(this.state.url) : false
+
+    criticalErrors.showDOIEmptyError = !this.state.DOI.length
+    criticalErrors.showDOIInvalidError = !criticalErrors.showDOIEmptyError ? !isDOI(this.state.DOI) : false
+    criticalErrors.showDOIPrefixError = !criticalErrors.showDOIEmptyError && !criticalErrors.showDOIInvalidError && this.props.mode !== 'edit' ? !this.validatePrefix() : false
+    criticalErrors.showDOIError =
+      !criticalErrors.showDOIEmptyError &&
+      !criticalErrors.showDOIInvalidError &&
+      !criticalErrors.showDOIPrefixError &&
+      this.props.mode !== 'edit' ?
+        await asyncCheckDupeDoi(this.state.DOI) : false
+
+
+    const errorStates = {...criticalErrors, ...warnings}
+
+    for (let key in errorStates) { // checking all the properties of errorStates to see if there is a true
+      if (errorStates[key]) {
+        valid = false
+        break
       }
-    })
+    }
+
+    return {valid, errorStates, criticalErrors}
   }
 
-  onSubmit = (e) => {
-    e.preventDefault()
+  save = (addToCart) => {
 
-    if(this.state['mdt-version']) {return this.saveEdit()}
-    this.validation().then((errors) => {
-      if (!errors) { // false = no errors
-        this.props.asyncSubmitPublication(this.state, publication => {
-          this.props.reduxAddDOIs(publication.message.doi)
-          this.props.reduxControlModal({showModal:false})
+    this.validation().then(({valid, errorStates, criticalErrors}) => {
+      if (valid) {
+        const publication = {
+          'title': {'title': this.state.title},
+          'doi': this.state.DOI,
+          'date': new Date(),
+          'owner-prefix': this.state.DOI.split('/')[0],
+          'type': 'Publication',
+          'mdt-version': this.state['mdt-version'],
+          'status': 'draft',
+          'content': publicationXml(this.state),
+          'contains': []
+        }
+
+        this.props.asyncSubmitPublication(publication)
+          .then(() => {
+            if(addToCart || this.props.inCart) {
+              publication.doi = publication.doi.toLowerCase()
+              this.props.reduxCartUpdate(publication, addToCart, this.props.inCart)
+            }
+            if(addToCart) {
+              this.props.reduxControlModal({showModal:false})
+            } else {
+              const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors, this.props.inCart)
+              this.setState({
+                'mdt-version': String( Number(this.state['mdt-version'] + 1)),
+                errors: errorStates,
+                confirmationPayload,
+                timeOut
+              })
+            }
+          })
+
+      } else if (!valid) {
+        const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+        this.setState({
+          'mdt-version': String( Number(this.state['mdt-version'] + 1)),
+          errors: errorStates,
+          confirmationPayload,
+          timeOut
         })
       }
     })
   }
 
-  saveEdit () {
-    this.props.asyncSubmitPublication(this.state, publication => {
-      if(this.props.searchResult) this.props.reduxAddDOIs(publication.message.doi)
-      this.props.reduxControlModal({showModal:false})
-    })
+  addToCart = () => {
+    const addToCart = true
+    this.save(addToCart)
   }
 
   inputHandler = (e) => {
@@ -192,8 +241,72 @@ export default class AddPublicationCard extends Component {
     })
   }
 
+  toggleMenu = () => {
+    this.setState({menuOpen: !this.state.menuOpen})
+  }
+
   closeModal = () => {
     this.props.reduxControlModal({showModal:false})
+  }
+
+  handleClick = e => {
+    const element = $(e.target)
+    if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
+      this.setState({ menuOpen: false })
+    }
+  }
+
+  componentWillUpdate (nextProps, nextState) {
+    if(nextState.menuOpen) {
+      document.addEventListener('click', this.handleClick, false)
+    } else if (!nextState.menuOpen) {
+      document.removeEventListener('click', this.handleClick, false)
+    }
+  }
+
+  componentWillUnmount () {
+    document.removeEventListener('click', this.handleClick, false)
+    clearTimeout(this.state.timeOut)
+  }
+
+  confirmSave = (criticalErrors, inCart) => {
+    clearTimeout(this.state.timeOut)
+    const confirmationPayload = {
+      status: 'saveSuccess',
+      message: 'Save Complete'
+    }
+
+    const criticalErrorMsg = {
+      showURLEmptyError: 'URL Required.',
+      showTitleEmptyError: 'Title Required.',
+      showISSNEmptyError: 'Valid ISSN Required.',
+      showISSNInvalidError: 'Valid ISSN Required.',
+      showDOIError: 'Valid DOI Required.',
+      showDOIEmptyError: 'Valid DOI Required.',
+      showDOIInvalidError: 'Valid DOI Required.',
+      showDOIPrefixError: 'Valid DOI Required.'
+    }
+
+    const errorMessageArray = ['Save Failed: ']
+
+    for (let error in criticalErrors) {
+      if(criticalErrors[error] === true) {
+        confirmationPayload.status = 'saveFailed'
+        errorMessageArray.push(criticalErrorMsg[error])
+      }
+    }
+
+    if(confirmationPayload.status === 'saveFailed') {
+      confirmationPayload.message = errorMessageArray.join(' ')
+    } else if (inCart) {
+      confirmationPayload.message = 'Save Complete. Publication updated in cart.'
+    }
+
+    const timeOut = setTimeout(()=>{
+      this.setState({confirmationPayload: {status: '', message: ''}})
+    }, 7000)
+
+    return {confirmationPayload, timeOut}
   }
 
   render () {
@@ -203,12 +316,14 @@ export default class AddPublicationCard extends Component {
     const disabledInput = isEdit ? {disabled: true} : {}
 
     const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
+    const errors = this.state.errors
 
     return (
       <div className='addPublicationCard'>
-        <form onSubmit={this.onSubmit} className='addPublications'>
+        <div className={`saveConfirmation publicationConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
+        <form className='addPublications'>
           <div className='fieldRowHolder'>
-            <div className={(this.state.showTitleEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
+            <div className={(errors.showTitleEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
               <div className='left-indent-36'>Journal Title (Required)</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
@@ -219,10 +334,10 @@ export default class AddPublicationCard extends Component {
                     value={this.state.title}
                     onChange={this.inputHandler} />
                 </div>
-                {this.state.showTitleEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
+                {errors.showTitleEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
               </div>
             </div>
-            <div className={(this.state.showURLError || this.state.showURLEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
+            <div className={(errors.showURLError || errors.showURLEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
               <div className='left-indent-36'>Journal URL (Required)</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
@@ -233,8 +348,8 @@ export default class AddPublicationCard extends Component {
                     value={!!this.state.url?this.state.url:'http://'}
                     onChange={this.inputHandler} />
                 </div>
-                {this.state.showURLEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
-                {this.state.showURLError && <div className='inputinnerholder'><div className='invalid'>Invalid URL. Please check your URL is correct.</div></div>}
+                {errors.showURLEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
+                {errors.showURLError && <div className='inputinnerholder'><div className='invalid'>Invalid URL. Please check your URL is correct.</div></div>}
               </div>
             </div>
           </div>
@@ -252,7 +367,7 @@ export default class AddPublicationCard extends Component {
                 </div>
               </div>
             </div>
-            <div className={(this.state.showDOIError || this.state.showDOIInvalidError || this.state.showDOIEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
+            <div className={(errors.showDOIError || errors.showDOIInvalidError || errors.showDOIEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
               <div className='left-indent-36'>Journal DOI</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
@@ -264,10 +379,10 @@ export default class AddPublicationCard extends Component {
                     value={this.state.DOI}
                     onChange={this.inputHandler} />
                 </div>
-                {this.state.showDOIError && <div className='inputinnerholder'><div className='invalid'>Duplicate DOI. Registering a new DOI? This one already exists.</div></div>}
-                {this.state.showDOIInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid DOI. Please check your DOI (10.xxxx/xx...).</div></div>}
-                {this.state.showDOIPrefixError && <div className='inputinnerholder'><div className='invalid'>Invalid DOI Prefix (10.xxxx). Prefix is not registered to your account.</div></div>}
-                {this.state.showDOIEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
+                {errors.showDOIError && <div className='inputinnerholder'><div className='invalid'>Duplicate DOI. Registering a new DOI? This one already exists.</div></div>}
+                {errors.showDOIInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid DOI. Please check your DOI (10.xxxx/xx...).</div></div>}
+                {errors.showDOIPrefixError && <div className='inputinnerholder'><div className='invalid'>Invalid DOI Prefix (10.xxxx). Prefix is not registered to your account.</div></div>}
+                {errors.showDOIEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
               </div>
             </div>
           </div>
@@ -281,7 +396,7 @@ export default class AddPublicationCard extends Component {
                 </div>
               </div>
             </div>
-            <div className={(this.state.showISSNError || this.state.showISSNEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
+            <div className={(errors.showDuplicateISSN || errors.showISSNEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
               <div className='left-indent-36'>ISSN (required)</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
@@ -292,9 +407,9 @@ export default class AddPublicationCard extends Component {
                     value={this.state.electISSN}
                     onChange={this.inputHandler} />
                 </div>
-                {this.state.showISSNError && <div className='inputinnerholder'><div className='invalid'>Duplicate ISSN. Registering a new ISSN? This one already exists.</div></div>}
-                {this.state.showISSNInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid ISSN. Please check your ISSN.</div></div>}
-                {this.state.showISSNEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
+                {errors.showDuplicateISSN && <div className='inputinnerholder'><div className='invalid'>Duplicate ISSN. Registering a new ISSN? This one already exists.</div></div>}
+                {errors.showISSNInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid ISSN. Please check your ISSN.</div></div>}
+                {errors.showISSNEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
               </div>
             </div>
           </div>
@@ -340,27 +455,17 @@ export default class AddPublicationCard extends Component {
                 onClick={this.closeModal}
                 className='button-anchor button-white-cancel'
               >Close</button>
-              <input
-                type='submit'
-                className='button-anchor'
-              />
+              <div onClick={this.toggleMenu} className='button-anchor actionTooltip'>
+                Action
+                {this.state.menuOpen && <div className='actionBarDropDown'>
+                  <p onClick={()=>this.save()}>Save</p>
+                  <p onClick={this.addToCart}>Add to Cart</p>
+                </div>}
+              </div>
             </div>
           </div>
         </form>
       </div>
     )
   }
-}
-
-const inactiveErrors = {
-  showURLError: false,
-  showURLEmptyError: false,
-  showTitleError: false,
-  showTitleEmptyError: false,
-  showISSNError: false,
-  showISSNEmptyError: false,
-  showDOIError: false,
-  showDOIEmptyError: false,
-  showDOIInvalidError: false,
-  showDOIPrefixError: false
 }

@@ -12,11 +12,13 @@ export default class Search extends Component {
   static propTypes = {
     reduxAddDOIs: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
     asyncSearch: is.func.isRequired,
     results: is.array,
     loading: is.bool.isRequired,
-    crossmarkPrefixes: is.array.isRequired
+    crossmarkPrefixes: is.array.isRequired,
+    prefixes: is.array.isRequired
   }
 
   constructor (props) {
@@ -42,13 +44,16 @@ export default class Search extends Component {
     } else {
       this.props.reduxControlModal({
         showModal: true,
-        title: 'Add DOI',
+        title: 'Edit Journal Record',
         Component: AddPublicationCard,
         props: {
+          mode: 'search',
           searchResult: item,
           asyncSubmitPublication: this.props.asyncSubmitPublication,
           reduxAddDOIs: this.props.reduxAddDOIs,
-          crossmarkPrefixes: this.props.crossmarkPrefixes
+          reduxCartUpdate: this.props.reduxCartUpdate,
+          crossmarkPrefixes: this.props.crossmarkPrefixes,
+          prefixes: this.props.prefixes
         }
       })
     }

@@ -4,7 +4,7 @@ import { Link } from 'react-router'
 import { browserHistory } from 'react-router'
 import { ToastContainer, ToastMessage } from "react-toastr"
 
-import pascaleCase from '../utilities/pascaleCase'
+import {pascaleCase} from '../utilities/helpers'
 import { routes } from '../routing'
 
 const ToastMessageFactory = React.createFactory(ToastMessage.animation)
@@ -38,24 +38,11 @@ export default class PublicationNav extends Component {
     }
 
     if (nextProps.toast.title !== '') {
-      let alreadyInCart = false
-      if(nextProps.toast.updateType === 'addToCart') {
-        const matchingItem = this.props.cart.find((cartItem) => {
-          return cartItem.doi === nextProps.toast.doi
-        })
 
-        if (matchingItem) {
-          alreadyInCart = true
-          const updatedItem = nextProps.cart.find((nextCartItem) => {
-            return (nextCartItem.doi === matchingItem.doi && nextCartItem['mdt-version'] !== matchingItem['mdt-version'])
-          })
-          if (updatedItem) {
-            nextProps.toast.updateType = 'updateCart'
-          }
-        }
+      const nothingRemoved = (nextProps.toast.updateType === 'removeFromCart' && this.props.cart.length === nextProps.cart.length)
+      if(!nothingRemoved) {
+        this.addAlert(nextProps.toast)
       }
-
-      if(!alreadyInCart || nextProps.toast.updateType === 'updateCart') this.addAlert(nextProps.toast)
       this.props.reduxClearToast()
     }
   }

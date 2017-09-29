@@ -19,8 +19,10 @@ export default class TitleBar extends Component {
       message: is.object.isRequired
     }).isRequired,
     search: is.object.isRequired,
+    cart: is.array,
 
     reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
 
     asyncSearchRecords: is.func.isRequired,
     asyncGetItem: is.func.isRequired,
@@ -39,8 +41,10 @@ export default class TitleBar extends Component {
         search={this.props.search}
         pubTitle={title}
         publication={this.props.publication}
+        cart={this.props.cart}
 
         reduxControlModal={this.props.reduxControlModal}
+        reduxCartUpdate={this.props.reduxCartUpdate}
 
         asyncSubmitIssue={this.props.asyncSubmitIssue}
         asyncGetPublications={this.props.asyncGetPublications}
