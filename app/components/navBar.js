@@ -38,27 +38,11 @@ export default class PublicationNav extends Component {
     }
 
     if (nextProps.toast.title !== '') {
-      let alreadyInCart = false
-      let nothingRemoved = false
-      if(nextProps.toast.updateType === 'addToCart') {
-        const matchingItem = this.props.cart.find( cartItem => cartItem.doi === nextProps.toast.doi)
 
-        if (matchingItem) {
-          alreadyInCart = true
-          const updatedItem = nextProps.cart.find((nextCartItem) => {
-            return (nextCartItem.doi === matchingItem.doi && nextCartItem['mdt-version'] !== matchingItem['mdt-version'])
-          })
-          if (updatedItem && nextProps.toast.recordType === 'article') {
-            nextProps.toast.updateType = 'updateCart'
-          }
-        }
+      const nothingRemoved = (nextProps.toast.updateType === 'removeFromCart' && this.props.cart.length === nextProps.cart.length)
+      if(!nothingRemoved) {
+        this.addAlert(nextProps.toast)
       }
-
-      if(nextProps.toast.updateType === 'removeFromCart' && this.props.cart.length === nextProps.cart.length) {
-        nothingRemoved = true
-      }
-
-      if(!nothingRemoved && (!alreadyInCart || nextProps.toast.updateType === 'updateCart')) this.addAlert(nextProps.toast)
       this.props.reduxClearToast()
     }
   }

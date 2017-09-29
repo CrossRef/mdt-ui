@@ -24,7 +24,10 @@ const mapDispatchToProps = (dispatch) => bindActionCreators({
 @connect(mapStateToProps, mapDispatchToProps)
 export default class App extends Component {
 
-  static propTypes = {}
+  static propTypes = {
+    cart: is.array.isRequired,
+    toast: is.object.isRequired
+  }
 
   render () {
     return (
