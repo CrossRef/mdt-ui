@@ -6,14 +6,15 @@ import { bindActionCreators } from 'redux'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
-import { controlModal, cartUpdate, getItem, removeFromCart, clearCart, deposit } from '../actions/application'
+import { controlModal, cartUpdate, removeFromCart, clearCart } from '../actions/application'
 import DepositCart from '../components/depositCart'
 import reviewDepositCart from '../components/reviewDepositCart'
 import DepositResult from '../components/depositResult'
 import {routes} from '../routing'
 import processDepositResult from '../utilities/processDepositResult'
-import {errorHandler, xmldoc} from '../utilities/helpers'
+import {errorHandler} from '../utilities/helpers'
 import * as api from '../actions/api'
+
 
 
 
@@ -195,33 +196,7 @@ export default class DepositCartPage extends Component {
     this.setState({status:`processing`})
 
     api.deposit(toDeposit).then( result => {
-      let resultArray = result.message
-      resultArray = resultArray.map((item) => {
-        try {
-          const getXML = xmldoc(item.result)
-          if(getXML !== undefined) item.result = getXML
-          if(item.contains && item.contains.length) {
-            const recordArray = item.contains
-            recordArray.map((record) => {
-              const getXML = xmldoc(record.result)
-              if(getXML !== undefined) record.result = getXML
-              if(record.contains && record.contains.length) {
-                const articleArray = record.contains
-                articleArray.map((article) => {
-                  const getXML = xmldoc(article.result)
-                  if(getXML !== undefined) article.result = getXML
-                })
-              }
-            })
-          }
-          return item
-        } catch (error) {
-          console.error('Error Parsing Deposit result: ' + error)
-          return item
-        }
-      })
-
-      this.setState({status:'result', result: processDepositResult(resultArray, this.props.publications, this.props.cart)})
+      this.setState({status:'result', result: processDepositResult(result, this.props.publications, this.props.cart)})
       this.props.reduxClearCart()
     })
     .catch(reason => errorHandler(reason, ()=>this.setState({status: 'cart'})))

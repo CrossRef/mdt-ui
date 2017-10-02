@@ -210,7 +210,7 @@ export default class AddPublicationCard extends Component {
             } else {
               const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors, this.props.inCart)
               this.setState({
-                'mdt-version': String( Number(this.state['mdt-version'] + 1)),
+                'mdt-version': String( Number(this.state['mdt-version']) + 1),
                 errors: errorStates,
                 confirmationPayload,
                 timeOut
@@ -221,7 +221,7 @@ export default class AddPublicationCard extends Component {
       } else if (!valid) {
         const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
         this.setState({
-          'mdt-version': String( Number(this.state['mdt-version'] + 1)),
+          'mdt-version': String( Number(this.state['mdt-version']) + 1),
           errors: errorStates,
           confirmationPayload,
           timeOut

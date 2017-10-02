@@ -1,13 +1,45 @@
-import {compareDois} from '../utilities/helpers'
+import * as helpers from '../utilities/helpers'
+const {xmldoc, compareDois} = helpers
 
 
-export default (depositResult, publications, cart) => {
+export default (rawResult, publications, cart) => {
+
+  let resultArray = rawResult.message
+  resultArray = resultArray.map((item) => {
+    try {
+      const getXML = xmldoc(item.result)
+      if(getXML !== undefined) item.result = getXML
+      if(item.contains && item.contains.length) {
+        const recordArray = item.contains
+        recordArray.map((record) => {
+          const getXML = xmldoc(record.result)
+          if(getXML !== undefined) record.result = getXML
+          if(record.contains && record.contains.length) {
+            const articleArray = record.contains
+            articleArray.map((article) => {
+              const getXML = xmldoc(article.result)
+              if(getXML !== undefined) article.result = getXML
+            })
+          }
+        })
+      }
+      return item
+    } catch (error) {
+      console.error('Error Parsing Deposit result: ' + error)
+      return item
+    }
+  })
+
+
+  console.log(resultArray)
   const resultCount = {Success: 0, Failed: 0}
   const resultData = {}
-  let depositId = []
+  let depositId = new Set
+  const used = {}
 
-  depositResult.forEach((result, index)=>{
-    let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue
+  resultArray.forEach((result, index)=>{
+    debugger
+    let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
     let error = {}
     let contains1 = {}
     const resultDoi = result['DOI:']
@@ -16,6 +48,8 @@ export default (depositResult, publications, cart) => {
 
     if(!resultInfo) {
       resultInfo = publications.find( record => compareDois(record.doi, resultDoi) )
+    } else {
+      resultInCart = true
     }
 
     resultType = resultInfo.type
@@ -33,15 +67,8 @@ export default (depositResult, publications, cart) => {
     //Assign data to variables
     pubDoi = resultType === 'Publication' ? resultDoi : resultInfo.pubDoi
     pubTitle = publications[pubDoi.toLowerCase()].message.title.title
-    resultTitle = do {
-      if(resultType === 'Publication') {
-        pubTitle
-      } else if (resultType === 'issue') {
-        `${resultInfo.title.volume && `Volume ${resultInfo.title.volume}, `}Issue ${resultInfo.title.issue}`
-      } else if (resultType === 'article') {
-        resultInfo.title.title
-      }
-    }
+    resultTitle = helpers.recordTitle(resultType, resultInfo.title)
+
 
     if(typeof result.result === 'string') {
       resultStatus = 'Failure'
@@ -61,30 +88,33 @@ export default (depositResult, publications, cart) => {
       resultStatus = 'Failed'
     }
 
-    if(resultType === 'article') {
+    if (resultInCart && !used[resultInfo.doi]) {
       resultCount[resultStatus]++
+      used[resultInfo.doi] = true
     }
+
 
 
     //Check contains for records and assign data
     if(result.contains && result.contains.length) {
       result.contains.forEach((record, index)=>{
-        let recordTitle, recordStatus, recordType, recordInfo
+        let recordTitle, recordStatus, recordType, recordInfo, recordInCart
         let error = {}
         let contains2 = {}
         const recordDoi = record['DOI:']
 
         //Check cart for record, if not found, must be an issue, get data from stored publications
-        recordInfo = cart.find( cartItem => compareDois(cartItem.doi, resultDoi) )
+        recordInfo = cart.find( cartItem => compareDois(cartItem.doi, recordDoi) )
+
         if(!recordInfo) {
           recordInfo = publications[pubDoi.toLowerCase()].normalizedRecords[recordDoi.toLowerCase()]
+        } else {
+          recordInCart = true
         }
 
         //Assign data to vars
         recordType = recordInfo.type
-        recordTitle = recordType === 'issue' ?
-          `${recordInfo.title.volume && `Volume ${recordInfo.title.volume}, `}Issue ${recordInfo.title.issue}`
-          : recordInfo.title.title
+        recordTitle = helpers.recordTitle(recordType, recordInfo.title)
 
         if(typeof record.result === 'string') {
           recordStatus = 'Failure'
@@ -100,9 +130,14 @@ export default (depositResult, publications, cart) => {
           error.errorMessage = 'Unknown Error'
         }
 
-        if(recordStatus === 'Failure') recordStatus = 'Failed'
+        if(recordStatus === 'Failure') {
+          recordStatus = 'Failed'
+        }
 
-        if(recordType === 'article') resultCount[recordStatus]++
+        if (recordInCart && !used[recordInfo.doi]) {
+          resultCount[recordStatus]++
+          used[recordInfo.doi] = true
+        }
 
 
         //Check record for contains, if found, must be articlesUnderIssue, assign data to vars
@@ -130,13 +165,13 @@ export default (depositResult, publications, cart) => {
               error.errorMessage = 'Unknown Error'
             }
 
-            if(articleStatus === 'Failure') articleStatus = 'Failed'
+            if(articleStatus === 'Failure') {
+              articleStatus = 'Failed'
+            }
 
             resultCount[articleStatus]++
 
-            if (depositId.indexOf(article.submissionid) === -1) {
-              depositId.push(article.submissionid)
-            }
+            depositId.add(article.submissionid)
 
             const articleResult = {
               title: articleTitle,
@@ -163,9 +198,7 @@ export default (depositResult, publications, cart) => {
 
 
         //Continue processing record
-        if (depositId.indexOf(record.submissionid) === -1) {
-          depositId.push(record.submissionid)
-        }
+        depositId.add(record.submissionid)
 
         const recordResult = {
           title: recordTitle,
@@ -192,24 +225,24 @@ export default (depositResult, publications, cart) => {
 
 
     //Continue processing result
-    if (depositId.indexOf(result.submissionid) === -1) {
-      depositId.push(result.submissionid)
-    }
+    depositId.add(result.submissionid)
 
-    let thisResult = {
-      title: resultTitle,
-      status:resultStatus,
-      type:resultType,
-      doi: resultDoi,
-      pubDoi: pubDoi,
-      submissionId: result.submissionid,
-      contains:[],
-      ...error
-    }
+
 
 
     //If result is a record, the parents didn't get deposited, so have to create a representation of the undeposited parents in resultData
     if (resultType !== 'Publication') {
+      let thisResult = {
+        title: resultTitle,
+        status:resultStatus,
+        type:resultType,
+        doi: resultDoi,
+        pubDoi: pubDoi,
+        submissionId: result.submissionid,
+        contains:[],
+        ...error
+      }
+
       let newContains = parentIssue ? {
         [parentIssue.doi]: {
           title: `${parentIssue.title.volume && `Volume ${parentIssue.title.volume}, `}Issue ${parentIssue.title.issue}`,
