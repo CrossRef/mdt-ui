@@ -203,12 +203,12 @@ export default class AddPublicationCard extends Component {
           .then(() => {
             if(addToCart || this.props.inCart) {
               publication.doi = publication.doi.toLowerCase()
-              this.props.reduxCartUpdate(publication)
+              this.props.reduxCartUpdate(publication, addToCart, this.props.inCart)
             }
             if(addToCart) {
               this.props.reduxControlModal({showModal:false})
             } else {
-              const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+              const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors, this.props.inCart)
               this.setState({
                 'mdt-version': String( Number(this.state['mdt-version'] + 1)),
                 errors: errorStates,
@@ -269,7 +269,7 @@ export default class AddPublicationCard extends Component {
     clearTimeout(this.state.timeOut)
   }
 
-  confirmSave = (criticalErrors) => {
+  confirmSave = (criticalErrors, inCart) => {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
@@ -298,6 +298,8 @@ export default class AddPublicationCard extends Component {
 
     if(confirmationPayload.status === 'saveFailed') {
       confirmationPayload.message = errorMessageArray.join(' ')
+    } else if (inCart) {
+      confirmationPayload.message = 'Save Complete. Publication updated in cart.'
     }
 
     const timeOut = setTimeout(()=>{

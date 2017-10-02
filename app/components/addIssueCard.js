@@ -221,11 +221,11 @@ export default class AddIssueCard extends Component {
 
       newRecord.pubDoi = publication.message.doi
 
-      const inCart = (!addToCart && this.props.mode === 'edit') ? this.props.cart.find( cartItem => compareDois(cartItem.doi, this.state.issue.issueDoi)) : false
+      const inCart = this.props.mode === 'edit' ? !!this.props.cart.find( cartItem => compareDois(cartItem.doi, this.state.issue.issueDoi)) : false
 
       if(addToCart || inCart) {
         newRecord.doi = newRecord.doi.toLowerCase()
-        this.props.reduxCartUpdate([newRecord])
+        this.props.reduxCartUpdate(newRecord, addToCart, inCart)
       }
 
       if (addToCart) {
@@ -235,7 +235,7 @@ export default class AddIssueCard extends Component {
 
         validatedPayload.issueDoiDisabled = true
         validatedPayload.version = String(Number(this.state.version) + 1)
-        const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+        const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors, inCart)
         validatedPayload.confirmationPayload = confirmationPayload
         validatedPayload.timeOut = timeOut
 
@@ -345,7 +345,7 @@ export default class AddIssueCard extends Component {
     clearTimeout(this.state.timeOut)
   }
 
-  confirmSave = (criticalErrors) => {
+  confirmSave = (criticalErrors, inCart) => {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
@@ -373,7 +373,10 @@ export default class AddIssueCard extends Component {
 
     if(confirmationPayload.status === 'saveFailed') {
       confirmationPayload.message = errorMessageArray.join(' ')
+    } else if (inCart) {
+      confirmationPayload.message = 'Save Complete. Issue updated in cart.'
     }
+
 
     const timeOut = setTimeout(()=>{
       this.setState({confirmationPayload: {status: '', message: ''}})

@@ -19,6 +19,7 @@ import {getSubItems} from '../utilities/getSubItems'
 
 const defaultState = {
   saving: false,
+  inCart: undefined,
   validating: false,
   crossmark: false,
   showCards: {},
@@ -339,21 +340,20 @@ export default class AddArticleCard extends Component {
         newRecord.issueDoi = this.props.issue
       }
 
-      if(addToCart) {
-        return newRecord
+      const inCart = this.props.mode === 'edit' ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi)) : false
+
+      if(addToCart || inCart) {
+        newRecord.doi = newRecord.doi.toLowerCase()
+        this.props.reduxCartUpdate(newRecord, addToCart, inCart)
+
+      }
+      if (addToCart) {
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
       } else {
-        // Save: check if article is already in cart, if so, update cart, otherwise just validate
-        for (let record of this.props.reduxCart) {
-          if (compareDois(record.doi, this.state.article.doi)) {
-            newRecord.doi = newRecord.doi.toLowerCase()
-            this.props.reduxCartUpdate([newRecord])
-            validatedPayload.saving = false
-            break
-          }
-        }
 
         validatedPayload.doiDisabled = true
         validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+        validatedPayload.inCart = inCart
 
         this.setState(validatedPayload, () => {
           this.state.validating = false
@@ -370,14 +370,9 @@ export default class AddArticleCard extends Component {
     }
   }
 
-  addToCart = async () => {
+  addToCart = () => {
     const addToCart = true
-    const newRecord = await this.save(addToCart)
-    if(newRecord) {
-      newRecord.doi = newRecord.doi.toLowerCase()
-      this.props.reduxCartUpdate([newRecord])
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
-    }
+    this.save(addToCart)
   }
 
   componentDidUpdate() {
@@ -459,6 +454,7 @@ export default class AddArticleCard extends Component {
               save={this.save}
               openReviewArticleModal={this.openReviewArticleModal}
               saving={this.state.saving}
+              inCart={this.state.inCart}
               criticalErrors={this.state.criticalErrors}/>
 
             <div className='articleInnerForm'>

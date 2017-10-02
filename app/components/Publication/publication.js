@@ -9,6 +9,7 @@ import ActionBar from './actionBar'
 import TitleBar from './titleBar'
 import AddIssueCard from '../addIssueCard'
 import {routes} from  '../../routing'
+import {compareDois} from '../../utilities/helpers'
 
 
 export default class Publication extends Component {
@@ -70,7 +71,9 @@ export default class Publication extends Component {
     const asyncLoop = (i) => {
       if (selections.length > i) {
         const cycle = new Promise (resolve=>{
-          this.props.reduxCartUpdate([selections[i].article])
+          if(!this.props.cart.find( cartItem => compareDois(cartItem.doi, selections[i].article.doi))) {
+            this.props.reduxCartUpdate(selections[i].article)
+          }
           resolve(i+1)
         })
         cycle.then((nextIndex)=>{

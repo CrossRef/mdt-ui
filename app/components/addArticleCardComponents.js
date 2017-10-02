@@ -17,6 +17,7 @@ export class ActionBar extends Component {
     save: is.func.isRequired,
     openReviewArticleModal: is.func.isRequired,
     saving: is.bool.isRequired,
+    inCart: is.bool,
     criticalErrors: is.object.isRequired
   }
 
@@ -54,10 +55,10 @@ export class ActionBar extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.saving) this.confirmSave(nextProps.criticalErrors)
+    if(nextProps.saving) this.confirmSave(nextProps.criticalErrors, nextProps.inCart)
   }
 
-  confirmSave = (criticalErrors) => {
+  confirmSave = (criticalErrors, inCart) => {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
@@ -83,6 +84,8 @@ export class ActionBar extends Component {
 
     if(confirmationPayload.status === 'saveFailed') {
       confirmationPayload.message = errorMessageArray.join(' ')
+    } else if (inCart) {
+      return
     }
 
     const timeOut = setTimeout(()=>{

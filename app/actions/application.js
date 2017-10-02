@@ -51,8 +51,8 @@ export function clearForm() {
   return { type: 'REDUXFORM_CLEAR' }
 }
 
-export function cartUpdate(article) {
-	return { type: 'CART_UPDATE', cart: article }
+export function cartUpdate(item, addToCart, inCart) {
+	return { type: 'CART_UPDATE', cart: item, addToCart, inCart }
 }
 
 export function clearCart() {

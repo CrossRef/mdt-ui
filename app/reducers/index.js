@@ -182,11 +182,15 @@ function toastReducer (state = {
   switch (action.type) {
     case 'CART_UPDATE':
       const record = action.cart[0]
+      if (record.type !== 'article' && action.inCart && !action.addToCart) {
+        //If issue or title are saved but already in cart, dont show a toast
+        return state
+      }
       return {
         doi: record.doi,
         title: recordTitle(record.type, record.title),
         recordType: record.type,
-        updateType: 'addToCart'
+        updateType: action.inCart ? 'updateCart' : 'addToCart'
       }
     case 'REMOVE_FROM_CART':
       return {doi: action.doi, title: action.title, recordType: action.recordType, updateType: 'removeFromCart'}
