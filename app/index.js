@@ -22,7 +22,7 @@ const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
 
 const currentLocation = browserHistory.getCurrentLocation().pathname;
-if(currentLocation !== `${routes.base}`) {
+if(currentLocation !== routes.base) {
   store.dispatch(getCRState('newLoad', currentLocation))
 }
 
@@ -47,9 +47,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
 function version () {
   const mergedBranches =
-    `
+`
 Merged branches / tickets in this build
 
+MM-76
+MM-71
+MM-50
 MM-108
 MM-47
 MM-106

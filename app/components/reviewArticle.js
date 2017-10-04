@@ -5,12 +5,13 @@ import update from 'immutability-helper'
 
 import {objectSearch, xmldoc} from '../utilities/helpers'
 import articleReviewGenerator from './articleReviewGenerator'
+import * as api from '../actions/api'
 
 
 export default class ArticleReview extends Component {
 
   static propTypes = {
-    asyncGetItem: is.func
+
   }
 
   constructor (props) {
@@ -28,7 +29,7 @@ export default class ArticleReview extends Component {
 
   componentWillMount () {
     if (this.props.issue) {
-      this.props.asyncGetItem(this.props.issue.doi).then((issueData) => {
+      api.getItem(this.props.issue.doi).then((issueData) => {
 
         const message = issueData.message
         const Issue = message.contains[0]

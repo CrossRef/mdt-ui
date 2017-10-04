@@ -6,12 +6,15 @@ import { bindActionCreators } from 'redux'
 import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
-import { controlModal, cartUpdate, getItem, removeFromCart, clearCart, deposit } from '../actions/application'
+import { controlModal, cartUpdate, removeFromCart, clearCart } from '../actions/application'
 import DepositCart from '../components/depositCart'
 import reviewDepositCart from '../components/reviewDepositCart'
 import DepositResult from '../components/depositResult'
 import {routes} from '../routing'
 import processDepositResult from '../utilities/processDepositResult'
+import {errorHandler} from '../utilities/helpers'
+import * as api from '../actions/api'
+
 
 
 
@@ -25,8 +28,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxCartUpdate: cartUpdate,
   reduxRemoveFromCart: removeFromCart,
   reduxClearCart: clearCart,
-  asyncGetItem: getItem,
-  asyncDeposit: deposit
 }, dispatch)
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -37,8 +38,6 @@ export default class DepositCartPage extends Component {
     reduxCartUpdate: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
     reduxClearCart: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
-    asyncDeposit: is.func.isRequired,
     cart: is.array.isRequired,
     publications: is.object.isRequired
   }
@@ -46,7 +45,7 @@ export default class DepositCartPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showDeposit: true,
+      showDeposit: false,
       fullCart: [],
       status: 'cart',
       result: {
@@ -70,7 +69,7 @@ export default class DepositCartPage extends Component {
         let doi = item.doi
 
         if(item.type !== 'Publication') {
-          promises.push(this.props.asyncGetItem(doi).then((data)=>{return data}))
+          promises.push(api.getItem(doi).then((data)=>{return data}))
         } else {
           promises.push(Promise.resolve({
             message: item
@@ -131,7 +130,7 @@ export default class DepositCartPage extends Component {
         const promises = []
 
         for(let i in mergedCart) {
-          promises.push(this.props.asyncGetItem(mergedCart[i].doi).then((data)=>{ // this gets publication content
+          promises.push(api.getItem(mergedCart[i].doi).then((data)=>{ // this gets publication content
             return data
           }))
         }
@@ -141,7 +140,7 @@ export default class DepositCartPage extends Component {
             mergedCart[i].content = publicationData[i].message.content
             for(let item of mergedCart[i].contains) {
               if (item.type === 'issue') {
-                issuePromises.push(this.props.asyncGetItem(item.doi).then((data)=>{ // this gets publication content
+                issuePromises.push(api.getItem(item.doi).then((data)=>{ // this gets publication content
                   item.content = data.message.contains[0].content
                 }))
               }
@@ -196,21 +195,11 @@ export default class DepositCartPage extends Component {
 
     this.setState({status:`processing`})
 
-    const errorHandler = (error) => {
-      console.error(error)
-      this.setState({status: 'cart'})
-      this.props.reduxControlModal({
-        showModal: true,
-        title: error,
-        style: 'errorModal',
-        Component: ()=>null
-      })
-    }
-
-    this.props.asyncDeposit(toDeposit, (depositResult) => {
-      this.setState({status:'result', result: processDepositResult(depositResult, this.props.publications, this.props.cart)})
+    api.deposit(toDeposit).then( result => {
+      this.setState({status:'result', result: processDepositResult(result, this.props.publications, this.props.cart)})
       this.props.reduxClearCart()
-    }, errorHandler)
+    })
+    .catch(reason => errorHandler(reason, ()=>this.setState({status: 'cart'})))
   }
 
 

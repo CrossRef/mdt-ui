@@ -23,8 +23,6 @@ export default class Listing extends Component {
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
 
-    asyncGetItem: is.func.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
   }
 
@@ -93,8 +91,6 @@ export default class Listing extends Component {
                 reduxControlModal={this.props.reduxControlModal}
                 reduxCartUpdate={this.props.reduxCartUpdate}
 
-                asyncGetItem={this.props.asyncGetItem}
-                asyncSubmitIssue={this.props.asyncSubmitIssue}
                 asyncGetPublications={this.props.asyncGetPublications}
 
               />,
@@ -110,8 +106,6 @@ export default class Listing extends Component {
                 handleAddToList={this.props.handleAddToList}
 
                 reduxCartUpdate={this.props.reduxCartUpdate}
-
-                asyncGetItem={this.props.asyncGetItem}
               />
             ]
           case 'article':
@@ -122,8 +116,6 @@ export default class Listing extends Component {
 
               handleRemoveFromList={this.props.handleRemoveFromList}
               handleAddToList={this.props.handleAddToList}
-
-              asyncGetItem={this.props.asyncGetItem}
             />
         }
       }

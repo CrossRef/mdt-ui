@@ -6,6 +6,7 @@ import { stateTrackerII } from 'my_decorators'
 
 import AddPublicationCard from './addPublicationCard'
 import AddIssueCard from './addIssueCard'
+import * as api from '../actions/api'
 
 
 export default class Search extends Component {
@@ -14,11 +15,9 @@ export default class Search extends Component {
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
     pubTitle: is.string.isRequired,
     ownerPrefix: is.string.isRequired,
     search: is.object.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
     publication: is.object.isRequired,
     cart: is.array.isRequired,
     asyncGetPublications: is.func.isRequired
@@ -64,15 +63,12 @@ export default class Search extends Component {
           preFilledData: type === 'Issue' ? {issue: number} : {volume: number},
           publication: publication,
           asyncGetPublications: this.props.asyncGetPublications,
-          asyncSubmitIssue: this.props.asyncSubmitIssue,
-          asyncGetItem: this.props.asyncGetItem
         }
       })
     }
 
 
-    this.props.asyncGetItem(item.doi)
-    .then((result) => {
+    api.getItem(item.doi).then((result) => {
 
       //clean up returned publication metadata
       result.message.doi = publication.message.doi
@@ -86,9 +82,7 @@ export default class Search extends Component {
         const record = result.message.contains[0]
         record['mdt-version'] = '0'
 
-        this.props.asyncSubmitIssue(result, () => {
-          this.props.asyncGetPublications(pubDoi) //gets updated publication data and refreshes page
-        })
+        api.submitItem(result).then(() => this.props.asyncGetPublications(pubDoi))
 
       //Is article with issue
       } else if (result.message.contains[0].contains[0].type === item.type) {
@@ -120,8 +114,6 @@ export default class Search extends Component {
               cart: this.props.cart,
               reduxCartUpdate: this.props.reduxCartUpdate,
               asyncGetPublications: this.props.asyncGetPublications,
-              asyncSubmitIssue: this.props.asyncSubmitIssue,
-              asyncGetItem: this.props.asyncGetItem
             }
           })
         }
@@ -135,22 +127,22 @@ export default class Search extends Component {
             delete issue.content
             delete issue['mdt-version']
 
-            this.props.asyncSubmitIssue(result, () => {
-              this.props.asyncGetPublications(pubDoi)
-            })
+            api.submitItem(result).then(() => this.props.asyncGetPublications(pubDoi))
             return
           }
         }
         
-        this.props.asyncSubmitIssue(result, () => {
+        api.submitItem(result).then(()=>{
           //reset issue metadata
           issue.contains = [savedArticle]
           delete issue['mdt-version']
 
-          this.props.asyncSubmitIssue(result, () => {
+          api.submitItem(result).then(()=>{
             this.props.asyncGetPublications(pubDoi)
           })
+          .catch( e => console.error('Error in searchRecords save 2: ', e))
         })
+        .catch( e => console.error('Error in searchRecords save: ', e))
       }
     })
     .catch((error) => {

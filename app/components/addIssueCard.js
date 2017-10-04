@@ -13,6 +13,7 @@ import {routes} from '../routing'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
 import {stateTrackerII} from 'my_decorators'
+import * as api from '../actions/api'
 
 
 
@@ -81,10 +82,7 @@ export default class AddIssueCard extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
-    cart: is.array.isRequired,
 
-    asyncSubmitIssue: is.func.isRequired,
-    asyncGetItem: is.func,
     asyncGetPublications: is.func.isRequired
   }
 
@@ -104,7 +102,7 @@ export default class AddIssueCard extends Component {
 
       if (!isSearch) {
         doi = this.props.issue.doi
-        Publication = await this.props.asyncGetItem(doi)
+        Publication = await api.getItem(doi)
         message = Publication.message
         Issue = message.contains[0]
 
@@ -172,12 +170,12 @@ export default class AddIssueCard extends Component {
   }
 
 
-  save = async (addToCart) => {
+  save = async () => {
 
     const {valid, validatedPayload, criticalErrors} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
     if (valid) {
-      const { publication, asyncSubmitIssue, asyncGetPublications, mode } = this.props
+      const { publication, mode } = this.props
 
       const issueXML = getIssueXml(this.state)
 
@@ -210,40 +208,34 @@ export default class AddIssueCard extends Component {
         }
       }
 
-      await asyncSubmitIssue(submissionPayload)
+      try {
+        await api.submitItem(submissionPayload)
+      } catch (e) {
+        console.error('ERROR in save Issue: ', e)
+      }
 
       if(this.props.mode === 'search') {
         newRecord.contains = [this.props.savedArticle]
-        await asyncSubmitIssue(submissionPayload)
+        try {
+          await api.submitItem(submissionPayload)
+        } catch (e) {
+          console.error('ERROR in save Issue search: ', e)
+        }
       }
 
       this.props.asyncGetPublications(this.props.publication.message.doi)
 
       newRecord.pubDoi = publication.message.doi
 
-      const inCart = (!addToCart && this.props.mode === 'edit') ? this.props.cart.find( cartItem => compareDois(cartItem.doi, this.state.issue.issueDoi)) : false
+      validatedPayload.issueDoiDisabled = true
+      validatedPayload.version = String(Number(this.state.version) + 1)
+      const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+      validatedPayload.confirmationPayload = confirmationPayload
+      validatedPayload.timeOut = timeOut
 
-      if(addToCart || inCart) {
-        newRecord.doi = newRecord.doi.toLowerCase()
-        this.props.reduxCartUpdate([newRecord])
-      }
-
-      if (addToCart) {
-        this.closeModal()
-
-      } else {
-
-        validatedPayload.issueDoiDisabled = true
-        validatedPayload.version = String(Number(this.state.version) + 1)
-        const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
-        validatedPayload.confirmationPayload = confirmationPayload
-        validatedPayload.timeOut = timeOut
-
-        this.setState(validatedPayload, () => {
-          this.state.validating = false
-        })
-
-      }
+      this.setState(validatedPayload, () => {
+        this.state.validating = false
+      })
 
     } else /*if not valid*/ {
       const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
@@ -253,11 +245,6 @@ export default class AddIssueCard extends Component {
         this.state.validating = false
       })
     }
-  }
-
-  addToCart = () => {
-    const addToCart = true
-    this.save(addToCart)
   }
 
 
@@ -321,27 +308,7 @@ export default class AddIssueCard extends Component {
     clearTimeout(this.state.timeOut)
   }
 
-  toggleMenu = () => {
-    this.setState({menuOpen: !this.state.menuOpen})
-  }
-
-  handleClick = e => {
-    const element = $(e.target)
-    if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
-      this.setState({ menuOpen: false })
-    }
-  }
-
-  componentWillUpdate (nextProps, nextState) {
-    if(nextState.menuOpen) {
-      document.addEventListener('click', this.handleClick, false)
-    } else if (!nextState.menuOpen) {
-      document.removeEventListener('click', this.handleClick, false)
-    }
-  }
-
   componentWillUnmount () {
-    document.removeEventListener('click', this.handleClick, false)
     clearTimeout(this.state.timeOut)
   }
 
@@ -817,12 +784,8 @@ export default class AddIssueCard extends Component {
                 showSection={this.state.showSection}
               />
               <div className='saveButtonAddIssueHolder'>
-                <div onClick={this.toggleMenu} className='saveButton addIssue actionTooltip'>
-                  Action
-                  {this.state.menuOpen && <div className='actionBarDropDown'>
-                    <p onClick={()=>this.save()}>Save</p>
-                    <p onClick={this.addToCart}>Add to Cart</p>
-                  </div>}
+                <div onClick={this.save} className='saveButton addIssue actionTooltip'>
+                  Save
                 </div>
                 <button onClick={this.closeModal} type='button' className='cancelButton addIssue'>Cancel</button>
               </div>

@@ -25,8 +25,6 @@ export default class TitleBar extends Component {
     reduxCartUpdate: is.func.isRequired,
 
     asyncSearchRecords: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
     asyncGetPublications: is.func.isRequired
   }
 
@@ -46,10 +44,8 @@ export default class TitleBar extends Component {
         reduxControlModal={this.props.reduxControlModal}
         reduxCartUpdate={this.props.reduxCartUpdate}
 
-        asyncSubmitIssue={this.props.asyncSubmitIssue}
         asyncGetPublications={this.props.asyncGetPublications}
         asyncSearchRecords={this.props.asyncSearchRecords}
-        asyncGetItem={this.props.asyncGetItem}
         />
     </div>)
   }

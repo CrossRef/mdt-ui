@@ -9,6 +9,7 @@ import ActionBar from './actionBar'
 import TitleBar from './titleBar'
 import AddIssueCard from '../addIssueCard'
 import {routes} from  '../../routing'
+import {compareDois} from '../../utilities/helpers'
 
 
 export default class Publication extends Component {
@@ -30,9 +31,7 @@ export default class Publication extends Component {
 
     asyncDeleteRecord: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
   }
 
   constructor (props) {
@@ -47,7 +46,7 @@ export default class Publication extends Component {
     const selections = this.state.selections;
     const newSelections = [...selections]
     for (let i in selections) {
-      if (item.article.doi.toLowerCase() === selections[i].article.doi.toLowerCase()) return;
+      if (compareDois(item.article.doi, selections[i].article.doi)) return
     }
     item.article.pubDoi = this.props.publication.message.doi;
     newSelections.push(item);
@@ -57,7 +56,7 @@ export default class Publication extends Component {
   handleRemoveFromList = (item) => {
     var selections = this.state.selections
     const filteredSelections = selections.filter((selection)=>{
-      return item.article.doi.toLowerCase() !== selection.article.doi.toLowerCase();
+      return !compareDois(item.article.doi, selection.article.doi)
     })
     this.setState({
       selections: filteredSelections
@@ -66,11 +65,15 @@ export default class Publication extends Component {
 
   handleAddCart = () => {
     const selections = this.state.selections
-
+    //Using an async loop because if there are multiple additions to cart, React batches them and doesn't show the toast for each one.
     const asyncLoop = (i) => {
       if (selections.length > i) {
-        const cycle = new Promise (resolve=>{
-          this.props.reduxCartUpdate([selections[i].article])
+        const cycle = new Promise ( resolve => {
+          const inCart = this.props.cart.find( cartItem => compareDois(cartItem.doi, selections[i].article.doi))
+          const isArticle = selections[i].article.type === 'article'
+          if(isArticle && !inCart) {
+            this.props.reduxCartUpdate(selections[i].article)
+          }
           resolve(i+1)
         })
         cycle.then((nextIndex)=>{
@@ -88,7 +91,7 @@ export default class Publication extends Component {
       showModal: true,
       title: 'Remove Record',
       style: 'defaultModal',
-      Component: DeleteConfirmModal,
+      Component: this.DeleteConfirmModal,
       props: {
         confirm: () => {
           for(let i in this.state.selections){
@@ -102,47 +105,46 @@ export default class Publication extends Component {
     });
   }
 
-  duplicateSelection = () => {
-    if(this.state.selections.length > 1) return this.props.reduxControlModal({
-      showModal: true,
-      style: 'defaultModal',
-      title: 'Please select one record to duplicate',
-      Component: ({close}) =>
-        <div className="actionModal">
-          <div className="messageHolder">
-            <p>You can only duplicate one record at a time. Please select only one record.</p>
-          </div>
-          <div className="buttonHolder">
-            <button onClick={close}>Ok</button>
-          </div>
+  DeleteConfirmModal = ({confirm, selections, close}) => {
+
+    const selectionNames = selections.reduce((accumulator, currentValue, index) => {
+      const title = (currentValue && currentValue.article && currentValue.article.status === 'draft') ? currentValue.article.title.title : '';
+      if(!accumulator && title) return title;
+      if(accumulator && title) return accumulator + ', ' + title;
+      else return accumulator
+    }, '');
+
+    return (
+      <div className="actionModal">
+        <div className="messageHolder">
+          <h4>Do you want to remove the selected records? Record data in draft state will be deleted.</h4>
+          <br/><br/>
+          <p>{`- ${selectionNames ? selectionNames : 'No records in draft state'}`}</p>
         </div>
-    })
+        <div className="buttonTable">
+          <div className="tableRow">
+            <div className="leftCell"></div>
+            <div className="rightCell">
+              <button className="leftButton" onClick={close}>Cancel</button>
+              <button className="rightButton" onClick={confirm}>Remove</button>
+            </div>
+          </div>
 
-    if(this.state.selections[0].article.type === 'article') browserHistory.push({
-      pathname: `${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}/addarticle`,
-      state: {
-        duplicateFrom: this.state.selections[0].article.doi
-      }
-    })
+        </div>
+      </div>
+    )
+  }
 
-    if(this.state.selections[0].article.type === 'issue') {
-      this.props.reduxControlModal({
-        showModal: true,
-        title: 'Duplicate Issue/Volume',
-        style: 'addIssueModal',
-        Component: AddIssueCard,
-        props: {
-          mode: 'edit',
-          issue: this.state.selections[0].article,
-          publication: this.props.publication,
-          handle: this.props.handle,
-          asyncGetItem: this.props.asyncGetItem,
-          asyncSubmitIssue: this.props.asyncSubmitIssue,
-          ownerPrefix: this.props.ownerPrefix,
-          duplicate: true
+  duplicateSelection = () => {
+    if(this.state.selections[0].article.type === 'article') {
+      const parentIssue = this.state.selections[0].article.issueDoi ? { parentIssue: this.state.selections[0].article.issueDoi } : {}
+      browserHistory.push({
+        pathname: `${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}/addarticle`,
+        state: {
+          duplicateFrom: this.state.selections[0].article.doi,
+          ...parentIssue
         }
       })
-      this.setState({selections:[]})
     }
   }
 
@@ -152,10 +154,13 @@ export default class Publication extends Component {
     })
   }
 
+
   render () {
+    console.log(this.state.selections)
     const { publication, asyncGetPublications, reduxControlModal, ownerPrefix } = this.props
     const contains = publication.message.contains || emptyArray
     const doi = publication.message.doi
+
     return (
       <div className='publication'>
         <Filter
@@ -171,9 +176,7 @@ export default class Publication extends Component {
           reduxControlModal={this.props.reduxControlModal}
           reduxCartUpdate={this.props.reduxCartUpdate}
 
-          asyncGetItem={this.props.asyncGetItem}
           asyncSearchRecords={this.props.asyncSearchRecords}
-          asyncSubmitIssue={this.props.asyncSubmitIssue}
           asyncGetPublications={this.props.asyncGetPublications}/>
 
         <ActionBar
@@ -189,8 +192,7 @@ export default class Publication extends Component {
           reduxControlModal={reduxControlModal}
           reduxCartUpdate={this.props.reduxCartUpdate}
 
-          asyncGetPublications={asyncGetPublications}
-          asyncSubmitIssue={this.props.asyncSubmitIssue} />
+          asyncGetPublications={asyncGetPublications}/>
 
         <div className='publication-children'>
           {contains.length ?
@@ -208,8 +210,6 @@ export default class Publication extends Component {
               reduxControlModal={this.props.reduxControlModal}
               reduxCartUpdate={this.props.reduxCartUpdate}
 
-              asyncGetItem={this.props.asyncGetItem}
-              asyncSubmitIssue={this.props.asyncSubmitIssue}
               asyncGetPublications={asyncGetPublications}
             /> : <div className='empty-message'>No articles, please create one!</div>}
         </div>
@@ -218,36 +218,6 @@ export default class Publication extends Component {
   }
 }
 
-
-function DeleteConfirmModal ({confirm, selections, close}) {
-
-  const selectionNames = selections.reduce((accumulator, currentValue, index) => {
-    const title = (currentValue && currentValue.article && currentValue.article.status === 'draft') ? currentValue.article.title.title : '';
-    if(!accumulator && title) return title;
-    if(accumulator && title) return accumulator + ', ' + title;
-    else return accumulator
-  }, '');
-
-  return (
-    <div className="actionModal">
-      <div className="messageHolder">
-        <h4>Do you want to remove the selected records? Record data in draft state will be deleted.</h4>
-        <br/><br/>
-        <p>{`- ${selectionNames ? selectionNames : 'No records in draft state'}`}</p>
-      </div>
-      <div className="buttonTable">
-        <div className="tableRow">
-          <div className="leftCell"></div>
-          <div className="rightCell">
-            <button className="leftButton" onClick={close}>Cancel</button>
-            <button className="rightButton" onClick={confirm}>Remove</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  )
-}
 
 
 const emptyArray = [];

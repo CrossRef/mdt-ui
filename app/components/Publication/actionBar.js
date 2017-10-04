@@ -18,7 +18,6 @@ export default class ActionBar extends Component {
     publication: is.object.isRequired,
     handleAddCart: is.func.isRequired,
     deleteSelections: is.func.isRequired,
-    asyncSubmitIssue: is.func.isRequired,
     ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired
   }
@@ -65,7 +64,6 @@ export default class ActionBar extends Component {
         publication: this.props.publication,
         reduxControlModal: this.props.reduxControlModal,
 	      reduxCartUpdate: this.props.reduxCartUpdate,
-        asyncSubmitIssue: this.props.asyncSubmitIssue,
         ownerPrefix: this.props.ownerPrefix
       }
     })
@@ -73,7 +71,9 @@ export default class ActionBar extends Component {
 
   onlyIssueSelected = () => {
     const selections = this.props.selections
-    if(!selections.length) return false
+    if(!selections.length) {
+      return false
+    }
     const types = selections.map((selection) => {
       return selection.article.type
     })
@@ -83,6 +83,7 @@ export default class ActionBar extends Component {
 
   render () {
     const onlyIssue = this.onlyIssueSelected()
+    console.log(this.props.selections.length === 1 && !onlyIssue)
     const { doi, publication, handleAddCart, deleteSelections, duplicateSelection } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
@@ -98,8 +99,8 @@ export default class ActionBar extends Component {
         >
           Action
           {this.state.actionMenuOpen && <div className='actionBarDropDown'>
-            <p onClick={handleAddCart}>Add to Cart</p>
-            <p onClick={duplicateSelection}>Duplicate</p>
+            {!onlyIssue ? <p onClick={handleAddCart}>Add to Cart</p> : <p className="grayedOut">Add to Cart</p>}
+            {this.props.selections.length === 1 && !onlyIssue ? <p onClick={duplicateSelection}>Duplicate</p> : <p className="grayedOut">Duplicate</p>}
             <p onClick={deleteSelections}>Remove</p>
           </div>}
         </div>

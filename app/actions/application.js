@@ -1,12 +1,10 @@
-import {xmldoc, recordTitle} from '../utilities/helpers'
-import authorizedFetch, {regularFetch} from '../utilities/fetch'
-import { routes } from '../routing'
-const withQuery = require('with-query')
+import {recordTitle} from '../utilities/helpers'
+import _getCRState from './getCRState'
+import * as api from './api'
 
 
 
 
-export const apiBaseUrl = require('../../deployConfig').apiBaseUrl
 
 
 // Action Creators, useless unless dispatched
@@ -51,8 +49,8 @@ export function clearForm() {
   return { type: 'REDUXFORM_CLEAR' }
 }
 
-export function cartUpdate(article) {
-	return { type: 'CART_UPDATE', cart: article }
+export function cartUpdate(item, inCart, addToCart) {
+	return { type: 'CART_UPDATE', cart: item, inCart, addToCart }
 }
 
 export function clearCart() {
@@ -63,24 +61,21 @@ export function removeFromCart(doi, title, recordType) {
 	return { type: 'REMOVE_FROM_CART', doi, title, recordType }
 }
 
-export function newToast (toast) {
-  return { type: 'NEW_TOAST', toast}
-}
-
 export function clearToast () {
   return { type: 'CLEAR_TOAST' }
 }
 
+
+
 // Async Action Creators
+
+export const getCRState = _getCRState
+
 
 
 export function login (usr, pwd, error = (reason) => console.error('ERROR in login', reason)) {
   return function(dispatch) {
-    authorizedFetch(`${apiBaseUrl}/login`, {
-      method: 'post',
-      body: JSON.stringify({usr, pwd})
-    })
-    .then((response)=> {
+    api.login(usr, pwd).then((response)=> {
       if(response.status !== 200) { dispatch(loginData({error: `${response.status}: ${response.statusText}`})) }
       else return response.json()
     })
@@ -98,115 +93,18 @@ export function login (usr, pwd, error = (reason) => console.error('ERROR in log
 }
 
 
-export function getCRState (type, currentLocation, error = (reason) => console.error('ERROR in getCRState', reason)) {
-  return function(dispatch) {
-    authorizedFetch(`${apiBaseUrl}/state`, {
-      method: 'get',
-      headers: {Authorization: localStorage.getItem('auth')}
-    })
-    .then((response)=> {
-      return response.text()
-    })
-    .then((textResponse)=>{
-      let state
-      const blankCRState = {
-        routing: {
-          locationBeforeTransitions: {
-            pathname: routes.publications,
-            query: ''
-          }
-        },
-        dois: [],
-        cart: [],
-        publications: {}
-      }
 
-      if (textResponse) {
-        try {
-          state = JSON.parse(textResponse)   // try to parse remote store state, if there are errors, use blank CRState
-        } catch(err) {
-          state = blankCRState
-        }
-        if(!state || !state.routing) state = blankCRState
-      } else {
-        state = blankCRState
-      }
-
-      if(state.dois.length) {
-        dispatch(getPublications(state.dois))
-      }
-
-      let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.
-
-      if(type === 'login') delete scrubbedState.login //do not retrieve old login state if this is a new login
-      delete scrubbedState.toast
-      delete scrubbedState.publications
-
-      // delete scrubbedState.cart  //deposit cart tends to get bad data, clear it by un-commenting this line, don't forget to re-comment when done
-
-      const pathname = scrubbedState.routing.locationBeforeTransitions.pathname
-      const base = routes.base
-      let match = true
-
-      // uncomment this checkRoutes function in case the base url has changed to deal with the transition between remote state with old base url to new url
-      // match = (function checkRoutes () {
-      //   const matchLength = routes.base.length + 4 // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
-      //   for (var route in routes) {
-      //     if(pathname.substring(0, matchLength) === routes[route].substring(0, matchLength)) return true
-      //   }
-      //   return false
-      // })()
-
-
-      if(!match || pathname === base) {   // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
-        scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
-      }
-
-      if(type === 'newLoad') {
-        scrubbedState.routing.locationBeforeTransitions.pathname = currentLocation
-      }
-
-      console.warn('Retrieving from remote store: ', scrubbedState)
-      dispatch({
-        type: 'SET_STATE',
-        payload: scrubbedState
-      })
-    })
-    .catch(reason => error(reason))
-  }
-}
 
 
 export function search (query, error = (reason) => console.error('ERROR in search', reason)) {
   return function (dispatch) {
-    if(!query) return
+    if(!query) {
+      return
+    }
     dispatch(searchValue(query))
     dispatch(searchLoading(true)) //having 2 dispatches seems to give the initial searchValue time to save to store before the return's searchValue is checked
-    authorizedFetch(`${apiBaseUrl}/search?q=${query}`, {
-      method: 'get',
-      headers: {Authorization: localStorage.getItem('auth')}
-    })
-    .then((response)=> response.json() )
-    .then((result)=>{
-      dispatch(searchResult(result.message, query))
-    })
-    .catch(reason => error(reason))
-  }
-}
 
-export function searchRecords (query, pubTitle, type, error = (reason) => console.error('ERROR in searchRecords', reason)) {
-  return function (dispatch) {
-    if(!query) return
-    dispatch(searchValue(query))
-    dispatch(searchLoading(true))
-    if(type === 'Issue') {
-      type = 'allissues'
-    }
-    authorizedFetch(`${apiBaseUrl}/search/works?q=${query}&title=${pubTitle}&type=${type.toLowerCase()}`, {
-      method: 'get',
-      headers: {Authorization: localStorage.getItem('auth')}
-    })
-      .then((response)=> response.json() )
+    api.searchTitle(query)
       .then((result)=>{
         dispatch(searchResult(result.message, query))
       })
@@ -215,16 +113,38 @@ export function searchRecords (query, pubTitle, type, error = (reason) => consol
 }
 
 
+
+
+
+export function searchRecords (query, pubTitle, type, error = (reason) => console.error('ERROR in searchRecords', reason)) {
+  return function (dispatch) {
+    if(!query) {
+      return
+    }
+    dispatch(searchValue(query))
+    dispatch(searchLoading(true))
+    if(type === 'Issue') {
+      type = 'allissues'
+    }
+
+    api.searchRecords(query, pubTitle, type)
+      .then((result)=>{
+        dispatch(searchResult(result.message, query))
+      })
+      .catch(reason => error(reason))
+  }
+}
+
+
+
+
+
+
 export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
   return function(dispatch) {
     if(!Array.isArray(DOIs)) DOIs = [DOIs]
     Promise.all(
-      DOIs.map(
-        (doi) =>
-          regularFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')}})
-            .then(publication => publication.json())
-            .catch(reason => console.error(`ERROR: publication DOI fetch failed `, reason))
-      )
+      DOIs.map( doi => api.getItem(doi).catch(reason => console.error(`ERROR: publication DOI fetch failed `, reason)) )
     )
       .then((publications) => {
         dispatch(storePublications(publications))
@@ -237,167 +157,42 @@ export function getPublications (DOIs, callback, error = (reason) => console.err
 }
 
 
+
+
+
+
 export function submitPublication (publication, error = reason => console.error('ERROR in submitPublication', reason)) {
   return function(dispatch) {
-    return authorizedFetch(`${apiBaseUrl}/work`, {
-      method:'post',
-      headers: {Authorization: localStorage.getItem('auth')},
-      body: JSON.stringify({
-        message: publication
-      })
-    }).then((response) => {
+    return api.submitItem({message: publication}).then(() => {
       dispatch(addDOIs(publication.doi))
       dispatch(getPublications(publication.doi))
-      if(response.status === 202) {
-        return true
-      } else {
-        throw `${response.status}: ${response.statusText}`
-      }
     })
-    .catch( reason => {
-      error(reason)
-    })
+    .catch( reason => error(reason))
   }
 }
 
 
-export function submitArticle (publication, articleDoi, callback, error = (reason) => console.error('ERROR in submitArticle', reason)) {
-  return function(dispatch) {
-
-    authorizedFetch(`${apiBaseUrl}/work`, {
-        method: 'post',
-        headers: {Authorization: localStorage.getItem('auth')},
-        body: JSON.stringify(publication)
-      }
-    ).then(() =>
-      authorizedFetch(`${apiBaseUrl}/work?doi=${articleDoi}`, { headers: {Authorization: localStorage.getItem('auth')} })
-        .then(article => article.json())
-        .then((article) => {
-          if(callback) callback()
-        })
-        .catch(reason => error(reason))
-    ).catch(reason => error(reason))
-
-  }
-}
 
 
-export function submitIssue (publication, callback, error = (reason) => console.error('ERROR in submitIssue', reason)) {
-  return function(dispatch) {
-    return authorizedFetch(`${apiBaseUrl}/work`, {
-        method: 'post',
-        headers: {Authorization: localStorage.getItem('auth')},
-        body: JSON.stringify(publication)
-      }
-    ).then((response) => {
-      if(response.status !== 202) {
-        throw response.statusText
-      }
-      if(callback) callback()
-    })
-    .catch((reason) => error(reason))
-  }
-}
 
-
-export function deposit (cartArray, callback, error = (reason) => console.error(reason)) {
-  return function(dispatch) {
-    authorizedFetch(`${apiBaseUrl}/deposit`, {
-      method:'post',
-      headers: {Authorization: localStorage.getItem('auth')},
-      body: JSON.stringify({
-        message: cartArray
-      })
-    })
-    .then(result => {
-      if(result.status > 202) throw `Server Error ${result.status}: ${result.statusText}`
-      return result.json()
-    })
-    .then(result => {
-      let resultArray = result.message
-      resultArray = resultArray.map((item) => {
-        try {
-          const getXML = xmldoc(item.result)
-          if(getXML !== undefined) item.result = getXML
-          if(item.contains && item.contains.length) {
-            const recordArray = item.contains
-            recordArray.map((record) => {
-              const getXML = xmldoc(record.result)
-              if(getXML !== undefined) record.result = getXML
-              if(record.contains && record.contains.length) {
-                const articleArray = record.contains
-                articleArray.map((article) => {
-                  const getXML = xmldoc(article.result)
-                  if(getXML !== undefined) article.result = getXML
-                })
-              }
-            })
-          }
-          return item
-        } catch (error) {
-          console.error('Error Parsing Deposit result: ' + error)
-          return item
-        }
-      })
-      if(callback) callback(resultArray)
-    })
-    .catch(reason => error(reason))
-  }
-}
-
-
-export function getItem (doi, forced) {
-	return function(dispatch) {
-		if(doi){
-      return authorizedFetch(`${apiBaseUrl}/work?doi=${doi}${forced ? `&forced=true` : ''}`, { headers: {Authorization: localStorage.getItem('auth')} })
-      .then(response => {
-        if(response.status !== 200) {
-          console.error(`${response.status}: ${response.statusText}`, response)
-          throw `${response.status}: ${response.statusText}`
-        }
-        return response.json()
-      })
-		}
-	}
-}
-
-export function getDepositHistory (params, callback, error = (reason) => console.error(reason)) {
-	return function(dispatch) {
-    return Promise.resolve(
-      authorizedFetch(withQuery(`${apiBaseUrl}/history`, params),
-      {
-        headers: {Authorization: localStorage.getItem('auth')}
-      }
-    ).then(depositHistory => depositHistory.json())
-    ).then((depositHistory) => {
-      if(callback) callback(depositHistory)
-      return depositHistory
-    })
-    .catch(reason => error(reason))
-	}
-}
-
-export function deleteRecord (record, callback, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
+export function deleteRecord (record, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
   return function(dispatch) {
     const {doi, pubDoi, title, type, contains} = record
-    authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, {
-      method: 'delete',
-      headers: {Authorization: localStorage.getItem('auth')}
-    })
-      .then(response => {
-        if(response.status === 200) {
-          if(type === 'issue') {
-            for(let i in contains) {
-              dispatch(deleteRecord(contains[i]))
-            }
+    return api.deleteItem(doi).then(response => {
+      if(response.status === 200) {
+        if(type === 'issue') {
+          for(let i in contains) {
+            dispatch(deleteRecord(contains[i]))
           }
+        }
 
-          dispatch(removeFromCart(doi, recordTitle(type, title), type))
+        dispatch(removeFromCart(doi, recordTitle(type, title), type))
+        dispatch(getPublications(pubDoi))
 
-          dispatch(getPublications(pubDoi))
-          if(callback) callback()
-        } else throw `delete ${response.url} failed: ${response.status || 'Unknown status'} - ${response.statusText || 'Unknown statusText' }`
-      })
-      .catch(reason => error(reason))
+      } else throw `delete ${response.url} failed: ${response.status || 'Unknown status'} - ${response.statusText || 'Unknown statusText' }`
+    })
+    .catch(reason => error(reason))
   }
 }
+
+

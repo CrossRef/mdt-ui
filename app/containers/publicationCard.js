@@ -14,8 +14,7 @@ import AddPublicationCard from '../components/addPublicationCard'
 
 const mapStateToProps = (state, props) => ({
   publication: state.publications[props.doi] || state.publications[props.doi.toLowerCase()],
-  crossmarkPrefixes: state.login['crossmark-prefixes'],
-  inCart: !!state.cart.find( cartItem => compareDois(cartItem.doi, props.doi) )
+  crossmarkPrefixes: state.login['crossmark-prefixes']
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -34,8 +33,7 @@ export default class PublicationCardContainer extends Component {
     asyncSubmitPublication: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object,
-    crossmarkPrefixes: is.array.isRequired,
-    inCart: is.bool.isRequired
+    crossmarkPrefixes: is.array.isRequired
   }
 
   constructor() {
@@ -69,8 +67,7 @@ export default class PublicationCardContainer extends Component {
         ...savedMetaData,
         asyncSubmitPublication: this.props.asyncSubmitPublication,
         reduxCartUpdate: this.props.reduxCartUpdate,
-        crossmarkPrefixes: this.props.crossmarkPrefixes,
-        inCart: this.props.inCart
+        crossmarkPrefixes: this.props.crossmarkPrefixes
       }
     })
   }

@@ -3,8 +3,9 @@ const jsesc = require('jsesc')
 var ObjTree = require('xml-objtree')
 import $ from 'jquery'
 
-import authorizedFetch from './fetch'
-import {apiBaseUrl} from '../actions/application'
+import {exposedStore} from '../store'
+import {controlModal} from '../actions/application'
+import * as api from '../actions/api'
 
 
 
@@ -58,8 +59,12 @@ export function isURL (url) {
 
 
 export async function asyncCheckDupeDoi (doi) {
-  const response = await authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, { headers: {Authorization: localStorage.getItem('auth')} })
-  return response.status === 200
+  try {
+    await api.getItem(doi)
+    return true
+  } catch (e) {
+    return false
+  }
 }
 
 
@@ -210,6 +215,22 @@ export function objectFind (object, finder) {
 
 
 
+export class SearchableRecords {
+  constructor (records) {
+    Object.assign(this, records)
+
+    this.find = (finder) => {
+      return objectFind(this, finder)
+    }
+
+    this.searchKey = (key) => {
+      return objectSearch(this, key)
+    }
+  }
+}
+
+
+
 
 
 
@@ -235,4 +256,38 @@ export function ClassWrapper ({classNames, children}) {
     }
   });
   return <Reducer />
+}
+
+
+
+
+
+export function removeDuplicates(a) {
+  var seen = {}
+  var out = []
+  var j = 0
+  for(let i in a) {
+    var item = a[i]
+    if(seen[item] !== 1) {
+      seen[item] = 1
+      out[j++] = item
+    }
+  }
+  return out
+}
+
+
+
+
+
+
+export const errorHandler = (error, action = ()=>{}) => {
+  console.error('Error Handler: ', error)
+  action()
+  exposedStore.dispatch(controlModal({
+    showModal: true,
+    title: error,
+    style: 'errorModal',
+    Component: ()=>null
+  }))
 }

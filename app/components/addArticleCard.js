@@ -15,10 +15,12 @@ import { makeDateDropDown } from '../utilities/date'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
 import {getSubItems} from '../utilities/getSubItems'
+import * as api from '../actions/api'
 
 
 const defaultState = {
   saving: false,
+  inCart: undefined,
   validating: false,
   crossmark: false,
   showCards: {},
@@ -181,9 +183,6 @@ export default class AddArticleCard extends Component {
     reduxControlModal: is.func.isRequired,
     reduxEditForm: is.func.isRequired,
     reduxDeleteCard: is.func.isRequired,
-
-    asyncSubmitArticle: is.func.isRequired,
-    asyncGetItem: is.func.isRequired
   }
 
   constructor (props) {
@@ -227,7 +226,7 @@ export default class AddArticleCard extends Component {
 
       setStatePayload = {...setStatePayload, ...{
         doiDisabled: doiDisabled,
-        version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
+        version: String( Number(publication.message.contains[0]['mdt-version']) + 1),
         addInfo: parsedArticle.addInfo,
         article: parsedArticle.article,
         contributors: parsedArticle.contributors,
@@ -332,28 +331,31 @@ export default class AddArticleCard extends Component {
         savePub = publication
       }
 
-      await this.props.asyncSubmitArticle(savePub, this.state.article.doi)
+      try {
+        await api.submitItem(savePub)
+      } catch (e) {
+        console.error('Error in save article: ', e)
+      }
 
       newRecord.pubDoi = this.props.publication.message.doi
       if(this.props.issue) {
         newRecord.issueDoi = this.props.issue
       }
 
-      if(addToCart) {
-        return newRecord
+      const inCart = this.props.mode === 'edit' ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi)) : false
+
+      if(addToCart || inCart) {
+        newRecord.doi = newRecord.doi.toLowerCase()
+        this.props.reduxCartUpdate(newRecord, inCart, addToCart)
+
+      }
+      if (addToCart) {
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
       } else {
-        // Save: check if article is already in cart, if so, update cart, otherwise just validate
-        for (let record of this.props.reduxCart) {
-          if (compareDois(record.doi, this.state.article.doi)) {
-            newRecord.doi = newRecord.doi.toLowerCase()
-            this.props.reduxCartUpdate([newRecord])
-            validatedPayload.saving = false
-            break
-          }
-        }
 
         validatedPayload.doiDisabled = true
-        validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+        validatedPayload.version = (Number(this.state.version) + 1).toString()
+        validatedPayload.inCart = inCart
 
         this.setState(validatedPayload, () => {
           this.state.validating = false
@@ -370,14 +372,9 @@ export default class AddArticleCard extends Component {
     }
   }
 
-  addToCart = async () => {
+  addToCart = () => {
     const addToCart = true
-    const newRecord = await this.save(addToCart)
-    if(newRecord) {
-      newRecord.doi = newRecord.doi.toLowerCase()
-      this.props.reduxCartUpdate([newRecord])
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}`)
-    }
+    this.save(addToCart)
   }
 
   componentDidUpdate() {
@@ -433,7 +430,6 @@ export default class AddArticleCard extends Component {
             publication: this.props.publication,
             publicationMetaData: this.props.publicationMetaData,
             issue: this.props.issuePublication ? this.props.issuePublication.message.contains[0] : undefined,
-            asyncGetItem: this.props.asyncGetItem
         }
     })
   }
@@ -459,6 +455,7 @@ export default class AddArticleCard extends Component {
               save={this.save}
               openReviewArticleModal={this.openReviewArticleModal}
               saving={this.state.saving}
+              inCart={this.state.inCart}
               criticalErrors={this.state.criticalErrors}/>
 
             <div className='articleInnerForm'>

@@ -1,4 +1,3 @@
-import React from 'react'
 
 export const Roles = [
     {'value':'author', 'name':'Author'},

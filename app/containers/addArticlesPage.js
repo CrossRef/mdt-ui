@@ -4,9 +4,10 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 
-import { controlModal, getPublications, editForm, deleteCard, clearForm, submitArticle, cartUpdate, getItem } from '../actions/application'
+import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
 import {xmldoc} from '../utilities/helpers'
 import AddArticleCard from '../components/addArticleCard'
+import * as api from '../actions/api'
 
 
 
@@ -24,9 +25,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxEditForm: editForm,
   reduxDeleteCard: deleteCard,
   reduxClearForm: clearForm,
-  asyncGetItem: getItem,
   asyncGetPublications: getPublications,
-  asyncSubmitArticle: submitArticle,
   reduxCartUpdate: cartUpdate
 }, dispatch)
 
@@ -41,8 +40,6 @@ export default class AddArticlesPage extends Component {
     reduxDeleteCard: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
-    asyncSubmitArticle: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
     reduxCart: is.array.isRequired,
     routeParams: is.shape({
       pubDoi: is.string.isRequired,
@@ -70,23 +67,22 @@ export default class AddArticlesPage extends Component {
   }
 
   componentDidMount () {
-    const { duplicateFrom } = this.props.location.state || {};
-    const { pubDoi, articleDoi, issueDoi } = this.props.routeParams;
+    const { duplicateFrom, parentIssue } = this.props.location.state || {};
 
+    const { pubDoi, articleDoi, issueDoi } = this.props.routeParams;
     const getItems = []
 
-    if(articleDoi || duplicateFrom) getItems.push(articleDoi ? this.props.asyncGetItem(articleDoi) : this.props.asyncGetItem(duplicateFrom))
-    if(issueDoi) getItems.push(this.props.asyncGetItem(issueDoi))
+    if(articleDoi || duplicateFrom) getItems.push(articleDoi ? api.getItem(articleDoi) : api.getItem(duplicateFrom))
+    if(issueDoi || parentIssue) getItems.push(issueDoi ? api.getItem(issueDoi) : api.getItem(parentIssue))
 
     const getOldPub = !!articleDoi || !!duplicateFrom
-    getItems.push(this.props.asyncGetItem(pubDoi, getOldPub).catch(e => this.props.asyncGetItem(pubDoi)))
+    getItems.push(api.getItem(pubDoi, getOldPub).catch(e => api.getItem(pubDoi)))
 
     Promise.all(getItems)
       .then((publications)=>{
         let publMeta = publications[publications.length-1].message.content
-
         let article = publications[0]
-        if (issueDoi) {
+        if (issueDoi || parentIssue) {
           //doing logic here so we don't have to change the addArticles page any further
           let unwrappedPub = publications[1]
 
@@ -120,8 +116,6 @@ export default class AddArticlesPage extends Component {
           reduxEditForm={this.props.reduxEditForm}
           reduxDeleteCard={this.props.reduxDeleteCard}
           reduxCartUpdate={this.props.reduxCartUpdate}
-          asyncSubmitArticle={this.props.asyncSubmitArticle}
-          asyncGetItem={this.props.asyncGetItem}
           reduxForm={this.props.reduxForm}
           ownerPrefix={ownerPrefix}
           publication = { publication }

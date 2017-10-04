@@ -1,6 +1,6 @@
-import authorizedFetch from '../utilities/fetch'
-import {apiBaseUrl} from '../actions/application'
+import {removeDuplicates} from '../utilities/helpers'
 import {routes} from '../routing'
+import * as api from '../actions/api'
 
 
 var blacklistActions = [
@@ -69,11 +69,7 @@ export default store => next => action => {
         postingState.dois = removeDuplicates(postingState.dois)
 
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
-        authorizedFetch(`${apiBaseUrl}/state`, {
-          method: 'POST',
-          headers: {Authorization: authHeader},
-          body: JSON.stringify(postingState)
-        })
+        api.syncState(postingState)
 
         // Reset pending state
         pendingAction = false
@@ -84,25 +80,4 @@ export default store => next => action => {
   return nextState
 }
 
-var isEmpty = (obj) => {
-  for (var key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      return false
-    }
-  }
-  return true
-}
 
-function removeDuplicates(a) {
-  var seen = {}
-  var out = []
-  var j = 0
-  for(let i in a) {
-    var item = a[i]
-    if(seen[item] !== 1) {
-      seen[item] = 1
-      out[j++] = item
-    }
-  }
-  return out
-}
