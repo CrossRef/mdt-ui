@@ -14,7 +14,6 @@ export default class AddPublicationCard extends Component {
   static propTypes = {
     mode: is.string.isRequired,
     crossmarkPrefixes: is.array.isRequired,
-    inCart: is.bool,
 
     Journal: is.shape({
       journal_metadata: is.object.isRequired
@@ -183,7 +182,7 @@ export default class AddPublicationCard extends Component {
     return {valid, errorStates, criticalErrors}
   }
 
-  save = (addToCart) => {
+  save = () => {
 
     this.validation().then(({valid, errorStates, criticalErrors}) => {
       if (valid) {
@@ -201,21 +200,13 @@ export default class AddPublicationCard extends Component {
 
         this.props.asyncSubmitPublication(publication)
           .then(() => {
-            if(addToCart || this.props.inCart) {
-              publication.doi = publication.doi.toLowerCase()
-              this.props.reduxCartUpdate(publication, addToCart, this.props.inCart)
-            }
-            if(addToCart) {
-              this.props.reduxControlModal({showModal:false})
-            } else {
-              const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors, this.props.inCart)
-              this.setState({
-                'mdt-version': String( Number(this.state['mdt-version']) + 1),
-                errors: errorStates,
-                confirmationPayload,
-                timeOut
-              })
-            }
+            const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+            this.setState({
+              'mdt-version': String( Number(this.state['mdt-version']) + 1),
+              errors: errorStates,
+              confirmationPayload,
+              timeOut
+            })
           })
 
       } else if (!valid) {
@@ -230,46 +221,21 @@ export default class AddPublicationCard extends Component {
     })
   }
 
-  addToCart = () => {
-    const addToCart = true
-    this.save(addToCart)
-  }
-
   inputHandler = (e) => {
     this.setState({
       [e.target.name]: e.target.value
     })
   }
 
-  toggleMenu = () => {
-    this.setState({menuOpen: !this.state.menuOpen})
-  }
-
   closeModal = () => {
     this.props.reduxControlModal({showModal:false})
   }
 
-  handleClick = e => {
-    const element = $(e.target)
-    if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
-      this.setState({ menuOpen: false })
-    }
-  }
-
-  componentWillUpdate (nextProps, nextState) {
-    if(nextState.menuOpen) {
-      document.addEventListener('click', this.handleClick, false)
-    } else if (!nextState.menuOpen) {
-      document.removeEventListener('click', this.handleClick, false)
-    }
-  }
-
   componentWillUnmount () {
-    document.removeEventListener('click', this.handleClick, false)
     clearTimeout(this.state.timeOut)
   }
 
-  confirmSave = (criticalErrors, inCart) => {
+  confirmSave = (criticalErrors) => {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
@@ -298,8 +264,6 @@ export default class AddPublicationCard extends Component {
 
     if(confirmationPayload.status === 'saveFailed') {
       confirmationPayload.message = errorMessageArray.join(' ')
-    } else if (inCart) {
-      confirmationPayload.message = 'Save Complete. Publication updated in cart.'
     }
 
     const timeOut = setTimeout(()=>{
@@ -455,12 +419,8 @@ export default class AddPublicationCard extends Component {
                 onClick={this.closeModal}
                 className='button-anchor button-white-cancel'
               >Close</button>
-              <div onClick={this.toggleMenu} className='button-anchor actionTooltip'>
-                Action
-                {this.state.menuOpen && <div className='actionBarDropDown'>
-                  <p onClick={()=>this.save()}>Save</p>
-                  <p onClick={this.addToCart}>Add to Cart</p>
-                </div>}
+              <div onClick={this.save} className='button-anchor actionTooltip'>
+                Save
               </div>
             </div>
           </div>

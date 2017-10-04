@@ -67,13 +67,13 @@ export default class AddArticlesPage extends Component {
   }
 
   componentDidMount () {
-    const { duplicateFrom } = this.props.location.state || {};
-    const { pubDoi, articleDoi, issueDoi } = this.props.routeParams;
+    const { duplicateFrom, parentIssue } = this.props.location.state || {};
 
+    const { pubDoi, articleDoi, issueDoi } = this.props.routeParams;
     const getItems = []
 
     if(articleDoi || duplicateFrom) getItems.push(articleDoi ? api.getItem(articleDoi) : api.getItem(duplicateFrom))
-    if(issueDoi) getItems.push(api.getItem(issueDoi))
+    if(issueDoi || parentIssue) getItems.push(issueDoi ? api.getItem(issueDoi) : api.getItem(parentIssue))
 
     const getOldPub = !!articleDoi || !!duplicateFrom
     getItems.push(api.getItem(pubDoi, getOldPub).catch(e => api.getItem(pubDoi)))
@@ -81,9 +81,8 @@ export default class AddArticlesPage extends Component {
     Promise.all(getItems)
       .then((publications)=>{
         let publMeta = publications[publications.length-1].message.content
-
         let article = publications[0]
-        if (issueDoi) {
+        if (issueDoi || parentIssue) {
           //doing logic here so we don't have to change the addArticles page any further
           let unwrappedPub = publications[1]
 

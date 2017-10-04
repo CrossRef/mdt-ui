@@ -226,7 +226,7 @@ export default class AddArticleCard extends Component {
 
       setStatePayload = {...setStatePayload, ...{
         doiDisabled: doiDisabled,
-        version: String(parseInt(publication.message.contains[0]['mdt-version']) + 1),
+        version: String( Number(publication.message.contains[0]['mdt-version']) + 1),
         addInfo: parsedArticle.addInfo,
         article: parsedArticle.article,
         contributors: parsedArticle.contributors,
@@ -346,7 +346,7 @@ export default class AddArticleCard extends Component {
 
       if(addToCart || inCart) {
         newRecord.doi = newRecord.doi.toLowerCase()
-        this.props.reduxCartUpdate(newRecord, addToCart, inCart)
+        this.props.reduxCartUpdate(newRecord, inCart, addToCart)
 
       }
       if (addToCart) {
@@ -354,7 +354,7 @@ export default class AddArticleCard extends Component {
       } else {
 
         validatedPayload.doiDisabled = true
-        validatedPayload.version = (parseInt(this.state.version) + 1).toString()
+        validatedPayload.version = (Number(this.state.version) + 1).toString()
         validatedPayload.inCart = inCart
 
         this.setState(validatedPayload, () => {

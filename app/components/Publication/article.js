@@ -10,15 +10,17 @@ export default class Article extends Component {
   static propTypes = {
     record: is.object.isRequired,
     selections: is.array.isRequired,
+    issue: is.string,
 
     handleRemoveFromList: is.func.isRequired,
-    handleAddToList: is.func.isRequired,
+    handleAddToList: is.func.isRequired
   }
 
   toggleCheckBox (e) {
     const { record } = this.props
     if(e.currentTarget.checked) {
-      this.props.handleAddToList({ article: record })
+      const selection = this.props.issue ? {...record, issueDoi: this.props.issue} : record
+      this.props.handleAddToList({ article: selection })
     } else {
       this.props.handleRemoveFromList({ article: record })
     }
