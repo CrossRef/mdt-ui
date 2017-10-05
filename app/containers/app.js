@@ -4,21 +4,23 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { stateTrackerII } from 'my_decorators'
 
-import Header from '../components/header'
-import Footer from '../components/footer'
-import Modal from './modal'
-import {clearToast} from '../actions/application'
+import Header from '../components/App/header'
+import Footer from '../components/App/footer'
+import Modal from '../components/App/modal'
+import {clearToast, controlModal} from '../actions/application'
 
 
 const mapStateToProps = (state) => {
   return {
     cart: state.cart,
-    toast: state.toast
+    toast: state.toast,
+    modalState: state.modal
   }
 }
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
-  reduxClearToast: clearToast
+  reduxClearToast: clearToast,
+  reduxControlModal: controlModal
 }, dispatch)
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -26,7 +28,10 @@ export default class App extends Component {
 
   static propTypes = {
     cart: is.array.isRequired,
-    toast: is.object.isRequired
+    toast: is.object.isRequired,
+    modalState: is.object.isRequired,
+    reduxClearToast: is.func.isRequired,
+    reduxControlModal: is.func.isRequired
   }
 
   render () {
@@ -39,7 +44,7 @@ export default class App extends Component {
           </div>
         </div>
         <Footer />
-        <Modal />
+        <Modal modalState={this.props.modalState} reduxControlModal={this.props.reduxControlModal}/>
       </div>
     )
   }

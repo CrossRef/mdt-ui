@@ -3,7 +3,7 @@ import is from 'prop-types'
 import moment from 'moment'
 import $ from 'jquery'
 
-import {routes} from '../routing'
+import {routes} from '../../routing'
 
 
 export default class DepositResult extends Component{

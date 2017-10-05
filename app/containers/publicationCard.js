@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 import {routes} from '../routing'
 import {xmldoc, compareDois} from '../utilities/helpers'
 import { controlModal, submitPublication, cartUpdate } from '../actions/application'
-import AddPublicationCard from '../components/addPublicationCard'
+import AddPublicationModal from './addPublicationModal'
 
 
 
@@ -61,7 +61,7 @@ export default class PublicationCardContainer extends Component {
     this.props.reduxControlModal({
       showModal:true,
       title:'Edit Journal Record',
-      Component: AddPublicationCard,
+      Component: AddPublicationModal,
       props:{
         mode: 'edit',
         ...savedMetaData,

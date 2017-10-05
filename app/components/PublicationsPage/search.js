@@ -4,7 +4,7 @@ import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 import { stateTrackerII } from 'my_decorators'
 
-import AddPublicationCard from './addPublicationCard'
+import AddPublicationCard from '../../containers/addPublicationModal'
 
 
 export default class Search extends Component {

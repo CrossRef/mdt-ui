@@ -4,13 +4,13 @@ import { Link } from 'react-router'
 import { browserHistory } from 'react-router'
 import { ToastContainer, ToastMessage } from "react-toastr"
 
-import {pascaleCase} from '../utilities/helpers'
-import { routes } from '../routing'
+import {pascaleCase} from '../../utilities/helpers'
+import { routes } from '../../routing'
 
 const ToastMessageFactory = React.createFactory(ToastMessage.animation)
 
 
-export default class PublicationNav extends Component {
+export default class NavBar extends Component {
   static propTypes = {
     cart: is.array.isRequired,
     toast: is.object.isRequired,

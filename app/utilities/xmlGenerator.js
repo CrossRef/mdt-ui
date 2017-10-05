@@ -7,8 +7,7 @@ const { pubHist, peer, copyright, supp, clinical, other, update} = cardNames
 
 
 
-export const journalArticleXml = (component, crossmark) => {
-  const state = component.state
+export const journalArticleXml = (state, reduxForm) => {
   const article = state.article
   const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
     printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay
@@ -212,7 +211,7 @@ export const journalArticleXml = (component, crossmark) => {
   }
 
   function crossmarkXml () {
-    const JSform = component.props.reduxForm.toJS()
+    const JSform = reduxForm.toJS()
     const crossmarkForm = {}
     if(JSform[pubHist]) crossmarkForm[pubHist] = JSform[pubHist]
     if(JSform[peer]) crossmarkForm[peer] = JSform[peer]
@@ -251,7 +250,7 @@ export const journalArticleXml = (component, crossmark) => {
       : null
 
     return [
-      `<crossmark>`, `<crossmark_policy>${component.props.ownerPrefix}/something</crossmark_policy>`, //TODO Needs to be looked at
+      `<crossmark>`, `<crossmark_policy>${state.ownerPrefix}/something</crossmark_policy>`, //TODO Needs to be looked at
 
       `<crossmark_domains><crossmark_domain><domain>psychoceramics.labs.crossref.org</domain></crossmark_domain></crossmark_domains>`, //TEMPORARY, Crossref team said they will be removing this requirement
 

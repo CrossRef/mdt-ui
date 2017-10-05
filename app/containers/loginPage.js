@@ -5,7 +5,7 @@ import { bindActionCreators } from 'redux'
 import { stateTrackerII } from 'my_decorators'
 
 
-import LoginCard from '../components/loginCard'
+import LoginCard from '../components/LoginPage/loginCard'
 import { SET_AUTH_BEARER, login } from '../actions/application'
 
 

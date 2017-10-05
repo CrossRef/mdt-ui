@@ -309,7 +309,7 @@ export default class AddPublicationCard extends Component {
                   <input
                     type='text'
                     name='url'
-                    value={!!this.state.url?this.state.url:'http://'}
+                    value={!!this.state.url ? this.state.url : 'http://'}
                     onChange={this.inputHandler} />
                 </div>
                 {errors.showURLEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}

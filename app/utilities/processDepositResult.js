@@ -38,7 +38,6 @@ export default (rawResult, publications, cart) => {
   const used = {}
 
   resultArray.forEach((result, index)=>{
-    debugger
     let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
     let error = {}
     let contains1 = {}

@@ -4,7 +4,7 @@ import moment from 'moment'
 import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 import {routes} from '../../routing'
-import AddIssueCard from '../addIssueCard'
+import AddIssueModal from '../../containers/addIssueModal'
 
 
 export default class Issue extends Component {
@@ -47,7 +47,7 @@ export default class Issue extends Component {
       showModal: true,
       title: 'Edit Issue/Volume',
       style: 'addIssueModal',
-      Component: AddIssueCard,
+      Component: AddIssueModal,
       props: {
         mode: 'edit',
         issue: this.props.record,

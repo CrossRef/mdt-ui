@@ -4,12 +4,12 @@ import { Link } from 'react-router'
 import $ from 'jquery'
 import {updateReporterII} from 'my_decorators'
 
-import {routes} from '../routing'
-import {asyncValidateArticle, asyncValidateIssue} from '../utilities/validation'
-import parseXMLArticle from '../utilities/parseXMLArticle'
-import parseXMLIssue from '../utilities/parseXMLIssue'
-import {recordTitle} from '../utilities/helpers'
-import {ArticleMessages, IssueMessages} from '../utilities/lists/validationMessages'
+import {routes} from '../../routing'
+import {asyncValidateArticle, asyncValidateIssue} from '../../utilities/validation'
+import parseXMLArticle from '../../utilities/parseXMLArticle'
+import parseXMLIssue from '../../utilities/parseXMLIssue'
+import {recordTitle} from '../../utilities/helpers'
+import {ArticleMessages, IssueMessages} from '../../utilities/lists/validationMessages'
 
 
 

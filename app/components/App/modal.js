@@ -1,11 +1,9 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
 import ReactModal from 'react-modal'
 import { updateReporterII } from 'my_decorators'
 
-import {routes} from '../routing'
+import {routes} from '../../routing'
 
 
 
@@ -30,6 +28,8 @@ export default class Modal extends React.Component {
     ReactModal.setAppElement('#root'); // need to include this so modal know where to append itself
   }
 
+  closeModal = () => this.props.reduxControlModal({showModal:false})
+
   render() {
     const { modalState, reduxControlModal } = this.props;
     const Component = modalState.Component;
@@ -47,13 +47,13 @@ export default class Modal extends React.Component {
                   {modalState.title}
                 </div>
                 <div className='titleclose'>
-                  <a onClick={ () => reduxControlModal({showModal:false}) }><img src={`${routes.images}/Modal/Asset_Icons_White_Close.svg`} /></a>
+                  <a onClick={this.closeModal}><img src={`${routes.images}/Modal/Asset_Icons_White_Close.svg`} /></a>
                 </div>
               </div>
             </div>
             <div className='modalbody'>
               <div className='modalboddyinner'>
-                <Component {...modalState.props} reduxControlModal={reduxControlModal} close={() => reduxControlModal({showModal:false})}/>
+                <Component {...modalState.props} reduxControlModal={reduxControlModal} close={this.closeModal}/>
               </div>
             </div>
           </div>

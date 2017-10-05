@@ -27,9 +27,9 @@ export default class Contributor extends Component {
   }
 
   toggle = () => {
-      this.setState({
-        showSubItem: !this.state.showSubItem
-      })
+    this.setState({
+      showSubItem: !this.state.showSubItem
+    })
   }
 
   displayRoles (ref) {
@@ -40,14 +40,14 @@ export default class Contributor extends Component {
     ]
 
     return (
-        <select
-          ref={ref}
-          onChange={this.handleContributor}
-          className={`height32 ${ref === 'role' ? contributorRole && 'fieldError' : contributorGroupRole && 'fieldError'}`}
-          value={this.props.contributor[ref]}
-          >
-            {roles}
-        </select>
+      <select
+        ref={ref}
+        onChange={this.handleContributor}
+        className={`height32 ${ref === 'role' ? contributorRole && 'fieldError' : contributorGroupRole && 'fieldError'}`}
+        value={this.props.contributor[ref]}
+        >
+          {roles}
+      </select>
     )
   }
 

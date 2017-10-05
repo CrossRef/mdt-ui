@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { stateTrackerII } from 'my_decorators'
-import {routes} from '../routing'
+import {routes} from '../../routing'
 
 
 export default class Footer extends Component {

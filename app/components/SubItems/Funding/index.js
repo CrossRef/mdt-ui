@@ -19,6 +19,7 @@ export default class Funding extends Component {
   constructor (props) {
     super(props)
     const {index, grantNumbers, funding} = this.props
+    console.log()
     this.state = {
       showSubItem: true,
       suggestions: [],

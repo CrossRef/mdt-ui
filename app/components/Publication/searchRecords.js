@@ -4,9 +4,9 @@ import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 import { stateTrackerII } from 'my_decorators'
 
-import AddPublicationCard from './addPublicationCard'
-import AddIssueCard from './addIssueCard'
-import * as api from '../actions/api'
+import AddPublicationCard from '../../containers/addPublicationModal'
+import AddIssueModal from '../../containers/addIssueModal'
+import * as api from '../../actions/api'
 
 
 export default class Search extends Component {
@@ -56,7 +56,7 @@ export default class Search extends Component {
         showModal: true,
         title: 'Edit Issue/Volume',
         style: 'addIssueModal',
-        Component: AddIssueCard,
+        Component: AddIssueModal,
         props: {
           mode: 'add',
           ownerPrefix: ownerPrefix,
@@ -104,7 +104,7 @@ export default class Search extends Component {
             showModal: true,
             title: 'Edit Issue/Volume',
             style: 'addIssueModal',
-            Component: AddIssueCard,
+            Component: AddIssueModal,
             props: {
               mode: 'search',
               ownerPrefix: ownerPrefix,

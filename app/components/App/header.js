@@ -2,8 +2,8 @@ import React, { Component } from 'react'
 import { stateTrackerII } from 'my_decorators'
 import is from 'prop-types'
 
-import PublicationsNav from './navBar'
-import { routes } from '../routing'
+import NavBar from './navBar'
+import { routes } from '../../routing'
 
 
 
@@ -17,9 +17,9 @@ export default class Header extends Component {
   render () {
     const path = window.location.pathname
     const isOnHome = path === routes.base
-    var showPublicationsNav = false
+    var showNavBar = false
     if(String(path) !== routes.base) {
-      showPublicationsNav = true
+      showNavBar = true
     }
 
     return (
@@ -28,7 +28,7 @@ export default class Header extends Component {
           <a target='_blank' href="https://www.crossref.org/services/content-registration/"><img src={`${routes.images}/App/crossref-content-registration-logo-200.svg`} /></a>
           <img className='second-logo-img' src={`${routes.images}/App/crossref-depositor-logo-200.svg`} />
         </div>
-        { (showPublicationsNav) && <PublicationsNav cart={this.props.cart} toast={this.props.toast} reduxClearToast={this.props.reduxClearToast}/> }
+        { (showNavBar) && <NavBar cart={this.props.cart} toast={this.props.toast} reduxClearToast={this.props.reduxClearToast}/> }
       </div>
     )
   }

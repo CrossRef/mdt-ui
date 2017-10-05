@@ -14,7 +14,7 @@ import {refreshErrorBubble} from '../../utilities/helpers'
 
 
 
-export default class SubtItem extends Component {
+export default class SubItem extends Component {
 
   static propTypes = {
     showCards: is.object
@@ -91,6 +91,7 @@ export default class SubtItem extends Component {
             break
           case 'Funding':
             const {addGrant, removeGrant, grantHandler} = this.props
+
             card = <Funding
               key={i}
               funding={data}
@@ -131,10 +132,10 @@ export default class SubtItem extends Component {
             card = <OptionalIssueInformation
               key={i}
               optionalIssueInfo={data}
+              optionalIssueInfoHandlers={this.props.optionalIssueInfoHandlers}
               remove={remove}
               handler={handler}
               data={incomingData}
-              errors={this.props.errors}
               index={i}/>
             break
         }
@@ -169,7 +170,11 @@ export default class SubtItem extends Component {
                   if (!this.state.showSection) {
                     this.toggle()
                   }
-                  addHandler()
+                  if(this.props.optionalIssueInfoHandlers) {
+                    this.props.optionalIssueInfoHandlers().addOptionalIssueInfo()
+                  } else {
+                    addHandler()
+                  }
                 }}>Add New</a>
               </div>}
             {title === 'Crossmark' &&

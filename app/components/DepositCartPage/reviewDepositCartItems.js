@@ -3,9 +3,9 @@ import is from 'prop-types'
 import { stateTrackerII } from 'my_decorators'
 import { browserHistory } from 'react-router'
 
-import articleReviewGenerator from './articleReviewGenerator'
-import issueReviewGenerator from  './issueReviewGenerator'
-import {routes} from '../routing'
+import articleReviewGenerator from '../AddArticlePage/articleReviewGenerator'
+import issueReviewGenerator from  '../AddIssueModal/issueReviewGenerator'
+import {routes} from '../../routing'
 
 
 export default class DepositCartItemsReview extends Component {

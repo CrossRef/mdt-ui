@@ -1,6 +1,6 @@
 import React from 'react'
 
-import parseXMLIssue from '../utilities/parseXMLIssue'
+import parseXMLIssue from '../../utilities/parseXMLIssue'
 
 
 
