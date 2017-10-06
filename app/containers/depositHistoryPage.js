@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import update from 'immutability-helper'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
 import DepositHistoryItem from '../components/DepositHistoryPage/depositHistoryItem'

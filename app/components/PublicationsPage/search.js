@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
-import { stateTrackerII } from 'my_decorators'
 
 import AddPublicationCard from '../../containers/addPublicationModal'
 

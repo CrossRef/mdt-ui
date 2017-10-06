@@ -260,54 +260,60 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
 
-export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPrefix, issueDoiDisabled = false, volumeDoiDisabled = false) {
+export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPrefix, issueDoiDisabled = false) {
   const { issueDoi, issue, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl } = issueData
+
+  function doiUnchanged (doi) {
+    return doi.length <= `${ownerPrefix}/`.length
+  }
+  const issueDoiEntered = !doiUnchanged(issueDoi)
+
   let criticalErrors = {
-    issue: !issue,
-    issuedoi: false,
+    issueVolume: !volume && !issue,
+
     invalidissuedoi: false,
     invalidIssueDoiPrefix: false,
     dupeissuedoi: false,
-    issueUrl: !issueUrl || issueUrl === 'http://',
-    dupeDois: false
   }
 
-  if(!issueDoiDisabled) {
-    criticalErrors.dupeDois = issueDoi === volumeDoi
-    criticalErrors.issuedoi = !issueDoi
-    criticalErrors.invalidissuedoi = !criticalErrors.issuedoi ? !isDOI(issueDoi) : false
+  if(!issueDoiDisabled && issueDoiEntered) {
+    criticalErrors.invalidissuedoi = !isDOI(issueDoi)
     criticalErrors.invalidIssueDoiPrefix = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== ownerPrefix
     criticalErrors.dupeissuedoi = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && await asyncCheckDupeDoi(issueDoi)
   }
 
   const hasDate = !!(printDateYear || onlineDateYear)
   let warnings = {
+    //issuedoi: !issueDoi || doiUnchanged(issueDoi),
+    issueUrl: !issueUrl || issueUrl === 'http://',
     invalidissueurl: !criticalErrors.issueUrl && !isURL(issueUrl),
 
     printDateYear: hasDate ? false : !printDateYear,
     onlineDateYear: hasDate ? false : !onlineDateYear,
 
-    volume: false,
     volumedoi: false,
     invalidvolumedoi: false,
     invalidVolumeDoiPrefix: false,
     dupevolumedoi: false,
     volumeUrl: false,
     invalidvolumeurl: false,
+    dupeDois: false,
 
     contributorLastName: false,
     contributorRole: false
   }
+
+
 
   warnings.printDateIncomplete = !warnings.printDateYear && !!((printDateMonth || printDateDay) && !printDateYear)
   warnings.printDateInvalid = !warnings.printDateYear && !warnings.printDateIncomplete && !validDate(printDateYear, printDateMonth, printDateDay)
 
   warnings.onlineDateIncomplete = !warnings.onlineDateYear && !!((onlineDateMonth || onlineDateDay) && !onlineDateYear)
   warnings.onlineDateInvalid = !warnings.onlineDateYear && !warnings.onlineDateIncomplete && !validDate(onlineDateYear, onlineDateMonth, onlineDateDay)
+  warnings.dupeDois = issueDoi === volumeDoi
 
-  if(volume || volumeDoi || (volumeUrl && volumeUrl !== 'http://')) {
-    warnings.volume = !volume
-    warnings.volumedoi = !volumeDoi
+  if(volume || (volumeDoi && !doiUnchanged(volumeDoi)) || (volumeUrl && volumeUrl !== 'http://')) {
+    warnings.volumedoi = !volumeDoi || doiUnchanged(volumeDoi)
     warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
     warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== ownerPrefix
     warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && await asyncCheckDupeDoi(volumeDoi)
@@ -330,5 +336,5 @@ export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPre
     return {...contributor, errors}
   })
 
-  return { criticalErrors, warnings, contributors, enableVolumeDoi }
+  return { criticalErrors, warnings, contributors, issueDoiEntered, enableVolumeDoi }
 }

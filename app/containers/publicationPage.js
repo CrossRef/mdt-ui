@@ -3,7 +3,6 @@ import is from 'prop-types'
 import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII } from 'my_decorators'
 
 import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords } from '../actions/application'
 import Listing from '../components/Publication/listing'
@@ -168,7 +167,7 @@ export default class PublicationPage extends Component {
 
   duplicateSelection = () => {
     if(this.state.selections[0].article.type === 'article') {
-      const parentIssue = this.state.selections[0].article.issueDoi ? { parentIssue: this.state.selections[0].article.issueDoi } : {}
+      const parentIssue = this.state.selections[0].article.issueDoi ? { issueDoi: this.state.selections[0].article.issueDoi } : {}
       browserHistory.push({
         pathname: `${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}/addarticle`,
         state: {

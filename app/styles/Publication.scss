@@ -235,6 +235,7 @@
         width: 280px;
         max-width: 280px;
         text-transform: none;
+        position: relative;
       }
 
       &.date, &.type {
@@ -342,7 +343,6 @@
 }
 
 .issueDOILink {
-    width: 110px;
     text-overflow: ellipsis;
     display: inline-block;
     overflow: hidden;
@@ -350,6 +350,9 @@
 }
 
 .issueDoiAddNew {
+  position: absolute;
+  top:12px;
+  right: 16px;
   border: 1px solid #000;
   color: #000 !important;
   display: inline-table;

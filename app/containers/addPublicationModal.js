@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
 import verifyIssn from 'issn-verify'
 import $ from 'jquery'
 
@@ -46,7 +45,6 @@ export default class AddPublicationCard extends Component {
         status: '',
         message: ''
       },
-
       'mdt-version': '0',
       title: '',
       abbreviation: '',
@@ -243,17 +241,17 @@ export default class AddPublicationCard extends Component {
     }
 
     const criticalErrorMsg = {
-      showURLEmptyError: 'URL Required.',
-      showTitleEmptyError: 'Title Required.',
-      showISSNEmptyError: 'Valid ISSN Required.',
-      showISSNInvalidError: 'Valid ISSN Required.',
-      showDOIError: 'Valid DOI Required.',
-      showDOIEmptyError: 'Valid DOI Required.',
-      showDOIInvalidError: 'Valid DOI Required.',
-      showDOIPrefixError: 'Valid DOI Required.'
+      showURLEmptyError: 'URL.',
+      showTitleEmptyError: 'Title.',
+      showISSNEmptyError: 'Valid ISSN.',
+      showISSNInvalidError: 'Valid ISSN.',
+      showDOIError: 'Valid DOI.',
+      showDOIEmptyError: 'Valid DOI.',
+      showDOIInvalidError: 'Valid DOI.',
+      showDOIPrefixError: 'Valid DOI.'
     }
 
-    const errorMessageArray = ['Save Failed: ']
+    const errorMessageArray = ['Required to save: ']
 
     for (let error in criticalErrors) {
       if(criticalErrors[error] === true) {
@@ -275,9 +273,8 @@ export default class AddPublicationCard extends Component {
 
   render () {
 
-    const isSearch = !!this.props.searchResult
-    const isEdit = !!(this.state['mdt-version'] && !isSearch)
-    const disabledInput = isEdit ? {disabled: true} : {}
+    const isEdit = this.props.mode !== 'add'
+    const disabledInput = isEdit ? {disabled: true, className: 'disabledDoi'} : {}
 
     const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
     const errors = this.state.errors
@@ -332,7 +329,7 @@ export default class AddPublicationCard extends Component {
               </div>
             </div>
             <div className={(errors.showDOIError || errors.showDOIInvalidError || errors.showDOIEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
-              <div className='left-indent-36'>Journal DOI</div>
+              <div className='left-indent-36'>{`Journal DOI${ isEdit ? '' : ' (Required)'}`}</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className={ isEdit ? 'notrequired' : 'required'}>{!isEdit && <span>*</span>}</div>

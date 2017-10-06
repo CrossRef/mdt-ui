@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { Link } from 'react-router'
 import $ from 'jquery'
-import {updateReporterII} from 'my_decorators'
 
 import {routes} from '../../routing'
 import {asyncValidateArticle, asyncValidateIssue} from '../../utilities/validation'
@@ -104,7 +103,13 @@ export default class DepositCartRecord extends Component {
     if(this.props.cartItem.type === 'issue') {
       return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(this.props.cartItem.doi)}`
     } else if (this.props.underIssue) {
-      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
+      return {
+        pathname: `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`,
+        state: {
+          issueDoi: this.props.issueDoi,
+          issueTitle: undefined
+        }
+      }
     } else {
       return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
     }

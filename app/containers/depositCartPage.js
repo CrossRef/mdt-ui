@@ -3,7 +3,6 @@ import is from 'prop-types'
 import update from 'immutability-helper'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 import _ from 'lodash'
 
 import { controlModal, cartUpdate, removeFromCart, clearCart } from '../actions/application'

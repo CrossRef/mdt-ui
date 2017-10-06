@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import {browserHistory} from 'react-router'
 import _ from 'lodash'
-import { stateTrackerII } from 'my_decorators'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
@@ -71,7 +70,6 @@ export default class AddArticlePage extends Component {
     super(props)
     const ownerPrefix = props.routeParams.pubDoi.split('/')[0];
     const articleDoi = props.routeParams.articleDoi || (props.location.state && props.location.state.duplicateFrom)
-    const issueDoi = props.routeParams.issueDoi || (props.location.state && props.location.state.parentIssue)
     const isDuplicate = this.props.location.state ? !!this.props.location.state.duplicateFrom : false
 
     this.state = {
@@ -80,7 +78,8 @@ export default class AddArticlePage extends Component {
       publicationXml: '',
       issuePublication: undefined,
       articleDoi,
-      issueDoi,
+      issueDoi: props.location.state && props.location.state.issueDoi,
+      issueTitle: props.location.state && props.location.state.issueTitle,
       mode: articleDoi ? 'edit' : 'add',
       isDuplicate,
       ownerPrefix,
@@ -88,6 +87,7 @@ export default class AddArticlePage extends Component {
       version: '1',
       ...defaultState
     }
+    this.state.article.doi = ownerPrefix + '/'
   }
 
   async componentDidMount () {
@@ -98,8 +98,8 @@ export default class AddArticlePage extends Component {
     if(this.state.articleDoi) {
       getItems.push(api.getItem(this.state.articleDoi))
     }
-    if(this.state.issueDoi) {
-      getItems.push(api.getItem(this.state.issueDoi))
+    if(this.state.issueDoi || this.state.issueTitle) {
+      getItems.push(api.getItem(this.state.issueDoi || {doi: this.state.issueDoi, title: this.state.issueTitle, pubDoi: this.props.routeParams.pubDoi}))
     }
     const checkForAcceptedPub = this.state.mode === 'edit'
     getItems.push(api.getItem(pubDoi, checkForAcceptedPub).catch(e => api.getItem(pubDoi)))
@@ -111,7 +111,7 @@ export default class AddArticlePage extends Component {
     const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
 
     let publication = publications[0]
-    if (this.state.issueDoi) {
+    if (this.state.issueDoi || this.state.issueTitle) {
       //doing logic here so we don't have to change the addArticles page any further
       let unwrappedPub = publications[1]
 
@@ -236,13 +236,10 @@ export default class AddArticlePage extends Component {
       // check if its part of a issue, the issue props will tell us
       let savePub
 
-      const issueDoi = this.props.routeParams.issueDoi
-      if (issueDoi) { //this is just an issue doi OR undefined
-        // if its an issue, we need to put this newRecord under the issue, NOT the publicaton
-        // need to use the issuePublication, the publication has been mutated to allow reading of the article
+      if (this.state.issueDoi || this.state.issueTitle) {
         const issuePublication = this.state.issuePublication
         const theIssue = _.find(issuePublication.message.contains, (item) => {
-          if ((item.type === 'issue') && (item.doi === issueDoi)) {
+          if (item.type === 'issue' && (item.doi === this.state.issueDoi || JSON.stringify(item.title) === JSON.stringify(this.state.issueTitle))) {
             return item
           }
         })
@@ -263,8 +260,9 @@ export default class AddArticlePage extends Component {
       }
 
       newRecord.pubDoi = publication.message.doi
-      if(this.props.issue) {
-        newRecord.issueDoi = issueDoi
+      if(this.state.issueDoi || this.state.issueTitle) {
+        newRecord.issueDoi = this.state.issueDoi
+        newRecord.issueTitle = this.state.issueTitle
       }
 
       const inCart = this.state.mode === 'edit' ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi)) : false

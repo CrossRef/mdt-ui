@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import Moment from 'react-moment';
 
-import { stateTrackerII } from 'my_decorators'
 
 
 export default class DepositHistoryItem extends Component {

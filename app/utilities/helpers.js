@@ -12,7 +12,7 @@ import * as api from '../actions/api'
 
 export function recordTitle (type, title) {
   if(type === 'issue') {
-    return `${title.volume ? `Volume ${title.volume} ` : ''}Issue ${title.issue}`
+    return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
   } else {
     return title.title
   }

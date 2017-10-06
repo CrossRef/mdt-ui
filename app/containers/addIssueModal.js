@@ -8,7 +8,6 @@ import {jsEscape, refreshErrorBubble} from '../utilities/helpers'
 import { getIssueXml } from '../utilities/xmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
-import {stateTrackerII} from 'my_decorators'
 import * as api from '../actions/api'
 
 
@@ -25,6 +24,7 @@ export default class AddIssueModal extends Component {
   constructor (props) {
     super(props);
     this.state = {...defaultState};
+    this.state.ownerPrefix = props.ownerPrefix
     if(props.preFilledData) {
       this.state.issue = {...this.state.issue, ...props.preFilledData}
     }
@@ -34,11 +34,15 @@ export default class AddIssueModal extends Component {
   async componentDidMount () {
     const isSearch = this.props.mode === 'search'
     if(this.props.mode === 'edit' || isSearch) {
-      let doi, Publication, message, Issue;
+      let id, Publication, message, Issue, issueDoiDisabled = false, volumeDoiDisabled = false;
 
       if (!isSearch) {
-        doi = this.props.issue.doi
-        Publication = await api.getItem(doi)
+        id = {
+          doi: this.props.issue.issueDoi,
+          title: this.props.issue.title,
+          pubDoi: this.props.publication.message.doi
+        }
+        Publication = await api.getItem(id)
         message = Publication.message
         Issue = message.contains[0]
 
@@ -50,19 +54,22 @@ export default class AddIssueModal extends Component {
 
       const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
 
+      if(issue.issueDoi === '') {
+        issue.issueDoi = this.props.ownerPrefix + '/'
+      } else {
+        issueDoiDisabled = true
+      }
+
       if(isSearch) {
         issue.issueDoi = this.props.ownerPrefix + '/'
       }
-
-      const issueDoiDisabled = !this.props.duplicate && !isSearch
-      const volumeDoiDisabled = issue.volumeDoi && !this.props.duplicate
 
       const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled)
 
       const setStatePayload = {
         version: version,
-        issueDoiDisabled: issueDoiDisabled,
-        volumeDoiDisabled: volumeDoiDisabled,
+        issueDoiDisabled,
+        volumeDoiDisabled,
         issue:  issue,
         optionalIssueInfo: optionalIssueInfo,
         showSection: showSection,
@@ -108,7 +115,7 @@ export default class AddIssueModal extends Component {
 
   save = async () => {
 
-    const {valid, validatedPayload, criticalErrors} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
+    const {valid, validatedPayload, criticalErrors, issueDoiEntered} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
     if (valid) {
       const { publication, mode } = this.props
@@ -118,7 +125,7 @@ export default class AddIssueModal extends Component {
       let version = this.state.version
 
       if (mode === 'edit') {
-        version = String(Number(this.state.version) + 1)
+        version = (Number(this.state.version) + 1).toString()
       }
 
       const title = jsEscape(this.state.issue.issueTitle)
@@ -126,9 +133,9 @@ export default class AddIssueModal extends Component {
       const volume = jsEscape(this.state.issue.volume)
 
       const newRecord = {
-        'title': {title, issue, volume},
+        'title': {issue, volume, title},
         'date': new Date(),
-        'doi': this.state.issue.issueDoi,
+        'doi': issueDoiEntered ? this.state.issue.issueDoi : '',
         'owner-prefix': this.props.ownerPrefix,
         'type': 'issue',
         'mdt-version': version,
@@ -163,8 +170,10 @@ export default class AddIssueModal extends Component {
 
       newRecord.pubDoi = publication.message.doi
 
-      validatedPayload.issueDoiDisabled = true
-      validatedPayload.version = String(Number(this.state.version) + 1)
+      if(issueDoiEntered) {
+        validatedPayload.issueDoiDisabled = true
+      }
+      validatedPayload.version = (Number(this.state.version) + 1).toString()
       const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
       validatedPayload.confirmationPayload = confirmationPayload
       validatedPayload.timeOut = timeOut
@@ -191,16 +200,13 @@ export default class AddIssueModal extends Component {
     }
 
     const criticalErrorMsg = {
-      issue: 'Issue # Required.',
-      issuedoi: 'Valid Issue DOI Required.',
-      invalidissuedoi: 'Valid Issue DOI Required.',
-      invalidIssueDoiPrefix: 'Valid Issue DOI Required.',
-      dupeissuedoi: 'Valid Issue DOI Required.',
-      dupeDois: 'Duplicate Issue & Volume DOIs.',
-      issueUrl: 'Issue Url is Required.'
+      issueVolume: 'Issue or Volume Number.',
+      invalidissuedoi: 'DOI must be valid.',
+      invalidIssueDoiPrefix: 'DOI must be valid.',
+      dupeissuedoi: 'DOI must be valid.',
     }
 
-    const errorMessageArray = ['Save Failed:']
+    const errorMessageArray = ['Required to save:']
 
     for (let error in criticalErrors) {
       if(criticalErrors[error] === true) {

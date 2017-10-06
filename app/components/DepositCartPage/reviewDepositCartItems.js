@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
 import { browserHistory } from 'react-router'
 
 import articleReviewGenerator from '../AddArticlePage/articleReviewGenerator'

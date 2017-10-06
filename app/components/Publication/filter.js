@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { Link } from 'react-router'
-import { stateTrackerII } from 'my_decorators'
 
 
 export default class PublicationFilter extends Component {

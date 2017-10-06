@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import {bindActionCreators} from 'redux'
 import is from 'prop-types'
 import { connect } from 'react-redux'
-import { stateTrackerII } from 'my_decorators'
 
 import Header from '../components/App/header'
 import Footer from '../components/App/footer'

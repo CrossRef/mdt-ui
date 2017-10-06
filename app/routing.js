@@ -23,7 +23,7 @@ export const routes = {
   publication: base + 'publications/:doi',
   addArticle: base + 'publications/:pubDoi/addarticle',
   editArticle: base + 'publications/:pubDoi/addarticle/:articleDoi',
-  addArticleUnderIssue: base + 'publications/:pubDoi/:issueDoi/addarticle',
+  addArticleUnderIssue: base + 'publications/:pubDoi/:issueId/addarticle',
   editArticleUnderIssue: base + 'publications/:pubDoi/:issueDoi/addarticle/:articleDoi',
   depositCart: base + 'cart',
   depositHistory: base + 'deposit-history'

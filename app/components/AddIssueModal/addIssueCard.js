@@ -55,9 +55,9 @@ export default class AddIssueCard extends React.Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder'>
+                        <div className={`requiredholder ${this.props.issue.volume && 'norequire'}`}>
                           <div className='required height32'>
-                            <span>*</span>
+                            {!this.props.issue.volume && <span>*</span>}
                           </div>
                         </div>
                         <div className='field'>
@@ -183,14 +183,12 @@ export default class AddIssueCard extends React.Component {
                       <div className='labelholder'>
                         <div></div>
                         <div className='labelinnerholder'>
-                          <div className='label'>Issue DOI (Required)</div>
+                          <div className='label'>Issue DOI</div>
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder'>
-                          <div className='required height32'>
-                            <span>*</span>
-                          </div>
+                        <div className='requiredholder norequire'>
+                          <div className='required height32' />
                         </div>
                         <div className='field'>
                           <input
@@ -208,7 +206,7 @@ export default class AddIssueCard extends React.Component {
                       <div className='labelholder'>
                         <div></div>
                         <div className='labelinnerholder'>
-                          <div className='label'>Issue URL (Required)</div>
+                          <div className='label'>Issue URL</div>
                         </div>
                       </div>
                       <div className='requrefieldholder'>
@@ -366,8 +364,8 @@ export default class AddIssueCard extends React.Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className={`requiredholder ${!volumeSectionRequired && 'norequire'}`}>
-                          <div className='required height32'>{volumeSectionRequired && <span>*</span>}</div>
+                        <div className={`requiredholder ${this.props.issue.issue && !volumeSectionRequired && 'norequire'}`}>
+                          <div className='required height32'>{(!this.props.issue.issue || volumeSectionRequired) && <span>*</span>}</div>
                         </div>
                         <div className='field'>
                           <input

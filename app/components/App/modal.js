@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import ReactModal from 'react-modal'
-import { updateReporterII } from 'my_decorators'
 
 import {routes} from '../../routing'
 
