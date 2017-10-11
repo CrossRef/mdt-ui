@@ -37,7 +37,7 @@ export default class Issue extends Component {
   }
 
   componentDidMount() {
-    if (this.props.triggerModal === this.props.record.doi) {
+    if (this.props.triggerModal === this.props.record.doi || this.props.triggerModal === JSON.stringify(this.props.record.title)) {
       this.modalOpen();
     }
   }
@@ -95,10 +95,7 @@ export default class Issue extends Component {
         &nbsp;
         <Link
           className='issueDoiAddNew'
-          to={{
-            pathname:`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`,
-            state: { issueDoi: doi, issueTitle: title }
-          }}>
+          to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`}>
           <span>Add Article</span>
         </Link>
       </td>

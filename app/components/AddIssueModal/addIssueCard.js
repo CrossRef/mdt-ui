@@ -6,6 +6,7 @@ import {routes} from '../../routing'
 import { displayArchiveLocations } from '../../utilities/lists/archiveLocations'
 import SubItem from '../SubItems/subItem'
 import {makeDateDropDown} from  '../../utilities/date'
+import {urlEntered, doiEntered} from  '../../utilities/helpers'
 
 
 
@@ -21,7 +22,8 @@ export default class AddIssueCard extends React.Component {
 
   render () {
     const { errors } = this.props;
-    const volumeSectionRequired =  !!(this.props.issue.volume || this.props.issue.volumeDoi || (this.props.issue.volumeUrl && this.props.issue.volumeUrl !== 'http://'));
+    const volumeSectionRequired =  !!(doiEntered(this.props.issue.volumeDoi, this.props.ownerPrefix) || urlEntered(this.props.issue.volumeUrl));
+    const issueDoiDataRequired = !!(doiEntered(this.props.issue.issueDoi, this.props.ownerPrefix) || urlEntered(this.props.issue.issueUrl))
     return (
       <div className='addIssueCard'>
         <div>
@@ -187,8 +189,8 @@ export default class AddIssueCard extends React.Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder norequire'>
-                          <div className='required height32' />
+                        <div className={`requiredholder ${issueDoiDataRequired ? '' : 'norequire'}`}>
+                          <div className='required height32'>{issueDoiDataRequired && <span>*</span>}</div>
                         </div>
                         <div className='field'>
                           <input
@@ -210,10 +212,8 @@ export default class AddIssueCard extends React.Component {
                         </div>
                       </div>
                       <div className='requrefieldholder'>
-                        <div className='requiredholder'>
-                          <div className='required height32'>
-                            <span>*</span>
-                          </div>
+                        <div className={`requiredholder ${issueDoiDataRequired ? '' : 'norequire'}`}>
+                          <div className='required height32'>{issueDoiDataRequired && <span>*</span>}</div>
                         </div>
                         <div className='field'>
                           <input

@@ -29,7 +29,7 @@ export default class AddArticleCard extends Component {
     return (
       <div>
 
-        <div className={'addarticlecard'}>
+        <div className='addarticlecard'>
 
           <form className='addArticleForm'>
 

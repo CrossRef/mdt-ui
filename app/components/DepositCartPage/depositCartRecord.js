@@ -1,25 +1,24 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { Link } from 'react-router'
-import $ from 'jquery'
 
 import {routes} from '../../routing'
 import {asyncValidateArticle, asyncValidateIssue} from '../../utilities/validation'
 import parseXMLArticle from '../../utilities/parseXMLArticle'
 import parseXMLIssue from '../../utilities/parseXMLIssue'
-import {recordTitle} from '../../utilities/helpers'
+import {recordTitle, pascaleCase} from '../../utilities/helpers'
 import {ArticleMessages, IssueMessages} from '../../utilities/lists/validationMessages'
+import ErrorBox from './errorBox'
 
 
 
 export default class DepositCartRecord extends Component {
   static propTypes = {
     cartItem: is.object.isRequired,
-    inCart: is.bool.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
     pubDoi: is.string.isRequired,
     issueDoi: is.string,
-    underIssue: is.bool,
+    issueTitle: is.object,
     closeErrors: is.func.isRequired,
     reportErrors: is.func.isRequired
   }
@@ -95,21 +94,15 @@ export default class DepositCartRecord extends Component {
       </div>
     })
     return (
-      <div className='errorBox'><ErrorBox closeErrors={this.props.closeErrors} errorMessage={errorMessage}/></div>
+      <div className='errorBox'><ErrorBox type='cart' closeErrors={this.props.closeErrors} errorMessage={errorMessage}/></div>
     )
   }
 
   getLink = () => {
     if(this.props.cartItem.type === 'issue') {
-      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(this.props.cartItem.doi)}`
-    } else if (this.props.underIssue) {
-      return {
-        pathname: `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`,
-        state: {
-          issueDoi: this.props.issueDoi,
-          issueTitle: undefined
-        }
-      }
+      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(this.props.cartItem.doi || JSON.stringify(this.props.cartItem.title))}`
+    } else if (this.props.issueDoi || this.props.issueTitle) {
+      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi || JSON.stringify(this.props.issueTitle))}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
     } else {
       return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
     }
@@ -123,6 +116,7 @@ export default class DepositCartRecord extends Component {
   }
 
   render () {
+    const underIssue = this.props.issueDoi || this.props.issueTitle
     const showError = this.state.status === 'error'
     if(this.state.status !== 'validating') {
       this.props.reportErrors(showError)
@@ -131,20 +125,19 @@ export default class DepositCartRecord extends Component {
     const cartType = cartItem.type
     const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume}, `}Issue ${cartItem.title.issue}` : cartItem.title.title
 
-    const status =  cartItem.status.charAt(0).toUpperCase() + cartItem.status.slice(1).toLowerCase()
-    const height = this.props.underIssue ? ' short' : ' tall'
+    const height = underIssue ? ' short' : ' tall'
     return (
-      <tr className={`item ${!this.props.underIssue && 'borderBottom'}`}>
+      <tr className={`item ${!underIssue && 'borderBottom'}`}>
         <td className={'stateIcon' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + height}>
         </td>
-        <td className={'title' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + ((this.props.underIssue) ? ' underIssue' : '') + height}>
+        <td className={'title' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + (underIssue ? ' underIssue' : '') + height}>
           <Link to={this.getLink()}>{title}</Link>
         </td>
         <td className={'status' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + height}>
-          {this.props.inCart && status}
+          {cartType === 'article' && pascaleCase(cartItem.status)}
         </td>
         <td className={'action' + (showError ? ' rowError' : '') + ((cartType === 'issue') ? ' issuerow' : '') + height}>
-          {this.props.inCart && <a onClick={this.remove}>Remove</a>}
+          {cartType === 'article' && <a onClick={this.remove}>Remove</a>}
         </td>
         <td className={'errorholder'}>
           {
@@ -152,48 +145,6 @@ export default class DepositCartRecord extends Component {
           }
         </td>
       </tr>
-    )
-  }
-}
-
-
-
-
-class ErrorBox extends Component {
-  state = {errorBoxShow: false}
-
-  componentWillReceiveProps () {
-    this.setState({errorBoxShow: false})
-  }
-
-  toggleError = async (e) => {
-    const target = $(e.target)
-    if((target.parents('.popup').length || target.hasClass('popup')) && !target.hasClass('closeButton')) {
-      return
-    }
-
-    if(!this.state.errorBoxShow) {
-      await this.props.closeErrors()
-      this.setState({errorBoxShow: true})
-    } else {
-      this.setState({errorBoxShow: false})
-    }
-  }
-
-  render () {
-    return (
-      <ul className="errorButton">
-        <li onClick={this.toggleError}>
-          <a className="tooltips">
-            {this.state.errorBoxShow && <div className="popup">
-              <div className="scrollContainer">{this.props.errorMessage}</div>
-              <img className='closeButton' src={`${routes.images}/Deposit/x.png`}/>
-            </div>}
-
-            <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>
-          </a>
-        </li>
-      </ul>
     )
   }
 }

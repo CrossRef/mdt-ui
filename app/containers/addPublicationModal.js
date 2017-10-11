@@ -1,10 +1,8 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import verifyIssn from 'issn-verify'
-import $ from 'jquery'
 
 import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
-import { publicationXml } from '../utilities/xmlGenerator'
 const languages = require('../utilities/lists/language.json')
 
 
@@ -192,7 +190,7 @@ export default class AddPublicationCard extends Component {
           'type': 'Publication',
           'mdt-version': this.state['mdt-version'],
           'status': 'draft',
-          'content': publicationXml(this.state),
+          'content': this.publicationXml(this.state),
           'contains': []
         }
 
@@ -217,6 +215,31 @@ export default class AddPublicationCard extends Component {
         })
       }
     })
+  }
+
+  publicationXml = (form = this.state) => {
+    const xmlArray = [
+      `<Journal xmlns="http://www.crossref.org/xschema/1.1">`,
+
+      `<journal_metadata${form.language ? ` language="${form.language}"` : '' }>`,
+
+      `<full_title>${form.title}</full_title>`,
+
+      form.abbreviation ? `<abbrev_title>${form.abbreviation}</abbrev_title>` : '',
+
+      `<issn media_type="electronic">${form.electISSN}</issn>`,
+
+      `<doi_data>`,
+      `<doi>${form.DOI}</doi>`,
+      `<resource>${form.url}</resource>`,
+      `</doi_data>`,
+
+      `</journal_metadata>`,
+
+      form.archivelocation ? `<archive_locations><archive name="${form.archivelocation}"/></archive_locations>` : ``,
+      `</Journal>`
+    ]
+    return xmlArray.join('')
   }
 
   inputHandler = (e) => {

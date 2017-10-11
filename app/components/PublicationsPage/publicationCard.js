@@ -5,10 +5,10 @@ import { Link } from 'react-router'
 import { connect } from 'react-redux'
 
 
-import {routes} from '../routing'
-import {xmldoc, compareDois} from '../utilities/helpers'
-import { controlModal, submitPublication, cartUpdate } from '../actions/application'
-import AddPublicationModal from './addPublicationModal'
+import {routes} from '../../routing'
+import {xmldoc, compareDois} from '../../utilities/helpers'
+import { controlModal, submitPublication, cartUpdate } from '../../actions/application'
+import AddPublicationModal from '../../containers/addPublicationModal'
 
 
 

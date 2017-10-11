@@ -4,7 +4,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import { controlModal, getPublications, addDOIs, submitPublication, cartUpdate, search } from '../actions/application'
-import PublicationCard from '../containers/publicationCard'
+import PublicationCard from '../components/PublicationsPage/publicationCard'
 import Search from '../components/PublicationsPage/search'
 import AddPublicationCard from './addPublicationModal'
 

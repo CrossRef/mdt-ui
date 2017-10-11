@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
-import {Deferred, compareDois, recordTitle, pascaleCase} from '../../utilities/helpers'
+import {Deferred, pascaleCase} from '../../utilities/helpers'
 
 
 
@@ -36,11 +36,10 @@ export default class DepositCartItem extends Component {
 
       records.push(
         <DepositCartRecord
-          key={record.doi}
+          key={record.doi || JSON.stringify(record.title)}
           pubDoi={props.cartItem.doi}
           reduxRemoveFromCart={props.reduxRemoveFromCart}
           cartItem={record}
-          inCart={record.type === 'issue' ? !!this.props.cart.find( cartRecord => compareDois(cartRecord.doi, record.doi) ) : true}
           closeErrors={this.props.closeErrors}
           reportErrors={asyncErrorReport.resolve}
         />
@@ -49,9 +48,10 @@ export default class DepositCartItem extends Component {
       if (record.contains) {
         for(let j = 0; j < record.contains.length; j++){
           const parentIssue = props.cartItem.contains[i]
-          const recordUnderIssue = props.cartItem.contains[i].contains[j]
+          const articleUnderIssue = props.cartItem.contains[i].contains[j]
+          const key = parentIssue.doi ? parentIssue.doi : JSON.stringify(parentIssue.title)
           if(j === 0) {
-            records.push(<tr key={parentIssue.doi + '_space1'} className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
+            records.push(<tr key={key + '_space1'} className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
           }
 
           const asyncErrorReport = new Deferred()
@@ -59,30 +59,25 @@ export default class DepositCartItem extends Component {
 
           records.push(
             <DepositCartRecord
-              key={recordUnderIssue.doi}
-              underIssue={true}
+              key={articleUnderIssue.doi}
               issueDoi={parentIssue.doi}
+              issueTitle={parentIssue.title}
               pubDoi={props.cartItem.doi}
               reduxRemoveFromCart={props.reduxRemoveFromCart}
-              cartItem={recordUnderIssue}
-              inCart={true}
+              cartItem={articleUnderIssue}
               closeErrors={this.props.closeErrors}
               reportErrors={asyncErrorReport.resolve}
             />
           )
           if(j === props.cartItem.contains[i].contains.length - 1) {
-            records.push(<tr key={parentIssue.doi + '_space2'} className='articleUnderIssueSpace borderBottom'><td/><td/><td/><td className="borderRight"/></tr>)
+            records.push(<tr key={key + '_space2'} className='articleUnderIssueSpace borderBottom'><td/><td/><td/><td className="borderRight"/></tr>)
           }
         }
       }
     }
 
     Promise.all(errorReports).then((results)=>{  // if none of the error reports resolved true, report no errors to depositCart
-      if(results.indexOf(true) === -1) {
-        this.props.reportErrors(false)
-      } else {
-        this.props.reportErrors(true)
-      }
+      this.props.reportErrors( results.indexOf(true) !== -1 )
     })
     return records
   }
@@ -106,7 +101,7 @@ export default class DepositCartItem extends Component {
                     <tr className="borderBottom">
                       <td className='stateIcon deposittitle'>&nbsp;</td>
                       <td className='depositpubtitle'><a href="">{this.props.cartItem.title}</a></td>
-                      <td className="status">{pascaleCase(this.props.cartItem.status)}</td>
+                      <td className="status">{/*{pascaleCase(this.props.cartItem.status)}*/}</td>
                       <td className="action">{this.props.inCart && <a onClick={this.remove}>Remove</a>}</td>
                       <td className='titlerror errorholder'>&nbsp;</td>
                     </tr>

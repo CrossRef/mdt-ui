@@ -35,7 +35,7 @@ export const IssueMessages = {
     message: 'Issue and Volume DOIs cannot be the same.'
   },
 
-  issueurl: {
+  issueUrl: {
     type: 'required',
     bold: 'Required',
     message: 'Please provide issue URL.'

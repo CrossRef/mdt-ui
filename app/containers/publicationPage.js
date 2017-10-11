@@ -16,7 +16,7 @@ import {compareDois} from '../utilities/helpers'
 
 
 const mapStateToProps = (state, props) => ({
-  publication: state.publications[props.routeParams.doi] || state.publications[props.routeParams.doi.toLowerCase()],
+  publication: state.publications[props.routeParams.pubDoi] || state.publications[props.routeParams.pubDoi.toLowerCase()],
   cart: state.cart,
   search: state.search
 })
@@ -39,7 +39,8 @@ export default class PublicationPage extends Component {
     search: is.object.isRequired,
     publication: is.object,
     routeParams: is.shape({
-      doi: is.string.isRequired
+      pubDoi: is.string.isRequired,
+      issueId: is.string
     }).isRequired,
     location: is.shape({
       query: is.shape({
@@ -57,8 +58,8 @@ export default class PublicationPage extends Component {
   constructor (props) {
     super ()
     this.state = {
-      doi: props.routeParams.doi,
-      ownerPrefix: props.routeParams.doi.split('/')[0],
+      doi: props.routeParams.pubDoi,
+      ownerPrefix: props.routeParams.pubDoi.split('/')[0],
       serverError: null,
       filterBy: 'all',
       selections: []
@@ -67,7 +68,7 @@ export default class PublicationPage extends Component {
 
 
   componentDidMount () {
-    this.props.asyncGetPublications(this.props.routeParams.doi, undefined, error => {
+    this.props.asyncGetPublications(this.props.routeParams.pubDoi, undefined, error => {
       this.setState({ serverError: error })
     })
   }
@@ -230,7 +231,7 @@ export default class PublicationPage extends Component {
                   filterBy={this.state.filterBy}
                   ownerPrefix={ownerPrefix}
                   publication={publication}
-                  triggerModal={this.props.triggerModal}
+                  triggerModal={this.props.location.query && this.props.location.query.modal}
                   selections={this.state.selections}
                   cart={this.props.cart}
 

@@ -4,6 +4,7 @@ import moment from 'moment'
 import $ from 'jquery'
 
 import {routes} from '../../routing'
+import ErrorBox from './errorBox'
 
 
 export default class DepositResult extends Component{
@@ -80,7 +81,7 @@ export default class DepositResult extends Component{
                 {record.type === 'article' &&
                   <td className={record.errorMessage ? 'errorBox' : 'urlBox'}>
                     {!record.errorMessage ? <a target='_blank' href={recordUrl}>{recordUrl}</a>
-                      : <ErrorBox errorMessage={record.errorMessage} closeErrors={this.closeErrors}/>}
+                      : <ErrorBox type='result' errorMessage={record.errorMessage} closeErrors={this.closeErrors}/>}
                   </td>}
             </tr>
             {articles}
@@ -137,43 +138,3 @@ export default class DepositResult extends Component{
   }
 }
 
-
-class ErrorBox extends Component {
-  state = {errorBoxShow: false}
-
-  componentWillReceiveProps () {
-    this.setState({errorBoxShow: false})
-  }
-
-  toggleError = async (e) => {
-    const target = $(e.target)
-    if((target.parents('.popup').length || target.hasClass('popup')) && !target.hasClass('closeButton')) {
-      return
-    }
-
-    if(!this.state.errorBoxShow) {
-      await this.props.closeErrors()
-      this.setState({errorBoxShow: true})
-    } else {
-      this.setState({errorBoxShow: false})
-    }
-  }
-
-  render () {
-    return (
-      <ul>
-        <li onClick={this.toggleError}>
-          <a className="tooltips">
-            {this.state.errorBoxShow &&
-              <div className="popup">
-                <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>
-                <p>{this.props.errorMessage}</p>
-                <img className='closeButton' src={`${routes.images}/Deposit/x.png`}/>
-              </div>}
-            <img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/>
-          </a>
-        </li>
-      </ul>
-    )
-  }
-}

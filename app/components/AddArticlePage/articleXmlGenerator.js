@@ -1,13 +1,13 @@
 import _ from 'lodash'
 import moment from 'moment'
 
-import { getContributor, getSubItems } from './getSubItems'
-import {cardNames, registryDois} from './crossmarkHelpers'
+import { getSubItems } from '../../utilities/getSubItems'
+import {cardNames, registryDois} from '../../utilities/crossmarkHelpers'
 const { pubHist, peer, copyright, supp, clinical, other, update} = cardNames
 
 
 
-export const journalArticleXml = (state, reduxForm) => {
+export default function (state, reduxForm) {
   const article = state.article
   const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
     printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay
@@ -20,59 +20,59 @@ export const journalArticleXml = (state, reduxForm) => {
 
   const array = [
     `<journal_article`,
-      `${(language.length > 0) ? ` language="${language}"`:``}`,
-      `${(publicationType.length > 0) ? ` publication_type="${publicationType}"`:``}`,
+    `${(language.length > 0) ? ` language="${language}"`:``}`,
+    `${(publicationType.length > 0) ? ` publication_type="${publicationType}"`:``}`,
     `>`,
 
-      `<titles>`,
-        `${article.title.length > 0 ? `<title>` + article.title.trim() + `</title>` : ``}`,
-        `${article.subtitle.length > 0 ? `<subtitle>` + article.subtitle.trim() + `</subtitle>` : ``}`,
-        `${article.originallanguagetitle.length > 0 ?
-          `<original_language_title>` + article.originallanguagetitle.trim() + `</original_language_title>` : ``}`,
-        `${article.originallanguagetitlesubtitle.length > 0 ? `<subtitle>` + article.originallanguagetitlesubtitle.trim() + `</subtitle>` : ``}`,
-      `</titles>`,
+    `<titles>`,
+    `${article.title.length > 0 ? `<title>` + article.title.trim() + `</title>` : ``}`,
+    `${article.subtitle.length > 0 ? `<subtitle>` + article.subtitle.trim() + `</subtitle>` : ``}`,
+    `${article.originallanguagetitle.length > 0 ?
+      `<original_language_title>` + article.originallanguagetitle.trim() + `</original_language_title>` : ``}`,
+    `${article.originallanguagetitlesubtitle.length > 0 ? `<subtitle>` + article.originallanguagetitlesubtitle.trim() + `</subtitle>` : ``}`,
+    `</titles>`,
 
-      `${(getContributorXML().length > 0) ? getContributorXML() : ``}`,
+    `${(getContributorXML().length > 0) ? getContributorXML() : ``}`,
 
-      `${(article.abstract.trim().length > 0) ?
-        `<jats:abstract xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"><jats:p>${article.abstract.trim()}</jats:p></jats:abstract>` : ''}`,
+    `${(article.abstract.trim().length > 0) ?
+      `<jats:abstract xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1"><jats:p>${article.abstract.trim()}</jats:p></jats:abstract>` : ''}`,
 
-      onlineYear || onlineMonth || onlineDay ? [
-        `<publication_date media_type="online">`,
-          `${onlineMonth.length > 0 ? `<month>${onlineMonth}</month>`:``}`,
-          `${onlineDay.length > 0 ? `<day>${onlineDay}</day>`:``}`,
-          `${onlineYear.length > 0 ? `<year>${onlineYear}</year>`:``}`,
-        `</publication_date>`
-      ].join('') : '',
+    onlineYear || onlineMonth || onlineDay ? [
+      `<publication_date media_type="online">`,
+      `${onlineMonth.length > 0 ? `<month>${onlineMonth}</month>`:``}`,
+      `${onlineDay.length > 0 ? `<day>${onlineDay}</day>`:``}`,
+      `${onlineYear.length > 0 ? `<year>${onlineYear}</year>`:``}`,
+      `</publication_date>`
+    ].join('') : '',
 
-      printYear || printMonth || printDay ? [
-        `<publication_date media_type="print">`,
-          `${printMonth.length > 0 ? `<month>${printMonth}</month>`:``}`,
-          `${printDay.length > 0 ? `<day>${printDay}</day>`:``}`,
-          `${printYear.length > 0 ? `<year>${printYear}</year>`:``}`,
-        `</publication_date>`
-      ].join('') : '',
+    printYear || printMonth || printDay ? [
+      `<publication_date media_type="print">`,
+      `${printMonth.length > 0 ? `<month>${printMonth}</month>`:``}`,
+      `${printDay.length > 0 ? `<day>${printDay}</day>`:``}`,
+      `${printYear.length > 0 ? `<year>${printYear}</year>`:``}`,
+      `</publication_date>`
+    ].join('') : '',
 
-      `${(getPagesXML().length > 0) ? getPagesXML() : ``}`,
+    `${(getPagesXML().length > 0) ? getPagesXML() : ``}`,
 
-      `${(getPublisherItems().length > 0) ? getPublisherItems() : ``}`,
+    `${(getPublisherItems().length > 0) ? getPublisherItems() : ``}`,
 
-      crossmarkElement,
+    crossmarkElement,
 
-      `${(!crossmarkElement && funderElement.length) ? funderElement : ``}`,
+    `${(!crossmarkElement && funderElement.length) ? funderElement : ``}`,
 
-      `${(!crossmarkElement && licenseElement.length) ? licenseElement : ``}`,
+    `${(!crossmarkElement && licenseElement.length) ? licenseElement : ``}`,
 
-      `${(getRelatedItemsXML().length > 0) ? getRelatedItemsXML() : ``}`,
+    `${(getRelatedItemsXML().length > 0) ? getRelatedItemsXML() : ``}`,
 
-      state.addInfo.archiveLocation.trim().length > 0 ?
-        `<archive_locations><archive name="${state.addInfo.archiveLocation}"/></archive_locations>` : '',
+    state.addInfo.archiveLocation.trim().length > 0 ?
+      `<archive_locations><archive name="${state.addInfo.archiveLocation}"/></archive_locations>` : '',
 
-      `<doi_data>`,
-        `<doi>${article.doi}</doi>`,
-        `${article.url ? `<resource>${article.url}</resource>` : ''}`,
-        `${(getCollectionXML().length > 0) ? getCollectionXML() : ``}`,
-      `</doi_data>`,
+    `<doi_data>`,
+    `<doi>${article.doi}</doi>`,
+    `${article.url ? `<resource>${article.url}</resource>` : ''}`,
+    `${(getCollectionXML().length > 0) ? getCollectionXML() : ``}`,
+    `</doi_data>`,
 
     `</journal_article>`
   ]
@@ -229,21 +229,21 @@ export const journalArticleXml = (state, reduxForm) => {
       [
         `<custom_metadata>`,
 
-          crossmarkForm[other] ? generateOther(crossmarkForm[other]) : '',
+        crossmarkForm[other] ? generateOther(crossmarkForm[other]) : '',
 
-          crossmarkForm[pubHist] ? generatePubHist(crossmarkForm[pubHist]) : '',
+        crossmarkForm[pubHist] ? generatePubHist(crossmarkForm[pubHist]) : '',
 
-          crossmarkForm[peer] ? generatePeer(crossmarkForm[peer]) : '',
+        crossmarkForm[peer] ? generatePeer(crossmarkForm[peer]) : '',
 
-          crossmarkForm[supp] ? generateSupp(crossmarkForm[supp]) : '',
+        crossmarkForm[supp] ? generateSupp(crossmarkForm[supp]) : '',
 
-          crossmarkForm[copyright] ? generateCopyright(crossmarkForm[copyright]) : '',
+        crossmarkForm[copyright] ? generateCopyright(crossmarkForm[copyright]) : '',
 
-          crossmarkForm[clinical] ? generateClinical(crossmarkForm[clinical]) : '',
+        crossmarkForm[clinical] ? generateClinical(crossmarkForm[clinical]) : '',
 
-          funderElement.length ? funderElement : '',
+        funderElement.length ? funderElement : '',
 
-          licenseElement.length ? licenseElement : '',
+        licenseElement.length ? licenseElement : '',
 
         `</custom_metadata>`
       ].join('')
@@ -332,111 +332,3 @@ export const journalArticleXml = (state, reduxForm) => {
   }
 }
 
-
-
-
-
-
-
-
-export const publicationXml = (form) => {
-  const xmlArray = [
-    `<Journal xmlns="http://www.crossref.org/xschema/1.1">`,
-
-      `<journal_metadata${form.language ? ` language="${form.language}"` : '' }>`,
-
-        `<full_title>${form.title}</full_title>`,
-
-        form.abbreviation ? `<abbrev_title>${form.abbreviation}</abbrev_title>` : '',
-
-        `<issn media_type="electronic">${form.electISSN}</issn>`,
-
-        `<doi_data>`,
-          `<doi>${form.DOI}</doi>`,
-          `<resource>${form.url}</resource>`,
-        `</doi_data>`,
-
-      `</journal_metadata>`,
-
-      form.archivelocation ? `<archive_locations><archive name="${form.archivelocation}"/></archive_locations>` : ``,
-    `</Journal>`
-  ]
-  return xmlArray.join('')
-}
-
-
-
-
-export const getIssueXml = (issueObj) => {
-    const {issue, optionalIssueInfo, ownerPrefix} = issueObj
-    // the title
-    const titles = issue.issueTitle.trim().length > 0 ? `<titles><title>${issue.issueTitle.trim()}</title></titles>` : ``
-
-    // special numbering
-    const specialNumbering = issue.specialIssueNumber.trim().length > 0 ? `<special_numbering>${issue.specialIssueNumber.trim()}</special_numbering>` : ``
-
-    // special numbering
-    const issueNumber = issue.issue.trim().length > 0 ? `<issue>${issue.issue.trim()}</issue>` : ``
-
-    // the online date
-    var publicationOnlineDate = ''
-    if (issue.onlineDateYear.length > 0 || issue.onlineDateDay.length > 0 || issue.onlineDateMonth.length > 0) {
-      publicationOnlineDate += (issue.onlineDateMonth.length > 0 ? `<month>${issue.onlineDateMonth}</month>` : ``)
-      publicationOnlineDate += (issue.onlineDateDay.length > 0 ? `<day>${issue.onlineDateDay}</day>` : ``)
-      publicationOnlineDate += (issue.onlineDateYear.length > 0 ? `<year>${issue.onlineDateYear}</year>` : ``)
-
-      publicationOnlineDate = `<publication_date media_type="online">${publicationOnlineDate}</publication_date>`
-    }
-
-    // the print date
-    var publicationPrintDate = ''
-    if (issue.printDateYear.length > 0 || issue.printDateDay.length > 0 || issue.printDateMonth.length > 0) {
-      publicationPrintDate += (issue.printDateMonth.length > 0 ? `<month>${issue.printDateMonth}</month>` : ``)
-      publicationPrintDate += (issue.printDateDay.length > 0 ? `<day>${issue.printDateDay}</day>` : ``)
-      publicationPrintDate += (issue.printDateYear.length > 0 ? `<year>${issue.printDateYear}</year>` : ``)
-
-      publicationPrintDate = `<publication_date media_type="print">${publicationPrintDate}</publication_date>`
-    }
-
-    //doi_data
-    var doiData = ''
-    const validDoi = issue.issueDoi.length > `${ownerPrefix}/`.length
-    if (issue.issueUrl !== 'http://' || validDoi) {
-      doiData += (validDoi ? `<doi>${issue.issueDoi}</doi>` : ``)
-      doiData += ((issue.issueUrl.trim().length > 0 && issue.issueUrl !== 'http://')? `<resource>${issue.issueUrl}</resource>` : ``)
-      doiData = `<doi_data>${doiData}</doi_data>`
-    }
-
-    // volume
-    var volumeXml = ''
-    if (
-      (issue.volumeDoi ? issue.volumeDoi : '').trim().length > 0 ||
-      ((issue.volumeUrl && issue.volumeUrl !== 'http://') ? issue.volumeUrl : '').trim().length > 0 ||
-      (issue.volume ? issue.volume : '').trim().length > 0
-    ) {
-      volumeXml += ((issue.volume ? issue.volume : '').trim().length > 0 ? `<volume>${issue.volume}</volume>` : ``)
-
-      var volumeDoiData = ''
-      if ((issue.volumeDoi ? issue.volumeDoi : '').trim().length > 0 || (issue.volumeUrl ? issue.volumeUrl : '').trim().length > 0 ) {
-        volumeDoiData += ((issue.volumeDoi ? issue.volumeDoi : '').trim().length > 0 ? `<doi>${issue.volumeDoi}</doi>` : ``)
-        volumeDoiData += (((issue.volumeUrl && issue.volumeUrl !== 'http://') ? issue.volumeUrl : '').trim().length > 0 ? `<resource>${issue.volumeUrl}</resource>` : ``)
-        volumeDoiData = `<doi_data>${volumeDoiData}</doi_data>`
-      }
-
-      volumeXml = `<journal_volume>${volumeXml}${volumeDoiData}</journal_volume>`
-    }
-
-    // archive locations
-    var archiveLocation = ''
-    if (issue.archiveLocation.trim().length > 0) {
-      archiveLocation = `<archive_locations><archive name="${issue.archiveLocation}"/></archive_locations>`
-    }
-    return `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal_issue>${getContributor(optionalIssueInfo)}${titles}${publicationOnlineDate}${publicationPrintDate}${volumeXml}${issueNumber}${specialNumbering}${archiveLocation}${doiData}</journal_issue></crossref>`
-    //took out xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd" per Mikes request
-}
-
-
-
-function lowerCaseFirst (string) {
-  return string.charAt(0).toLowerCase() + string.slice(1)
-}

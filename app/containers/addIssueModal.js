@@ -5,7 +5,7 @@ import update from 'immutability-helper'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
 import {jsEscape, refreshErrorBubble} from '../utilities/helpers'
-import { getIssueXml } from '../utilities/xmlGenerator'
+import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
 import * as api from '../actions/api'
@@ -29,6 +29,7 @@ export default class AddIssueModal extends Component {
       this.state.issue = {...this.state.issue, ...props.preFilledData}
     }
     this.state.issue.issueDoi = props.ownerPrefix + '/'
+    this.state.issue.volumeDoi = props.ownerPrefix + '/'
   }
 
   async componentDidMount () {
@@ -199,14 +200,15 @@ export default class AddIssueModal extends Component {
       message: 'Save Complete'
     }
 
+    const errorMessageArray = ['Required to save:']
+
     const criticalErrorMsg = {
       issueVolume: 'Issue or Volume Number.',
       invalidissuedoi: 'DOI must be valid.',
       invalidIssueDoiPrefix: 'DOI must be valid.',
       dupeissuedoi: 'DOI must be valid.',
+      volume: 'Volume Number.'
     }
-
-    const errorMessageArray = ['Required to save:']
 
     for (let error in criticalErrors) {
       if(criticalErrors[error] === true) {

@@ -7,10 +7,11 @@ import _ from 'lodash'
 
 import { controlModal, cartUpdate, removeFromCart, clearCart } from '../actions/application'
 import DepositCart from '../components/DepositCartPage/depositCart'
+import {TopOfPage, EmptyCart, WaitMessage} from '../components/DepositCartPage/depositCartComponents'
 import reviewDepositCart from '../components/DepositCartPage/reviewDepositCart'
 import DepositResult from '../components/DepositCartPage/depositResult'
 import {routes} from '../routing'
-import processDepositResult from '../utilities/processDepositResult'
+import processDepositResult from '../components/DepositCartPage/processDepositResult'
 import {errorHandler} from '../utilities/helpers'
 import * as api from '../actions/api'
 
@@ -64,17 +65,7 @@ export default class DepositCartPage extends Component {
     const _this = this
     if(cart.length > 0) {
       _.each(cart, (item) => {
-
-        let doi = item.doi
-
-        if(item.type !== 'Publication') {
-          promises.push(api.getItem(doi).then((data)=>{return data}))
-        } else {
-          promises.push(Promise.resolve({
-            message: item
-          }))
-        }
-
+        promises.push(api.getItem(item.doi).then( data => data))
       })
 
       Promise.all(promises).then((fullData) => {
@@ -97,8 +88,8 @@ export default class DepositCartPage extends Component {
 
         function mergeByDoi(arr) {
           return _(arr)
-            .groupBy(function(item) { // group the items using the lower case
-              return item.doi
+            .groupBy(function(item) {
+              return item.doi || JSON.stringify(item.title)
             })
             .map(function(group) { // map each group
               return _.mergeWith.apply(_, [{}].concat(group, function(obj, src) { // merge all items, and if a property is an array concat the content
@@ -139,8 +130,9 @@ export default class DepositCartPage extends Component {
             mergedCart[i].content = publicationData[i].message.content
             for(let item of mergedCart[i].contains) {
               if (item.type === 'issue') {
-                issuePromises.push(api.getItem(item.doi).then((data)=>{ // this gets publication content
-                  item.content = data.message.contains[0].content
+                issuePromises.push(api.getItem(item.doi || {title: item.title, pubDoi: mergedCart[i].doi})
+                  .then((data)=>{
+                    item.content = data.message.contains[0].content
                 }))
               }
             }
@@ -246,57 +238,3 @@ export default class DepositCartPage extends Component {
 
 
 
-
-
-
-
-
-const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {
-  return (
-    <div>
-      {status !== 'result' &&
-        <div className='pageTitle'>
-          Deposit Cart
-        </div>
-      }
-
-      <div className='buttonHolder'>
-        <div className='buttonInnerHolder'>
-          <div className='ReviewButtonHolder'>
-            {status !== 'result' ? (cart.length > 0 ? <a onClick={review}>Review All</a> : '') : <div className='pageTitle'>Deposit Result</div>}
-          </div>
-          <div className={`DepositButtonHolder ${status === 'result' ? 'result' : ''}`}>
-            <a
-              onClick={deposit}
-              className={((!showDeposit || status === 'processing') ? 'disabledDeposit' : '') + (cart.length <= 0 ? ' emptycartbutton': '')}>
-              {(cart.length > 0 && status !== 'processing') ? 'Deposit' : 'Processing...'}
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const EmptyCart = () => {
-  return (
-    <div className='EmptyHolder'>
-      <div className='emptyTitle'>
-        Deposit Cart is Empty
-      </div>
-      <div className='emptyBoxHolder'>
-        <img src={`${routes.images}/Deposit/Asset_Empty_Box_Empty Box Yellow.svg`} />
-      </div>
-    </div>
-  )
-}
-
-const WaitMessage = () => {
-  return (
-    <div className="waitMessage">
-      <div>Just a moment...</div>
-      <div>Please wait while we process your deposit</div>
-      <img src={`${routes.images}/Deposit/Asset_Load_Throbber_Load Throbber Grey.svg`} />
-    </div>
-  )
-}

@@ -1,4 +1,4 @@
-import * as helpers from '../utilities/helpers'
+import * as helpers from '../../utilities/helpers'
 const {xmldoc, compareDois} = helpers
 
 
@@ -65,7 +65,8 @@ export default (rawResult, publications, cart) => {
 
     //Assign data to variables
     pubDoi = resultType === 'Publication' ? resultDoi : resultInfo.pubDoi
-    pubTitle = publications[pubDoi.toLowerCase()].message.title.title
+    console.log(pubDoi, publications)
+    pubTitle = (publications[pubDoi] || publications[pubDoi.toLowerCase()]).message.title.title
     resultTitle = helpers.recordTitle(resultType, resultInfo.title)
 
 
@@ -106,7 +107,7 @@ export default (rawResult, publications, cart) => {
         recordInfo = cart.find( cartItem => compareDois(cartItem.doi, recordDoi) )
 
         if(!recordInfo) {
-          recordInfo = publications[pubDoi.toLowerCase()].normalizedRecords[recordDoi.toLowerCase()]
+          recordInfo = (publications[pubDoi] || publications[pubDoi.toLowerCase()]).normalizedRecords[recordDoi.toLowerCase()]
         } else {
           recordInCart = true
         }
@@ -296,6 +297,7 @@ export default (rawResult, publications, cart) => {
     }
   })
 
+  depositId = Array.from(depositId)
   depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
 
   console.log({resultData, resultCount, depositId})

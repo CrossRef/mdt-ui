@@ -19,12 +19,12 @@ export const routes = {
   base: base,
   images: base + 'assets/images',
   publications: base + 'publications',
-  publicationsModal: base + 'publications?modal=:doi',
-  publication: base + 'publications/:doi',
+  publicationsModal: base + 'publications?modal=:issueId',
+  publication: base + 'publications/:pubDoi',
   addArticle: base + 'publications/:pubDoi/addarticle',
   editArticle: base + 'publications/:pubDoi/addarticle/:articleDoi',
   addArticleUnderIssue: base + 'publications/:pubDoi/:issueId/addarticle',
-  editArticleUnderIssue: base + 'publications/:pubDoi/:issueDoi/addarticle/:articleDoi',
+  editArticleUnderIssue: base + 'publications/:pubDoi/:issueId/addarticle/:articleDoi',
   depositCart: base + 'cart',
   depositHistory: base + 'deposit-history'
 };

@@ -14,7 +14,7 @@ import {asyncValidateArticle} from '../utilities/validation'
 import {getSubItems} from '../utilities/getSubItems'
 import * as api from '../actions/api'
 import parseXMLArticle from '../utilities/parseXMLArticle'
-import { journalArticleXml } from '../utilities/xmlGenerator'
+import journalArticleXml from '../components/AddArticlePage/articleXmlGenerator'
 import ReviewArticle from '../components/AddArticlePage/reviewArticle'
 
 
@@ -71,6 +71,9 @@ export default class AddArticlePage extends Component {
     const ownerPrefix = props.routeParams.pubDoi.split('/')[0];
     const articleDoi = props.routeParams.articleDoi || (props.location.state && props.location.state.duplicateFrom)
     const isDuplicate = this.props.location.state ? !!this.props.location.state.duplicateFrom : false
+    const issueId = props.routeParams.issueId
+    const issueDoi = issueId && (issueId.split('/')[0] === ownerPrefix) ? issueId : undefined
+    const issueTitle = issueId && !issueDoi ? JSON.parse(issueId) : undefined
 
     this.state = {
       publication: props.publication,
@@ -78,8 +81,8 @@ export default class AddArticlePage extends Component {
       publicationXml: '',
       issuePublication: undefined,
       articleDoi,
-      issueDoi: props.location.state && props.location.state.issueDoi,
-      issueTitle: props.location.state && props.location.state.issueTitle,
+      issueDoi,
+      issueTitle,
       mode: articleDoi ? 'edit' : 'add',
       isDuplicate,
       ownerPrefix,
@@ -112,7 +115,7 @@ export default class AddArticlePage extends Component {
 
     let publication = publications[0]
     if (this.state.issueDoi || this.state.issueTitle) {
-      //doing logic here so we don't have to change the addArticles page any further
+
       let unwrappedPub = publications[1]
 
       unwrappedPub.message.contains = [publications[0].message.contains[0].contains[0]]
@@ -123,6 +126,10 @@ export default class AddArticlePage extends Component {
     if(this.state.mode === 'edit') {
 
       let setStatePayload = {}
+
+      if(this.state.issueDoi || this.state.issueTitle) {
+        setStatePayload.issueTitle = publications[0].message.contains[0].title
+      }
 
       const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
       let reduxForm
@@ -141,7 +148,7 @@ export default class AddArticlePage extends Component {
 
       setStatePayload = {...setStatePayload, ...{
         publication,
-        issuePublication: publications[0],
+        issuePublication: this.state.issueDoi || this.state.issueTitle ? publications[0] : undefined,
         publicationMetaData,
         publicationXml,
         doiDisabled,
@@ -259,16 +266,17 @@ export default class AddArticlePage extends Component {
         console.error('Error in save article: ', e)
       }
 
-      newRecord.pubDoi = publication.message.doi
-      if(this.state.issueDoi || this.state.issueTitle) {
-        newRecord.issueDoi = this.state.issueDoi
-        newRecord.issueTitle = this.state.issueTitle
-      }
+
 
       const inCart = this.state.mode === 'edit' ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi)) : false
 
       if(addToCart || inCart) {
         newRecord.doi = newRecord.doi.toLowerCase()
+        newRecord.pubDoi = publication.message.doi
+        if(this.state.issueDoi || this.state.issueTitle) {
+          newRecord.issueDoi = this.state.issueDoi
+          newRecord.issueTitle = this.state.issueTitle
+        }
         this.props.reduxCartUpdate(newRecord, inCart, addToCart)
 
       }
