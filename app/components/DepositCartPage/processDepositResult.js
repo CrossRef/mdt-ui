@@ -30,8 +30,6 @@ export default (rawResult, publications, cart) => {
     }
   })
 
-
-  console.log(resultArray)
   const resultCount = {Success: 0, Failed: 0}
   const resultData = {}
   let depositId = new Set
@@ -65,7 +63,6 @@ export default (rawResult, publications, cart) => {
 
     //Assign data to variables
     pubDoi = resultType === 'Publication' ? resultDoi : resultInfo.pubDoi
-    console.log(pubDoi, publications)
     pubTitle = (publications[pubDoi] || publications[pubDoi.toLowerCase()]).message.title.title
     resultTitle = helpers.recordTitle(resultType, resultInfo.title)
 
@@ -300,7 +297,6 @@ export default (rawResult, publications, cart) => {
   depositId = Array.from(depositId)
   depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
 
-  console.log({resultData, resultCount, depositId})
   return {resultData, resultCount, depositId}
 }
 

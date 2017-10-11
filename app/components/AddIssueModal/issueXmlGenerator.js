@@ -1,4 +1,5 @@
 import { getContributor } from '../../utilities/getSubItems'
+import {doiEntered, urlEntered} from '../../utilities/helpers'
 
 
 
@@ -35,31 +36,27 @@ export default function (issueObj) {
 
   //doi_data
   var doiData = ''
-  const validDoi = issue.issueDoi.length > `${ownerPrefix}/`.length
-  if (issue.issueUrl !== 'http://' || validDoi) {
-    doiData += (validDoi ? `<doi>${issue.issueDoi}</doi>` : ``)
-    doiData += ((issue.issueUrl.trim().length > 0 && issue.issueUrl !== 'http://')? `<resource>${issue.issueUrl}</resource>` : ``)
+  const issueDoiEntered = doiEntered(issue.issueDoi, ownerPrefix)
+  const issueUrlEntered = urlEntered(issue.issueUrl)
+  if (issueUrlEntered || issueDoiEntered) {
+    doiData += (issueDoiEntered ? `<doi>${issue.issueDoi}</doi>` : ``)
+    doiData += ( issueUrlEntered ? `<resource>${issue.issueUrl}</resource>` : ``)
     doiData = `<doi_data>${doiData}</doi_data>`
   }
 
   // volume
-  var volumeXml = ''
-  if (
-    (issue.volumeDoi ? issue.volumeDoi : '').trim().length > 0 ||
-    ((issue.volumeUrl && issue.volumeUrl !== 'http://') ? issue.volumeUrl : '').trim().length > 0 ||
-    (issue.volume ? issue.volume : '').trim().length > 0
-  ) {
-    volumeXml += ((issue.volume ? issue.volume : '').trim().length > 0 ? `<volume>${issue.volume}</volume>` : ``)
+  var volumeXml = ((issue.volume ? issue.volume : '').trim().length > 0 ? `<volume>${issue.volume}</volume>` : ``)
+  const volumeDoiEntered = doiEntered(issue.volumeDoi, ownerPrefix)
+  const volumeUrlEntered = urlEntered(issue.volumeUrl)
 
-    var volumeDoiData = ''
-    if ((issue.volumeDoi ? issue.volumeDoi : '').trim().length > 0 || (issue.volumeUrl && issue.volumeUrl !== 'http://' ? issue.volumeUrl : '').trim().length > 0 ) {
-      volumeDoiData += ((issue.volumeDoi ? issue.volumeDoi : '').trim().length > 0 ? `<doi>${issue.volumeDoi}</doi>` : ``)
-      volumeDoiData += (((issue.volumeUrl && issue.volumeUrl !== 'http://') ? issue.volumeUrl : '').trim().length > 0 ? `<resource>${issue.volumeUrl}</resource>` : ``)
-      volumeDoiData = `<doi_data>${volumeDoiData}</doi_data>`
-    }
-
-    volumeXml = `<journal_volume>${volumeXml}${volumeDoiData}</journal_volume>`
+  var volumeDoiData = ''
+  if (volumeDoiEntered && volumeUrlEntered) {
+    volumeDoiData += `<doi>${issue.volumeDoi}</doi>`
+    volumeDoiData += `<resource>${issue.volumeUrl}</resource>`
+    volumeDoiData = `<doi_data>${volumeDoiData}</doi_data>`
   }
+
+  volumeXml = volumeXml ? `<journal_volume>${volumeXml}${volumeDoiData}</journal_volume>` : ''
 
   // archive locations
   var archiveLocation = ''
