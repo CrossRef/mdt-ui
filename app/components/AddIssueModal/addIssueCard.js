@@ -447,7 +447,7 @@ export default class AddIssueCard extends React.Component {
                 <div onClick={this.props.save} className='saveButton addIssue actionTooltip'>
                   Save
                 </div>
-                <button onClick={this.props.closeModal} type='button' className='cancelButton addIssue'>Cancel</button>
+                <button onClick={this.props.closeModal} type='button' className='cancelButton addIssue'>Close</button>
               </div>
             </div>
           </form>
