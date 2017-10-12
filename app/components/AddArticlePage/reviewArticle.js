@@ -1,8 +1,5 @@
 import React, { Component } from 'react'
-import is from 'prop-types'
-import update from 'immutability-helper'
 
-import {objectSearch, xmldoc} from '../../utilities/helpers'
 import articleReviewGenerator from './articleReviewGenerator'
 import * as api from '../../actions/api'
 
@@ -29,7 +26,6 @@ export default class ArticleReview extends Component {
   componentWillMount () {
     if (this.props.issue) {
       api.getItem(this.props.issue.doi || {title: this.props.issue.title, pubDoi: this.props.publication.message.doi}).then((issueData) => {
-        console.log(issueData)
 
         this.setState({
           loaded: true,
