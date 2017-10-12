@@ -118,14 +118,9 @@ export function search (query, error = (reason) => console.error('ERROR in searc
 
 export function searchRecords (query, pubTitle, type, error = (reason) => console.error('ERROR in searchRecords', reason)) {
   return function (dispatch) {
-    if(!query) {
-      return
-    }
+
     dispatch(searchValue(query))
     dispatch(searchLoading(true))
-    if(type === 'Issue') {
-      type = 'allissues'
-    }
 
     api.searchRecords(query, pubTitle, type)
       .then((result)=>{

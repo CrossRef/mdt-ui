@@ -33,23 +33,17 @@ export default class AddIssueModal extends Component {
   }
 
   async componentDidMount () {
-    const isSearch = this.props.mode === 'search'
-    if(this.props.mode === 'edit' || isSearch) {
+    if(this.props.mode === 'edit') {
       let id, Publication, message, Issue, issueDoiDisabled = false, volumeDoiDisabled = false;
 
-      if (!isSearch) {
-        id = {
-          doi: this.props.issue.issueDoi,
-          title: this.props.issue.title,
-          pubDoi: this.props.publication.message.doi
-        }
-        Publication = await api.getItem(id)
-        message = Publication.message
-        Issue = message.contains[0]
-
-      } else {
-        Issue = this.props.issue
+      id = {
+        doi: this.props.issue.issueDoi,
+        title: this.props.issue.title,
+        pubDoi: this.props.publication.message.doi
       }
+      Publication = await api.getItem(id)
+      message = Publication.message
+      Issue = message.contains[0]
 
       const version = Issue['mdt-version']
 
@@ -61,8 +55,10 @@ export default class AddIssueModal extends Component {
         issueDoiDisabled = true
       }
 
-      if(isSearch) {
-        issue.issueDoi = this.props.ownerPrefix + '/'
+      if(issue.volumeDoi === '') {
+        issue.volumeDoi = this.props.ownerPrefix + '/'
+      } else {
+        volumeDoiDisabled = true
       }
 
       const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled)
@@ -156,15 +152,6 @@ export default class AddIssueModal extends Component {
         await api.submitItem(submissionPayload)
       } catch (e) {
         console.error('ERROR in save Issue: ', e)
-      }
-
-      if(this.props.mode === 'search') {
-        newRecord.contains = [this.props.savedArticle]
-        try {
-          await api.submitItem(submissionPayload)
-        } catch (e) {
-          console.error('ERROR in save Issue search: ', e)
-        }
       }
 
       this.props.asyncGetPublications(this.props.publication.message.doi)

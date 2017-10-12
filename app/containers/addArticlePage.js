@@ -21,7 +21,7 @@ import ReviewArticle from '../components/AddArticlePage/reviewArticle'
 
 const mapStateToProps = (state, props) => {
   return ({
-    publication: state.publications[props.routeParams.doi],
+    publication: state.publications[props.routeParams.pubDoi],
     reduxForm: state.reduxForm,
     crossmarkPrefixes: state.login['crossmark-prefixes'],
     reduxCart: state.cart
@@ -101,26 +101,52 @@ export default class AddArticlePage extends Component {
     if(this.state.articleDoi) {
       getItems.push(api.getItem(this.state.articleDoi))
     }
-    if(this.state.issueDoi || this.state.issueTitle) {
-      getItems.push(api.getItem(this.state.issueDoi || {doi: this.state.issueDoi, title: this.state.issueTitle, pubDoi: this.props.routeParams.pubDoi}))
-    }
     const checkForAcceptedPub = this.state.mode === 'edit'
     getItems.push(api.getItem(pubDoi, checkForAcceptedPub).catch(e => api.getItem(pubDoi)))
 
     const publications = await Promise.all(getItems)
 
-    let publMeta = publications[publications.length-1].message.content
+    const publicationData = publications[1] || publications[0]
+    const articleFullHierarchy = publications[0]
+
+    let publMeta = publicationData.message.content
     const publicationMetaData = publMeta ? xmldoc(publMeta) : {}
     const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
 
-    let publication = publications[0]
+    if(this.state.articleDoi) {
+      delete articleFullHierarchy.message.content
+      articleFullHierarchy.message.date = publicationData.message.date
+      articleFullHierarchy.message.doi = articleFullHierarchy.message.doi || pubDoi
+      articleFullHierarchy.message['owner-prefix'] = articleFullHierarchy.message['owner-prefix'] || this.state.ownerPrefix
+      articleFullHierarchy.message['mdt-version'] = articleFullHierarchy.message['mdt-version'] || '0'
+    }
+
+    let publication = articleFullHierarchy
+
     if (this.state.issueDoi || this.state.issueTitle) {
+      if(!this.state.articleDoi) { //New article means publicationData includes all records and need to locate the correct issue
+        articleFullHierarchy.message.contains[0] = articleFullHierarchy.message.contains.find((item)=>{
+          if(item.type !== 'issue') {
+            return false
+          }
+          return compareDois(this.state.issueDoi, item.doi) || JSON.stringify(this.state.issueTitle) === JSON.stringify(item.title)
+        })
+      }
 
-      let unwrappedPub = publications[1]
+      let articleUnderPub = {
+        ...articleFullHierarchy,
+        message: {
+          ...articleFullHierarchy.message,
+          contains: [articleFullHierarchy.message.contains[0].contains[0]]
+        }
+      }
+      const issue = articleFullHierarchy.message.contains[0]
+      delete issue.content
+      issue['mdt-version'] = issue['mdt-version'] || '1'
+      issue['owner-prefix'] = issue['owner-prefix'] || this.state.ownerPrefix
+      issue.date = issue.date || new Date()
 
-      unwrappedPub.message.contains = [publications[0].message.contains[0].contains[0]]
-
-      publication = unwrappedPub
+      publication = articleUnderPub
     }
 
     if(this.state.mode === 'edit') {
@@ -128,7 +154,7 @@ export default class AddArticlePage extends Component {
       let setStatePayload = {}
 
       if(this.state.issueDoi || this.state.issueTitle) {
-        setStatePayload.issueTitle = publications[0].message.contains[0].title
+        setStatePayload.issueTitle = articleFullHierarchy.message.contains[0].title
       }
 
       const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
@@ -146,21 +172,23 @@ export default class AddArticlePage extends Component {
 
       const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
 
-      setStatePayload = {...setStatePayload, ...{
+      setStatePayload = {
+        ...setStatePayload,
         publication,
-        issuePublication: this.state.issueDoi || this.state.issueTitle ? publications[0] : undefined,
+        issuePublication: this.state.issueDoi || this.state.issueTitle ? articleFullHierarchy : undefined,
         publicationMetaData,
         publicationXml,
         doiDisabled,
-        version: String( Number(publication.message.contains[0]['mdt-version']) + 1),
+        version: String( Number(publication.message.contains[0]['mdt-version'] || 0) + 1),
         addInfo: parsedArticle.addInfo,
         article: parsedArticle.article,
         contributors: parsedArticle.contributors,
         funding: parsedArticle.funding,
         license: parsedArticle.license,
         relatedItems: parsedArticle.relatedItems,
-        openItems: parsedArticle.openItems
-      }, ...validatedPayload}
+        openItems: parsedArticle.openItems,
+        ...validatedPayload
+      }
 
 
       this.setState(setStatePayload, () => this.state.validating = false)
@@ -245,11 +273,7 @@ export default class AddArticlePage extends Component {
 
       if (this.state.issueDoi || this.state.issueTitle) {
         const issuePublication = this.state.issuePublication
-        const theIssue = _.find(issuePublication.message.contains, (item) => {
-          if (item.type === 'issue' && (item.doi === this.state.issueDoi || JSON.stringify(item.title) === JSON.stringify(this.state.issueTitle))) {
-            return item
-          }
-        })
+        const theIssue = issuePublication.message.contains[0]
 
         theIssue.contains = [newRecord]
         issuePublication.message.contains = [theIssue]
@@ -354,9 +378,9 @@ export default class AddArticlePage extends Component {
       props: {
         submit: this.addToCart,
         reviewData: this.state,
-        publication: this.props.publication,
-        publicationMetaData: this.props.publicationMetaData,
-        issue: this.props.issuePublication ? this.props.issuePublication.message.contains[0] : undefined,
+        publication: this.state.publication,
+        publicationMetaData: this.state.publicationMetaData,
+        issue: this.state.issuePublication ? this.state.issuePublication.message.contains[0] : undefined,
       }
     })
   }
