@@ -73,11 +73,11 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   warnings.invalidurl = !warnings.url && !isURL(url)
 
   warnings.printDateYear = hasDate ? false : !printDateYear
-  warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay))
+  warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay)) || (printDateYear && printDateDay && !printDateMonth)
   warnings.printDateInvalid = warnings.printDateIncomplete ? false : !validDate(printDateYear, printDateMonth, printDateDay)
 
   warnings.onlineDateYear = hasDate ? false : !onlineDateYear
-  warnings.onlineDateIncomplete = !!(!onlineDateYear && (onlineDateMonth || onlineDateDay))
+  warnings.onlineDateIncomplete = !!(!onlineDateYear && (onlineDateMonth || onlineDateDay)) || (onlineDateYear && onlineDateDay && !onlineDateMonth)
   warnings.onlineDateInvalid = warnings.onlineDateIncomplete ? false : !validDate(onlineDateYear, onlineDateMonth, onlineDateDay)
 
   warnings.firstPage = lastPage && !firstPage

@@ -306,8 +306,8 @@ export class DatesRow extends Component {
     const errors = this.props.errors
     const {printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay} = this.props.article
     const {printDateInvalid, printDateIncomplete, onlineDateInvalid, onlineDateIncomplete} = this.props.errors
-    const printYearError = errors.printDateYear || printDateIncomplete || printDateInvalid
-    const onlineYearError = errors.onlineDateYear || onlineDateIncomplete || onlineDateInvalid
+    const printYearError = errors.printDateYear || (!printDateYear && printDateIncomplete) || printDateInvalid
+    const onlineYearError = errors.onlineDateYear || (!onlineDateYear && onlineDateIncomplete) || onlineDateInvalid
     return (
       <div className='row'>
         <div className='fieldHolder'>
@@ -334,7 +334,7 @@ export class DatesRow extends Component {
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', printDateMonth, printDateInvalid)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', printDateMonth, (printDateIncomplete && !printDateMonth) || printDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
@@ -371,7 +371,7 @@ export class DatesRow extends Component {
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', onlineDateMonth, onlineDateInvalid)}
+                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', onlineDateMonth, (onlineDateIncomplete && !onlineDateMonth) || onlineDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
