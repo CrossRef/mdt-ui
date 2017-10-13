@@ -3,7 +3,7 @@ import is from 'prop-types'
 import { browserHistory } from 'react-router'
 
 import articleReviewGenerator from '../AddArticlePage/articleReviewGenerator'
-import issueReviewGenerator from  '../AddIssueModal/issueReviewGenerator'
+import issueReviewGenerator from  './issueReviewGenerator'
 import {routes} from '../../routing'
 
 
