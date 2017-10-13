@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import SubItem from '../SubItems/subItem'
-import SubItem2 from '../Common/subItem'
+import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
 import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './articleFormComponents'
 import { makeDateDropDown } from '../../utilities/date'
@@ -96,7 +95,7 @@ export default class AddArticleCard extends Component {
 
               </div>
 
-              <SubItem2
+              <SubItem
                 title={'Contributor'}
                 validating={this.props.validating}
                 showSection={this.props.openItems.Contributors}
@@ -111,9 +110,9 @@ export default class AddArticleCard extends Component {
                       data={this.props.contributors}
                       index={i}/>
                   )}
-              </SubItem2>
+              </SubItem>
 
-              <SubItem2
+              <SubItem
                 title={'Funding'}
                 validating={this.props.validating}
                 showSection={this.props.openItems.Funding}
@@ -128,9 +127,9 @@ export default class AddArticleCard extends Component {
                       data={this.props.funding}
                       index={i}/>
                   )}
-              </SubItem2>
+              </SubItem>
 
-              <SubItem2
+              <SubItem
                 title={'License'}
                 validating={this.props.validating}
                 showSection={this.props.openItems.Licenses}
@@ -148,9 +147,9 @@ export default class AddArticleCard extends Component {
                       makeDateDropDown={makeDateDropDown}
                       freeToRead={i===0 ? this.props.addInfo.freetolicense : false}/>
                   )}
-              </SubItem2>
+              </SubItem>
 
-              <SubItem2
+              <SubItem
                 title={'Related Items'}
                 validating={this.props.validating}
                 showSection={this.props.openItems.relatedItems}
@@ -165,9 +164,9 @@ export default class AddArticleCard extends Component {
                       data={this.props.relatedItems}
                       index={i}/>
                   )}
-              </SubItem2>
+              </SubItem>
 
-              <SubItem2
+              <SubItem
                 title={'Additional Information'}
                 validating={this.props.validating}
                 showSection={this.props.openItems.addInfo}>
@@ -175,10 +174,10 @@ export default class AddArticleCard extends Component {
                     addInfo={this.props.addInfo}
                     handler={this.props.boundSetState}
                     simCheckError={this.props.errors.simCheckUrlInvalid}/>
-              </SubItem2>
+              </SubItem>
 
               {this.props.crossmark &&
-                <SubItem2
+                <SubItem
                   title={'Crossmark'}
                   showSection={!!Object.keys(this.props.showCards).length}
                   validating={this.props.validating}
@@ -186,7 +185,7 @@ export default class AddArticleCard extends Component {
                     <CrossmarkCards
                       showCards={this.props.showCards}
                       reduxDeleteCard={this.props.reduxDeleteCard}/>
-                </SubItem2>
+                </SubItem>
               }
 
             </div>
