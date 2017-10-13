@@ -86,8 +86,6 @@ export class CrossmarkCards extends Component {
   }
 
 
-
-
   removeCrossmarkCard = (selection) => {
     const newState = {...this.state.crossmarkCards}
     delete newState[selection]

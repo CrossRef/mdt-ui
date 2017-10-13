@@ -4,7 +4,8 @@ import Switch from 'react-toggle-switch'
 
 import {routes} from '../../routing'
 import { displayArchiveLocations } from '../../utilities/lists/archiveLocations'
-import SubItem from '../SubItems/subItem'
+import SubItem from '../Common/subItem'
+import OptionalIssueInfo from './optionalIssueInfo'
 import {makeDateDropDown} from  '../../utilities/date'
 import {urlEntered, doiEntered} from  '../../utilities/helpers'
 
@@ -437,12 +438,18 @@ export default class AddIssueCard extends React.Component {
               <SubItem
                 title={'Optional Issue Information (Contributorship)'}
                 arrowType={'dark'}
-                addable={true}
-                incomingData={this.props.optionalIssueInfo}
                 optionalIssueInfoHandlers={this.props.optionalIssueInfoHandlers}
                 validating={this.props.validating}
-                showSection={this.props.showSection}
-              />
+                showSection={this.props.showSection}>
+                  {this.props.optionalIssueInfo.map((data, i)=>
+                    <OptionalIssueInfo
+                      key={i}
+                      optionalIssueInfo={data}
+                      optionalIssueInfoHandlers={this.props.optionalIssueInfoHandlers}
+                      data={this.props.optionalIssueInfo}
+                      index={i}/>
+                  )}
+              </SubItem>
               <div className='saveButtonAddIssueHolder'>
                 <div onClick={this.props.save} className='saveButton addIssue actionTooltip'>
                   Save

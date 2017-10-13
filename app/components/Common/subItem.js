@@ -12,7 +12,7 @@ export default class SubItem extends Component {
     title: is.string.isRequired,
     showSection: is.bool.isRequired,
     freeToRead: is.bool,
-    optionalIssueInfoHandlers: is.object,
+    optionalIssueInfoHandlers: is.func,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
     arrowType: is.string
@@ -22,7 +22,7 @@ export default class SubItem extends Component {
   constructor (props) {
     super()
     this.state = {
-      showSection: props.showSection || !!props.simCheckError || props.freeToRead || false,
+      showSection: props.showSection || !!props.simCheckError || props.freeToRead || false
     }
   }
 
@@ -30,7 +30,7 @@ export default class SubItem extends Component {
     const freeToReadSwitchedOn = !!(nextProps.freeToRead && !this.props.freeToRead)
     if (freeToReadSwitchedOn || nextProps.validating) {
       this.setState({
-        showSection: freeToReadSwitchedOn || nextProps.showSection || this.props.freeToRead
+        showSection: freeToReadSwitchedOn || nextProps.showSection || this.props.freeToRead || false
       })
     }
   }
@@ -50,7 +50,6 @@ export default class SubItem extends Component {
       return (
         <div className='addholder'>
           <a onClick={()=>{
-
             if (!this.state.showSection) {
               this.setState({showSection: true})
             }
