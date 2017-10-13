@@ -3,8 +3,8 @@ import is from 'prop-types'
 
 import ReduxTextInput from './reduxTextInput'
 import ReduxSelectInput from './reduxSelectInput'
-import dateOptions from '../../../utilities/date'
-import { registryDois, updateTypes, cardNames } from '../../../utilities/crossmarkHelpers'
+import dateOptions from '../../../../utilities/date'
+import { registryDois, updateTypes, cardNames } from '../../../../utilities/crossmarkHelpers'
 const { pubHist, peer, update, copyright, clinical, supp, other } = cardNames;
 
 
@@ -25,7 +25,7 @@ export class Blank extends Component {
 }
 
 function generateCard (name, fields) {
-  return class crossmarkCard extends Component {
+  return class CrossmarkCard extends Component {
     static propTypes = {
       number: is.number.isRequired,
       remove: is.func.isRequired

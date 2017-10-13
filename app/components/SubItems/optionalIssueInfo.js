@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import { Roles } from '../../../utilities/lists/roles.js'
+import { Roles } from '../../utilities/lists/roles.js'
 
 
 export default class OptionalIssueInformation extends Component {
