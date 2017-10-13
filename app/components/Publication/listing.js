@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
 
 import { routes } from '../../routing'
 import Issue from './issue'
@@ -76,7 +75,7 @@ export default class Listing extends Component {
         switch (child.type.toLowerCase()) {
           case 'issue':
             return [
-              <Issue key={i}
+              <Issue key={JSON.stringify(child.title)}
                 ownerPrefix={this.props.ownerPrefix}
                 triggerModal={this.props.triggerModal}
 
@@ -95,7 +94,7 @@ export default class Listing extends Component {
 
               />,
 
-              <ArticlesContainer key={`${i}-articles`}
+              <ArticlesContainer key={`${JSON.stringify(child.title)}-articles`}
                 filterBy={this.props.filterBy}
 
                 record={child}
@@ -109,7 +108,7 @@ export default class Listing extends Component {
               />
             ]
           case 'article':
-            return <Article key={i}
+            return <Article key={child.doi}
               record={child}
               selections={this.props.selections}
               publication={publication}

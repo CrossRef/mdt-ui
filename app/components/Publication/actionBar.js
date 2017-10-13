@@ -3,7 +3,7 @@ import $ from 'jquery'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
 
-import AddIssueCard from '../addIssueCard'
+import AddIssueModal from '../../containers/addIssueModal'
 import {routes} from '../../routing'
 
 
@@ -58,7 +58,7 @@ export default class ActionBar extends Component {
       showModal: true,
       title: 'Create New Issue/Volume',
       style: 'addIssueModal',
-      Component: AddIssueCard,
+      Component: AddIssueModal,
       props: {
         asyncGetPublications: this.props.asyncGetPublications,
         publication: this.props.publication,
@@ -83,7 +83,6 @@ export default class ActionBar extends Component {
 
   render () {
     const onlyIssue = this.onlyIssueSelected()
-    console.log(this.props.selections.length === 1 && !onlyIssue)
     const { doi, publication, handleAddCart, deleteSelections, duplicateSelection } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>

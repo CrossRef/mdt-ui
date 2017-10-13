@@ -3,7 +3,7 @@ import {Map, fromJS} from 'immutable'
 import { getSubItems } from './getSubItems'
 import {cardNames} from './crossmarkHelpers'
 import { validDate } from './date'
-import {asyncCheckDupeDoi, isDOI, isURL} from './helpers'
+import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered} from './helpers'
 
 
 
@@ -21,7 +21,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   }
 
   if(!doiDisabled) {
-    criticalErrors.doi = !doi
+    criticalErrors.doi = !doiEntered(doi, ownerPrefix)
     criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi)
     criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== ownerPrefix)
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
@@ -69,8 +69,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     [`${clinical} Registry`]: false,
     [`${clinical} TrialNumber`]: false
   }
-  warnings.url = !url||url==='http://'
-  warnings.invalidurl = !!(!warnings.url && !isURL(url))
+  warnings.url = !urlEntered(url)
+  warnings.invalidurl = !warnings.url && !isURL(url)
 
   warnings.printDateYear = hasDate ? false : !printDateYear
   warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay))
@@ -80,14 +80,14 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   warnings.onlineDateIncomplete = !!(!onlineDateYear && (onlineDateMonth || onlineDateDay))
   warnings.onlineDateInvalid = warnings.onlineDateIncomplete ? false : !validDate(onlineDateYear, onlineDateMonth, onlineDateDay)
 
-  warnings.firstPage = !!(lastPage && !firstPage)
-  warnings.simCheckUrlInvalid = !!(data.addInfo.similarityCheckURL !== 'http://' && data.addInfo.similarityCheckURL && !isURL(data.addInfo.similarityCheckURL))
+  warnings.firstPage = lastPage && !firstPage
+  warnings.simCheckUrlInvalid = urlEntered(data.addInfo.similarityCheckURL) && !isURL(data.addInfo.similarityCheckURL)
 
 
   //validate License subItems
   const licenses = getSubItems(data.license).map((license, i) => {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license
-    if((licenseurl&&licenseurl!=='http://')) criticalErrors.licenseFreeToRead = false
+    if(urlEntered(licenseurl)) criticalErrors.licenseFreeToRead = false
 
     const errors = {
       licenseUrl: criticalErrors.licenseFreeToRead,
@@ -118,7 +118,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
       warnings.licenseDateInvalid = true
     }
 
-    if((!licenseurl||licenseurl==='http://') && (thereIsDate || appliesto)) {
+    if(!urlEntered(licenseurl) && (thereIsDate || appliesto)) {
       errors.licenseUrl = true
       warnings.licenseUrl = true
     }
@@ -260,62 +260,74 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
 
-export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPrefix, issueDoiDisabled = false, volumeDoiDisabled = false) {
+export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPrefix, issueDoiDisabled = false) {
   const { issueDoi, issue, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl } = issueData
+
+  const issueDoiEntered = doiEntered(issueDoi, ownerPrefix)
+  const issueUrlEntered = urlEntered(issueUrl)
+  const volumeDoiEntered = doiEntered(volumeDoi, ownerPrefix)
+  const volumeUrlEntered = urlEntered(volumeUrl)
+
   let criticalErrors = {
-    issue: !issue,
-    issuedoi: false,
+    issueVolume: !volume && !issue,
+
     invalidissuedoi: false,
     invalidIssueDoiPrefix: false,
     dupeissuedoi: false,
-    issueUrl: !issueUrl || issueUrl === 'http://',
-    dupeDois: false
+
+    volume: false
   }
 
-  if(!issueDoiDisabled) {
-    criticalErrors.dupeDois = issueDoi === volumeDoi
-    criticalErrors.issuedoi = !issueDoi
-    criticalErrors.invalidissuedoi = !criticalErrors.issuedoi ? !isDOI(issueDoi) : false
+  if(!issueDoiDisabled && issueDoiEntered) {
+    criticalErrors.invalidissuedoi = !isDOI(issueDoi)
     criticalErrors.invalidIssueDoiPrefix = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== ownerPrefix
     criticalErrors.dupeissuedoi = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && await asyncCheckDupeDoi(issueDoi)
   }
 
   const hasDate = !!(printDateYear || onlineDateYear)
   let warnings = {
-    invalidissueurl: !criticalErrors.issueUrl && !isURL(issueUrl),
+    issuedoi: issueUrlEntered && !issueDoiEntered,
+    issueUrl: issueDoiEntered && !issueUrlEntered,
+    invalidissueurl: false,
 
+    printDateIncomplete: false,
+    printDateInvalid: false,
     printDateYear: hasDate ? false : !printDateYear,
     onlineDateYear: hasDate ? false : !onlineDateYear,
+    onlineDateIncomplete: false,
+    onlineDateInvalid: false,
 
-    volume: false,
     volumedoi: false,
     invalidvolumedoi: false,
     invalidVolumeDoiPrefix: false,
     dupevolumedoi: false,
     volumeUrl: false,
     invalidvolumeurl: false,
+    dupeDois: false,
 
     contributorLastName: false,
     contributorRole: false
   }
 
+  warnings.invalidissueurl = issueUrlEntered && !isURL(issueUrl)
   warnings.printDateIncomplete = !warnings.printDateYear && !!((printDateMonth || printDateDay) && !printDateYear)
   warnings.printDateInvalid = !warnings.printDateYear && !warnings.printDateIncomplete && !validDate(printDateYear, printDateMonth, printDateDay)
-
   warnings.onlineDateIncomplete = !warnings.onlineDateYear && !!((onlineDateMonth || onlineDateDay) && !onlineDateYear)
   warnings.onlineDateInvalid = !warnings.onlineDateYear && !warnings.onlineDateIncomplete && !validDate(onlineDateYear, onlineDateMonth, onlineDateDay)
+  warnings.dupeDois = issueDoiEntered && issueDoi === volumeDoi
 
-  if(volume || volumeDoi || (volumeUrl && volumeUrl !== 'http://')) {
-    warnings.volume = !volume
-    warnings.volumedoi = !volumeDoi
+  if(volumeDoiEntered || volumeUrlEntered) {
+    criticalErrors.volume = !criticalErrors.issueVolume && !volume
+    warnings.volumedoi = !volumeDoiEntered
     warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
     warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== ownerPrefix
     warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && await asyncCheckDupeDoi(volumeDoi)
-    warnings.volumeUrl = !volumeUrl || volumeUrl === 'http://'
+    warnings.volumeUrl = !volumeDoiEntered
     warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
   }
 
   const enableVolumeDoi = warnings.volumedoi || warnings.invalidvolumedoi || warnings.invalidVolumeDoiPrefix
+
 
   //validate contributor subItems
   const contributors = getSubItems(optionalIssueInfo).map( contributor => {
@@ -330,5 +342,5 @@ export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPre
     return {...contributor, errors}
   })
 
-  return { criticalErrors, warnings, contributors, enableVolumeDoi }
+  return { criticalErrors, warnings, contributors, issueDoiEntered, enableVolumeDoi }
 }

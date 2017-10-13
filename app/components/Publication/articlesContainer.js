@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
 
 import Article from './article'
 
@@ -19,6 +18,7 @@ export default class ArticleContainer extends Component {
   render () {
     let articles = this.props.record.contains
     const  issueDoi = this.props.record.doi
+    const issueTitle = this.props.record.title
     const padding = articles.length ? {padding:"48px 0",height: "32px"} : {padding: "0px 0", height: "0px"}
 
     if(this.props.filterBy !== 'all') {
@@ -34,9 +34,10 @@ export default class ArticleContainer extends Component {
           <tbody>
             {
               articles.map((article, i) => <Article
-                key={i}
+                key={article.doi}
                 record={article}
-                issue = { issueDoi }
+                issueDoi = { issueDoi }
+                issueTitle = { issueTitle }
                 selections={this.props.selections}
                 publication={this.props.publication}
 

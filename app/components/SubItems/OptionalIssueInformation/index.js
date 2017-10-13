@@ -6,11 +6,12 @@ import { Roles } from '../../../utilities/lists/roles.js'
 export default class OptionalIssueInformation extends Component {
   constructor (props) {
     super(props)
-    const {index, handler, remove, optionalIssueInfo} = this.props
+    const {index, optionalIssueInfo} = this.props
+    const handlers = this.props.optionalIssueInfoHandlers()
     this.state = {
       index: index,
-      handler: handler,
-      remove: remove,
+      handler: handlers.handler,
+      remove: handlers.remove,
       optionalIssueInfo: optionalIssueInfo
     }
   }

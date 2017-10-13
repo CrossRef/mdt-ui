@@ -2,9 +2,10 @@ import React, { Component } from 'react'
 import { Link } from 'react-router'
 import moment from 'moment'
 import is from 'prop-types'
-import { stateTrackerII } from 'my_decorators'
+
 import {routes} from '../../routing'
-import AddIssueCard from '../addIssueCard'
+import AddIssueModal from '../../containers/addIssueModal'
+import {recordTitle} from '../../utilities/helpers'
 
 
 export default class Issue extends Component {
@@ -36,7 +37,7 @@ export default class Issue extends Component {
   }
 
   componentDidMount() {
-    if (this.props.triggerModal === this.props.record.doi) {
+    if (this.props.triggerModal === this.props.record.doi || this.props.triggerModal === JSON.stringify(this.props.record.title)) {
       this.modalOpen();
     }
   }
@@ -47,7 +48,7 @@ export default class Issue extends Component {
       showModal: true,
       title: 'Edit Issue/Volume',
       style: 'addIssueModal',
-      Component: AddIssueCard,
+      Component: AddIssueModal,
       props: {
         mode: 'edit',
         issue: this.props.record,
@@ -68,10 +69,9 @@ export default class Issue extends Component {
 
   render () {
     const publicationDoi = this.props.publication.message.doi;
-    let { status, type, date, doi } = this.props.record;
+    let { status, type, date, doi, title } = this.props.record;
     date = moment(date || undefined).format('MMM Do YYYY')
-    const { volume, issue} = this.props.record.title;
-    const displayTitle = `${volume && `Volume ${volume}, `}Issue ${issue}`
+    const displayTitle = recordTitle(type, title)
     const url = doi && `http://dx.doi.org/${doi}`
 
     const checked = !this.props.selections.length ? {checked:false} : {};
@@ -84,7 +84,21 @@ export default class Issue extends Component {
       <td className='date'>{date}</td>
       <td className='type'>{type}</td>
       <td className='status'>{status}</td>
-      <td className='url'>{url && <a className='issueDOILink' target='_blank' href={url}>{url}</a>}&nbsp;<Link className='issueDoiAddNew' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi)}/addarticle`}><span>Add Article</span></Link></td>
+      <td className='url'>
+        {url &&
+        <a
+          className='issueDOILink'
+          target='_blank'
+          href={url}>
+          {url}
+        </a>}
+        &nbsp;
+        <Link
+          className='issueDoiAddNew'
+          to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`}>
+          <span>Add Article</span>
+        </Link>
+      </td>
     </tr>)
   }
 }

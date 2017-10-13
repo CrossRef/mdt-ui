@@ -19,7 +19,7 @@ export default class Article extends Component {
   toggleCheckBox (e) {
     const { record } = this.props
     if(e.currentTarget.checked) {
-      const selection = this.props.issue ? {...record, issueDoi: this.props.issue} : record
+      const selection = this.props.issueDoi || this.props.issueTitle ? {...record, issueDoi: this.props.issueDoi, issueTitle: this.props.issueTitle} : record
       this.props.handleAddToList({ article: selection })
     } else {
       this.props.handleRemoveFromList({ article: record })
@@ -29,7 +29,8 @@ export default class Article extends Component {
   render () {
     let { title, status, type, date, doi } = this.props.record
     const publicationDoi = this.props.publication.message.doi
-    const issue = this.props.issue
+    const issueDoi = this.props.issueDoi
+    const issueTitle = this.props.issueTitle
     date = moment(date || undefined).format('MMM Do YYYY')
     title = title.title
     if(title.length > 35) {
@@ -37,13 +38,13 @@ export default class Article extends Component {
     }
     const url = (doi && doi.length > 25) ? `http://doi.org/${doi.substr(0,25)}...` : (doi ? `http://doi.org/${doi}` : '')
 
-    const checked = !this.props.selections.length ? {checked:false} : {};
+    const checked = !this.props.selections.length ? {checked:false} : {}
 
     return (<tr className={status}>
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox.bind(this)} {...checked} /><span>&nbsp;</span></label></td>
       <td className='title'>
-        {issue ?
-          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+        {issueDoi || issueTitle ?
+          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(issueDoi || JSON.stringify(issueTitle))}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
           :
           <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
         }

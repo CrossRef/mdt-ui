@@ -12,7 +12,7 @@ import * as api from '../actions/api'
 
 export function recordTitle (type, title) {
   if(type === 'issue') {
-    return `${title.volume ? `Volume ${title.volume} ` : ''}Issue ${title.issue}`
+    return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
   } else {
     return title.title
   }
@@ -38,20 +38,24 @@ export function refreshErrorBubble () {
 
 
 
+export function doiEntered (doi, ownerPrefix) {
+  return doi.length > `${ownerPrefix}/`.length
+}
+
+export function urlEntered (url) {
+  return url.length > 'http://'.length
+}
+
 export function isDOI (doi) {
   var re = /^10\.\d{4,9}\/[-._;()/:A-Z0-9]+$/i
   return re.test(doi)
 }
 
-
-
-
-
-
 export function isURL (url) {
   var re = /^(?:(ftp|http|https)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/
   return re.test(url)
 }
+
 
 
 
@@ -111,6 +115,15 @@ export function pascaleCase (name) {
   } else {
     return name;
   }
+}
+
+
+
+
+
+
+export function lowerCaseFirst (string) {
+  return string.charAt(0).toLowerCase() + string.slice(1)
 }
 
 
@@ -291,3 +304,9 @@ export const errorHandler = (error, action = ()=>{}) => {
     Component: ()=>null
   }))
 }
+
+
+
+
+
+

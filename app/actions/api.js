@@ -55,8 +55,19 @@ export function searchRecords (query, pubTitle, type) {
 
 
 
-export function getItem (doi, forced) {
-  return authorizedFetch(`${apiBaseUrl}/work?doi=${doi}${forced ? `&forced=true` : ''}`, { headers: {Authorization: localStorage.getItem('auth')} })
+export function getItem (id, forced) {
+  let doi, pubDoi, title
+  if(typeof id === 'object') {
+    doi = id.doi
+    title = id.title
+    pubDoi = id.pubDoi
+  } else if(typeof id === 'string') {
+    doi = id
+  }
+
+  const queryParams = doi ? `doi=${doi}` : `pubdoi=${pubDoi}&title=${JSON.stringify(title)}`
+
+  return authorizedFetch(`${apiBaseUrl}/work?${queryParams}${forced ? `&forced=true` : ''}`, { headers: {Authorization: localStorage.getItem('auth')} })
     .then(response => {
       if(response.status !== 200) {
         throw `${response.status}: ${response.statusText}`

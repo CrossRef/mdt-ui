@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
-import {stateTrackerII} from 'my_decorators'
 
 import {routes} from '../../../routing'
 import {refreshErrorBubble} from '../../../utilities/helpers'
@@ -19,6 +18,7 @@ export default class Funding extends Component {
   constructor (props) {
     super(props)
     const {index, grantNumbers, funding} = this.props
+    console.log()
     this.state = {
       showSubItem: true,
       suggestions: [],

@@ -2,12 +2,11 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import { stateTrackerII, updateReporterII } from 'my_decorators'
 
 import { controlModal, getPublications, addDOIs, submitPublication, cartUpdate, search } from '../actions/application'
-import Publications from '../components/publications'
-import Search from '../components/search'
-import AddPublicationCard from '../components/addPublicationCard'
+import PublicationCard from '../components/PublicationsPage/publicationCard'
+import Search from '../components/PublicationsPage/search'
+import AddPublicationCard from './addPublicationModal'
 
 
 
@@ -81,7 +80,13 @@ export default class PublicationsPage extends Component {
           </button>
         </div>
 
-        {DOIs.length ? <Publications dois={DOIs} />
+        {DOIs.length ?
+          <div className='content'>
+            <div className='tools' />
+            <div className='cards'>
+              {DOIs.map((doi, i) => <PublicationCard doi={doi} key={i} />)}
+            </div>
+          </div>
         : <div className='empty-message'>No publications, please create one!</div>}
 
       </div>
