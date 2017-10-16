@@ -3,7 +3,7 @@ import is from 'prop-types'
 import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
-import { editForm } from '../../../actions/application'
+import { editForm } from '../../../../actions/application'
 
 
 
@@ -20,11 +20,10 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class ReduxSelectInput extends Component {
+export default class ReduxTextInput extends Component {
 
   static propTypes = {
     className: is.string,
-    options: is.array.isRequired,
     reduxValue: is.string,
     error: is.bool,
     keyPath: is.array,
@@ -38,16 +37,14 @@ export default class ReduxSelectInput extends Component {
 
   render() {
     return(
-      <select
+      <input
         className={`${this.props.className} ${this.props.error && 'fieldError'}`}
         type='text'
+        name={this.props.name}
         onChange={this.handler}
-        value={this.props.reduxValue}
-      >
-        {this.props.options.map((value, index)=>{
-          return ( <option key={index}>{value}</option> )
-        })}
-      </select>
+        value={this.props.reduxValue|| this.props.keyPath[2]!=='href'?this.props.reduxValue:'http://'}
+      />
     )
   }
 }
+

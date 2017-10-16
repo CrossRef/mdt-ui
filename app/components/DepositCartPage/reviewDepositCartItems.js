@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { browserHistory } from 'react-router'
 
-import articleReviewGenerator from '../AddArticlePage/articleReviewGenerator'
+import articleReviewGenerator from '../Common/articleReviewGenerator'
 import issueReviewGenerator from  './issueReviewGenerator'
 import {routes} from '../../routing'
 

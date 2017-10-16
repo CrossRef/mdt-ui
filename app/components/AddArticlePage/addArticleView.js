@@ -1,10 +1,16 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import SubItem from '../SubItems/subItem'
+import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
 import { TopBar, InfoBubble, InfoHelperRow, ErrorBubble, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './articleFormComponents'
 import { makeDateDropDown } from '../../utilities/date'
+import Contributor from './SubItems/contributor'
+import Funding from './SubItems/funding'
+import License from './SubItems/license'
+import RelatedItems from './SubItems/relatedItems'
+import AdditionalInformation from './SubItems/additionalInfo'
+import { CrossmarkCards, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
 
 
 
@@ -92,62 +98,94 @@ export default class AddArticleCard extends Component {
               <SubItem
                 title={'Contributor'}
                 validating={this.props.validating}
-                addable={true}
-                incomingData={this.props.contributors}
-                handler={this.props.boundSetState}
-                remove={this.props.removeSection.bind(null, 'contributors')}
                 showSection={this.props.openItems.Contributors}
-                addHandler={this.props.addSection.bind(null, 'contributors')}
-              />
+                addHandler={this.props.addSection.bind(null, 'contributors')}>
+                  {this.props.contributors.map((data, i)=>
+                    <Contributor
+                      validating={this.props.validating}
+                      key={i}
+                      contributor={data}
+                      remove={this.props.removeSection.bind(null, 'contributors', i)}
+                      handler={this.props.boundSetState}
+                      data={this.props.contributors}
+                      index={i}/>
+                  )}
+              </SubItem>
+
               <SubItem
                 title={'Funding'}
                 validating={this.props.validating}
-                addable={true}
-                incomingData={this.props.funding}
-                handler={this.props.boundSetState}
-                remove={this.props.removeSection.bind(null, 'funding')}
                 showSection={this.props.openItems.Funding}
-                addHandler={this.props.addSection.bind(null, 'funding')}
-              />
+                addHandler={this.props.addSection.bind(null, 'funding')}>
+                  {this.props.funding.map((data, i)=>
+                    <Funding
+                      validating={this.props.validating}
+                      key={i}
+                      funding={data}
+                      remove={this.props.removeSection.bind(null, 'funding', i)}
+                      handler={this.props.boundSetState}
+                      data={this.props.funding}
+                      index={i}/>
+                  )}
+              </SubItem>
+
               <SubItem
                 title={'License'}
                 validating={this.props.validating}
-                addable={true}
-                incomingData={this.props.license}
-                handler={this.props.boundSetState}
-                remove={this.props.removeSection.bind(null, 'license')}
                 showSection={this.props.openItems.Licenses}
                 addHandler={this.props.addSection.bind(null, 'license')}
-                freetoread={this.props.addInfo.freetolicense}
-                makeDateDropDown={makeDateDropDown}
-              />
+                freeToRead={this.props.addInfo.freetolicense}>
+                  {this.props.license.map((data, i)=>
+                    <License
+                      validating={this.props.validating}
+                      key={i}
+                      license={data}
+                      remove={this.props.removeSection.bind(null, 'license', i)}
+                      handler={this.props.boundSetState}
+                      data={this.props.license}
+                      index={i}
+                      makeDateDropDown={makeDateDropDown}
+                      freeToRead={i===0 ? this.props.addInfo.freetolicense : false}/>
+                  )}
+              </SubItem>
+
               <SubItem
                 title={'Related Items'}
                 validating={this.props.validating}
-                addable={true}
-                incomingData={this.props.relatedItems}
-                handler={this.props.boundSetState}
-                remove={this.props.removeSection.bind(null, 'relatedItems')}
                 showSection={this.props.openItems.relatedItems}
-                addHandler={this.props.addSection.bind(null, 'relatedItems')}
-              />
+                addHandler={this.props.addSection.bind(null, 'relatedItems')}>
+                  {this.props.relatedItems.map((data, i)=>
+                    <RelatedItems
+                      validating={this.props.validating}
+                      key={i}
+                      relateditem={data}
+                      remove={this.props.removeSection.bind(null, 'relatedItems', i)}
+                      handler={this.props.boundSetState}
+                      data={this.props.relatedItems}
+                      index={i}/>
+                  )}
+              </SubItem>
+
               <SubItem
                 title={'Additional Information'}
                 validating={this.props.validating}
-                addable={false}
-                incomingData={this.props.addInfo}
-                handler={this.props.boundSetState}
-                showSection={this.props.openItems.addInfo}
-                freetoread={this.props.addInfo.freetolicense}
-                simCheckError={this.props.errors.simCheckUrlInvalid}
-              />
+                showSection={this.props.openItems.addInfo}>
+                  <AdditionalInformation
+                    addInfo={this.props.addInfo}
+                    handler={this.props.boundSetState}
+                    simCheckError={this.props.errors.simCheckUrlInvalid}/>
+              </SubItem>
+
               {this.props.crossmark &&
                 <SubItem
                   title={'Crossmark'}
-                  showCards={this.props.showCards}
-                  crossmarkErrors={this.props.crossmarkErrors}
-                  reduxDeleteCard={this.props.reduxDeleteCard}
-                />
+                  showSection={!!Object.keys(this.props.showCards).length}
+                  validating={this.props.validating}
+                  CrossmarkAddButton={CrossmarkAddButton}>
+                    <CrossmarkCards
+                      showCards={this.props.showCards}
+                      reduxDeleteCard={this.props.reduxDeleteCard}/>
+                </SubItem>
               }
 
             </div>

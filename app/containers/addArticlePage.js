@@ -15,7 +15,7 @@ import {getSubItems} from '../utilities/getSubItems'
 import * as api from '../actions/api'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import journalArticleXml from '../components/AddArticlePage/articleXmlGenerator'
-import ReviewArticle from '../components/AddArticlePage/reviewArticle'
+import ReviewArticle from '../components/AddArticlePage/reviewArticleModal'
 
 
 
@@ -69,26 +69,25 @@ export default class AddArticlePage extends Component {
   constructor (props) {
     super(props)
     const ownerPrefix = props.routeParams.pubDoi.split('/')[0];
-    const articleDoi = props.routeParams.articleDoi || (props.location.state && props.location.state.duplicateFrom)
+    const editArticleDoi = props.routeParams.articleDoi || (props.location.state && props.location.state.duplicateFrom)
     const isDuplicate = this.props.location.state ? !!this.props.location.state.duplicateFrom : false
     const issueId = props.routeParams.issueId
     const issueDoi = issueId && (issueId.split('/')[0] === ownerPrefix) ? issueId : undefined
     const issueTitle = issueId && !issueDoi ? JSON.parse(issueId) : undefined
-
     this.state = {
+      ...defaultState,
       publication: props.publication,
       publicationMetaData: {},
       publicationXml: '',
       issuePublication: undefined,
-      articleDoi,
+      editArticleDoi,
       issueDoi,
       issueTitle,
-      mode: articleDoi ? 'edit' : 'add',
+      mode: editArticleDoi ? 'edit' : 'add',
       isDuplicate,
       ownerPrefix,
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
-      version: '1',
-      ...defaultState
+      version: '1'
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -98,8 +97,8 @@ export default class AddArticlePage extends Component {
     const { pubDoi } = this.props.routeParams;
     const getItems = []
 
-    if(this.state.articleDoi) {
-      getItems.push(api.getItem(this.state.articleDoi))
+    if(this.state.editArticleDoi) {
+      getItems.push(api.getItem(this.state.editArticleDoi))
     }
     const checkForAcceptedPub = this.state.mode === 'edit'
     getItems.push(api.getItem(pubDoi, checkForAcceptedPub).catch(e => api.getItem(pubDoi)))
@@ -113,7 +112,7 @@ export default class AddArticlePage extends Component {
     const publicationMetaData = publMeta ? xmldoc(publMeta) : {}
     const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
 
-    if(this.state.articleDoi) {
+    if(this.state.editArticleDoi) {
       delete articleFullHierarchy.message.content
       articleFullHierarchy.message.date = publicationData.message.date
       articleFullHierarchy.message.doi = articleFullHierarchy.message.doi || pubDoi
@@ -124,7 +123,7 @@ export default class AddArticlePage extends Component {
     let publication = articleFullHierarchy
 
     if (this.state.issueDoi || this.state.issueTitle) {
-      if(!this.state.articleDoi) { //New article means publicationData includes all records and need to locate the correct issue
+      if(!this.state.editArticleDoi) { //New article means publicationData includes all records and need to locate the correct issue
         articleFullHierarchy.message.contains[0] = articleFullHierarchy.message.contains.find((item)=>{
           if(item.type !== 'issue') {
             return false
@@ -190,7 +189,6 @@ export default class AddArticlePage extends Component {
         ...validatedPayload
       }
 
-
       this.setState(setStatePayload, () => this.state.validating = false)
     } else /*if add mode*/ {
       this.setState({
@@ -198,6 +196,14 @@ export default class AddArticlePage extends Component {
         issuePublication: publications[0],
         publicationMetaData,
         publicationXml
+      })
+    }
+  }
+
+  componentWillReceiveProps (nextProps) {
+    if (this.props.crossmarkPrefixes !== nextProps.crossmarkPrefixes) {
+      this.setState({
+        crossmark: nextProps.crossmarkPrefixes.indexOf(this.state.ownerPrefix) !== -1
       })
     }
   }
@@ -237,7 +243,8 @@ export default class AddArticlePage extends Component {
     }
 
     if(newReduxForm && newReduxForm.size) {
-      this.props.reduxEditForm([], newReduxForm)
+      const keyPath = []
+      this.props.reduxEditForm(keyPath, newReduxForm)
     }
 
     return {valid, validatedPayload}
@@ -357,7 +364,11 @@ export default class AddArticlePage extends Component {
 
   removeSection = (section, index) => {
     this.setState({
-      [section]: [...this.state[section]].splice(index, 1)
+      [section]: do {
+        const newArray = [...this.state[section]]
+        newArray.splice(index, 1)
+        newArray
+      }
     })
   }
 
@@ -411,7 +422,7 @@ export default class AddArticlePage extends Component {
           boundSetState={this.boundSetState}
           removeSection={this.removeSection}
           addSection={this.addSection}
-
+          reduxDeleteCard={this.props.reduxDeleteCard}
           {...this.state}
         />
       </div>

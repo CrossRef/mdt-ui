@@ -16,7 +16,7 @@ export default class License extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.validating || nextProps.freeToReadSwitchedOn) {
+    if(nextProps.validating || (nextProps.freeToRead && !this.props.freeToRead)) {
       this.setState({showSubItem: true})
     }
   }

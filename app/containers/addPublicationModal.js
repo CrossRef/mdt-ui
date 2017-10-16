@@ -153,7 +153,7 @@ export default class AddPublicationCard extends Component {
     criticalErrors.showISSNInvalidError = !criticalErrors.showISSNEmptyError ? !this.validateISSN(): false
 
     criticalErrors.showURLEmptyError = !this.state.url.length
-    warnings.showURLError = !criticalErrors.showURLEmptyError ? !isURL(this.state.url) : false
+    criticalErrors.showURLError = !criticalErrors.showURLEmptyError ? !isURL(this.state.url) : false
 
     criticalErrors.showDOIEmptyError = !this.state.DOI.length
     criticalErrors.showDOIInvalidError = !criticalErrors.showDOIEmptyError ? !isDOI(this.state.DOI) : false
@@ -263,8 +263,11 @@ export default class AddPublicationCard extends Component {
       message: 'Save Complete'
     }
 
+    const errorMessageArray = ['Required to save: ']
+
     const criticalErrorMsg = {
-      showURLEmptyError: 'URL.',
+      showURLEmptyError: 'Valid URL.',
+      showURLError: 'Valid URL.',
       showTitleEmptyError: 'Title.',
       showISSNEmptyError: 'Valid ISSN.',
       showISSNInvalidError: 'Valid ISSN.',
@@ -273,8 +276,6 @@ export default class AddPublicationCard extends Component {
       showDOIInvalidError: 'Valid DOI.',
       showDOIPrefixError: 'Valid DOI.'
     }
-
-    const errorMessageArray = ['Required to save: ']
 
     for (let error in criticalErrors) {
       if(criticalErrors[error] === true) {

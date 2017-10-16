@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-import articleReviewGenerator from './articleReviewGenerator'
+import articleReviewGenerator from '../Common/articleReviewGenerator'
 import * as api from '../../actions/api'
 
 
