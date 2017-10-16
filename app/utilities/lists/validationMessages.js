@@ -177,8 +177,8 @@ export const ArticleMessages = {
   },
   printDateIncomplete: {
     type: 'required',
-    bold: 'Incomplete Print Date',
-    message: 'Please provide year with month and/or day.'
+    bold: 'Required',
+    message: 'Print date incomplete.'
   },
   printDateInvalid: {
     type: 'invalid',
