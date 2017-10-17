@@ -85,11 +85,10 @@ export default class AddPublicationCard extends Component {
         archivelocation: archive['-name'],
         crossmarkDoi: '',
       }
-      console.log(this.state)
     }
     else if (props.mode === 'search') {
       const result = props.searchResult
-      let pissn, eissn
+      let pissn = '', eissn = ''
       if(Array.isArray(result.issns)) {
         result.issns.forEach(issn => {
           if(issn.type === 'pissn') pissn = issn.issn
@@ -134,13 +133,7 @@ export default class AddPublicationCard extends Component {
     return this.props.prefixes.indexOf(this.state.DOI.split('/')[0]) !== -1
   }
 
-  validateISSN (issn) {
-    if(verifyIssn(issn)) {
-      return true
-    } else {
-      return false
-    }
-  }
+
 
   validation = async () => {
     let valid = true
@@ -149,9 +142,9 @@ export default class AddPublicationCard extends Component {
 
     criticalErrors.showTitleEmptyError = !this.state.title.length
 
-    criticalErrors.onlineISSNInvalidError = this.state.electISSN.length ? !this.validateISSN(this.state.electISSN): false
+    criticalErrors.onlineISSNInvalidError = this.state.electISSN.length ? !verifyIssn(this.state.electISSN): false
     criticalErrors.onlineDuplicateISSN = false
-    criticalErrors.printISSNInvalidError = this.state.printISSN.length ? !this.validateISSN(this.state.printISSN): false
+    criticalErrors.printISSNInvalidError = this.state.printISSN.length ? !verifyIssn(this.state.printISSN): false
     criticalErrors.printDuplicateISSN = false
 
     criticalErrors.showURLEmptyError = !this.state.url.length
