@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
-import {Deferred, pascaleCase} from '../../utilities/helpers'
+import {DeferredTask} from '../../utilities/helpers'
 
 
 
@@ -31,7 +31,7 @@ export default class DepositCartItem extends Component {
     for(let i = 0; i < props.cartItem.contains.length; i++){
       const record = props.cartItem.contains[i]
 
-      const asyncErrorReport = new Deferred()
+      const asyncErrorReport = new DeferredTask()
       errorReports.push(asyncErrorReport.promise)
 
       records.push(
@@ -54,7 +54,7 @@ export default class DepositCartItem extends Component {
             records.push(<tr key={key + '_space1'} className='articleUnderIssueSpace'><td/><td/><td/><td className="borderRight"/></tr>)
           }
 
-          const asyncErrorReport = new Deferred()
+          const asyncErrorReport = new DeferredTask()
           errorReports.push(asyncErrorReport.promise)
 
           records.push(

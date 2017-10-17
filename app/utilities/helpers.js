@@ -144,7 +144,7 @@ export function xmldoc (content) {
 
 
 
-export class Deferred {
+export class DeferredTask {
   constructor () {
     this.promise = new Promise((resolve, reject) => {
       this.reject = reject
@@ -228,6 +228,9 @@ export function objectFind (object, finder) {
 
 
 
+
+
+
 export class SearchableRecords {
   constructor (records) {
     Object.assign(this, records)
@@ -294,15 +297,19 @@ export function removeDuplicates(a) {
 
 
 
+
 export const errorHandler = (error, action = ()=>{}) => {
   console.error('Error Handler: ', error)
   action()
-  exposedStore.dispatch(controlModal({
-    showModal: true,
-    title: error,
-    style: 'errorModal',
-    Component: ()=>null
-  }))
+  if(!exposedStore.getState().modal.showModal) {
+    exposedStore.dispatch(controlModal({
+      showModal: true,
+      title: error,
+      style: 'errorModal',
+      Component: ()=>null
+    }))
+  }
+
 }
 
 
