@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
-import {refreshErrorBubble} from '../../../utilities/helpers'
+import {refreshErrorBubble, refreshStickyError} from '../../../utilities/helpers'
 const AppliesTo = require('../../../utilities/lists/appliesTo.json')
 
 
@@ -23,6 +23,7 @@ export default class License extends Component {
 
   componentDidUpdate () {
     refreshErrorBubble()
+    refreshStickyError()
   }
 
   displayAppliesTo () {

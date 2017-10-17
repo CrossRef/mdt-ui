@@ -7,7 +7,7 @@ import $ from 'jquery'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {xmldoc, jsEscape, refreshErrorBubble, compareDois} from '../utilities/helpers'
+import {xmldoc, jsEscape, refreshErrorBubble, refreshStickyError, compareDois} from '../utilities/helpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
@@ -408,34 +408,14 @@ export default class AddArticlePage extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     refreshErrorBubble()
-    this.refreshStickyError()
+    refreshStickyError()
     if(!prevState.error && this.state.error) {
-      document.addEventListener('scroll', this.refreshStickyError, false)
+      document.addEventListener('scroll', refreshStickyError, false)
     } else if (prevState.error && !this.state.error) {
-      document.removeEventListener('scroll', this.refreshStickyError, false)
+      document.removeEventListener('scroll', refreshStickyError, false)
     }
   }
 
-  refreshStickyError () {
-    const errorMessage = $('.toolmsgholder')[0]
-    if(!errorMessage) {
-      return
-    }
-    const stickyError = $('.stickyError')
-    const bounds = errorMessage.getBoundingClientRect()
-    const ErrorIsVisible = bounds.top < window.innerHeight && bounds.bottom > 0
-    const errorIsAbove = bounds.top < 0
-    if (ErrorIsVisible && stickyError.is(":visible")) {
-      stickyError.hide()
-    } else if (!ErrorIsVisible && !stickyError.is(":visible")) {
-      stickyError.show()
-    }
-    if (errorIsAbove) {
-      stickyError.addClass('errorAbove').removeClass('errorBelow').find('img').removeClass('rotate')
-    } else {
-      stickyError.addClass('errorBelow').removeClass('errorAbove').find('img').addClass('rotate')
-    }
-  }
 
   back = () => {
     browserHistory.push(`${routes.publications}/${encodeURIComponent(this.state.publication.message.doi)}`)

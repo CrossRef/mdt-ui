@@ -3,7 +3,7 @@ import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
 
 import {routes} from '../../../routing'
-import {refreshErrorBubble} from '../../../utilities/helpers'
+import {refreshErrorBubble, refreshStickyError} from '../../../utilities/helpers'
 
 
 function renderSuggestion(suggestion) {
@@ -30,7 +30,8 @@ export default class Funding extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble();
+    refreshErrorBubble()
+    refreshStickyError()
   }
 
   componentWillReceiveProps(nextProps) {

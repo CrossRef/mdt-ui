@@ -36,6 +36,29 @@ export function refreshErrorBubble () {
 
 
 
+export function refreshStickyError () {
+  const errorMessage = $('.toolmsgholder')
+  if(!errorMessage) {
+    return
+  }
+  const stickyError = $('.stickyError')
+  const bounds = errorMessage[0].getBoundingClientRect()
+  const ErrorIsVisible = bounds.top < window.innerHeight && bounds.bottom > 0
+  const errorIsAbove = bounds.top < 0
+  if ( (ErrorIsVisible && stickyError.is(":visible")) || !errorMessage.is(":visible")) {
+    stickyError.hide()
+  } else if (!ErrorIsVisible && !stickyError.is(":visible")) {
+    stickyError.show()
+  }
+  if (errorIsAbove) {
+    stickyError.addClass('errorAbove').removeClass('errorBelow').find('img').removeClass('rotate')
+  } else {
+    stickyError.addClass('errorBelow').removeClass('errorAbove').find('img').addClass('rotate')
+  }
+}
+
+
+
 
 
 export function doiEntered (doi, ownerPrefix) {
