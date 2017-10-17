@@ -11,6 +11,7 @@ import License from './SubItems/license'
 import RelatedItems from './SubItems/relatedItems'
 import AdditionalInformation from './SubItems/additionalInfo'
 import { CrossmarkCards, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
+import {routes} from '../../routing'
 
 
 
@@ -60,6 +61,7 @@ export default class AddArticleCard extends Component {
                   <ArticleTitleField handleChange={this.props.handleChange} title={this.props.article.title} errors={this.props.errors}/>
                   {(!this.props.error && this.props.showHelper) && <InfoBubble/> }
                   {(this.props.error) && <ErrorBubble errors={this.props.errors} crossmarkErrors={this.props.crossmarkErrors}/> }
+                  {(this.props.error) && <div className="stickyError"><p>More Errors</p><img src={`${routes.images}/AddArticle/Triangle.svg`}/></div> }
                 </div>
 
                 <div className='row'>

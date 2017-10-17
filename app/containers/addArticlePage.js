@@ -3,7 +3,7 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import {browserHistory} from 'react-router'
-import _ from 'lodash'
+import $ from 'jquery'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
@@ -92,8 +92,8 @@ export default class AddArticlePage extends Component {
     this.state.article.doi = ownerPrefix + '/'
   }
 
-  async componentDidMount () {
 
+  async componentDidMount () {
     const { pubDoi } = this.props.routeParams;
     const getItems = []
 
@@ -200,6 +200,7 @@ export default class AddArticlePage extends Component {
     }
   }
 
+
   componentWillReceiveProps (nextProps) {
     if (this.props.crossmarkPrefixes !== nextProps.crossmarkPrefixes) {
       this.setState({
@@ -207,6 +208,7 @@ export default class AddArticlePage extends Component {
       })
     }
   }
+
 
   validation = async (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) => {
     const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
@@ -249,6 +251,7 @@ export default class AddArticlePage extends Component {
 
     return {valid, validatedPayload}
   }
+
 
   save = async (addToCart) => {
 
@@ -334,6 +337,7 @@ export default class AddArticlePage extends Component {
     }
   }
 
+
   addToCart = () => {
     const addToCart = true
     this.save(addToCart)
@@ -348,7 +352,9 @@ export default class AddArticlePage extends Component {
     })
   }
 
+
   boundSetState = (...args) => { this.setState(...args) }
+
 
   toggleFields = () => {
     this.setState({
@@ -356,11 +362,13 @@ export default class AddArticlePage extends Component {
     })
   }
 
+
   addSection = (section) => {
     this.setState({
       [section]: [...this.state[section], defaultState[section][0]]
     })
   }
+
 
   removeSection = (section, index) => {
     this.setState({
@@ -371,6 +379,7 @@ export default class AddArticlePage extends Component {
       }
     })
   }
+
 
   openReviewArticleModal = () => {
     this.props.reduxControlModal({
@@ -396,17 +405,47 @@ export default class AddArticlePage extends Component {
     })
   }
 
-  componentDidUpdate() {
+
+  componentDidUpdate(prevProps, prevState) {
     refreshErrorBubble()
+    this.refreshStickyError()
+    if(!prevState.error && this.state.error) {
+      document.addEventListener('scroll', this.refreshStickyError, false)
+    } else if (prevState.error && !this.state.error) {
+      document.removeEventListener('scroll', this.refreshStickyError, false)
+    }
+  }
+
+  refreshStickyError () {
+    const errorMessage = $('.toolmsgholder')[0]
+    if(!errorMessage) {
+      return
+    }
+    const stickyError = $('.stickyError')
+    const bounds = errorMessage.getBoundingClientRect()
+    const ErrorIsVisible = bounds.top < window.innerHeight && bounds.bottom > 0
+    const errorIsAbove = bounds.top < 0
+    if (ErrorIsVisible && stickyError.is(":visible")) {
+      stickyError.hide()
+    } else if (!ErrorIsVisible && !stickyError.is(":visible")) {
+      stickyError.show()
+    }
+    if (errorIsAbove) {
+      stickyError.addClass('errorAbove').removeClass('errorBelow').find('img').removeClass('rotate')
+    } else {
+      stickyError.addClass('errorBelow').removeClass('errorAbove').find('img').addClass('rotate')
+    }
   }
 
   back = () => {
     browserHistory.push(`${routes.publications}/${encodeURIComponent(this.state.publication.message.doi)}`)
   }
 
+
   componentWillUnmount () {
     this.props.reduxClearForm();
   }
+
 
   render () {
     return (
