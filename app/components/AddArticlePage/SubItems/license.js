@@ -69,7 +69,6 @@ export default class License extends Component {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, licenseurl, appliesto} = this.props.license;
     const errors = this.props.license.errors || {};
     const thereIsDate = !!(acceptedDateYear || acceptedDateMonth || acceptedDateDay);
-
     return (
         <div>
             <div className='row subItemRow' onClick={this.toggle.bind(this)}>
@@ -147,7 +146,7 @@ export default class License extends Component {
                                             type='text'
                                             ref='licenseurl'
                                             onChange={this.handleLicense}
-                                            value={!!licenseurl?licenseurl:'http://'}
+                                            value={licenseurl ? licenseurl : 'http://'}
                                         />
                                     </div>
                                 </div>

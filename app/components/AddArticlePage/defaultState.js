@@ -69,7 +69,8 @@ export default {
     firstPage: '',
     lastPage: '',
     locationId: '',
-    abstract: ''
+    abstract: '',
+    freetolicense: false
   },
   contributors: [
     {
@@ -130,7 +131,6 @@ export default {
     language:'',
     publicationType:'',
     similarityCheckURL:'http://',
-    freetolicense: false
   },
   openItems: {
     Contributors:false,

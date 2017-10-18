@@ -8,7 +8,7 @@ import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered} from './helpers
 
 
 export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDisabled = false) {
-  const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage } = data.article
+  const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage, freetolicense } = data.article
   const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames
 
   let criticalErrors = {
@@ -27,7 +27,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 
-  if (data.addInfo.freetolicense){
+  if (freetolicense){
     criticalErrors.licenseFreeToRead = true
   }
 
@@ -85,9 +85,14 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
   //validate License subItems
+  console.log(getSubItems(data.license))
   const licenses = getSubItems(data.license).map((license, i) => {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license
-    if(urlEntered(licenseurl)) criticalErrors.licenseFreeToRead = false
+    const licenseUrlEntered = urlEntered(licenseurl)
+    console.log(license, licenseUrlEntered)
+    if(licenseUrlEntered) {
+      criticalErrors.licenseFreeToRead = false
+    }
 
     const errors = {
       licenseUrl: criticalErrors.licenseFreeToRead,
@@ -118,12 +123,12 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
       warnings.licenseDateInvalid = true
     }
 
-    if(!urlEntered(licenseurl) && (thereIsDate || appliesto)) {
+    if(!licenseUrlEntered && (thereIsDate || appliesto)) {
       errors.licenseUrl = true
       warnings.licenseUrl = true
     }
 
-    if(!errors.licenseUrl) {
+    if(!errors.licenseUrl && licenseUrlEntered) {
       const urlInvalid = !isURL(licenseurl)
       errors.licenseUrlInvalid = urlInvalid
       warnings.licenseUrlInvalid = urlInvalid

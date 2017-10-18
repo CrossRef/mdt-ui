@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
+import Switch from 'react-toggle-switch'
 
 import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
@@ -134,7 +135,50 @@ export default class AddArticleCard extends Component {
                 validating={this.props.validating}
                 showSection={this.props.openItems.Licenses}
                 addHandler={this.props.addSection.bind(null, 'license')}
-                freeToRead={this.props.addInfo.freetolicense}>
+                freeToRead={this.props.article.freetolicense}>
+
+                  <div className="freeToLicense">
+                    <div className='row'>
+                      <div className='fieldHolder'>
+                        <div className='fieldinnerholder halflength'>
+                          <div className='labelholder'>
+                            <div></div>
+                            <div className='labelinnerholder'>
+                              <div className='label'>&nbsp;</div>
+                            </div>
+                          </div>
+                          <div className='requrefieldholder'>
+                            <div className='field'>
+                              <div className='switchOuterHolder'>
+                                <div className='switchInnerHolder'>
+                                  <div>&nbsp;</div>
+                                  <div className='switchLicense'>
+                                    <div className='switchLabel'><span>Free to License</span></div>
+                                    <Switch
+                                      ref='freetolicense'
+                                      onClick={() => {
+                                        const event={
+                                          target: {
+                                            name: 'freetolicense',
+                                            value: !this.props.article.freetolicense
+                                          }
+                                        }
+                                        this.props.handleChange(event)
+                                      }}
+                                      on={this.props.article.freetolicense}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className='errorHolder'>
+                    </div>
+                  </div>
+
                   {this.props.license.map((data, i)=>
                     <License
                       validating={this.props.validating}

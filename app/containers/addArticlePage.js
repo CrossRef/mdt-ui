@@ -92,6 +92,7 @@ export default class AddArticlePage extends Component {
     this.state.article.doi = ownerPrefix + '/'
   }
 
+
   async componentDidMount () {
 
     const { pubDoi } = this.props.routeParams;
@@ -200,6 +201,7 @@ export default class AddArticlePage extends Component {
     }
   }
 
+
   componentWillReceiveProps (nextProps) {
     if (this.props.crossmarkPrefixes !== nextProps.crossmarkPrefixes) {
       this.setState({
@@ -207,6 +209,7 @@ export default class AddArticlePage extends Component {
       })
     }
   }
+
 
   validation = async (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) => {
     const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
@@ -216,9 +219,9 @@ export default class AddArticlePage extends Component {
       error: false,
       errors: {...criticalErrors, ...warnings},
       criticalErrors: criticalErrors,
-      license: licenses.length ? licenses : this.state.license,
-      contributors: contributors.length ? contributors : this.state.contributors,
-      relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems,
+      license: licenses.length ? licenses : defaultState.license,
+      contributors: contributors.length ? contributors : defaultState.contributors,
+      relatedItems: relatedItems.length ? relatedItems : defaultState.relatedItems,
       openItems: {
         Contributors: !!contributors.length,
         Funding: !!getSubItems(data.funding).length,
@@ -249,6 +252,7 @@ export default class AddArticlePage extends Component {
 
     return {valid, validatedPayload}
   }
+
 
   save = async (addToCart) => {
 
@@ -334,10 +338,12 @@ export default class AddArticlePage extends Component {
     }
   }
 
+
   addToCart = () => {
     const addToCart = true
     this.save(addToCart)
   }
+
 
   handleChange = (e) => {
     this.setState({
@@ -348,7 +354,9 @@ export default class AddArticlePage extends Component {
     })
   }
 
+
   boundSetState = (...args) => { this.setState(...args) }
+
 
   toggleFields = () => {
     this.setState({
@@ -356,11 +364,13 @@ export default class AddArticlePage extends Component {
     })
   }
 
+
   addSection = (section) => {
     this.setState({
       [section]: [...this.state[section], defaultState[section][0]]
     })
   }
+
 
   removeSection = (section, index) => {
     this.setState({
@@ -371,6 +381,7 @@ export default class AddArticlePage extends Component {
       }
     })
   }
+
 
   openReviewArticleModal = () => {
     this.props.reduxControlModal({
@@ -396,17 +407,21 @@ export default class AddArticlePage extends Component {
     })
   }
 
+
   componentDidUpdate() {
     refreshErrorBubble()
   }
+
 
   back = () => {
     browserHistory.push(`${routes.publications}/${encodeURIComponent(this.state.publication.message.doi)}`)
   }
 
+
   componentWillUnmount () {
     this.props.reduxClearForm();
   }
+
 
   render () {
     return (
