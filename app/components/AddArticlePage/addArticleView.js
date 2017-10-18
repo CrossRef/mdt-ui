@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
+import $ from 'jquery'
 
 import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
@@ -61,7 +62,13 @@ export default class AddArticleCard extends Component {
                   <ArticleTitleField handleChange={this.props.handleChange} title={this.props.article.title} errors={this.props.errors}/>
                   {(!this.props.error && this.props.showHelper) && <InfoBubble/> }
                   {(this.props.error) && <ErrorBubble errors={this.props.errors} crossmarkErrors={this.props.crossmarkErrors}/> }
-                  {(this.props.error) && <div className="stickyError"><p>More Errors</p><img src={`${routes.images}/AddArticle/Triangle.svg`}/></div> }
+                  {(this.props.error) &&
+                    <div
+                      className="stickyError"
+                      onClick={this.props.scrollToError}>
+                        <p>More Errors</p>
+                        <img src={`${routes.images}/AddArticle/Triangle.svg`}/>
+                    </div> }
                 </div>
 
                 <div className='row'>

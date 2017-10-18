@@ -804,6 +804,7 @@ input.height64, textarea.height64, select.height64 {
 }
 
 .stickyError {
+  cursor: pointer;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
