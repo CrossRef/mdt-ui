@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import $ from 'jquery'
 
 import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
@@ -13,6 +12,7 @@ import RelatedItems from './SubItems/relatedItems'
 import AdditionalInformation from './SubItems/additionalInfo'
 import { CrossmarkCards, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
 import {routes} from '../../routing'
+import {scrollToError} from '../../utilities/helpers'
 
 
 
@@ -65,7 +65,7 @@ export default class AddArticleCard extends Component {
                   {(this.props.error) &&
                     <div
                       className="stickyError"
-                      onClick={this.props.scrollToError}>
+                      onClick={scrollToError}>
                         <p>More Errors</p>
                         <img src={`${routes.images}/AddArticle/Triangle.svg`}/>
                     </div> }

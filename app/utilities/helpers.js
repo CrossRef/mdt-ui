@@ -10,16 +10,11 @@ import * as api from '../actions/api'
 
 
 
-export function recordTitle (type, title) {
-  if(type === 'issue') {
-    return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
-  } else {
-    return title.title
-  }
-}
 
 
-
+//JQUERY DOM Modifications.
+// Its a bad idea to mix react with jquery modifications but these particular operations are difficult to write in react without careful thought,
+// so for now will "quarantine" all jquery DOM modifications here for easier debugging. At some point it would be worthwhile to refactor this into react
 
 
 export function refreshErrorBubble () {
@@ -57,6 +52,26 @@ export function refreshStickyError () {
   }
 }
 
+
+
+export function scrollToError () {
+  $('html, body').animate({
+    scrollTop: $('.toolmsgholder').offset().top - 300
+  }, 1000);
+}
+
+//--------------------------------------- End JQUERY -------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+
+
+export function recordTitle (type, title) {
+  if(type === 'issue') {
+    return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
+  } else {
+    return title.title
+  }
+}
 
 
 

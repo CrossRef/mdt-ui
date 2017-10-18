@@ -416,12 +416,6 @@ export default class AddArticlePage extends Component {
     }
   }
 
-  scrollToError = () => {
-    $('html, body').animate({
-      scrollTop: $('.toolmsgholder').offset().top - 300
-    }, 1000);
-  }
-
 
   back = () => {
     browserHistory.push(`${routes.publications}/${encodeURIComponent(this.state.publication.message.doi)}`)
@@ -448,7 +442,6 @@ export default class AddArticlePage extends Component {
           removeSection={this.removeSection}
           addSection={this.addSection}
           reduxDeleteCard={this.props.reduxDeleteCard}
-          scrollToError={this.scrollToError}
           {...this.state}
         />
       </div>
