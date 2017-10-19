@@ -3,10 +3,9 @@ import _ from 'lodash'
 
 const Languages = require('../../utilities/lists/language.json')
 import { ArchiveLocations } from '../../utilities/lists/archiveLocations'
-const PublicationTypes = require('../../utilities/lists/publicationTypes.json')
 const AppliesTo = require('../../utilities/lists/appliesTo.json')
 const IdentifierTypes = require('../../utilities/lists/identifierTypes.json')
-import {objectSearch, xmldoc} from '../../utilities/helpers'
+import {objectSearch, xmldoc, doiEntered, urlEntered} from '../../utilities/helpers'
 import parseXMLArticle from '../../utilities/parseXMLArticle'
 import { getSubItems } from '../../utilities/getSubItems'
 
@@ -85,7 +84,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
 
     const getAddInfo = () => {
         var retInfo = []
-        if (reviewData.addInfo.similarityCheckURL.length > 0) {
+        if (urlEntered(reviewData.addInfo.similarityCheckURL)) {
             retInfo.push(<span>Similarity Check URL: {reviewData.addInfo.similarityCheckURL}<br /></span>)
         }
         if (reviewData.addInfo.archiveLocation.length > 0) {
@@ -103,15 +102,6 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
             }
             })
             retInfo.push(<span>Language: {lang.name}<br /></span>)
-        }
-
-        if (reviewData.addInfo.publicationType.length > 0) {
-            const pt= _.find(PublicationTypes, (pubType) => {
-            if (pubType.value.trim().toLowerCase() === reviewData.addInfo.publicationType.trim().toLowerCase()) {
-                return pubType
-            }
-            })
-            retInfo.push(<span>Publication Type: {pt.name}</span>)
         }
         return retInfo.length > 0 ? retInfo : ``
     }
@@ -160,9 +150,8 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
 
         const onlineDate = reviewData.article.onlineDateYear.length > 0 ? ' (' + reviewData.article.onlineDateYear + '), ' : ''
         const title = reviewData.article.title.length > 0 ? reviewData.article.title + '.' : ''
-
-        const doi = reviewData.article.doi.length > 0 ? ' DOI: ' + reviewData.article.doi + '. ' : ''
-        const url = reviewData.article.url ? ' ' + reviewData.article.url + ' ' : ''
+        const doi = doiEntered(reviewData.article.doi, article.ownerPrefix) ? ' DOI: ' + reviewData.article.doi + '. ' : ''
+        const url = urlEntered(reviewData.article.url) ? ' ' + reviewData.article.url + ' ' : ''
         const locationId = reviewData.article.locationId.length > 0 ? ' ' + reviewData.article.locationId  : ''
 
         var vol = ''
