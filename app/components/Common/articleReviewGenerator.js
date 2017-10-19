@@ -23,8 +23,8 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
     const getFunding = () => {
         var funders = getSubItems(reviewData.funding).map((funder, i) => {
             var funderName = undefined
-            if (funder.fundername) {
-                funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
+            if (funder.funderName) {
+                funderName = funder.funderName.trim().length > 0 ? funder.funderName : undefined
             }
 
             var funder_identifier = undefined
