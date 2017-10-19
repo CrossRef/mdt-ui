@@ -133,11 +133,11 @@ export default class ErrorBubble extends React.Component{
                   {this.state.requiredMessageInUse = false}
                   {errors.title && this.errorMessage('title')}
                   {errors.doi && this.errorMessage('doi')}
-                  {(errors.invaliddoi) && this.errorMessage('invaliddoi')}
-                  {(errors.invalidDoiPrefix) && this.errorMessage('invalidDoiPrefix')}
-                  {(errors.dupedoi) && this.errorMessage('dupedoi')}
+                  {errors.invaliddoi && this.errorMessage('invaliddoi')}
+                  {errors.invalidDoiPrefix && this.errorMessage('invalidDoiPrefix')}
+                  {errors.dupedoi && this.errorMessage('dupedoi')}
                   {errors.url && this.errorMessage('url')}
-                  {(errors.invalidurl) && this.errorMessage('invalidurl')}
+                  {errors.invalidurl && this.errorMessage('invalidurl')}
                   {(errors.printDateYear || errors.onlineDateYear) && this.errorMessage('printDateYear')}
                   {(errors.printDateIncomplete || errors.onlineDateIncomplete) && this.errorMessage('printDateIncomplete')}
                   {errors.printDateInvalid && this.errorMessage('printDateInvalid')}
@@ -149,13 +149,13 @@ export default class ErrorBubble extends React.Component{
                   {errors.contributorGroupRole && this.errorMessage('contributorGroupRole')}
                   {errors.contributorGroupName && this.errorMessage('contributorGroupName')}
 
-                  {(errors.licenseFreeToRead) && this.errorMessage('licenseFreeToRead')}
+                  {errors.licenseFreeToRead && this.errorMessage('licenseFreeToRead')}
                   {errors.licenseDateIncomplete && this.errorMessage('licenseDateIncomplete')}
-                  {(errors.licenseDateInvalid) && this.errorMessage('licenseDateInvalid')}
+                  {errors.licenseDateInvalid && this.errorMessage('licenseDateInvalid')}
                   {errors.licenseUrl && this.errorMessage('licenseUrl')}
-                  {(errors.licenseUrlInvalid) && this.errorMessage('licenseUrlInvalid')}
+                  {errors.licenseUrlInvalid && this.errorMessage('licenseUrlInvalid')}
 
-                  {(errors.relatedItemDoiInvalid) && this.errorMessage('relatedItemDoiInvalid')}
+                  {errors.relatedItemDoiInvalid && this.errorMessage('relatedItemDoiInvalid')}
                   {errors.relatedItemIdType && this.errorMessage('relatedItemIdType')}
                   {errors.relatedItemRelType && this.errorMessage('relatedItemRelType')}
 
