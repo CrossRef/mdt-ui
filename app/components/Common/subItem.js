@@ -15,7 +15,8 @@ export default class SubItem extends Component {
     optionalIssueInfoHandlers: is.func,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
-    arrowType: is.string
+    arrowType: is.string,
+    deferredErrorBubbleRefresh: is.object.isRequired
   }
 
 
@@ -42,8 +43,7 @@ export default class SubItem extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble()
-    refreshStickyError()
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   addButton = () => {

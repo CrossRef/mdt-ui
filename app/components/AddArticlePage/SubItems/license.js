@@ -22,8 +22,7 @@ export default class License extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble()
-    refreshStickyError()
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   displayAppliesTo () {
@@ -65,6 +64,7 @@ export default class License extends Component {
     })
 
   }
+
 
   render () {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, licenseurl, appliesto} = this.props.license;

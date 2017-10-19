@@ -33,7 +33,7 @@ export function refreshErrorBubble () {
 
 export function refreshStickyError () {
   const errorMessage = $('.toolmsgholder')
-  if(!errorMessage) {
+  if(!errorMessage || !errorMessage.length) {
     return
   }
   const stickyError = $('.stickyError')
@@ -52,13 +52,6 @@ export function refreshStickyError () {
   }
 }
 
-
-
-export function scrollToError () {
-  $('html, body').animate({
-    scrollTop: $('.toolmsgholder').offset().top - 300
-  }, 1000);
-}
 
 //--------------------------------------- End JQUERY -------------------------------------------------
 //----------------------------------------------------------------------------------------------------
@@ -182,11 +175,36 @@ export function xmldoc (content) {
 
 
 
-export class Deferred {
+export class DeferredTask {
   constructor () {
     this.promise = new Promise((resolve, reject) => {
-      this.reject = reject
-      this.resolve = resolve
+
+      this._resolve = resolve
+      this._reject = reject
+
+      this.reject = (x) => {
+        this._reject(x)
+        this.rejected = true
+      }
+
+      this.resolve = (x) => {
+        this._resolve(x)
+        this.resolved = true
+      }
+
+      this.resolved = false
+      this.rejected = false
+
+      this.reset = function () {
+        this.promise = new Promise((resolve, reject) => {
+
+          this._resolve = resolve
+          this._reject = reject
+
+          this.resolved = false
+          this.rejected = false
+        })
+      }
     })
   }
 }

@@ -3,8 +3,8 @@ import is from 'prop-types'
 import _ from 'lodash'
 import $ from 'jquery'
 
-import DepositCartItem from './depositCartItem'
-import {Deferred, compareDois} from '../../utilities/helpers'
+import DepositCartTitle from './depositCartTitle'
+import {DeferredTask, compareDois} from '../../utilities/helpers'
 
 
 
@@ -49,11 +49,11 @@ export default class DepositCart extends Component {
         recordCount += cartItem.contains[record].contains.length
       }
 
-      let asyncErrorReport = new Deferred()
+      let asyncErrorReport = new DeferredTask()
       errorReports.push(asyncErrorReport.promise)
 
       items.push(
-        <DepositCartItem
+        <DepositCartTitle
             cartItem={cartItem}
             cart={this.props.cart}
             key={cartItem.doi}

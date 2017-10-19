@@ -7,7 +7,7 @@ import $ from 'jquery'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {xmldoc, jsEscape, refreshErrorBubble, refreshStickyError, compareDois} from '../utilities/helpers'
+import {xmldoc, jsEscape, compareDois, DeferredTask} from '../utilities/helpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
@@ -87,13 +87,15 @@ export default class AddArticlePage extends Component {
       isDuplicate,
       ownerPrefix,
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
-      version: '1'
+      version: '1',
+      deferredErrorBubbleRefresh: new DeferredTask()
     }
     this.state.article.doi = ownerPrefix + '/'
   }
 
 
   async componentDidMount () {
+
     const { pubDoi } = this.props.routeParams;
     const getItems = []
 
@@ -407,13 +409,7 @@ export default class AddArticlePage extends Component {
 
 
   componentDidUpdate(prevProps, prevState) {
-    refreshErrorBubble()
-    refreshStickyError()
-    if(!prevState.error && this.state.error) {
-      document.addEventListener('scroll', refreshStickyError, false)
-    } else if (prevState.error && !this.state.error) {
-      document.removeEventListener('scroll', refreshStickyError, false)
-    }
+    this.state.deferredErrorBubbleRefresh.resolve()
   }
 
 

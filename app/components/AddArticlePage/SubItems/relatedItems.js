@@ -22,8 +22,7 @@ export default class RelatedItems extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble()
-    refreshStickyError()
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   toggle = () => {

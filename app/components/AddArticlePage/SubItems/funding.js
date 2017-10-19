@@ -30,8 +30,7 @@ export default class Funding extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble()
-    refreshStickyError()
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   componentWillReceiveProps(nextProps) {
