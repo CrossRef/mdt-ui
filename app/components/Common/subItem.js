@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import {routes} from '../../routing'
-import {refreshErrorBubble} from '../../utilities/helpers'
+import {refreshErrorBubble, refreshStickyError} from '../../utilities/helpers'
 
 
 
@@ -15,7 +15,8 @@ export default class SubItem extends Component {
     optionalIssueInfoHandlers: is.func,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
-    arrowType: is.string
+    arrowType: is.string,
+    deferredErrorBubbleRefresh: is.object.isRequired
   }
 
 
@@ -42,7 +43,7 @@ export default class SubItem extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble()
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   addButton = () => {

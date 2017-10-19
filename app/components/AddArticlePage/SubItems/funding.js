@@ -3,7 +3,7 @@ import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
 
 import {routes} from '../../../routing'
-import {refreshErrorBubble} from '../../../utilities/helpers'
+import {refreshErrorBubble, refreshStickyError} from '../../../utilities/helpers'
 
 
 
@@ -24,7 +24,7 @@ export default class Funding extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble();
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   componentWillReceiveProps(nextProps) {
@@ -55,7 +55,6 @@ export default class Funding extends Component {
         }
       }
       this.handleFunding(event)
-      console.log(newValue)
       this.setState({
         funderName: newValue.name || '',
         funder_identifier: newValue.uri || ''

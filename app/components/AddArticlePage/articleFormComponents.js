@@ -56,66 +56,6 @@ export const InfoBubble = () =>
 
 
 
-let requiredMessageInUse = false
-const requiredMessage = () => {
-  if(!requiredMessageInUse) {
-    requiredMessageInUse = true
-    return <div><b>Required.</b><br />Please provide required information.</div>
-  } else {
-    return null
-  }
-}
-
-export const ErrorBubble = ({errors, crossmarkErrors}) =>
-  <ClassWrapper classNames={['errorHolder talltooltip fullError', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder', 'errormsginnerholder']}>
-    <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Caution.svg`} /></div>
-
-    {requiredMessageInUse = false}
-    {errors.title && requiredMessage()}
-    {errors.doi && requiredMessage()}
-    {(errors.invaliddoi) && <div><b>Invalid Article DOI.</b><br/>Please check your DOI (10.xxxx/xx...).</div>}
-    {(errors.invalidDoiPrefix) && <div><b>Invalid Article DOI.</b><br/>DOI prefix needs to match journal DOI prefix.</div>}
-    {(errors.dupedoi) && <div><b>Duplicate DOI.</b><br />Registering a new DOI? This one already exists.</div>}
-    {errors.url && requiredMessage()}
-    {(errors.invalidurl) && <div><b>Invalid Article URL.</b><br />Please check your URL.</div>}
-    {(errors.printDateYear || errors.onlineDateYear) && <div><b>Required.</b><br />Please provide either a print or online date.</div>}
-    {(errors.printDateIncomplete || errors.onlineDateIncomplete) && requiredMessage()}
-    {(errors.printDateInvalid || errors.onlineDateInvalid) && <div><b>Invalid Publication Date.</b><br />Please check your date.</div>}
-    {errors.firstPage && requiredMessage()}
-
-    {errors.contributorLastName && requiredMessage()}
-    {errors.contributorRole && requiredMessage()}
-    {errors.contributorGroupRole && requiredMessage()}
-    {errors.contributorGroupName && requiredMessage()}
-
-    {(errors.licenseFreeToRead) && <div><b>License Url Required.</b><br />Please provide a license URL.</div>}
-    {errors.licenseDateIncomplete && requiredMessage()}
-    {(errors.licenseDateInvalid) && <div><b>Invalid License Date.</b><br />Please check your Date.</div>}
-    {errors.licenseUrl && requiredMessage()}
-    {(errors.licenseUrlInvalid) && <div><b>Invalid License URL.</b><br />Please check your URL.</div>}
-
-    {(errors.relatedItemDoiInvalid) && <div><b>Invalid Related Item DOI.</b><br />Please check your DOI (10.xxxx/xx...)..</div>}
-    {errors.relatedItemIdType && requiredMessage()}
-    {errors.relatedItemRelType && requiredMessage()}
-
-    {errors.simCheckUrlInvalid && <div><b>Invalid Similarity Check URL.</b><br />Please check your URL.</div>}
-
-    {errors[`${pubHist} Label`] && requiredMessage()}
-    {errors[`${peer} Label`] && requiredMessage()}
-    {errors[`${peer} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Peer Review URL.</div>}
-    {errors[`${copyright} Label`] && requiredMessage()}
-    {errors[`${copyright} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Copyright / Licensing URL.</div>}
-    {errors[`${other} Label`] && requiredMessage()}
-    {errors[`${other} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Other URL.</div>}
-    {errors[`${supp} Href`] && <div><b>Invalid Crossmark URL.</b><br />Please check your Supplementary Material URL.</div>}
-    {errors[`${update} Type`] && requiredMessage()}
-    {errors[`${update} Date`] && requiredMessage()}
-    {errors[`${update} DOI`] && requiredMessage()}
-    {errors[`${update} DOIinvalid`] && <div><b>Invalid Crossmark DOI.</b><br />Please check your Status Update DOI (10.xxxx/xx...).</div>}
-    {errors[`${clinical} Registry`] && requiredMessage()}
-    {errors[`${clinical} TrialNumber`] && requiredMessage()}
-
-  </ClassWrapper>
 
 
 
@@ -143,6 +83,7 @@ export class ArticleTitleField extends Component {
     )
   }
 }
+
 
 
 export class OptionalTitleData extends Component {
