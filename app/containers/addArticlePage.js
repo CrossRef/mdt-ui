@@ -3,11 +3,11 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import {browserHistory} from 'react-router'
-import _ from 'lodash'
+import $ from 'jquery'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {xmldoc, jsEscape, refreshErrorBubble, compareDois} from '../utilities/helpers'
+import {xmldoc, jsEscape, compareDois, DeferredTask} from '../utilities/helpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
@@ -87,7 +87,8 @@ export default class AddArticlePage extends Component {
       isDuplicate,
       ownerPrefix,
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
-      version: '1'
+      version: '1',
+      deferredErrorBubbleRefresh: new DeferredTask()
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -219,9 +220,9 @@ export default class AddArticlePage extends Component {
       error: false,
       errors: {...criticalErrors, ...warnings},
       criticalErrors: criticalErrors,
-      license: licenses.length ? licenses : defaultState.license,
-      contributors: contributors.length ? contributors : defaultState.contributors,
-      relatedItems: relatedItems.length ? relatedItems : defaultState.relatedItems,
+      license: licenses.length ? licenses : this.state.license,
+      contributors: contributors.length ? contributors : this.state.contributors,
+      relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems,
       openItems: {
         Contributors: !!contributors.length,
         Funding: !!getSubItems(data.funding).length,
@@ -344,7 +345,6 @@ export default class AddArticlePage extends Component {
     this.save(addToCart)
   }
 
-
   handleChange = (e) => {
     this.setState({
       article: {
@@ -409,7 +409,7 @@ export default class AddArticlePage extends Component {
 
 
   componentDidUpdate() {
-    refreshErrorBubble()
+    this.state.deferredErrorBubbleRefresh.resolve()
   }
 
 

@@ -47,7 +47,7 @@ export const IssueMessages = {
   },
 
   printDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
@@ -63,7 +63,7 @@ export const IssueMessages = {
   },
 
   onlineDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
@@ -171,14 +171,14 @@ export const ArticleMessages = {
   },
 
   printDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
   printDateIncomplete: {
     type: 'required',
-    bold: 'Incomplete Print Date',
-    message: 'Please provide year with month and/or day.'
+    bold: 'Required',
+    message: 'Print date incomplete.'
   },
   printDateInvalid: {
     type: 'invalid',
@@ -187,14 +187,14 @@ export const ArticleMessages = {
   },
 
   onlineDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
   onlineDateIncomplete: {
     type: 'required',
-    bold: 'Required',
-    message: 'Online date incomplete.'
+    bold: 'Incomplete Online Date',
+    message: 'Please provide year with month and/or day.'
   },
   onlineDateInvalid: {
     type: 'invalid',
@@ -252,7 +252,7 @@ export const ArticleMessages = {
   licenseUrlInvalid: {
     type: 'invalid',
     bold: 'Invalid License URL',
-    message: 'Please check your license URL.'
+    message: 'Please check your URL format.'
   },
 
   relatedItemDoiInvalid: {

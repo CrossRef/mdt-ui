@@ -10,16 +10,11 @@ import * as api from '../actions/api'
 
 
 
-export function recordTitle (type, title) {
-  if(type === 'issue') {
-    return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
-  } else {
-    return title.title
-  }
-}
 
 
-
+//JQUERY DOM Modifications.
+// Its a bad idea to mix react with jquery modifications but these particular operations are difficult to write in react without careful thought,
+// so for now will "quarantine" all jquery DOM modifications here for easier debugging. At some point it would be worthwhile to refactor this into react
 
 
 export function refreshErrorBubble () {
@@ -34,6 +29,42 @@ export function refreshErrorBubble () {
   }
 }
 
+
+
+export function refreshStickyError () {
+  const errorMessage = $('.toolmsgholder')
+  if(!errorMessage || !errorMessage.length) {
+    return
+  }
+  const stickyError = $('.stickyError')
+  const bounds = errorMessage[0].getBoundingClientRect()
+  const ErrorIsVisible = bounds.top < window.innerHeight && bounds.bottom > 0
+  const errorIsAbove = bounds.top < 0
+  if ( (ErrorIsVisible && stickyError.is(":visible")) || !errorMessage.is(":visible")) {
+    stickyError.hide()
+  } else if (!ErrorIsVisible && !stickyError.is(":visible")) {
+    stickyError.show()
+  }
+  if (errorIsAbove) {
+    stickyError.addClass('errorAbove').removeClass('errorBelow').find('img').removeClass('rotate')
+  } else {
+    stickyError.addClass('errorBelow').removeClass('errorAbove').find('img').addClass('rotate')
+  }
+}
+
+
+//--------------------------------------- End JQUERY -------------------------------------------------
+//----------------------------------------------------------------------------------------------------
+
+
+
+export function recordTitle (type, title) {
+  if(type === 'issue') {
+    return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
+  } else {
+    return title.title
+  }
+}
 
 
 
@@ -144,11 +175,36 @@ export function xmldoc (content) {
 
 
 
-export class Deferred {
+export class DeferredTask {
   constructor () {
     this.promise = new Promise((resolve, reject) => {
-      this.reject = reject
-      this.resolve = resolve
+
+      this._resolve = resolve
+      this._reject = reject
+
+      this.reject = (x) => {
+        this._reject(x)
+        this.rejected = true
+      }
+
+      this.resolve = (x) => {
+        this._resolve(x)
+        this.resolved = true
+      }
+
+      this.resolved = false
+      this.rejected = false
+
+      this.reset = function () {
+        this.promise = new Promise((resolve, reject) => {
+
+          this._resolve = resolve
+          this._reject = reject
+
+          this.resolved = false
+          this.rejected = false
+        })
+      }
     })
   }
 }
@@ -228,6 +284,9 @@ export function objectFind (object, finder) {
 
 
 
+
+
+
 export class SearchableRecords {
   constructor (records) {
     Object.assign(this, records)
@@ -294,15 +353,19 @@ export function removeDuplicates(a) {
 
 
 
+
 export const errorHandler = (error, action = ()=>{}) => {
   console.error('Error Handler: ', error)
   action()
-  exposedStore.dispatch(controlModal({
-    showModal: true,
-    title: error,
-    style: 'errorModal',
-    Component: ()=>null
-  }))
+  if(!exposedStore.getState().modal.showModal) {
+    exposedStore.dispatch(controlModal({
+      showModal: true,
+      title: error,
+      style: 'errorModal',
+      Component: ()=>null
+    }))
+  }
+
 }
 
 

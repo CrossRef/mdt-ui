@@ -4,9 +4,6 @@ import update from 'immutability-helper'
 const Languages = require('../../../utilities/lists/language.json')
 import { ArchiveLocations } from '../../../utilities/lists/archiveLocations'
 
-const PublicationTypes = require('../../../utilities/lists/publicationTypes.json')
-
-
 export default class AdditionalInformation extends Component {
   constructor (props) {
     super(props)
@@ -55,24 +52,6 @@ export default class AdditionalInformation extends Component {
             value={this.props.addInfo.archiveLocation}
             >
               {locations}
-          </select>
-      )
-  }
-
-  displayPublicationTypes () {
-      var publicationType = [
-        <option key='-1'></option>,
-        ...PublicationTypes.map((pubtype, i) => (<option key={i} value={pubtype.value}>{pubtype.name}</option>))
-      ]
-
-      return (
-          <select
-            ref='publicationType'
-            onChange={this.handleAddInfo}
-            className='height32'
-            value={this.props.addInfo.publicationType}
-            >
-              {publicationType}
           </select>
       )
   }
@@ -154,23 +133,6 @@ export default class AdditionalInformation extends Component {
                                 </div>
                                 <div className='field'>
                                     {this.displayLanguages()}
-                                </div>
-                            </div>
-                        </div>
-                        <div className='fieldinnerholder halflength'>
-                            <div className='labelholder'>
-                                <div></div>
-                                <div className='labelinnerholder'>
-                                    <div className='label'>Publication Type</div>
-                                </div>
-                            </div>
-                            <div className='requrefieldholder'>
-                                <div className='requiredholder norequire'>
-                                    <div className='required height32'>
-                                    </div>
-                                </div>
-                                <div className='field'>
-                                    {this.displayPublicationTypes()}
                                 </div>
                             </div>
                         </div>

@@ -173,7 +173,7 @@ export const StatusUpdate = generateCard(update, function fields (i, card) {
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput title='DOI for Update' keyPath={[update, i, 'DOI']} required={card.state[`require_${i}`]}/>
+          <TextInput title='Original DOI updated' keyPath={[update, i, 'DOI']} required={card.state[`require_${i}`]}/>
         </div>
         <div className='errorHolder'></div>
       </div>
