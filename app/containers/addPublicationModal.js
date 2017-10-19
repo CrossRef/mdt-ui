@@ -71,7 +71,7 @@ export default class AddPublicationCard extends Component {
       const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {}
       let version = props['mdt-version'] ? String(Number(props['mdt-version'])+1) : '0'
       const doi_data = data.doi_data || {}
-      const issn = Array.isArray(data.issn) ? data.issn : [data.issn]
+      const issn = Array.isArray(data.issn) ? data.issn : [data.issn || {}]
       this.state = {
         ...defaultState,
         'mdt-version': version.toString(),
