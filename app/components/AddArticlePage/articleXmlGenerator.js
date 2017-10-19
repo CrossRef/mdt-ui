@@ -114,8 +114,8 @@ export default function (state, reduxForm) {
   function getFunderXML () {
     var funders = getSubItems(state.funding).map( funder => {
       let funderName
-      if (funder.fundername) {
-        funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
+      if (funder.funderName) {
+        funderName = funder.funderName.trim().length > 0 ? funder.funderName : undefined
       }
 
       let funder_identifier

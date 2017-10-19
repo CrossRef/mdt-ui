@@ -181,7 +181,6 @@ const parseXMLArticle = function (articleXML) {
       _.each(fundings, (fund) => {
         let thefunder = objectSearch(fund, 'fr:assertion')
         let funderName = ''
-        let funderRegId = ''
         let funderIdent = ''
         let grants = []
 
@@ -191,14 +190,12 @@ const parseXMLArticle = function (articleXML) {
         for(const element of thefunder) {
           if (element['-name'] === 'funder_identifier') {
             funderIdent = element['#text']
-            funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
           } else if (element['-name'] === 'funder_name'){
             funderName = element['#text'].trim()
             // within the name, there is the funder ID
             const thefunderId = objectSearch(element, 'fr:assertion')
             if (thefunderId) {
               funderIdent = thefunderId['#text']
-              funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
             }
 
           } else if (element['-name'] === 'award_number'){
@@ -208,8 +205,7 @@ const parseXMLArticle = function (articleXML) {
 
 
         funders.push({
-          fundername: funderName,
-          funderRegistryID: funderRegId,
+          funderName: funderName,
           funder_identifier: funderIdent,
           grantNumbers: grants.length > 0 ? grants : ['']
         })

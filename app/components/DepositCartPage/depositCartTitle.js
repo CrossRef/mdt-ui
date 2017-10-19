@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import DepositCartRecord from './depositCartRecord'
-import {DeferredTask, pascaleCase} from '../../utilities/helpers'
+import {DeferredTask} from '../../utilities/helpers'
 
 
 

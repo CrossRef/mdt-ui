@@ -91,8 +91,7 @@ export default {
   ],
   funding: [
     {
-      fundername: '',
-      funderRegistryID: '',
+      funderName: '',
       funder_identifier: '',
       grantNumbers: ['']
     }
