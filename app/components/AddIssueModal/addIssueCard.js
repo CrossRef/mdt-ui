@@ -65,7 +65,7 @@ export default class AddIssueCard extends React.Component {
                         </div>
                         <div className='field'>
                           <input
-                            className={`height32 ${errors.issue && 'fieldError'}`}
+                            className={`height32 ${errors.issueVolume && 'fieldError'}`}
                             type='text'
                             name='issue.issue'
                             onChange={this.props.handler}
@@ -122,15 +122,16 @@ export default class AddIssueCard extends React.Component {
                           <div className='errormsgholder'>
                             <div className='errormsginnerholder'>
                               <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
+                              {errors.issueVolume &&
+                                <div><b>Required.</b><br />Please provide either an issue or volume number.</div>
+                              }
                               {(()=>{
 
                                 let requiredError = [];
-                                if(errors.issue) requiredError.push('Please provide an issue number.');
                                 if(errors.issuedoi) requiredError.push('Please provide required DOI.');
                                 if(errors.issueUrl) requiredError.push('Please provide required Issue URL.');
                                 if(errors.printDateYear || errors.onlineDateYear) requiredError.push('Please provide either a print or online date.');
                                 if(errors.printDateIncomplete || errors.onlineDateIncomplete) requiredError.push('Dates require a year value.');
-                                if(errors.volume) requiredError.push('Please provide a volume number.');
                                 if(errors.volumeUrl) requiredError.push('Please provide required Volume URL.');
                                 if(errors.volumedoi) requiredError.push('Please provide required Volume DOI.');
                                 if(errors.contributorLastName) requiredError.push('Last name required with First Name.');
@@ -370,7 +371,7 @@ export default class AddIssueCard extends React.Component {
                         </div>
                         <div className='field'>
                           <input
-                            className={`height32 ${errors.volume && 'fieldError'}`}
+                            className={`height32 ${errors.issueVolume && 'fieldError'}`}
                             type='text'
                             name='issue.volume'
                             onChange={this.props.handler}
