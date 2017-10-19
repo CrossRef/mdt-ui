@@ -55,7 +55,6 @@ export default class Funding extends Component {
         }
       }
       this.handleFunding(event)
-      console.log(newValue)
       this.setState({
         funderName: newValue.name || '',
         funder_identifier: newValue.uri || ''
