@@ -16,7 +16,7 @@ export default class Funding extends Component {
     this.state = {
       showSubItem: true,
       suggestions: [],
-      funderName: funding.funderName,
+      funderName: funding.funderName || '',
       funder_identifier: funding.funder_identifier.trim().length ? funding.funder_identifier : '',
       isLoading: false,
       grantNumbers: funding.grantNumbers.length > 0 ? funding.grantNumbers : ['']
