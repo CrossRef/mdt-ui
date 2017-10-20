@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import {routes} from '../../routing'
-import {refreshErrorBubble, refreshStickyError} from '../../utilities/helpers'
+import {refreshErrorBubble} from '../../utilities/helpers'
 
 
 
@@ -43,7 +43,11 @@ export default class SubItem extends Component {
   }
 
   componentDidUpdate () {
-    this.props.deferredErrorBubbleRefresh.resolve()
+    if(this.props.title === 'Optional Issue Information (Contributorship)') {
+      refreshErrorBubble()
+    } else {
+      this.props.deferredErrorBubbleRefresh.resolve()
+    }
   }
 
   addButton = () => {
