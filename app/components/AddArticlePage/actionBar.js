@@ -30,20 +30,20 @@ export default class ActionBar extends Component {
     this.setState({menuOpen: !this.state.menuOpen})
   }
 
-handleClick = e => {
-  const element = $(e.target)
-  if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
-    this.setState({ menuOpen: false })
+  handleClick = e => {
+    const element = $(e.target)
+    if(!(element.parents('.actionBarDropDown').length || element.is('.actionBarDropDown, .actionTooltip'))) {
+      this.setState({ menuOpen: false })
+    }
   }
-}
 
-componentWillUpdate (nextProps, nextState) {
-  if(nextState.menuOpen) {
-    document.addEventListener('click', this.handleClick, false)
-  } else if (!nextState.menuOpen) {
-    document.removeEventListener('click', this.handleClick, false)
+  componentWillUpdate (nextProps, nextState) {
+    if(nextState.menuOpen) {
+      document.addEventListener('click', this.handleClick, false)
+    } else if (!nextState.menuOpen) {
+      document.removeEventListener('click', this.handleClick, false)
+    }
   }
-}
 
   componentWillUnmount () {
     document.removeEventListener('click', this.handleClick, false)
