@@ -70,7 +70,7 @@ export default {
     lastPage: '',
     locationId: '',
     abstract: '',
-    freetolicense: false
+    freetolicense: ''
   },
   contributors: [
     {

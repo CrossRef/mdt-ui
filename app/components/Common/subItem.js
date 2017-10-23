@@ -10,8 +10,8 @@ export default class SubItem extends Component {
 
   static propTypes = {
     title: is.string.isRequired,
+    freetolicense: is.string,
     showSection: is.bool.isRequired,
-    freeToRead: is.bool,
     optionalIssueInfoHandlers: is.func,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
@@ -23,15 +23,14 @@ export default class SubItem extends Component {
   constructor (props) {
     super()
     this.state = {
-      showSection: props.showSection || !!props.simCheckError || props.freeToRead || false
+      showSection: props.showSection || !!props.simCheckError || false
     }
   }
 
   componentWillReceiveProps(nextProps) {
-    const freeToReadSwitchedOn = !!(nextProps.freeToRead && !this.props.freeToRead)
-    if (freeToReadSwitchedOn || nextProps.validating) {
+    if (nextProps.validating) {
       this.setState({
-        showSection: freeToReadSwitchedOn || nextProps.showSection || this.props.freeToRead || false
+        showSection: nextProps.showSection || false
       })
     }
   }

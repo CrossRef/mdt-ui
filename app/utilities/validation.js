@@ -16,7 +16,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     doi: false,
     invaliddoi: false,
     invalidDoiPrefix: false,
-    licenseFreeToRead: false,
+    freetolicense: false,
     dupedoi: false
   }
 
@@ -27,8 +27,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 
-  if (freetolicense){
-    criticalErrors.licenseFreeToRead = true
+  if (freetolicense === 'yes'){
+    criticalErrors.freetolicense = true
   }
 
   const hasDate = !!(printDateYear || onlineDateYear)
@@ -85,17 +85,16 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
   //validate License subItems
-  console.log(getSubItems(data.license))
   const licenses = getSubItems(data.license).map((license, i) => {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license
     const licenseUrlEntered = urlEntered(licenseurl)
-    console.log(license, licenseUrlEntered)
-    if(licenseUrlEntered) {
-      criticalErrors.licenseFreeToRead = false
+    if(licenseUrlEntered && i === 0) {
+      criticalErrors.freetolicense = false
     }
 
     const errors = {
-      licenseUrl: criticalErrors.licenseFreeToRead,
+      freetolicense: i===0 && criticalErrors.freetolicense,
+      licenseUrl: false,
       licenseUrlInvalid: false,
       licenseDateIncomplete: false,
       licenseDateInvalid: false,
@@ -123,7 +122,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
       warnings.licenseDateInvalid = true
     }
 
-    if(!licenseUrlEntered && (thereIsDate || appliesto)) {
+    if(!errors.freetolicense && !licenseUrlEntered && (thereIsDate || appliesto)) {
       errors.licenseUrl = true
       warnings.licenseUrl = true
     }
@@ -137,14 +136,16 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     return {...license, errors}
   })
 
-  if(criticalErrors.licenseFreeToRead) {  // if no licenses have a date and free to license is on, make first license require a date
+  if(criticalErrors.freetolicense) {
     if(!licenses.length) {
       licenses[0] = {
-        errors: {}
+        errors: {
+          freetolicense: true
+        }
       }
     }
-    licenses[0].errors.licenseUrl = true
   }
+
 
   //validate contributor subItems
   const contributors = getSubItems(data.contributors).map( contributor => {
