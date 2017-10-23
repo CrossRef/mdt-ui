@@ -12,7 +12,6 @@ export default function (state, reduxForm) {
   const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
     printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay
   const language = state.addInfo.language
-  const publicationType = state.addInfo.publicationType
 
   const funderElement = getFunderXML()
   const licenseElement = getLicenseXML()
@@ -21,7 +20,6 @@ export default function (state, reduxForm) {
   const array = [
     `<journal_article`,
     `${(language.length > 0) ? ` language="${language}"`:``}`,
-    `${(publicationType.length > 0) ? ` publication_type="${publicationType}"`:``}`,
     `>`,
 
     `<titles>`,

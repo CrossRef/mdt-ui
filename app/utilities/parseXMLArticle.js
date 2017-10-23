@@ -132,7 +132,6 @@ const parseXMLArticle = function (articleXML) {
     const addInfo = {
         archiveLocation: archive,
         language: language ? language : '',
-        publicationType: publicationType ? publicationType : '',
         similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
         freetolicense: !!freeToRead
     }
