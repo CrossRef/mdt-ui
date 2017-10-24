@@ -241,7 +241,7 @@ export default class Funding extends Component {
                                          />
                                         {this.state.isLoading &&
                                             <div className="status">
-                                                <img src={`${routes.images}/AddArticle/ajax-loader-transparent.gif`} />
+                                             
                                             </div>
                                         }
                                     </div>
