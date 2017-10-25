@@ -107,6 +107,7 @@ export default function (state, reduxForm) {
   }
   function appendFunder(el) {
     var funders = getSubItems(state.funding)
+    if(!funders || !funders.size)return
     var programElm = el.ownerDocument.createElementNS("http://www.crossref.org/fundref.xsd", "fr:program")
 
     for (let funder of funders) {
@@ -162,7 +163,7 @@ export default function (state, reduxForm) {
   }
   function appendLicenseElm(root) {
     var licenses = getSubItems(state.license)
-    if (!licenses) {
+    if (!licenses || !licenses.size) {
       return
     }
     var licElm = root.ownerDocument.createElementNS("http://www.crossref.org/AccessIndicators.xsd", "ai:program")
@@ -191,10 +192,9 @@ export default function (state, reduxForm) {
           appendAttribute("start_date", date, el)
           licElm.appendChild(el)
         }
-        el = root.ownerDocument.createElement("ai:license_ref")
+        el = appendElm("ai:license_ref",license.licenseurl)
         appendAttribute("applies_to", license.appliesto, el)
         appendAttribute("start_date", date, el)
-        el.textContent = license.licenseurl
         licElm.appendChild(el)
       }
     }

@@ -263,7 +263,7 @@ export default class AddArticlePage extends Component {
       const journalArticle = journalArticleXml(this.state, this.props.reduxForm)
       const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
       const journalElm = journalDoc.getElementsByTagName("journal")[0]
-      journalElm.parentNode.appendChild(journalArticle)    
+      journalElm.appendChild(journalArticle)    
       console.info(new XMLSerializer().serializeToString(journalDoc))
       const title = jsEscape(this.state.article.title)
 
