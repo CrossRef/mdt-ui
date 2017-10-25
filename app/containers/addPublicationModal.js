@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import verifyIssn from 'issn-verify'
-
+import {appendElm,appendAttribute} from '../utilities/helpers'
+import { XMLSerializer, DOMParser } from 'xmldom'
 import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
 const languages = require('../utilities/lists/language.json')
 
@@ -218,28 +219,21 @@ export default class AddPublicationCard extends Component {
   }
 
   publicationXml = (form = this.state) => {
-    const xmlArray = [
-      `<Journal xmlns="http://www.crossref.org/xschema/1.1">`,
+    const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>')
+    const pubElm = doc.createElement("journal_metadata")
+    doc.rootElement.appendChild(pubElm)
+    appendAttribute("language",form.language,pubElm)
 
-      `<journal_metadata${form.language ? ` language="${form.language}"` : '' }>`,
-
-      `<full_title>${form.title}</full_title>`,
-
-      form.abbreviation ? `<abbrev_title>${form.abbreviation}</abbrev_title>` : '',
-
-      `<issn media_type="electronic">${form.electISSN}</issn>`,
-
-      `<doi_data>`,
-      `<doi>${form.DOI}</doi>`,
-      `<resource>${form.url}</resource>`,
-      `</doi_data>`,
-
-      `</journal_metadata>`,
-
-      form.archivelocation ? `<archive_locations><archive name="${form.archivelocation}"/></archive_locations>` : ``,
-      `</Journal>`
-    ]
-    return xmlArray.join('')
+    appendElm("full_title",form.title,pubElm)
+    appendElm("abbrev_title",form.abbreviation,pubElm)
+    var el = appendElm("issn",electISSN,pubElm)
+    appendAttribute("media_type","electronic",el)
+    el = doc.createElement("doi_data")
+    pubElm.appendChild(el)
+    appendElm("doi",form.DOI,el)
+    appendElm("resource",form.url,el)
+    appendElm("archive_locations",form.archivelocation,doc.rootElement)
+    return new XMLSerializer().serializeToString(doc)
   }
 
   inputHandler = (e) => {

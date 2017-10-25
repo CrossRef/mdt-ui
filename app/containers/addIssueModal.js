@@ -9,7 +9,7 @@ import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
 import * as api from '../actions/api'
-
+import { XMLSerializer, DOMParser } from 'xmldom'
 
 
 export default class AddIssueModal extends Component {
@@ -137,7 +137,7 @@ export default class AddIssueModal extends Component {
         'type': 'issue',
         'mdt-version': version,
         'status': 'draft',
-        'content': issueXML.replace(/(\r\n|\n|\r)/gm,'')
+        'content': new XMLSerializer().serializeToString(issueXML)
       }
 
       const submissionPayload = {

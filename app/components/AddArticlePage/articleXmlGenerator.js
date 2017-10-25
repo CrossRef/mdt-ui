@@ -4,6 +4,7 @@ import xmlent from 'xml-entities'
 import { XMLSerializer, DOMParser } from 'xmldom'
 import { getSubItems } from '../../utilities/getSubItems'
 import { cardNames, registryDois } from '../../utilities/crossmarkHelpers'
+import {appendElm,appendAttribute} from '../../utilities/helpers'
 const { pubHist, peer, copyright, supp, clinical, other, update } = cardNames
 
 
@@ -74,20 +75,8 @@ export default function (state, reduxForm) {
   doc.documentElement.appendChild(el)
 
   console.info(new XMLSerializer().serializeToString(doc))
-  return new XMLSerializer().serializeToString(doc)
+  return doc
 
-
-  function appendElm(elmName, val, appendToElm) {
-    if (val && (val.trim().length )) {
-      var el = appendToElm.ownerDocument.createElement(elmName)
-      el.textContent = val
-      appendToElm.appendChild(el)
-    }
-    return el
-  }
-  function appendAttribute(attrName, val, appendToElm) {
-    if (val && val.trim().length ) appendToElm.setAttribute(attrName, val)
-  }
   function appendContributorElm(root) {
     var contributors = getSubItems(state.contributors)
     if (contributors.length == 0) return

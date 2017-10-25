@@ -8,7 +8,17 @@ import {controlModal} from '../actions/application'
 import * as api from '../actions/api'
 
 
-
+export function appendElm(elmName, val, appendToElm) {
+  if (val && (val.trim().length )) {
+    var el = appendToElm.ownerDocument.createElement(elmName)
+    el.textContent = val.trim()
+    appendToElm.appendChild(el)
+  }
+  return el
+}
+export function appendAttribute(attrName, val, appendToElm) {
+  if (val && val.trim().length ) appendToElm.setAttribute(attrName, val.trim())
+}
 
 export function recordTitle (type, title) {
   if(type === 'issue') {
