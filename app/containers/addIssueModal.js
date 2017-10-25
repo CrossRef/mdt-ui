@@ -1,10 +1,13 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import update from 'immutability-helper'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
+import { controlModal, getPublications } from '../actions/application'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
-import {jsEscape, refreshErrorBubble} from '../utilities/helpers'
+import {jsEscape, DeferredTask} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
@@ -12,12 +15,21 @@ import * as api from '../actions/api'
 
 
 
+
+const mapStateToProps = (state, props) => ({})
+
+const mapDispatchToProps = dispatch => bindActionCreators({
+  asyncGetPublications: getPublications,
+  reduxControlModal: controlModal
+}, dispatch)
+
+
+@connect(mapStateToProps, mapDispatchToProps)
 export default class AddIssueModal extends Component {
 
   static propTypes = {
     ownerPrefix: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
-
     asyncGetPublications: is.func.isRequired
   }
 
@@ -30,11 +42,13 @@ export default class AddIssueModal extends Component {
     }
     this.state.issue.issueDoi = props.ownerPrefix + '/'
     this.state.issue.volumeDoi = props.ownerPrefix + '/'
+
+    this.state.deferredErrorBubbleRefresh = new DeferredTask()
   }
 
   async componentDidMount () {
     if(this.props.mode === 'edit') {
-      let id, Publication, message, Issue, issueDoiDisabled = false, volumeDoiDisabled = false;
+      let id, Publication, Issue, issueDoiDisabled = false, volumeDoiDisabled = false;
 
       id = {
         doi: this.props.issue.issueDoi,
@@ -42,8 +56,7 @@ export default class AddIssueModal extends Component {
         pubDoi: this.props.publication.message.doi
       }
       Publication = await api.getItem(id)
-      message = Publication.message
-      Issue = message.contains[0]
+      Issue = Publication.message.contains[0]
 
       const version = Issue['mdt-version']
 
@@ -70,6 +83,7 @@ export default class AddIssueModal extends Component {
         issue:  issue,
         optionalIssueInfo: optionalIssueInfo,
         showSection: showSection,
+        titleId: JSON.stringify({issue: issue.issue, volume: issue.volume, title: issue.issueTitle}),
         ...validatedPayload
       }
 
@@ -112,9 +126,11 @@ export default class AddIssueModal extends Component {
 
   save = async () => {
 
-    const {valid, validatedPayload, criticalErrors, issueDoiEntered} = await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
+    const {valid, validatedPayload, criticalErrors, issueDoiEntered} =
+      await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
 
     if (valid) {
+      const issueDoi = issueDoiEntered ? this.state.issue.issueDoi : ''
       const { publication, mode } = this.props
 
       const issueXML = getIssueXml(this.state)
@@ -122,7 +138,7 @@ export default class AddIssueModal extends Component {
       let version = this.state.version
 
       if (mode === 'edit') {
-        version = (Number(this.state.version) + 1).toString()
+        version = String(Number(this.state.version) + 1)
       }
 
       const title = jsEscape(this.state.issue.issueTitle)
@@ -132,7 +148,7 @@ export default class AddIssueModal extends Component {
       const newRecord = {
         'title': {issue, volume, title},
         'date': new Date(),
-        'doi': issueDoiEntered ? this.state.issue.issueDoi : '',
+        'doi': issueDoi,
         'owner-prefix': this.props.ownerPrefix,
         'type': 'issue',
         'mdt-version': version,
@@ -148,20 +164,39 @@ export default class AddIssueModal extends Component {
         }
       }
 
-      try {
+      const newTitleId = JSON.stringify(newRecord.title)
+      const oldTitleId = this.state.titleId
+      validatedPayload.titleId = newTitleId
+
+      //check if new titleId, if so, do rename
+      if(!issueDoiEntered && oldTitleId && oldTitleId !== newTitleId) {
+        const issueInfo = publication.normalizedRecords.find( record =>
+          JSON.stringify(record.title) === oldTitleId
+        )
+
+        //delete old issue
+        await api.deleteItem({doi: issueDoi, title: oldTitleId, pubDoi: publication.message.doi})
+
+        //save new issue
         await api.submitItem(submissionPayload)
-      } catch (e) {
-        console.error('ERROR in save Issue: ', e)
+
+        //save articles in contains to new issue
+        for (let article of issueInfo.contains) {
+          newRecord.contains = [article]
+          article['mdt-version'] = String(Number(article['mdt-version']) + 1)
+          await api.submitItem(submissionPayload)
+        }
+
+      } else {
+        await api.submitItem(submissionPayload)
       }
 
       this.props.asyncGetPublications(this.props.publication.message.doi)
 
-      newRecord.pubDoi = publication.message.doi
-
       if(issueDoiEntered) {
         validatedPayload.issueDoiDisabled = true
       }
-      validatedPayload.version = (Number(this.state.version) + 1).toString()
+      validatedPayload.version = String(Number(this.state.version) + 1)
       const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
       validatedPayload.confirmationPayload = confirmationPayload
       validatedPayload.timeOut = timeOut
@@ -276,7 +311,7 @@ export default class AddIssueModal extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble()
+    this.state.deferredErrorBubbleRefresh.resolve()
   }
 
   componentWillUnmount () {

@@ -186,7 +186,7 @@ export default class PublicationPage extends Component {
   }
 
   render () {
-    const { publication, asyncGetPublications, reduxControlModal } = this.props
+    const { publication, reduxControlModal } = this.props
     const contains = (publication && publication.message && publication.message.contains) || []
     const {doi, ownerPrefix} = this.state
 
@@ -207,8 +207,7 @@ export default class PublicationPage extends Component {
               reduxControlModal={this.props.reduxControlModal}
               reduxCartUpdate={this.props.reduxCartUpdate}
 
-              asyncSearchRecords={this.props.asyncSearchRecords}
-              asyncGetPublications={this.props.asyncGetPublications}/>
+              asyncSearchRecords={this.props.asyncSearchRecords}/>
 
             <ActionBar
               ownerPrefix={ownerPrefix}
@@ -221,9 +220,7 @@ export default class PublicationPage extends Component {
               duplicateSelection={this.duplicateSelection}
 
               reduxControlModal={reduxControlModal}
-              reduxCartUpdate={this.props.reduxCartUpdate}
-
-              asyncGetPublications={asyncGetPublications}/>
+              reduxCartUpdate={this.props.reduxCartUpdate}/>
 
             <div className='publication-children'>
               {contains.length ?
@@ -239,10 +236,9 @@ export default class PublicationPage extends Component {
                   handleAddToList={this.handleAddToList}
 
                   reduxControlModal={this.props.reduxControlModal}
-                  reduxCartUpdate={this.props.reduxCartUpdate}
+                  reduxCartUpdate={this.props.reduxCartUpdate}/>
 
-                  asyncGetPublications={asyncGetPublications}
-                /> : <div className='empty-message'>No articles, please create one!</div>}
+                : <div className='empty-message'>No articles, please create one!</div>}
             </div>
           </div>
         :
