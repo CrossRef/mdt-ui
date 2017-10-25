@@ -46,6 +46,7 @@ export default class AddIssueModal extends Component {
     this.state.deferredErrorBubbleRefresh = new DeferredTask()
   }
 
+
   async componentDidMount () {
     if(this.props.mode === 'edit') {
       let id, Publication, Issue, issueDoiDisabled = false, volumeDoiDisabled = false;
@@ -94,7 +95,8 @@ export default class AddIssueModal extends Component {
 
   async validation (issueData, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled) {
 
-    const { criticalErrors, warnings, contributors, enableVolumeDoi } = await asyncValidateIssue(issueData, optionalIssueInfo, this.props.ownerPrefix, issueDoiDisabled, volumeDoiDisabled)
+    const { criticalErrors, warnings, contributors, enableVolumeDoi } =
+      await asyncValidateIssue(issueData, optionalIssueInfo, this.props.ownerPrefix, issueDoiDisabled, volumeDoiDisabled)
 
     const validatedPayload = {
       validating: true,
@@ -170,9 +172,11 @@ export default class AddIssueModal extends Component {
 
       //check if new titleId, if so, do rename
       if(!issueDoiEntered && oldTitleId && oldTitleId !== newTitleId) {
-        const issueInfo = publication.normalizedRecords.find( record =>
-          JSON.stringify(record.title) === oldTitleId
-        )
+        const issueInfo = mode === 'edit' ?
+          publication.normalizedRecords.find( record =>
+            JSON.stringify(record.title) === oldTitleId
+          )
+        : undefined
 
         //delete old issue
         await api.deleteItem({doi: issueDoi, title: oldTitleId, pubDoi: publication.message.doi})
@@ -181,10 +185,12 @@ export default class AddIssueModal extends Component {
         await api.submitItem(submissionPayload)
 
         //save articles in contains to new issue
-        for (let article of issueInfo.contains) {
-          newRecord.contains = [article]
-          article['mdt-version'] = String(Number(article['mdt-version']) + 1)
-          await api.submitItem(submissionPayload)
+        if(issueInfo && issueInfo.contains && issueInfo.contains.length) {
+          for (let article of issueInfo.contains) {
+            newRecord.contains = [article]
+            article['mdt-version'] = String(Number(article['mdt-version']) + 1)
+            await api.submitItem(submissionPayload)
+          }
         }
 
       } else {
@@ -214,6 +220,7 @@ export default class AddIssueModal extends Component {
       })
     }
   }
+
 
   confirmSave = (criticalErrors) => {
     clearTimeout(this.state.timeOut)
@@ -250,6 +257,7 @@ export default class AddIssueModal extends Component {
     return {confirmationPayload, timeOut}
   }
 
+
   handler = (e) => {
     const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
 
@@ -262,13 +270,16 @@ export default class AddIssueModal extends Component {
     })
   }
 
+
   closeModal = () => {
     this.props.reduxControlModal({showModal:false})
   }
 
+
   helperSwitch = () => {
       this.setState({showHelper: !this.state.showHelper})
   }
+
 
   optionalIssueInfoHandlers = () => {
     return {
@@ -310,9 +321,11 @@ export default class AddIssueModal extends Component {
     }
   }
 
+
   componentDidUpdate () {
     this.state.deferredErrorBubbleRefresh.resolve()
   }
+
 
   componentWillUnmount () {
     clearTimeout(this.state.timeOut)

@@ -77,7 +77,9 @@ export default class PublicationPage extends Component {
     const selections = this.state.selections;
     const newSelections = [...selections]
     for (let i in selections) {
-      if (compareDois(item.article.doi, selections[i].article.doi)) return
+      if (compareDois(item.article.doi, selections[i].article.doi) && JSON.stringify(item.article.title) === JSON.stringify(selections[i].article.title)) {
+        return
+      }
     }
     item.article.pubDoi = this.props.publication.message.doi;
     newSelections.push(item);
@@ -87,7 +89,7 @@ export default class PublicationPage extends Component {
   handleRemoveFromList = (item) => {
     var selections = this.state.selections
     const filteredSelections = selections.filter((selection)=>{
-      return !compareDois(item.article.doi, selection.article.doi)
+      return !compareDois(item.article.doi, selection.article.doi) || JSON.stringify(item.article.title) !== JSON.stringify(selection.article.title)
     })
     this.setState({
       selections: filteredSelections
