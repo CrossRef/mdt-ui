@@ -110,9 +110,8 @@ export default class AddArticlePage extends Component {
 
     let publMeta = publicationData.message.content
     const publicationMetaData = publMeta ? xmldoc(publMeta) : {}
-    const pubElm = journalDoc.getElementsByTagName("journal_metadata")[0]
-    
-    const publicationXml = new XMLSerializer().serializeToString(pubElm)
+    const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
+
     
     if(this.state.editArticleDoi) {
       delete articleFullHierarchy.message.content

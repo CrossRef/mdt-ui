@@ -2,14 +2,11 @@ import {
   doiEntered,
   urlEntered
 } from '../../utilities/helpers'
-import {
-  appendElm,
-  appendAttribute
-} from '../../utilities/helpers'
-
-
+import {appendElm,appendAttribute} from '../../utilities/helpers'
+import { XMLSerializer, DOMParser } from 'xmldom'
+import { getSubItems } from '../../utilities/getSubItems'
 export default function (issueObj) {
-  var doc = new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"></crossref>')
+  var doc = new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"></crossref>','text/xml')
   var issueElm = doc.createElement("journal_issue")
   doc.documentElement.appendChild(issueElm)
 
@@ -86,7 +83,7 @@ export default function (issueObj) {
   }
 
   function appendContributorElm(root, contributors) {
-    var contributors = getSubItems(state.contributors)
+    var contributors = getSubItems(contributors)
     if (contributors.length == 0) return
     const contElm = root.ownerDocument.createElement("contributors")
 

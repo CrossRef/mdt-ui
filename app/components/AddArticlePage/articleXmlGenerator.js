@@ -17,7 +17,7 @@ export default function (state, reduxForm) {
   const publicationType = state.addInfo.publicationType
 
   
-  var doc = new DOMParser().parseFromString('<journal_article></journal_article>')
+  var doc = new DOMParser().parseFromString('<journal_article></journal_article>','text/xml')
 
   appendAttribute("language",language,doc.documentElement)
   appendAttribute("publication_type",publicationType,doc.documentElement)

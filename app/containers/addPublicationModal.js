@@ -219,7 +219,7 @@ export default class AddPublicationCard extends Component {
   }
 
   publicationXml = (form = this.state) => {
-    const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>')
+    const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>','text/xml')
     const pubElm = doc.createElement("journal_metadata")
     doc.rootElement.appendChild(pubElm)
     appendAttribute("language",form.language,pubElm)
