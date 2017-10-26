@@ -107,7 +107,7 @@ export default function (state, reduxForm) {
   }
   function appendFunder(el) {
     var funders = getSubItems(state.funding)
-    if(!funders || !funders.size)return
+    if(!funders || !funders.length)return
     var programElm = el.ownerDocument.createElementNS("http://www.crossref.org/fundref.xsd", "fr:program")
 
     for (let funder of funders) {
@@ -163,7 +163,7 @@ export default function (state, reduxForm) {
   }
   function appendLicenseElm(root) {
     var licenses = getSubItems(state.license)
-    if (!licenses || !licenses.size) {
+    if (!licenses || !licenses.length) {
       return
     }
     var licElm = root.ownerDocument.createElementNS("http://www.crossref.org/AccessIndicators.xsd", "ai:program")
@@ -192,10 +192,9 @@ export default function (state, reduxForm) {
           appendAttribute("start_date", date, el)
           licElm.appendChild(el)
         }
-        el = appendElm("ai:license_ref",license.licenseurl)
+        el = appendElm("ai:license_ref",license.licenseurl,licElm)
         appendAttribute("applies_to", license.appliesto, el)
         appendAttribute("start_date", date, el)
-        licElm.appendChild(el)
       }
     }
     root.appendChild(licElm)
@@ -212,6 +211,7 @@ export default function (state, reduxForm) {
       var interRelElm
       const relItemElm = root.ownerDocument.createElement("rel:related_item")
       appendElm("description", description, relItemElm)
+      relProgramElm.appendChild(relItemElm)
 
       if (relationType || identifierType || relatedItemIdentifier) {
         interRelElm = root.ownerDocument.createElement("inter_work_relation")
@@ -221,6 +221,7 @@ export default function (state, reduxForm) {
         relItemElm.appendChild(interRelElm)
       }
     }
+    root.appendChild(relProgramElm)
   }
   function appendCollectionXML(el) {
     if (state.addInfo.similarityCheckURL === 'http://' || state.addInfo.similarityCheckURL.trim().length === 0) {
