@@ -216,7 +216,7 @@ export default function (state, reduxForm) {
       if (relationType || identifierType || relatedItemIdentifier) {
         interRelElm = root.ownerDocument.createElement("inter_work_relation")
         appendAttribute("relationship-type", relationType, interRelElm)
-        appendAttribute("identifier-type", identifier - type, interRelElm)
+        appendAttribute("identifier-type", identifierType, interRelElm)
         interRelElm.textContent = relatedItemIdentifier
         relItemElm.appendChild(interRelElm)
       }

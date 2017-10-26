@@ -288,12 +288,11 @@ const parseXMLArticle = function (articleXML) {
         relatedItems: relItem
     })
 
-    if(parsedArticle.crossref) {
-      if(parsedArticle.crossref.journal.journal_article.crossmark) {
-        const {reduxForm, showCards} = parseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark)
-        if(reduxForm && showCards) {
-          retObj.crossmark = {reduxForm, showCards}
-        }
+    const crossmark = objectSearch(parsedArticle, 'crossmark')
+    if(crossmark) {
+      const {reduxForm, showCards} = parseCrossmark(crossmark)
+      if(reduxForm && showCards) {
+        retObj.crossmark = {reduxForm, showCards}
       }
     }
 
