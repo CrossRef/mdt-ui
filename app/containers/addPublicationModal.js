@@ -228,11 +228,12 @@ export default class AddPublicationCard extends Component {
     appendElm("abbrev_title",form.abbreviation,pubElm)
     var el = appendElm("issn",electISSN,pubElm)
     appendAttribute("media_type","electronic",el)
+    appendElm("archive_locations",form.archivelocation,pubElm)
     el = doc.createElement("doi_data")
     pubElm.appendChild(el)
     appendElm("doi",form.DOI,el)
     appendElm("resource",form.url,el)
-    appendElm("archive_locations",form.archivelocation,doc.rootElement)
+
     return new XMLSerializer().serializeToString(doc)
   }
 
