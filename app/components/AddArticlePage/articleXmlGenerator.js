@@ -14,13 +14,11 @@ export default function (state, reduxForm) {
   const onlineYear = article.onlineDateYear, onlineMonth = article.onlineDateMonth, onlineDay = article.onlineDateDay,
     printYear = article.printDateYear, printMonth = article.printDateMonth, printDay = article.printDateDay
   const language = state.addInfo.language
-  const publicationType = state.addInfo.publicationType
 
 
   var doc = new DOMParser().parseFromString('<journal_article></journal_article>','text/xml')
 
   appendAttribute("language",language,doc.documentElement)
-  appendAttribute("publication_type",publicationType,doc.documentElement)
 
   var el = doc.createElement("titles")
   appendElm("title",article.title,el)

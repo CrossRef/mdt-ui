@@ -69,7 +69,7 @@ export default class AddPublicationCard extends Component {
 
     if(props.mode === 'edit') {
       const data = props.Journal.journal_metadata
-      const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {}
+      const archive = data.archive_locations ? data.archive_locations.archive || {} : {}
       let version = props['mdt-version'] ? String(Number(props['mdt-version'])+1) : '0'
       const doi_data = data.doi_data || {}
       const issn = Array.isArray(data.issn) ? data.issn : [data.issn || {}]
@@ -176,6 +176,7 @@ export default class AddPublicationCard extends Component {
     return {valid, errorStates, criticalErrors}
   }
 
+
   save = () => {
 
     this.validation().then(({valid, errorStates, criticalErrors}) => {
@@ -215,10 +216,11 @@ export default class AddPublicationCard extends Component {
     })
   }
 
+
   publicationXml = (form = this.state) => {
     const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>','text/xml')
     const pubElm = doc.createElement("journal_metadata")
-    doc.rootElement.appendChild(pubElm)
+    doc.documentElement.appendChild(pubElm)
     appendAttribute("language",form.language,pubElm)
 
     appendElm("full_title",form.title,pubElm)
@@ -227,14 +229,19 @@ export default class AddPublicationCard extends Component {
     appendAttribute("media_type","electronic",el)
     el = appendElm("issn",form.printISSN,pubElm)
     appendAttribute("media_type","print",el)
-    appendElm("archive_locations",form.archivelocation,pubElm)
-    el = doc.createElement("doi_data")
+    el = doc.createElement("archive_locations")
+    var el2 = doc.createElement("archive")
+    appendAttribute("name", form.archivelocation, el2)
+    el.appendChild(el2)
     pubElm.appendChild(el)
+    el = doc.createElement("doi_data")
     appendElm("doi",form.DOI,el)
     appendElm("resource",form.url,el)
+    pubElm.appendChild(el)
 
     return new XMLSerializer().serializeToString(doc)
   }
+
 
   inputHandler = (e) => {
     this.setState({
@@ -242,13 +249,16 @@ export default class AddPublicationCard extends Component {
     })
   }
 
+
   closeModal = () => {
     this.props.reduxControlModal({showModal:false})
   }
 
+
   componentWillUnmount () {
     clearTimeout(this.state.timeOut)
   }
+
 
   confirmSave = (criticalErrors) => {
     clearTimeout(this.state.timeOut)
@@ -420,8 +430,8 @@ export default class AddPublicationCard extends Component {
                       <option value='CLOCKSS'>CLOCKSS</option>
                       <option value='LOCKSS'>LOCKSS</option>
                       <option value='Portico'>Portico</option>
-                      <option value='Koninklijke Bibliotheek'>Koninklijke Bibliotheek</option>
-                      <option value='Deep Web Technologies'>Deep Web Technologies</option>
+                      <option value='KB'>Koninklijke Bibliotheek</option>
+                      <option value='DWT'>Deep Web Technologies</option>
                       <option value='Internet Archive'>Internet Archive</option>
                   </select>
                 </div>

@@ -6,17 +6,29 @@ import {controlModal} from '../actions/application'
 import * as api from '../actions/api'
 
 
+
+
+
+
+
 export function appendElm(elmName, val, appendToElm) {
+  var el = null
   if (val && (val.trim().length )) {
-    var el = appendToElm.ownerDocument.createElement(elmName)
+    el = appendToElm.ownerDocument.createElement(elmName)
     el.textContent = val.trim()
     appendToElm.appendChild(el)
   }
   return el
 }
+
+
 export function appendAttribute(attrName, val, appendToElm) {
-  if (val && val.trim().length ) appendToElm.setAttribute(attrName, val.trim())
+  if (appendToElm && val && val.trim().length ) appendToElm.setAttribute(attrName, val.trim())
 }
+
+
+
+
 
 
 
