@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
+import Switch from 'react-toggle-switch'
 
 import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
@@ -31,7 +32,8 @@ export default class AddArticleCard extends Component {
     toggleFields: is.func.isRequired,
     boundSetState: is.func.isRequired,
     removeSection: is.func.isRequired,
-    addSection: is.func.isRequired
+    addSection: is.func.isRequired,
+    deferredErrorBubbleRefresh: is.object.isRequired
   }
 
   render () {
@@ -62,7 +64,11 @@ export default class AddArticleCard extends Component {
                 <div className='row'>
                   <ArticleTitleField handleChange={this.props.handleChange} title={this.props.article.title} errors={this.props.errors}/>
                   {(!this.props.error && this.props.showHelper) && <InfoBubble/> }
-                  {(this.props.error) && <ErrorBubble deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh} errors={this.props.errors} crossmarkErrors={this.props.crossmarkErrors}/> }
+                  {(this.props.error) &&
+                    <ErrorBubble
+                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      errors={this.props.errors}
+                      crossmarkErrors={this.props.crossmarkErrors}/>}
                 </div>
 
                 <div className='row'>
@@ -141,8 +147,44 @@ export default class AddArticleCard extends Component {
                 validating={this.props.validating}
                 showSection={this.props.openItems.Licenses}
                 addHandler={this.props.addSection.bind(null, 'license')}
-                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
-                freeToRead={this.props.addInfo.freetolicense}>
+                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}>
+
+                  <div className="freeToLicense">
+                    <div className='row'>
+                      <div className='fieldHolder'>
+                        <div className='fieldinnerholder halflength'>
+                          <div className='labelholder'>
+                            <div></div>
+                            <div className='labelinnerholder'>
+                              <div className='label'>Free to License</div>
+                            </div>
+                          </div>
+                          <div className='requrefieldholder'>
+                            <div className='requiredholder norequire'>
+                              <div className='required height32'>
+                              </div>
+                            </div>
+                            <div className='field'>
+                              <select
+                                name="freetolicense"
+                                onChange={this.props.handleChange}
+                                className='height32'
+                                value={this.props.article.freetolicense}>
+                                  <option key='-1' value={''}>{''}</option>
+                                  <option key='0' value={'yes'}>Yes</option>
+                                  <option key='1' value={'no'}>No</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div className='errorHolder'>
+                      </div>
+                    </div>
+                    <div className='errorHolder'>
+                    </div>
+                  </div>
+
                   {this.props.license.map((data, i)=>
                     <License
                       validating={this.props.validating}
@@ -154,7 +196,7 @@ export default class AddArticleCard extends Component {
                       index={i}
                       makeDateDropDown={makeDateDropDown}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
-                      freeToRead={i===0 ? this.props.addInfo.freetolicense : false}/>
+                      freetolicense={i===0 ? this.props.article.freetolicense : ''}/>
                   )}
               </SubItem>
 

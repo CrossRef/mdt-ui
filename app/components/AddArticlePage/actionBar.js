@@ -66,7 +66,7 @@ export default class ActionBar extends Component {
       doi: 'Valid DOI Required.',
       invaliddoi: 'Valid DOI Required.',
       invalidDoiPrefix: 'Valid DOI Required.',
-      licenseFreeToRead: 'License URL Required.',
+      freetolicense: 'License URL Required.',
       dupedoi: 'Valid DOI Required.'
     }
     const errorMessageArray = ['Save Failed:']

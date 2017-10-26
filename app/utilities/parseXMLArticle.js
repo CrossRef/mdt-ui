@@ -106,7 +106,8 @@ const parseXMLArticle = function (articleXML) {
         firstPage: firstPage,
         lastPage: lastPage,
         locationId: locationId,
-        abstract: abstract
+        abstract: abstract,
+        freetolicense: (objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1) ? 'yes' : ''
     }
 
     retObj = _.extend(retObj, {
@@ -127,14 +128,11 @@ const parseXMLArticle = function (articleXML) {
     }
     const language = objectSearch(parsedArticle, '-language')
 
-    let freeToRead = objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1
-
     const addInfo = {
         archiveLocation: archive,
         language: language ? language : '',
         publicationType: publicationType ? publicationType : '',
         similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
-        freetolicense: !!freeToRead
     }
 
     retObj = _.extend(retObj, {
@@ -142,7 +140,7 @@ const parseXMLArticle = function (articleXML) {
     })
 
     retObj.openItems={}
-    retObj.openItems.addInfo = !!(archiveLocations || language || publicationType || similarityCheckURL || freeToRead);
+    retObj.openItems.addInfo = !!(archiveLocations || language || publicationType || similarityCheckURL);
 
     // contributor loading
     const getOrganization = true;
@@ -240,7 +238,7 @@ const parseXMLArticle = function (articleXML) {
         })
     }
 
-    retObj.openItems.Licenses = thereAreLicenses;
+    retObj.openItems.Licenses = thereAreLicenses || article.freetolicense === 'yes'
     retObj = _.extend(retObj, {
         license: lic
     })
