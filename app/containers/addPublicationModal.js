@@ -58,8 +58,8 @@ export default class AddPublicationCard extends Component {
         showURLError: false,
         showURLEmptyError: false,
         showTitleEmptyError: false,
+        printISSNInvalidError: false,
         onlineISSNInvalidError: false,
-        showISSNEmptyError: false,
         showDOIError: false,
         showDOIEmptyError: false,
         showDOIInvalidError: false,
@@ -227,11 +227,12 @@ export default class AddPublicationCard extends Component {
     appendAttribute("media_type","electronic",el)
     el = appendElm("issn",form.printISSN,pubElm)
     appendAttribute("media_type","print",el)
+    appendElm("archive_locations",form.archivelocation,pubElm)
     el = doc.createElement("doi_data")
     pubElm.appendChild(el)
     appendElm("doi",form.DOI,el)
     appendElm("resource",form.url,el)
-    appendElm("archive_locations",form.archivelocation,doc.rootElement)
+
     return new XMLSerializer().serializeToString(doc)
   }
 
