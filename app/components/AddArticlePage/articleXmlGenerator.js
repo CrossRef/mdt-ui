@@ -204,12 +204,12 @@ export default function (state, reduxForm) {
     if (!relatedItems) {
       return
     }
-    const relProgramElm = root.ownerDocument.createElementNS("http://www.crossref.org/relations.xsd", "rel:program")
+    const relProgramElm = root.ownerDocument.createElementNS("http://www.crossref.org/relations.xsd", "program")
 
     for (var item of relatedItems) {
       const { description, relationType, identifierType, relatedItemIdentifier } = item
       var interRelElm
-      const relItemElm = root.ownerDocument.createElement("rel:related_item")
+      const relItemElm = root.ownerDocument.createElement("related_item")
       appendElm("description", description, relItemElm)
       relProgramElm.appendChild(relItemElm)
 
