@@ -19,7 +19,7 @@ export default function publicationsReducer (state = new SearchableRecords(), ac
           if((thisPublication.message.contains || []).length) {
             thisPublication.message.contains.forEach( thisRecord => {
               if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) return console.warn(`Had trouble retrieving data for a Record`, thisRecord || 'Empty Array Value')
-              normalizedRecords[thisRecord.doi] = thisRecord
+              normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
             })
           }
           normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
@@ -29,8 +29,8 @@ export default function publicationsReducer (state = new SearchableRecords(), ac
         const normalizedRecords = new SearchableRecords()
 
         publications.message.contains.forEach(thisRecord => {
-          if(!thisRecord || !thisRecord.doi) return console.warn(`Had trouble retrieving data for a Record`, thisRecord || 'Empty Array Value')
-          normalizedRecords[thisRecord.doi] = thisRecord
+          if(!thisRecord || (!thisRecord.doi && !thisRecord.title)) return console.warn(`Had trouble retrieving data for a Record`, thisRecord || 'Empty Array Value')
+          normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
         })
         normalizedData[publications.message.doi] = {...publications, normalizedRecords}
 

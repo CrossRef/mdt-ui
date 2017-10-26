@@ -8,6 +8,7 @@ import SubItem from '../Common/subItem'
 import OptionalIssueInfo from './optionalIssueInfo'
 import {makeDateDropDown} from  '../../utilities/date'
 import {urlEntered, doiEntered} from  '../../utilities/helpers'
+import ErrorBubble from './errorBubble'
 
 
 
@@ -65,7 +66,7 @@ export default class AddIssueCard extends React.Component {
                         </div>
                         <div className='field'>
                           <input
-                            className={`height32 ${errors.issue && 'fieldError'}`}
+                            className={`height32 ${errors.issueVolume && 'fieldError'}`}
                             type='text'
                             name='issue.issue'
                             onChange={this.props.handler}
@@ -114,71 +115,7 @@ export default class AddIssueCard extends React.Component {
                     </div>
                   </div>
                   }
-                  {(this.props.error) &&
-                  <div className='errorHolder talltooltip fullError'>
-                    <div className='toolTipHolder'>
-                      <a className="tooltips">
-                        <div className='toolmsgholder'>
-                          <div className='errormsgholder'>
-                            <div className='errormsginnerholder'>
-                              <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
-                              {(()=>{
-
-                                let requiredError = [];
-                                if(errors.issue) requiredError.push('Please provide an issue number.');
-                                if(errors.issuedoi) requiredError.push('Please provide required DOI.');
-                                if(errors.issueUrl) requiredError.push('Please provide required Issue URL.');
-                                if(errors.printDateYear || errors.onlineDateYear) requiredError.push('Please provide either a print or online date.');
-                                if(errors.printDateIncomplete || errors.onlineDateIncomplete) requiredError.push('Dates require a year value.');
-                                if(errors.volume) requiredError.push('Please provide a volume number.');
-                                if(errors.volumeUrl) requiredError.push('Please provide required Volume URL.');
-                                if(errors.volumedoi) requiredError.push('Please provide required Volume DOI.');
-                                if(errors.contributorLastName) requiredError.push('Last name required with First Name.');
-                                if(errors.contributorRole) requiredError.push('Please provide Contributor Role.');
-                                if(requiredError.length) return (
-                                  <div><b>Required.</b><br />{requiredError.length > 1 ? 'Please provide required information.' : requiredError[0]}</div>
-                                );
-                              })()}
-                              {errors.invalidissuedoi &&
-                              <div><b>Invalid Issue DOI.</b><br />Please check your issue DOI (10.xxxx/xx...).</div>
-                              }
-                              {errors.invalidIssueDoiPrefix &&
-                              <div><b>Invalid Issue DOI.</b><br />DOI prefix needs to match journal DOI prefix.</div>
-                              }
-                              {(errors.dupeissuedoi) &&
-                              <div><b>Duplicate Issue DOI.</b><br />Registering a new DOI? This one already exists.</div>
-                              }
-                              {(errors.dupeDois) &&
-                              <div><b>Duplicate DOIs.</b><br />Issue and Volume DOIs cannot be the same.</div>
-                              }
-                              {(errors.invalidissueurl) &&
-                              <div><b>Invalid URL.</b><br />Please check your URL.</div>
-                              }
-                              {errors.printDateInvalid &&
-                              <div><b>Invalid Print Date.</b><br />Please verify date.</div>
-                              }
-                              {errors.onlineDateInvalid &&
-                              <div><b>Invalid Online Date.</b><br />Please verify date.</div>
-                              }
-                              {errors.invalidvolumedoi &&
-                              <div><b>Invalid Volume DOI.</b><br />Please check your volume DOI (10.xxxx/xx...).</div>
-                              }
-                              {errors.invalidVolumeDoiPrefix &&
-                              <div><b>Invalid Volume DOI.</b><br />DOI prefix needs to match journal DOI prefix.</div>
-                              }
-                              {(errors.dupevolumedoi) &&
-                              <div><b>Duplicate Volume DOI.</b><br />Registering a new DOI? This one already exists.</div>
-                              }
-                              {errors.invalidvolumeurl &&
-                              <div><b>Invalid Volume URL.</b><br />Please check your URL.</div>
-                              }
-                            </div>
-                          </div>
-                        </div>
-                      </a>
-                    </div>
-                  </div>
-                  }
+                  {(this.props.error) && <ErrorBubble errors={errors} deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}/>}
                 </div>
                 <div className='row'>
                   <div className='fieldHolder'>
@@ -370,7 +307,7 @@ export default class AddIssueCard extends React.Component {
                         </div>
                         <div className='field'>
                           <input
-                            className={`height32 ${errors.volume && 'fieldError'}`}
+                            className={`height32 ${errors.issueVolume && 'fieldError'}`}
                             type='text'
                             name='issue.volume'
                             onChange={this.props.handler}
@@ -440,6 +377,7 @@ export default class AddIssueCard extends React.Component {
                 arrowType={'dark'}
                 optionalIssueInfoHandlers={this.props.optionalIssueInfoHandlers}
                 validating={this.props.validating}
+                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 showSection={this.props.showSection}>
                   {this.props.optionalIssueInfo.map((data, i)=>
                     <OptionalIssueInfo
@@ -447,6 +385,7 @@ export default class AddIssueCard extends React.Component {
                       optionalIssueInfo={data}
                       optionalIssueInfoHandlers={this.props.optionalIssueInfoHandlers}
                       data={this.props.optionalIssueInfo}
+                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                       index={i}/>
                   )}
               </SubItem>

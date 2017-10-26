@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
-import {refreshErrorBubble} from '../../../utilities/helpers'
 const RelationTypes = require('../../../utilities/lists/relationTypes.json')
 const IdentifierTypes = require('../../../utilities/lists/identifierTypes.json')
 
@@ -22,7 +21,7 @@ export default class RelatedItems extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble();
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   toggle = () => {

@@ -69,7 +69,8 @@ export default {
     firstPage: '',
     lastPage: '',
     locationId: '',
-    abstract: ''
+    abstract: '',
+    freetolicense: ''
   },
   contributors: [
     {
@@ -91,8 +92,7 @@ export default {
   ],
   funding: [
     {
-      fundername: '',
-      funderRegistryID: '',
+      funderName: '',
       funder_identifier: '',
       grantNumbers: ['']
     }
@@ -130,7 +130,6 @@ export default {
     language:'',
     publicationType:'',
     similarityCheckURL:'http://',
-    freetolicense: false
   },
   openItems: {
     Contributors:false,

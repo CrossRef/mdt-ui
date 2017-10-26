@@ -1,7 +1,5 @@
 import React from 'react'
-const jsesc = require('jsesc')
 var ObjTree = require('xml-objtree')
-import $ from 'jquery'
 
 import {exposedStore} from '../store'
 import {controlModal} from '../actions/application'
@@ -20,6 +18,9 @@ export function appendAttribute(attrName, val, appendToElm) {
   if (val && val.trim().length ) appendToElm.setAttribute(attrName, val.trim())
 }
 
+
+
+
 export function recordTitle (type, title) {
   if(type === 'issue') {
     return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
@@ -27,23 +28,6 @@ export function recordTitle (type, title) {
     return title.title
   }
 }
-
-
-
-
-
-export function refreshErrorBubble () {
-  var firstError = $(".fieldError").first()
-  if (firstError.length > 0) {
-    $('.fullError').show()
-    $('.fullError').find('.tooltips').css({
-      'top': ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9)) - ($('.switchLicense').first().position().top + 15) - ($('.switchLicense').first().offset().top + 15))) + 25
-    })
-  } else {
-    $('.fullError').hide()
-  }
-}
-
 
 
 
@@ -100,7 +84,7 @@ export function compareDois (doi1, doi2) {
 
 
 export function jsEscape (str) {
-  return jsesc(str, {'json': true, 'wrap' : false})
+  return str
 }
 
 
@@ -154,11 +138,36 @@ export function xmldoc (content) {
 
 
 
-export class Deferred {
+export class DeferredTask {
   constructor () {
     this.promise = new Promise((resolve, reject) => {
-      this.reject = reject
-      this.resolve = resolve
+
+      this._resolve = resolve
+      this._reject = reject
+
+      this.reject = (x) => {
+        this._reject(x)
+        this.rejected = true
+      }
+
+      this.resolve = (x) => {
+        this._resolve(x)
+        this.resolved = true
+      }
+
+      this.resolved = false
+      this.rejected = false
+
+      this.reset = function () {
+        this.promise = new Promise((resolve, reject) => {
+
+          this._resolve = resolve
+          this._reject = reject
+
+          this.resolved = false
+          this.rejected = false
+        })
+      }
     })
   }
 }
@@ -238,6 +247,9 @@ export function objectFind (object, finder) {
 
 
 
+
+
+
 export class SearchableRecords {
   constructor (records) {
     Object.assign(this, records)
@@ -304,15 +316,19 @@ export function removeDuplicates(a) {
 
 
 
+
 export const errorHandler = (error, action = ()=>{}) => {
   console.error('Error Handler: ', error)
   action()
-  exposedStore.dispatch(controlModal({
-    showModal: true,
-    title: error,
-    style: 'errorModal',
-    Component: ()=>null
-  }))
+  if(!exposedStore.getState().modal.showModal) {
+    exposedStore.dispatch(controlModal({
+      showModal: true,
+      title: error,
+      style: 'errorModal',
+      Component: ()=>null
+    }))
+  }
+
 }
 
 

@@ -1,7 +1,7 @@
 import _ from 'lodash'
 import moment from 'moment'
-import xmlent from 'xml-entities'
 import { XMLSerializer, DOMParser } from 'xmldom'
+
 import { getSubItems } from '../../utilities/getSubItems'
 import { cardNames, registryDois } from '../../utilities/crossmarkHelpers'
 import {appendElm,appendAttribute} from '../../utilities/helpers'
@@ -16,12 +16,12 @@ export default function (state, reduxForm) {
   const language = state.addInfo.language
   const publicationType = state.addInfo.publicationType
 
-  
+
   var doc = new DOMParser().parseFromString('<journal_article></journal_article>','text/xml')
 
   appendAttribute("language",language,doc.documentElement)
   appendAttribute("publication_type",publicationType,doc.documentElement)
-    
+
   var el = doc.createElement("titles")
   appendElm("title",article.title,el)
   appendElm("subtitle",article.subtitle,el)
@@ -111,8 +111,8 @@ export default function (state, reduxForm) {
 
     for (let funder of funders) {
       var funderName
-      if (funder.fundername) {
-        funderName = funder.fundername.trim().length > 0 ? funder.fundername : undefined
+      if (funder.funderName) {
+        funderName = funder.funderName.trim().length > 0 ? funder.funderName : undefined
       }
       var nameElm
       if (funderName) {
@@ -186,7 +186,7 @@ export default function (state, reduxForm) {
       const isDate = dayHolder.length > 0
       if (isDate || license.licenseurl || license.appliesto) {
         const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : ''
-        if (i == 0 && state.addInfo.freetolicense) {
+        if (i == 0 && article.freetolicense === 'yes') {
           el = root.ownerDocument.createElement("ai:free_to_read")
           appendAttribute("start_date", date, el)
           licElm.appendChild(el)

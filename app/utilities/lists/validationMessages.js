@@ -3,6 +3,12 @@ const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 
 
 export const IssueMessages = {
+  issueVolume: {
+    type: 'eitherOr',
+    bold: 'Required',
+    message: 'Please provide either an issue or volume number.'
+  },
+
   issue: {
     type: 'required',
     bold: 'Required',
@@ -47,7 +53,7 @@ export const IssueMessages = {
   },
 
   printDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
@@ -63,7 +69,7 @@ export const IssueMessages = {
   },
 
   onlineDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
@@ -171,14 +177,14 @@ export const ArticleMessages = {
   },
 
   printDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
   printDateIncomplete: {
     type: 'required',
-    bold: 'Incomplete Print Date',
-    message: 'Please provide year with month and/or day.'
+    bold: 'Required',
+    message: 'Print date incomplete.'
   },
   printDateInvalid: {
     type: 'invalid',
@@ -187,14 +193,14 @@ export const ArticleMessages = {
   },
 
   onlineDateYear: {
-    type: 'required',
+    type: 'eitherOr',
     bold: 'Required',
     message: 'Please provide either a print or online date.'
   },
   onlineDateIncomplete: {
     type: 'required',
-    bold: 'Required',
-    message: 'Online date incomplete.'
+    bold: 'Incomplete Online Date',
+    message: 'Please provide year with month and/or day.'
   },
   onlineDateInvalid: {
     type: 'invalid',
@@ -229,10 +235,10 @@ export const ArticleMessages = {
     message: 'Please provide contributor group name.'
   },
 
-  licenseFreeToRead: {
-    type: 'required',
+  freetolicense: {
+    type: 'special',
     bold: 'Required',
-    message: 'Please provide license URL if content is Free to Read.'
+    message: 'Please provide license URL if content is Free to License.'
   },
   licenseDateIncomplete: {
     type: 'required',
@@ -252,7 +258,7 @@ export const ArticleMessages = {
   licenseUrlInvalid: {
     type: 'invalid',
     bold: 'Invalid License URL',
-    message: 'Please check your license URL.'
+    message: 'Please check your URL format.'
   },
 
   relatedItemDoiInvalid: {

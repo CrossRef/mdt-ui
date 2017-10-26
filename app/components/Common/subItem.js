@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import {routes} from '../../routing'
-import {refreshErrorBubble} from '../../utilities/helpers'
 
 
 
@@ -10,30 +9,32 @@ export default class SubItem extends Component {
 
   static propTypes = {
     title: is.string.isRequired,
+    freetolicense: is.string,
     showSection: is.bool.isRequired,
-    freeToRead: is.bool,
     optionalIssueInfoHandlers: is.func,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
-    arrowType: is.string
+    arrowType: is.string,
+    deferredErrorBubbleRefresh: is.object.isRequired
   }
 
 
   constructor (props) {
     super()
     this.state = {
-      showSection: props.showSection || !!props.simCheckError || props.freeToRead || false
+      showSection: props.showSection || !!props.simCheckError || false
     }
   }
 
+
   componentWillReceiveProps(nextProps) {
-    const freeToReadSwitchedOn = !!(nextProps.freeToRead && !this.props.freeToRead)
-    if (freeToReadSwitchedOn || nextProps.validating) {
+    if (nextProps.validating) {
       this.setState({
-        showSection: freeToReadSwitchedOn || nextProps.showSection || this.props.freeToRead || false
+        showSection: nextProps.showSection || false
       })
     }
   }
+
 
   toggle = () => {
     this.setState({
@@ -41,9 +42,11 @@ export default class SubItem extends Component {
     })
   }
 
+
   componentDidUpdate () {
-    refreshErrorBubble()
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
+
 
   addButton = () => {
     if(this.props.addHandler || this.props.optionalIssueInfoHandlers) {
@@ -67,6 +70,7 @@ export default class SubItem extends Component {
       )
     }
   }
+
 
   render () {
     const { title, addHandler, arrowType } = this.props

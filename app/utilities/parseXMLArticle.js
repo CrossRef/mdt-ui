@@ -106,7 +106,8 @@ const parseXMLArticle = function (articleXML) {
         firstPage: firstPage,
         lastPage: lastPage,
         locationId: locationId,
-        abstract: abstract
+        abstract: abstract,
+        freetolicense: (objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1) ? 'yes' : ''
     }
 
     retObj = _.extend(retObj, {
@@ -127,14 +128,11 @@ const parseXMLArticle = function (articleXML) {
     }
     const language = objectSearch(parsedArticle, '-language')
 
-    let freeToRead = objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1
-
     const addInfo = {
         archiveLocation: archive,
         language: language ? language : '',
         publicationType: publicationType ? publicationType : '',
         similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
-        freetolicense: !!freeToRead
     }
 
     retObj = _.extend(retObj, {
@@ -142,7 +140,7 @@ const parseXMLArticle = function (articleXML) {
     })
 
     retObj.openItems={}
-    retObj.openItems.addInfo = !!(archiveLocations || language || publicationType || similarityCheckURL || freeToRead);
+    retObj.openItems.addInfo = !!(archiveLocations || language || publicationType || similarityCheckURL);
 
     // contributor loading
     const getOrganization = true;
@@ -181,7 +179,6 @@ const parseXMLArticle = function (articleXML) {
       _.each(fundings, (fund) => {
         let thefunder = objectSearch(fund, 'fr:assertion')
         let funderName = ''
-        let funderRegId = ''
         let funderIdent = ''
         let grants = []
 
@@ -191,14 +188,12 @@ const parseXMLArticle = function (articleXML) {
         for(const element of thefunder) {
           if (element['-name'] === 'funder_identifier') {
             funderIdent = element['#text']
-            funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
           } else if (element['-name'] === 'funder_name'){
             funderName = element['#text'].trim()
             // within the name, there is the funder ID
             const thefunderId = objectSearch(element, 'fr:assertion')
             if (thefunderId) {
               funderIdent = thefunderId['#text']
-              funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
             }
 
           } else if (element['-name'] === 'award_number'){
@@ -208,8 +203,7 @@ const parseXMLArticle = function (articleXML) {
 
 
         funders.push({
-          fundername: funderName,
-          funderRegistryID: funderRegId,
+          funderName: funderName,
           funder_identifier: funderIdent,
           grantNumbers: grants.length > 0 ? grants : ['']
         })
@@ -244,7 +238,7 @@ const parseXMLArticle = function (articleXML) {
         })
     }
 
-    retObj.openItems.Licenses = thereAreLicenses;
+    retObj.openItems.Licenses = thereAreLicenses || article.freetolicense === 'yes'
     retObj = _.extend(retObj, {
         license: lic
     })

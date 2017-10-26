@@ -58,7 +58,7 @@ export default class AddPublicationCard extends Component {
         showURLError: false,
         showURLEmptyError: false,
         showTitleEmptyError: false,
-        showISSNInvalidError: false,
+        onlineISSNInvalidError: false,
         showISSNEmptyError: false,
         showDOIError: false,
         showDOIEmptyError: false,
@@ -72,13 +72,14 @@ export default class AddPublicationCard extends Component {
       const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {}
       let version = props['mdt-version'] ? String(Number(props['mdt-version'])+1) : '0'
       const doi_data = data.doi_data || {}
+      const issn = Array.isArray(data.issn) ? data.issn : [data.issn || {}]
       this.state = {
         ...defaultState,
         'mdt-version': version.toString(),
         title: data.full_title,
         abbreviation: data.abbrev_title,
-        printISSN: (data.issn || {})['#text'],
-        electISSN: ((data.issn || {})[1] || data.issn || {})['#text'],
+        printISSN: (issn.find( item => item['-media_type'] === 'print') || {})['#text'] || '',
+        electISSN: (issn.find( item => item['-media_type'] === 'electronic') || {})['#text'] || '',
         url: doi_data.resource,
         DOI: doi_data.doi,
         language: data['-language'],
@@ -88,7 +89,7 @@ export default class AddPublicationCard extends Component {
     }
     else if (props.mode === 'search') {
       const result = props.searchResult
-      let pissn, eissn
+      let pissn = '', eissn = ''
       if(Array.isArray(result.issns)) {
         result.issns.forEach(issn => {
           if(issn.type === 'pissn') pissn = issn.issn
@@ -133,25 +134,19 @@ export default class AddPublicationCard extends Component {
     return this.props.prefixes.indexOf(this.state.DOI.split('/')[0]) !== -1
   }
 
-  validateISSN () {
-    const issn = this.state.electISSN
-    if(verifyIssn(issn)) {
-      return true
-    } else {
-      return false
-    }
-  }
+
 
   validation = async () => {
     let valid = true
 
-    const criticalErrors = {
-      showTitleEmptyError: !this.state.title.length,
-    }
-    const warnings = {}
+    const criticalErrors = {}
 
-    criticalErrors.showISSNEmptyError = !this.state.electISSN.length
-    criticalErrors.showISSNInvalidError = !criticalErrors.showISSNEmptyError ? !this.validateISSN(): false
+    criticalErrors.showTitleEmptyError = !this.state.title.length
+
+    criticalErrors.onlineISSNInvalidError = this.state.electISSN.length ? !verifyIssn(this.state.electISSN): false
+    criticalErrors.onlineDuplicateISSN = false
+    criticalErrors.printISSNInvalidError = this.state.printISSN.length ? !verifyIssn(this.state.printISSN): false
+    criticalErrors.printDuplicateISSN = false
 
     criticalErrors.showURLEmptyError = !this.state.url.length
     criticalErrors.showURLError = !criticalErrors.showURLEmptyError ? !isURL(this.state.url) : false
@@ -166,6 +161,8 @@ export default class AddPublicationCard extends Component {
       this.props.mode !== 'edit' ?
         await asyncCheckDupeDoi(this.state.DOI) : false
 
+
+    const warnings = {}
 
     const errorStates = {...criticalErrors, ...warnings}
 
@@ -226,8 +223,10 @@ export default class AddPublicationCard extends Component {
 
     appendElm("full_title",form.title,pubElm)
     appendElm("abbrev_title",form.abbreviation,pubElm)
-    var el = appendElm("issn",electISSN,pubElm)
+    var el = appendElm("issn",form.electISSN,pubElm)
     appendAttribute("media_type","electronic",el)
+    el = appendElm("issn",form.printISSN,pubElm)
+    appendAttribute("media_type","print",el)
     el = doc.createElement("doi_data")
     pubElm.appendChild(el)
     appendElm("doi",form.DOI,el)
@@ -257,14 +256,16 @@ export default class AddPublicationCard extends Component {
       message: 'Save Complete'
     }
 
-    const errorMessageArray = ['Required to save: ']
+    const errorMessageSet = new Set(['Required to save: '])
 
     const criticalErrorMsg = {
       showURLEmptyError: 'Valid URL.',
       showURLError: 'Valid URL.',
       showTitleEmptyError: 'Title.',
-      showISSNEmptyError: 'Valid ISSN.',
-      showISSNInvalidError: 'Valid ISSN.',
+      onlineISSNInvalidError: 'Valid ISSN.',
+      onlineDuplicateISSN: 'Valid ISSN.',
+      printISSNInvalidError: 'Valid ISSN.',
+      printDuplicateISSN: 'Valid ISSN.',
       showDOIError: 'Valid DOI.',
       showDOIEmptyError: 'Valid DOI.',
       showDOIInvalidError: 'Valid DOI.',
@@ -274,12 +275,12 @@ export default class AddPublicationCard extends Component {
     for (let error in criticalErrors) {
       if(criticalErrors[error] === true) {
         confirmationPayload.status = 'saveFailed'
-        errorMessageArray.push(criticalErrorMsg[error])
+        errorMessageSet.add(criticalErrorMsg[error])
       }
     }
 
     if(confirmationPayload.status === 'saveFailed') {
-      confirmationPayload.message = errorMessageArray.join(' ')
+      confirmationPayload.message = Array.from(errorMessageSet).join(' ')
     }
 
     const timeOut = setTimeout(()=>{
@@ -366,6 +367,38 @@ export default class AddPublicationCard extends Component {
             </div>
           </div>
           <div className='fieldRowHolder'>
+            <div className={(errors.printDuplicateISSN ? 'fieldinput invalid' : 'fieldinput')}>
+              <div className='left-indent-36'>Print ISSN</div>
+              <div className='inputholder'>
+                <div className='inputinnerholder'>
+                  <div className='notrequired' />
+                  <input
+                    type='text'
+                    name='printISSN'
+                    value={this.state.printISSN}
+                    onChange={this.inputHandler} />
+                </div>
+                {errors.printDuplicateISSN && <div className='inputinnerholder'><div className='invalid'>Duplicate ISSN. Registering a new ISSN? This one already exists.</div></div>}
+                {errors.printISSNInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid ISSN. Please check your ISSN.</div></div>}
+              </div>
+            </div>
+            <div className={(errors.onlineDuplicateISSN ? 'fieldinput invalid' : 'fieldinput')}>
+              <div className='left-indent-36'>Online ISSN</div>
+              <div className='inputholder'>
+                <div className='inputinnerholder'>
+                  <div className='notrequired'/>
+                  <input
+                    type='text'
+                    name='electISSN'
+                    value={this.state.electISSN}
+                    onChange={this.inputHandler} />
+                </div>
+                {errors.onlineDuplicateISSN && <div className='inputinnerholder'><div className='invalid'>Duplicate ISSN. Registering a new ISSN? This one already exists.</div></div>}
+                {errors.onlineISSNInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid ISSN. Please check your ISSN.</div></div>}
+              </div>
+            </div>
+          </div>
+          <div className='fieldRowHolder'>
             <div className='fieldinput'>
               <div className='left-indent-36'>Language</div>
               <div className='inputholder'>
@@ -375,43 +408,26 @@ export default class AddPublicationCard extends Component {
                 </div>
               </div>
             </div>
-            <div className={(errors.showDuplicateISSN || errors.showISSNEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
-              <div className='left-indent-36'>ISSN (required)</div>
-              <div className='inputholder'>
-                <div className='inputinnerholder'>
-                  <div className='required'><span>*</span></div>
-                  <input
-                    type='text'
-                    name='electISSN'
-                    value={this.state.electISSN}
-                    onChange={this.inputHandler} />
-                </div>
-                {errors.showDuplicateISSN && <div className='inputinnerholder'><div className='invalid'>Duplicate ISSN. Registering a new ISSN? This one already exists.</div></div>}
-                {errors.showISSNInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid ISSN. Please check your ISSN.</div></div>}
-                {errors.showISSNEmptyError && <div className='inputinnerholder'><div className='invalid'>Required. Please provide required information.</div></div>}
-              </div>
-            </div>
-          </div>
-          <div className='fieldRowHolder'>
             <div className='fieldinput'>
               <div className='left-indent-36'>Archive Locations</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className='notrequired' />
                   <select name='archivelocation' value={this.state.archivelocation}
-                    onChange={this.inputHandler}
-                  >
-                    <option value='' />
-                    <option value='CLOCKSS'>CLOCKSS</option>
-                    <option value='LOCKSS'>LOCKSS</option>
-                    <option value='Portico'>Portico</option>
-                    <option value='Koninklijke Bibliotheek'>Koninklijke Bibliotheek</option>
-                    <option value='Deep Web Technologies'>Deep Web Technologies</option>
-                    <option value='Internet Archive'>Internet Archive</option>
+                    onChange={this.inputHandler}>
+                      <option value='' />
+                      <option value='CLOCKSS'>CLOCKSS</option>
+                      <option value='LOCKSS'>LOCKSS</option>
+                      <option value='Portico'>Portico</option>
+                      <option value='Koninklijke Bibliotheek'>Koninklijke Bibliotheek</option>
+                      <option value='Deep Web Technologies'>Deep Web Technologies</option>
+                      <option value='Internet Archive'>Internet Archive</option>
                   </select>
                 </div>
               </div>
             </div>
+          </div>
+          <div className='fieldRowHolder'>
             {crossmark &&
               <div className='fieldinput'>
                 <div className='left-indent-36'>Crossmark Policy Page DOI</div>

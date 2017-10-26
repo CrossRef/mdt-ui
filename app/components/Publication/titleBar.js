@@ -24,7 +24,6 @@ export default class TitleBar extends Component {
     reduxCartUpdate: is.func.isRequired,
 
     asyncSearchRecords: is.func.isRequired,
-    asyncGetPublications: is.func.isRequired
   }
 
   render () {
@@ -43,7 +42,6 @@ export default class TitleBar extends Component {
         reduxControlModal={this.props.reduxControlModal}
         reduxCartUpdate={this.props.reduxCartUpdate}
 
-        asyncGetPublications={this.props.asyncGetPublications}
         asyncSearchRecords={this.props.asyncSearchRecords}
         />
     </div>)

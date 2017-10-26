@@ -1,12 +1,8 @@
 import React, { Component } from 'react'
-import Switch from 'react-toggle-switch'
 import update from 'immutability-helper'
 
 const Languages = require('../../../utilities/lists/language.json')
 import { ArchiveLocations } from '../../../utilities/lists/archiveLocations'
-
-const PublicationTypes = require('../../../utilities/lists/publicationTypes.json')
-
 
 export default class AdditionalInformation extends Component {
   constructor (props) {
@@ -60,24 +56,6 @@ export default class AdditionalInformation extends Component {
       )
   }
 
-  displayPublicationTypes () {
-      var publicationType = [
-        <option key='-1'></option>,
-        ...PublicationTypes.map((pubtype, i) => (<option key={i} value={pubtype.value}>{pubtype.name}</option>))
-      ]
-
-      return (
-          <select
-            ref='publicationType'
-            onChange={this.handleAddInfo}
-            className='height32'
-            value={this.props.addInfo.publicationType}
-            >
-              {publicationType}
-          </select>
-      )
-  }
-
   handleAddInfo = () => {
     this.props.handler({
       addInfo: update(this.props.addInfo, {$set:{
@@ -85,7 +63,6 @@ export default class AdditionalInformation extends Component {
         language: this.refs.language.value,
         publicationType: this.refs.publicationType.value,
         similarityCheckURL: this.refs.similarityCheckURL.value,
-        freetolicense: this.state.on
       }})
     })
   }
@@ -159,61 +136,11 @@ export default class AdditionalInformation extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className='fieldinnerholder halflength'>
-                            <div className='labelholder'>
-                                <div></div>
-                                <div className='labelinnerholder'>
-                                    <div className='label'>Publication Type</div>
-                                </div>
-                            </div>
-                            <div className='requrefieldholder'>
-                                <div className='requiredholder norequire'>
-                                    <div className='required height32'>
-                                    </div>
-                                </div>
-                                <div className='field'>
-                                    {this.displayPublicationTypes()}
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div className='errorHolder'>
                     </div>
                 </div>
-                <div className='row'>
-                    <div className='fieldHolder'>
-                        <div className='fieldinnerholder halflength'>
-                            <div className='labelholder'>
-                                <div></div>
-                                <div className='labelinnerholder'>
-                                    <div className='label'>&nbsp;</div>
-                                </div>
-                            </div>
-                            <div className='requrefieldholder'>
-                                <div className='field'>
-                                    <div className='switchOuterHolder'>
-                                        <div className='switchInnerHolder'>
-                                            <div>&nbsp;</div>
-                                            <div className='switchLicense'>
-                                                <div className='switchLabel'><span>Free to License</span></div>
-                                                <Switch
-                                                    ref='freetolicense'
-                                                    onClick={() => {
-                                                        this.setState({on: !this.state.on}, this.handleAddInfo)
-                                                    }}
-                                                    on={this.state.on}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <div className='errorHolder'>
-                    </div>
-                </div>
+            </div>
         </div>
     )
   }

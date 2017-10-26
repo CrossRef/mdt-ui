@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import { Roles } from '../../../utilities/lists/roles.js'
-import {refreshErrorBubble} from '../../../utilities/helpers'
 import {routes} from '../../../routing'
 
 
@@ -22,7 +21,7 @@ export default class Contributor extends Component {
   }
 
   componentDidUpdate () {
-    refreshErrorBubble();
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
   toggle = () => {
