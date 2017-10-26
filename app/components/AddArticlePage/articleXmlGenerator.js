@@ -169,7 +169,7 @@ export default function (state, reduxForm) {
       if (isDate || license.licenseurl || license.appliesto) {
         const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : ''
         let freetolicense = ``
-        if (i===0 && state.addInfo.freetolicense) {
+        if (i===0 && article.freetolicense === 'yes') {
           freetolicense = `<ai:free_to_read${isDate ? ` start_date="${date}"` : ''}/>`
         }
 

@@ -16,7 +16,7 @@ export default class License extends Component {
   }
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.validating || (nextProps.freeToRead && !this.props.freeToRead)) {
+    if(nextProps.validating || nextProps.freetolicense === 'yes') {
       this.setState({showSubItem: true})
     }
   }
@@ -70,7 +70,6 @@ export default class License extends Component {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, licenseurl, appliesto} = this.props.license;
     const errors = this.props.license.errors || {};
     const thereIsDate = !!(acceptedDateYear || acceptedDateMonth || acceptedDateDay);
-
     return (
         <div>
             <div className='row subItemRow' onClick={this.toggle.bind(this)}>
@@ -139,16 +138,16 @@ export default class License extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!this.props.freetoread && !(thereIsDate || appliesto) && 'norequire'}`}>
-                                        <div className='required height32'>{(this.props.freetoread || (thereIsDate || appliesto)) && <span>*</span>}</div>
+                                    <div className={`requiredholder ${this.props.freetolicense !== 'yes' && !(thereIsDate || appliesto) && 'norequire'}`}>
+                                        <div className='required height32'>{(this.props.freetolicense === 'yes' || (thereIsDate || appliesto)) && <span>*</span>}</div>
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className={`height32 ${(errors.licenseUrl || errors.licenseUrlInvalid) && 'fieldError'}`}
+                                            className={`height32 ${(errors.freetolicense || errors.licenseUrl || errors.licenseUrlInvalid) && 'fieldError'}`}
                                             type='text'
                                             ref='licenseurl'
                                             onChange={this.handleLicense}
-                                            value={!!licenseurl?licenseurl:'http://'}
+                                            value={licenseurl ? licenseurl : 'http://'}
                                         />
                                     </div>
                                 </div>

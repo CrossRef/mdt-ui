@@ -220,9 +220,9 @@ export default class AddArticlePage extends Component {
       error: false,
       errors: {...criticalErrors, ...warnings},
       criticalErrors: criticalErrors,
-      license: licenses.length ? licenses : this.state.license,
-      contributors: contributors.length ? contributors : this.state.contributors,
-      relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems,
+      license: licenses.length ? licenses : defaultState.license,
+      contributors: contributors.length ? contributors : defaultState.contributors,
+      relatedItems: relatedItems.length ? relatedItems : defaultState.relatedItems,
       openItems: {
         Contributors: !!contributors.length,
         Funding: !!getSubItems(data.funding).length,
@@ -408,7 +408,7 @@ export default class AddArticlePage extends Component {
   }
 
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     this.state.deferredErrorBubbleRefresh.resolve()
   }
 
