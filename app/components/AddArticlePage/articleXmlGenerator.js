@@ -74,7 +74,6 @@ export default function (state, reduxForm) {
   appendCollectionXML(el)
   doc.documentElement.appendChild(el)
 
-  console.info(new XMLSerializer().serializeToString(doc))
   return doc
 
   function appendContributorElm(root) {

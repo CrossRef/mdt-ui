@@ -264,7 +264,6 @@ export default class AddArticlePage extends Component {
       const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
       const journalElm = journalDoc.getElementsByTagName("journal")[0]
       journalElm.appendChild(journalArticle)    
-      console.info(new XMLSerializer().serializeToString(journalDoc))
       const title = jsEscape(this.state.article.title)
 
       const newRecord = {
