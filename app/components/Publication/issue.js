@@ -23,8 +23,6 @@ export default class Issue extends Component {
 
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-
-    asyncGetPublications: is.func.isRequired,
   }
 
   toggleCheckBox = (e) => {
@@ -59,10 +57,6 @@ export default class Issue extends Component {
 
         handleAddCart: this.props.handleAddCart,
         handleAddToList: this.props.handleAddToList,
-
-        reduxCartUpdate: this.props.reduxCartUpdate,
-
-        asyncGetPublications: this.props.asyncGetPublications,
       }
     })
   }

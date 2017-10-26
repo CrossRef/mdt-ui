@@ -173,11 +173,11 @@ export function submitPublication (publication, error = reason => console.error(
 export function deleteRecord (record, error = (reason) => console.error('ERROR in deleteRecord', reason)) {
   return function(dispatch) {
     const {doi, pubDoi, title, type, contains} = record
-    return api.deleteItem(doi).then(response => {
+    return api.deleteItem({doi, title, pubDoi}).then(response => {
       if(response.status === 200) {
         if(type === 'issue') {
-          for(let i in contains) {
-            dispatch(deleteRecord(contains[i]))
+          for(let article of contains) {
+            dispatch(deleteRecord(article))
           }
         }
 

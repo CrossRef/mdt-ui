@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 
 import {routes} from '../../routing'
-import {refreshErrorBubble} from '../../utilities/helpers'
 
 
 
@@ -27,6 +26,7 @@ export default class SubItem extends Component {
     }
   }
 
+
   componentWillReceiveProps(nextProps) {
     if (nextProps.validating) {
       this.setState({
@@ -35,19 +35,18 @@ export default class SubItem extends Component {
     }
   }
 
+
   toggle = () => {
     this.setState({
       showSection: !this.state.showSection
     })
   }
 
+
   componentDidUpdate () {
-    if(this.props.title === 'Optional Issue Information (Contributorship)') {
-      refreshErrorBubble()
-    } else {
-      this.props.deferredErrorBubbleRefresh.resolve()
-    }
+    this.props.deferredErrorBubbleRefresh.resolve()
   }
+
 
   addButton = () => {
     if(this.props.addHandler || this.props.optionalIssueInfoHandlers) {
@@ -71,6 +70,7 @@ export default class SubItem extends Component {
       )
     }
   }
+
 
   render () {
     const { title, addHandler, arrowType } = this.props

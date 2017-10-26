@@ -3,6 +3,12 @@ const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 
 
 export const IssueMessages = {
+  issueVolume: {
+    type: 'eitherOr',
+    bold: 'Required',
+    message: 'Please provide either an issue or volume number.'
+  },
+
   issue: {
     type: 'required',
     bold: 'Required',

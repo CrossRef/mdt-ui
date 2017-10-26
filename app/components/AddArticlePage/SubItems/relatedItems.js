@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
-import {refreshErrorBubble, refreshStickyError} from '../../../utilities/helpers'
 const RelationTypes = require('../../../utilities/lists/relationTypes.json')
 const IdentifierTypes = require('../../../utilities/lists/identifierTypes.json')
 

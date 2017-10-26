@@ -21,8 +21,6 @@ export default class Listing extends Component {
 
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-
-    asyncGetPublications: is.func.isRequired,
   }
 
   state = {
@@ -89,9 +87,6 @@ export default class Listing extends Component {
 
                 reduxControlModal={this.props.reduxControlModal}
                 reduxCartUpdate={this.props.reduxCartUpdate}
-
-                asyncGetPublications={this.props.asyncGetPublications}
-
               />,
 
               <ArticlesContainer key={`${JSON.stringify(child.title)}-articles`}

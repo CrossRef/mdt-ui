@@ -4,7 +4,6 @@ import ReactDOM from 'react-dom'
 import { Router, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import { Provider } from 'react-redux'
-import { STContainer, myDecoratorsConfig, setConfig } from 'my_decorators'
 
 import configure from './store'
 import Routing, { routes } from './routing'
@@ -13,10 +12,6 @@ import { getCRState, controlModal } from './actions/application'
 
 window.version = version()
 
-setConfig({
-  showStateTracker: false,
-  updateReports: {mount: false, update: false, pass: false, render: false}
-})
 
 const store = configure()
 const history = syncHistoryWithStore(browserHistory, store)
@@ -29,7 +24,6 @@ if(currentLocation !== routes.base) {
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
-      {myDecoratorsConfig.showStateTracker && <STContainer />}
       <Router history={history} onUpdate={()=>{
         if(!store.getState().routing.locationBeforeTransitions.query.modal) {
           store.dispatch(controlModal({ showModal: false }))
@@ -50,6 +44,7 @@ function version () {
 `
 Merged branches / tickets in this build
 
+MM-156
 MM-148
 MM-96
 MMM-139

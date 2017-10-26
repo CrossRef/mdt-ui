@@ -3,7 +3,6 @@ import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
 
 import {routes} from '../../../routing'
-import {refreshErrorBubble, refreshStickyError} from '../../../utilities/helpers'
 
 
 
