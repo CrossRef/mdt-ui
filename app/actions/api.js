@@ -65,7 +65,7 @@ export function getItem (id, forced) {
     doi = id
   }
 
-  const queryParams = doi ? `doi=${doi}` : `pubdoi=${pubDoi}&title=${JSON.stringify(title)}`
+  const queryParams = doi ? `doi=${doi}` : `pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
 
   return authorizedFetch(`${apiBaseUrl}/work?${queryParams}${forced ? `&forced=true` : ''}`, { headers: {Authorization: localStorage.getItem('auth')} })
     .then(response => {
@@ -94,8 +94,19 @@ export function submitItem (publication) {
 
 
 
-export function deleteItem (doi) {
-  return authorizedFetch(`${apiBaseUrl}/work?doi=${doi}`, {
+export function deleteItem (id) {
+  let doi, pubDoi, title
+  if(typeof id === 'object') {
+    doi = id.doi
+    title = id.title
+    pubDoi = id.pubDoi
+  } else if(typeof id === 'string') {
+    doi = id
+  }
+
+  const queryParams = doi ? `doi=${doi}` : `pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
+
+  return authorizedFetch(`${apiBaseUrl}/work?${queryParams}`, {
     method: 'delete',
     headers: {Authorization: localStorage.getItem('auth')}
   })

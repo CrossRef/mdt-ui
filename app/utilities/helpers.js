@@ -1,7 +1,5 @@
 import React from 'react'
-const jsesc = require('jsesc')
 var ObjTree = require('xml-objtree')
-import $ from 'jquery'
 
 import {exposedStore} from '../store'
 import {controlModal} from '../actions/application'
@@ -12,49 +10,26 @@ import * as api from '../actions/api'
 
 
 
-//JQUERY DOM Modifications.
-// Its a bad idea to mix react with jquery modifications but these particular operations are difficult to write in react without careful thought,
-// so for now will "quarantine" all jquery DOM modifications here for easier debugging. At some point it would be worthwhile to refactor this into react
 
-
-export function refreshErrorBubble () {
-  var firstError = $(".fieldError").first()
-  if (firstError.length > 0) {
-    $('.fullError').show()
-    $('.fullError').find('.tooltips').css({
-      'top': ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9)) - ($('.switchLicense').first().position().top + 15) - ($('.switchLicense').first().offset().top + 15))) + 25
-    })
-  } else {
-    $('.fullError').hide()
+export function appendElm(elmName, val, appendToElm) {
+  var el = null
+  if (appendToElm && val && (val.trim().length )) {
+    el = appendToElm.ownerDocument.createElement(elmName)
+    el.textContent = val.trim()
+    appendToElm.appendChild(el)
   }
+  return el
+}
+
+
+export function appendAttribute(attrName, val, appendToElm) {
+  if (appendToElm && val && val.trim().length ) appendToElm.setAttribute(attrName, val.trim())
 }
 
 
 
-export function refreshStickyError () {
-  const errorMessage = $('.toolmsgholder')
-  if(!errorMessage || !errorMessage.length) {
-    return
-  }
-  const stickyError = $('.stickyError')
-  const bounds = errorMessage[0].getBoundingClientRect()
-  const ErrorIsVisible = bounds.top < window.innerHeight && bounds.bottom > 0
-  const errorIsAbove = bounds.top < 0
-  if ( (ErrorIsVisible && stickyError.is(":visible")) || !errorMessage.is(":visible")) {
-    stickyError.hide()
-  } else if (!ErrorIsVisible && !stickyError.is(":visible")) {
-    stickyError.show()
-  }
-  if (errorIsAbove) {
-    stickyError.addClass('errorAbove').removeClass('errorBelow').find('img').removeClass('rotate')
-  } else {
-    stickyError.addClass('errorBelow').removeClass('errorAbove').find('img').addClass('rotate')
-  }
-}
 
 
-//--------------------------------------- End JQUERY -------------------------------------------------
-//----------------------------------------------------------------------------------------------------
 
 
 
@@ -121,7 +96,7 @@ export function compareDois (doi1, doi2) {
 
 
 export function jsEscape (str) {
-  return jsesc(str, {'json': true, 'wrap' : false})
+  return str
 }
 
 

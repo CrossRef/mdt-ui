@@ -13,7 +13,6 @@ export default class ActionBar extends Component {
   static propTypes ={
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-    asyncGetPublications: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object.isRequired,
     handleAddCart: is.func.isRequired,
@@ -60,10 +59,7 @@ export default class ActionBar extends Component {
       style: 'addIssueModal',
       Component: AddIssueModal,
       props: {
-        asyncGetPublications: this.props.asyncGetPublications,
         publication: this.props.publication,
-        reduxControlModal: this.props.reduxControlModal,
-	      reduxCartUpdate: this.props.reduxCartUpdate,
         ownerPrefix: this.props.ownerPrefix
       }
     })

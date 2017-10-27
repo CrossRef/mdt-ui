@@ -3,7 +3,6 @@ import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
 
 import {routes} from '../../../routing'
-import {refreshErrorBubble, refreshStickyError} from '../../../utilities/helpers'
 
 
 
@@ -204,7 +203,7 @@ export default class Funding extends Component {
                                     />
                                     {this.state.isLoading &&
                                     <div className="status">
-                                      <img src={`${routes.images}/AddArticle/ajax-loader-transparent.gif`} />
+                                      {/*<img src={`${routes.images}/AddArticle/ajax-loader-transparent.gif`} />*/}
                                     </div>
                                     }
                                   </div>

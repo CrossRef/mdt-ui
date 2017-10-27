@@ -20,7 +20,6 @@ export default class Search extends Component {
     search: is.object.isRequired,
     publication: is.object.isRequired,
     cart: is.array.isRequired,
-    asyncGetPublications: is.func.isRequired
   }
 
   constructor (props) {
@@ -87,7 +86,6 @@ export default class Search extends Component {
         issue.contains = []
 
         api.submitItem(result).then(()=>{
-          //this.props.asyncGetPublications(pubDoi)
           browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/${encodeURIComponent(issueDoi || issueTitle)}/addarticle/${encodeURIComponent(item.doi)}`)
         })
       }

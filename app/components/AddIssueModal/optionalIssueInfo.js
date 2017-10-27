@@ -47,6 +47,10 @@ export default class OptionalIssueInformation extends Component {
     )
   }
 
+  componentDidUpdate() {
+    this.props.deferredErrorBubbleRefresh.resolve()
+  }
+
   render () {
     const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role, errors} = this.state.optionalIssueInfo
     const hasData = !!(firstName || lastName || suffix || affiliation || orcid || alternativeName || role)

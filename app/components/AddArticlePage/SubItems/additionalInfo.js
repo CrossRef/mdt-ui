@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-import Switch from 'react-toggle-switch'
 import update from 'immutability-helper'
 
 const Languages = require('../../../utilities/lists/language.json')
@@ -63,7 +62,6 @@ export default class AdditionalInformation extends Component {
         archiveLocation: this.refs.archiveLocation.value,
         language: this.refs.language.value,
         similarityCheckURL: this.refs.similarityCheckURL.value,
-        freetolicense: this.state.on
       }})
     })
   }
@@ -141,40 +139,7 @@ export default class AdditionalInformation extends Component {
                     <div className='errorHolder'>
                     </div>
                 </div>
-                <div className='row'>
-                    <div className='fieldHolder'>
-                        <div className='fieldinnerholder halflength'>
-                            <div className='labelholder'>
-                                <div></div>
-                                <div className='labelinnerholder'>
-                                    <div className='label'>&nbsp;</div>
-                                </div>
-                            </div>
-                            <div className='requrefieldholder'>
-                                <div className='field'>
-                                    <div className='switchOuterHolder'>
-                                        <div className='switchInnerHolder'>
-                                            <div>&nbsp;</div>
-                                            <div className='switchLicense'>
-                                                <div className='switchLabel'><span>Free to License</span></div>
-                                                <Switch
-                                                    ref='freetolicense'
-                                                    onClick={() => {
-                                                        this.setState({on: !this.state.on}, this.handleAddInfo)
-                                                    }}
-                                                    on={this.state.on}
-                                                />
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        </div>
-                    </div>
-                    <div className='errorHolder'>
-                    </div>
-                </div>
+            </div>
         </div>
     )
   }

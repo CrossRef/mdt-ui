@@ -149,7 +149,7 @@ export default class ErrorBubble extends React.Component{
                   {errors.contributorGroupRole && this.errorMessage('contributorGroupRole')}
                   {errors.contributorGroupName && this.errorMessage('contributorGroupName')}
 
-                  {errors.licenseFreeToRead && this.errorMessage('licenseFreeToRead')}
+                  {errors.freetolicense && this.errorMessage('freetolicense')}
                   {errors.licenseDateIncomplete && this.errorMessage('licenseDateIncomplete')}
                   {errors.licenseDateInvalid && this.errorMessage('licenseDateInvalid')}
                   {errors.licenseUrl && this.errorMessage('licenseUrl')}

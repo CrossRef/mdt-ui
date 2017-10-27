@@ -3,6 +3,12 @@ const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 
 
 export const IssueMessages = {
+  issueVolume: {
+    type: 'eitherOr',
+    bold: 'Required',
+    message: 'Please provide either an issue or volume number.'
+  },
+
   issue: {
     type: 'required',
     bold: 'Required',
@@ -229,10 +235,10 @@ export const ArticleMessages = {
     message: 'Please provide contributor group name.'
   },
 
-  licenseFreeToRead: {
-    type: 'required',
+  freetolicense: {
+    type: 'special',
     bold: 'Required',
-    message: 'Please provide license URL if content is Free to Read.'
+    message: 'Please provide license URL if content is Free to License.'
   },
   licenseDateIncomplete: {
     type: 'required',

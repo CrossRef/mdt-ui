@@ -16,7 +16,7 @@ import * as api from '../actions/api'
 import parseXMLArticle from '../utilities/parseXMLArticle'
 import journalArticleXml from '../components/AddArticlePage/articleXmlGenerator'
 import ReviewArticle from '../components/AddArticlePage/reviewArticleModal'
-
+import { XMLSerializer, DOMParser } from 'xmldom'
 
 
 const mapStateToProps = (state, props) => {
@@ -114,6 +114,7 @@ export default class AddArticlePage extends Component {
     const publicationMetaData = publMeta ? xmldoc(publMeta) : {}
     const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
 
+    
     if(this.state.editArticleDoi) {
       delete articleFullHierarchy.message.content
       articleFullHierarchy.message.date = publicationData.message.date
@@ -220,9 +221,9 @@ export default class AddArticlePage extends Component {
       error: false,
       errors: {...criticalErrors, ...warnings},
       criticalErrors: criticalErrors,
-      license: licenses.length ? licenses : this.state.license,
-      contributors: contributors.length ? contributors : this.state.contributors,
-      relatedItems: relatedItems.length ? relatedItems : this.state.relatedItems,
+      license: licenses.length ? licenses : defaultState.license,
+      contributors: contributors.length ? contributors : defaultState.contributors,
+      relatedItems: relatedItems.length ? relatedItems : defaultState.relatedItems,
       openItems: {
         Contributors: !!contributors.length,
         Funding: !!getSubItems(data.funding).length,
@@ -265,8 +266,9 @@ export default class AddArticlePage extends Component {
       const publication = this.state.publication
 
       const journalArticle = journalArticleXml(this.state, this.props.reduxForm)
-      const journal = `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}${journalArticle}</journal></crossref>`
-
+      const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
+      const journalElm = journalDoc.getElementsByTagName("journal")[0]
+      journalElm.appendChild(journalArticle)    
       const title = jsEscape(this.state.article.title)
 
       const newRecord = {
@@ -277,7 +279,7 @@ export default class AddArticlePage extends Component {
         'type': 'article',
         'mdt-version': this.state.version,
         'status': 'draft',
-        'content': journal.replace(/(\r\n|\n|\r)/gm,'')
+        'content': new XMLSerializer().serializeToString(journalDoc)
       }
 
       // check if its part of a issue, the issue props will tell us
@@ -408,7 +410,7 @@ export default class AddArticlePage extends Component {
   }
 
 
-  componentDidUpdate(prevProps, prevState) {
+  componentDidUpdate() {
     this.state.deferredErrorBubbleRefresh.resolve()
   }
 
