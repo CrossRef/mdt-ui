@@ -13,7 +13,7 @@ import * as api from '../actions/api'
 
 export function appendElm(elmName, val, appendToElm) {
   var el = null
-  if (val && (val.trim().length )) {
+  if (appendToElm && val && (val.trim().length )) {
     el = appendToElm.ownerDocument.createElement(elmName)
     el.textContent = val.trim()
     appendToElm.appendChild(el)

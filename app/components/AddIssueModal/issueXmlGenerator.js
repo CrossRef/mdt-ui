@@ -16,10 +16,11 @@ export default function (issueObj) {
     ownerPrefix
   } = issueObj
   appendContributorElm(issueElm, optionalIssueInfo)
-  var el = doc.createElement("titles")
+  var el
   if (issue.issueTitle.trim().length) {
+    el = doc.createElement("titles")
     appendElm("title", issue.issueTitle, el)
-    doc.rootElement.appendChild(issueElm)
+    issueElm.appendChild(el)
   }
 
   const onlineYear = issue.onlineDateYear,
@@ -46,14 +47,16 @@ export default function (issueObj) {
   }
 
   // volume
-  if (issue.volume && issue.volume.length) {
+  const volumeDoiEntered = doiEntered(issue.volumeDoi, ownerPrefix)
+  const volumeUrlEntered = urlEntered(issue.volumeUrl)
+  if(issue.volume || volumeDoiEntered || volumeUrlEntered) {
     el = doc.createElement("journal_volume")
-    const volumeDoiEntered = doiEntered(issue.volumeDoi, ownerPrefix)
-    const volumeUrlEntered = urlEntered(issue.volumeUrl)
+    if(issue.volume) appendElm("volume", issue.volume, el)
     if (volumeUrlEntered || volumeDoiEntered) {
-      el = doc.createElement("doi_data")
-      if (volumeDoiEntered) appendElm("doi", issue.volumeDoi, el)
-      if (volumeUrlEntered) appendElm("resource", issue.volumeUrl, el)
+      el2 = doc.createElement("doi_data")
+      if (volumeDoiEntered) appendElm("doi", issue.volumeDoi, el2)
+      if (volumeUrlEntered) appendElm("resource", issue.volumeUrl, el2)
+      el.appendChild(el2)
     }
     issueElm.appendChild(el)
   }
@@ -62,45 +65,45 @@ export default function (issueObj) {
 
   appendElm("special_numbering", issue.specialIssueNumber, issueElm)
   if (issue.archiveLocation.trim().length ){
-      el = doc.createElement("archive_locations")
-      var el2 = doc.createElement("archive")
-      appendAttribute("name", issue.archiveLocation, el2)
-      el.appendChild(el2)
-      issueElm.appendChild(el)
-    }
-    appendElm("issue", issue.issue, issueElm)
-    //doi_data
-    var doiData = ''
-    const issueDoiEntered = doiEntered(issue.issueDoi, ownerPrefix)
-    const issueUrlEntered = urlEntered(issue.issueUrl)
-    if (issueUrlEntered || issueDoiEntered) {
-      el = doc.createElement("doi_data")
-      if (issueDoiEntered) appendElm("doi", issue.issueDoi, el)
-      if (issueUrlEntered) appendElm("resource", issue.issueUrl, el)
-      issueElm.appendChild(el)
-    }
-    return doc
+    el = doc.createElement("archive_locations")
+    var el2 = doc.createElement("archive")
+    appendAttribute("name", issue.archiveLocation, el2)
+    el.appendChild(el2)
+    issueElm.appendChild(el)
   }
 
-  function appendContributorElm(root, contributors) {
-    var contributors = getSubItems(contributors)
-    if (contributors.length == 0) return
-    const contElm = root.ownerDocument.createElement("contributors")
-
-    for (var i in contributors) {
-      const contributor = contributors[i]
-
-      const personElm = root.ownerDocument.createElement("person_name")
-      personElm.setAttribute("sequence", i == 0 ? "first" : "additional")
-      appendAttribute("contributor_role", contributor.role, personElm)
-      appendElm("given_name", contributor.firstName, personElm)
-      appendElm("surname", contributor.lastName, personElm)
-      appendElm("suffix", contributor.suffix, personElm)
-      appendElm("affiliation", contributor.affiliation, personElm)
-      appendElm("ORCID", contributor.orcid, personElm)
-      appendElm("alt-name", contributor.alternativeName, personElm)
-      contElm.appendChild(personElm)
-    }
-
-    root.appendChild(contElm)
+  //doi_data
+  var doiData = ''
+  const issueDoiEntered = doiEntered(issue.issueDoi, ownerPrefix)
+  const issueUrlEntered = urlEntered(issue.issueUrl)
+  if (issueUrlEntered || issueDoiEntered) {
+    el = doc.createElement("doi_data")
+    if (issueDoiEntered) appendElm("doi", issue.issueDoi, el)
+    if (issueUrlEntered) appendElm("resource", issue.issueUrl, el)
+    issueElm.appendChild(el)
   }
+  return doc
+}
+
+function appendContributorElm(root, contributors) {
+  var contributors = getSubItems(contributors)
+  if (contributors.length == 0) return
+  const contElm = root.ownerDocument.createElement("contributors")
+
+  for (var i in contributors) {
+    const contributor = contributors[i]
+
+    const personElm = root.ownerDocument.createElement("person_name")
+    personElm.setAttribute("sequence", i == 0 ? "first" : "additional")
+    appendAttribute("contributor_role", contributor.role, personElm)
+    appendElm("given_name", contributor.firstName, personElm)
+    appendElm("surname", contributor.lastName, personElm)
+    appendElm("suffix", contributor.suffix, personElm)
+    appendElm("affiliation", contributor.affiliation, personElm)
+    appendElm("ORCID", contributor.orcid, personElm)
+    appendElm("alt-name", contributor.alternativeName, personElm)
+    contElm.appendChild(personElm)
+  }
+
+  root.appendChild(contElm)
+}
