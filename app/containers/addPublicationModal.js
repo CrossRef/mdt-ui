@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import verifyIssn from 'issn-verify'
-
+import {appendElm,appendAttribute} from '../utilities/helpers'
+import { XMLSerializer, DOMParser } from 'xmldom'
 import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
 const languages = require('../utilities/lists/language.json')
 
@@ -57,8 +58,8 @@ export default class AddPublicationCard extends Component {
         showURLError: false,
         showURLEmptyError: false,
         showTitleEmptyError: false,
+        printISSNInvalidError: false,
         onlineISSNInvalidError: false,
-        showISSNEmptyError: false,
         showDOIError: false,
         showDOIEmptyError: false,
         showDOIInvalidError: false,
@@ -68,7 +69,7 @@ export default class AddPublicationCard extends Component {
 
     if(props.mode === 'edit') {
       const data = props.Journal.journal_metadata
-      const archive = props.Journal.archive_locations ? props.Journal.archive_locations.archive : {}
+      const archive = data.archive_locations ? data.archive_locations.archive || {} : {}
       let version = props['mdt-version'] ? String(Number(props['mdt-version'])+1) : '0'
       const doi_data = data.doi_data || {}
       const issn = Array.isArray(data.issn) ? data.issn : [data.issn || {}]
@@ -175,6 +176,7 @@ export default class AddPublicationCard extends Component {
     return {valid, errorStates, criticalErrors}
   }
 
+
   save = () => {
 
     this.validation().then(({valid, errorStates, criticalErrors}) => {
@@ -214,32 +216,32 @@ export default class AddPublicationCard extends Component {
     })
   }
 
+
   publicationXml = (form = this.state) => {
-    const xmlArray = [
-      `<Journal xmlns="http://www.crossref.org/xschema/1.1">`,
+    const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>','text/xml')
+    const pubElm = doc.createElement("journal_metadata")
+    doc.documentElement.appendChild(pubElm)
+    appendAttribute("language",form.language,pubElm)
 
-      `<journal_metadata${form.language ? ` language="${form.language}"` : '' }>`,
+    appendElm("full_title",form.title,pubElm)
+    appendElm("abbrev_title",form.abbreviation,pubElm)
+    var el = appendElm("issn",form.electISSN,pubElm)
+    appendAttribute("media_type","electronic",el)
+    el = appendElm("issn",form.printISSN,pubElm)
+    appendAttribute("media_type","print",el)
+    el = doc.createElement("archive_locations")
+    var el2 = doc.createElement("archive")
+    appendAttribute("name", form.archivelocation, el2)
+    el.appendChild(el2)
+    pubElm.appendChild(el)
+    el = doc.createElement("doi_data")
+    appendElm("doi",form.DOI,el)
+    appendElm("resource",form.url,el)
+    pubElm.appendChild(el)
 
-      `<full_title>${form.title}</full_title>`,
-
-      form.abbreviation ? `<abbrev_title>${form.abbreviation}</abbrev_title>` : '',
-
-      form.printISSN ? `<issn media_type="print">${form.printISSN}</issn>` : '',
-
-      form.electISSN ? `<issn media_type="electronic">${form.electISSN}</issn>` : '',
-
-      `<doi_data>`,
-      `<doi>${form.DOI}</doi>`,
-      `<resource>${form.url}</resource>`,
-      `</doi_data>`,
-
-      `</journal_metadata>`,
-
-      form.archivelocation ? `<archive_locations><archive name="${form.archivelocation}"/></archive_locations>` : ``,
-      `</Journal>`
-    ]
-    return xmlArray.join('')
+    return new XMLSerializer().serializeToString(doc)
   }
+
 
   inputHandler = (e) => {
     this.setState({
@@ -247,13 +249,16 @@ export default class AddPublicationCard extends Component {
     })
   }
 
+
   closeModal = () => {
     this.props.reduxControlModal({showModal:false})
   }
 
+
   componentWillUnmount () {
     clearTimeout(this.state.timeOut)
   }
+
 
   confirmSave = (criticalErrors) => {
     clearTimeout(this.state.timeOut)
@@ -420,15 +425,14 @@ export default class AddPublicationCard extends Component {
                 <div className='inputinnerholder'>
                   <div className='notrequired' />
                   <select name='archivelocation' value={this.state.archivelocation}
-                          onChange={this.inputHandler}
-                  >
-                    <option value='' />
-                    <option value='CLOCKSS'>CLOCKSS</option>
-                    <option value='LOCKSS'>LOCKSS</option>
-                    <option value='Portico'>Portico</option>
-                    <option value='Koninklijke Bibliotheek'>Koninklijke Bibliotheek</option>
-                    <option value='Deep Web Technologies'>Deep Web Technologies</option>
-                    <option value='Internet Archive'>Internet Archive</option>
+                    onChange={this.inputHandler}>
+                      <option value='' />
+                      <option value='CLOCKSS'>CLOCKSS</option>
+                      <option value='LOCKSS'>LOCKSS</option>
+                      <option value='Portico'>Portico</option>
+                      <option value='KB'>Koninklijke Bibliotheek</option>
+                      <option value='DWT'>Deep Web Technologies</option>
+                      <option value='Internet Archive'>Internet Archive</option>
                   </select>
                 </div>
               </div>
@@ -436,19 +440,19 @@ export default class AddPublicationCard extends Component {
           </div>
           <div className='fieldRowHolder'>
             {crossmark &&
-            <div className='fieldinput'>
-              <div className='left-indent-36'>Crossmark Policy Page DOI</div>
-              <div className='inputholder'>
-                <div className='inputinnerholder'>
-                  <div className='notrequired' />
-                  <input
-                    type='text'
-                    name='crossmarkDoi'
-                    value={this.state.crossmarkDoi}
-                    onChange={this.inputHandler}/>
+              <div className='fieldinput'>
+                <div className='left-indent-36'>Crossmark Policy Page DOI</div>
+                <div className='inputholder'>
+                  <div className='inputinnerholder'>
+                    <div className='notrequired' />
+                    <input
+                      type='text'
+                      name='crossmarkDoi'
+                      value={this.state.crossmarkDoi}
+                      onChange={this.inputHandler}/>
+                  </div>
                 </div>
-              </div>
-            </div>}
+              </div>}
           </div>
           <div className='fieldRowHolder buttonholder'>
             <div className='fieldinput' />
@@ -467,6 +471,3 @@ export default class AddPublicationCard extends Component {
     )
   }
 }
-
-
-

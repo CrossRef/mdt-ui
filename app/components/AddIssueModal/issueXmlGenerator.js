@@ -1,37 +1,75 @@
-import { getContributor } from '../../utilities/getSubItems'
-import {doiEntered, urlEntered} from '../../utilities/helpers'
-
-
-
+import {
+  doiEntered,
+  urlEntered
+} from '../../utilities/helpers'
+import {appendElm,appendAttribute} from '../../utilities/helpers'
+import { XMLSerializer, DOMParser } from 'xmldom'
+import { getSubItems } from '../../utilities/getSubItems'
 export default function (issueObj) {
-  const {issue, optionalIssueInfo, ownerPrefix} = issueObj
-  // the title
-  const titles = issue.issueTitle.trim().length > 0 ? `<titles><title>${issue.issueTitle.trim()}</title></titles>` : ``
+  var doc = new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"></crossref>','text/xml')
+  var issueElm = doc.createElement("journal_issue")
+  doc.documentElement.appendChild(issueElm)
 
-  // special numbering
-  const specialNumbering = issue.specialIssueNumber.trim().length > 0 ? `<special_numbering>${issue.specialIssueNumber.trim()}</special_numbering>` : ``
-
-  // special numbering
-  const issueNumber = issue.issue.trim().length > 0 ? `<issue>${issue.issue.trim()}</issue>` : ``
-
-  // the online date
-  var publicationOnlineDate = ''
-  if (issue.onlineDateYear.length > 0 || issue.onlineDateDay.length > 0 || issue.onlineDateMonth.length > 0) {
-    publicationOnlineDate += (issue.onlineDateMonth.length > 0 ? `<month>${issue.onlineDateMonth}</month>` : ``)
-    publicationOnlineDate += (issue.onlineDateDay.length > 0 ? `<day>${issue.onlineDateDay}</day>` : ``)
-    publicationOnlineDate += (issue.onlineDateYear.length > 0 ? `<year>${issue.onlineDateYear}</year>` : ``)
-
-    publicationOnlineDate = `<publication_date media_type="online">${publicationOnlineDate}</publication_date>`
+  const {
+    issue,
+    optionalIssueInfo,
+    ownerPrefix
+  } = issueObj
+  appendContributorElm(issueElm, optionalIssueInfo)
+  var el
+  if (issue.issueTitle.trim().length) {
+    el = doc.createElement("titles")
+    appendElm("title", issue.issueTitle, el)
+    issueElm.appendChild(el)
   }
 
-  // the print date
-  var publicationPrintDate = ''
-  if (issue.printDateYear.length > 0 || issue.printDateDay.length > 0 || issue.printDateMonth.length > 0) {
-    publicationPrintDate += (issue.printDateMonth.length > 0 ? `<month>${issue.printDateMonth}</month>` : ``)
-    publicationPrintDate += (issue.printDateDay.length > 0 ? `<day>${issue.printDateDay}</day>` : ``)
-    publicationPrintDate += (issue.printDateYear.length > 0 ? `<year>${issue.printDateYear}</year>` : ``)
+  const onlineYear = issue.onlineDateYear,
+    onlineMonth = issue.onlineDateMonth,
+    onlineDay = issue.onlineDateDay,
+    printYear = issue.printDateYear,
+    printMonth = issue.printDateMonth,
+    printDay = issue.printDateDay
+  if (onlineYear || onlineMonth || onlineDay) {
+    el = doc.createElement('publication_date')
+    el.setAttribute('media_type', 'online')
+    appendElm("month", onlineMonth, el)
+    appendElm("day", onlineDay, el)
+    appendElm("year", onlineYear, el)
+    issueElm.appendChild(el)
+  }
+  if (printYear || printMonth || printDay) {
+    el = doc.createElement('publication_date')
+    el.setAttribute('media_type', 'print')
+    appendElm("month", printMonth, el)
+    appendElm("day", printDay, el)
+    appendElm("year", printYear, el)
+    issueElm.appendChild(el)
+  }
 
-    publicationPrintDate = `<publication_date media_type="print">${publicationPrintDate}</publication_date>`
+  // volume
+  const volumeDoiEntered = doiEntered(issue.volumeDoi, ownerPrefix)
+  const volumeUrlEntered = urlEntered(issue.volumeUrl)
+  if(issue.volume || volumeDoiEntered || volumeUrlEntered) {
+    el = doc.createElement("journal_volume")
+    if(issue.volume) appendElm("volume", issue.volume, el)
+    if (volumeUrlEntered || volumeDoiEntered) {
+      el2 = doc.createElement("doi_data")
+      if (volumeDoiEntered) appendElm("doi", issue.volumeDoi, el2)
+      if (volumeUrlEntered) appendElm("resource", issue.volumeUrl, el2)
+      el.appendChild(el2)
+    }
+    issueElm.appendChild(el)
+  }
+
+  appendElm("issue", issue.issue, issueElm)
+
+  appendElm("special_numbering", issue.specialIssueNumber, issueElm)
+  if (issue.archiveLocation.trim().length ){
+    el = doc.createElement("archive_locations")
+    var el2 = doc.createElement("archive")
+    appendAttribute("name", issue.archiveLocation, el2)
+    el.appendChild(el2)
+    issueElm.appendChild(el)
   }
 
   //doi_data
@@ -39,30 +77,33 @@ export default function (issueObj) {
   const issueDoiEntered = doiEntered(issue.issueDoi, ownerPrefix)
   const issueUrlEntered = urlEntered(issue.issueUrl)
   if (issueUrlEntered || issueDoiEntered) {
-    doiData += (issueDoiEntered ? `<doi>${issue.issueDoi}</doi>` : ``)
-    doiData += ( issueUrlEntered ? `<resource>${issue.issueUrl}</resource>` : ``)
-    doiData = `<doi_data>${doiData}</doi_data>`
+    el = doc.createElement("doi_data")
+    if (issueDoiEntered) appendElm("doi", issue.issueDoi, el)
+    if (issueUrlEntered) appendElm("resource", issue.issueUrl, el)
+    issueElm.appendChild(el)
+  }
+  return doc
+}
+
+function appendContributorElm(root, contributors) {
+  var contributors = getSubItems(contributors)
+  if (contributors.length == 0) return
+  const contElm = root.ownerDocument.createElement("contributors")
+
+  for (var i in contributors) {
+    const contributor = contributors[i]
+
+    const personElm = root.ownerDocument.createElement("person_name")
+    personElm.setAttribute("sequence", i == 0 ? "first" : "additional")
+    appendAttribute("contributor_role", contributor.role, personElm)
+    appendElm("given_name", contributor.firstName, personElm)
+    appendElm("surname", contributor.lastName, personElm)
+    appendElm("suffix", contributor.suffix, personElm)
+    appendElm("affiliation", contributor.affiliation, personElm)
+    appendElm("ORCID", contributor.orcid, personElm)
+    appendElm("alt-name", contributor.alternativeName, personElm)
+    contElm.appendChild(personElm)
   }
 
-  // volume
-  var volumeXml = ((issue.volume ? issue.volume : '').trim().length > 0 ? `<volume>${issue.volume}</volume>` : ``)
-  const volumeDoiEntered = doiEntered(issue.volumeDoi, ownerPrefix)
-  const volumeUrlEntered = urlEntered(issue.volumeUrl)
-
-  var volumeDoiData = ''
-  if (volumeDoiEntered && volumeUrlEntered) {
-    volumeDoiData += `<doi>${issue.volumeDoi}</doi>`
-    volumeDoiData += `<resource>${issue.volumeUrl}</resource>`
-    volumeDoiData = `<doi_data>${volumeDoiData}</doi_data>`
-  }
-
-  volumeXml = volumeXml ? `<journal_volume>${volumeXml}${volumeDoiData}</journal_volume>` : ''
-
-  // archive locations
-  var archiveLocation = ''
-  if (issue.archiveLocation.trim().length > 0) {
-    archiveLocation = `<archive_locations><archive name="${issue.archiveLocation}"/></archive_locations>`
-  }
-  return `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal_issue>${getContributor(optionalIssueInfo)}${titles}${publicationOnlineDate}${publicationPrintDate}${volumeXml}${issueNumber}${specialNumbering}${archiveLocation}${doiData}</journal_issue></crossref>`
-  //took out xsi:schemaLocation="http://www.crossref.org/xschema/1.1 http://doi.crossref.org/schemas/unixref1.1.xsd" per Mikes request
+  root.appendChild(contElm)
 }

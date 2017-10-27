@@ -11,6 +11,28 @@ import * as api from '../actions/api'
 
 
 
+export function appendElm(elmName, val, appendToElm) {
+  var el = null
+  if (appendToElm && val && (val.trim().length )) {
+    el = appendToElm.ownerDocument.createElement(elmName)
+    el.textContent = val.trim()
+    appendToElm.appendChild(el)
+  }
+  return el
+}
+
+
+export function appendAttribute(attrName, val, appendToElm) {
+  if (appendToElm && val && val.trim().length ) appendToElm.setAttribute(attrName, val.trim())
+}
+
+
+
+
+
+
+
+
 export function recordTitle (type, title) {
   if(type === 'issue') {
     return `${title.volume ? `Volume ${title.volume}` : ''}${title.volume && title.issue ? ', ' : ''}${title.issue ? `Issue ${title.issue}` : ''}`
