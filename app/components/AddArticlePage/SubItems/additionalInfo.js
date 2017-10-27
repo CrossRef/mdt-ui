@@ -61,7 +61,6 @@ export default class AdditionalInformation extends Component {
       addInfo: update(this.props.addInfo, {$set:{
         archiveLocation: this.refs.archiveLocation.value,
         language: this.refs.language.value,
-        publicationType: this.refs.publicationType.value,
         similarityCheckURL: this.refs.similarityCheckURL.value,
       }})
     })
