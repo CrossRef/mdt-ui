@@ -40,7 +40,10 @@ export default class Contributor extends Component {
     return (
       <select
         ref={ref}
-        onChange={this.handleContributor}
+        onChange={ async (e) => {
+          await this.handleContributor(e)
+          this.props.validate()
+        }}
         className={`height32 ${ref === 'role' ? contributorRole && 'fieldError' : contributorGroupRole && 'fieldError'}`}
         value={this.props.contributor[ref]}
         >
@@ -106,6 +109,7 @@ export default class Contributor extends Component {
                                             ref='firstName'
                                             onChange={this.handleContributor}
                                             value={firstName}
+                                            onBlur={this.props.validate}
                                         />
                                     </div>
                                 </div>
@@ -128,6 +132,7 @@ export default class Contributor extends Component {
                                             ref='lastName'
                                             onChange={this.handleContributor}
                                             value={lastName}
+                                            onBlur={this.props.validate}
                                         />
                                     </div>
                                 </div>
@@ -157,6 +162,7 @@ export default class Contributor extends Component {
                                             ref='suffix'
                                             onChange={this.handleContributor}
                                             value={suffix}
+                                            onBlur={this.props.validate}
                                         />
                                     </div>
                                 </div>
@@ -180,6 +186,7 @@ export default class Contributor extends Component {
                                             ref='affiliation'
                                             onChange={this.handleContributor}
                                             value={affiliation}
+                                            onBlur={this.props.validate}
                                         />
                                     </div>
                                 </div>
@@ -209,6 +216,7 @@ export default class Contributor extends Component {
                                             ref='orcid'
                                             onChange={this.handleContributor}
                                             value={orcid}
+                                            onBlur={this.props.validate}
                                         />
                                     </div>
                                 </div>
@@ -256,6 +264,7 @@ export default class Contributor extends Component {
                                             ref='groupAuthorName'
                                             onChange={this.handleContributor}
                                             value={groupAuthorName}
+                                            onBlur={this.props.validate}
                                         />
                                     </div>
                                 </div>

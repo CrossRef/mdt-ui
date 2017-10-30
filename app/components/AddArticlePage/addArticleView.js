@@ -27,6 +27,7 @@ export default class AddArticleCard extends Component {
     back: is.func.isRequired,
     addToCart: is.func.isRequired,
     save: is.func.isRequired,
+    validate: is.func.isRequired,
     openReviewArticleModal: is.func.isRequired,
     handleChange: is.func.isRequired,
     toggleFields: is.func.isRequired,
@@ -62,8 +63,14 @@ export default class AddArticleCard extends Component {
                 <InfoHelperRow setState={this.props.boundSetState} on={this.props.on}/>
 
                 <div className='row'>
-                  <ArticleTitleField handleChange={this.props.handleChange} title={this.props.article.title} errors={this.props.errors}/>
+                  <ArticleTitleField
+                    handleChange={this.props.handleChange}
+                    title={this.props.article.title}
+                    validate={this.props.validate}
+                    errors={this.props.errors}/>
+
                   {(!this.props.error && this.props.showHelper) && <InfoBubble/> }
+
                   {(this.props.error) &&
                     <ErrorBubble
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
@@ -78,13 +85,23 @@ export default class AddArticleCard extends Component {
                     subtitle={this.props.article.subtitle}
                     originallanguagetitle={this.props.article.originallanguagetitle}
                     originallanguagetitlesubtitle={this.props.article.originallanguagetitlesubtitle}
+                    validate={this.props.validate}
                     handleChange={this.props.handleChange}/>
                 </div>
 
                 <div className='row'>
                   <div className="fieldHolder">
-                    <ArticleDOIField disabled={this.props.doiDisabled} doi={this.props.article.doi} handleChange={this.props.handleChange} errors={this.props.errors}/>
-                    <ArticleUrlField url={this.props.article.url} handleChange={this.props.handleChange} errors={this.props.errors} />
+                    <ArticleDOIField
+                      disabled={this.props.doiDisabled}
+                      doi={this.props.article.doi}
+                      handleChange={this.props.handleChange}
+                      validate={this.props.validate}
+                      errors={this.props.errors}/>
+
+                    <ArticleUrlField url={this.props.article.url}
+                      handleChange={this.props.handleChange}
+                      validate={this.props.validate}
+                      errors={this.props.errors} />
                   </div>
                 </div>
 
@@ -93,6 +110,7 @@ export default class AddArticleCard extends Component {
                   errors={this.props.errors}
                   makeDateDropDown={makeDateDropDown}
                   handleChange={this.props.handleChange}
+                  validate={this.props.validate}
                 />
 
                 <BottomFields
@@ -100,6 +118,7 @@ export default class AddArticleCard extends Component {
                   errors={this.props.errors}
                   makeDateDropDown={makeDateDropDown}
                   handleChange={this.props.handleChange}
+                  validate={this.props.validate}
                 />
 
               </div>
@@ -113,6 +132,7 @@ export default class AddArticleCard extends Component {
                   {this.props.contributors.map((data, i)=>
                     <Contributor
                       validating={this.props.validating}
+                      validate={this.props.validate}
                       key={i}
                       contributor={data}
                       remove={this.props.removeSection.bind(null, 'contributors', i)}
@@ -132,6 +152,7 @@ export default class AddArticleCard extends Component {
                   {this.props.funding.map((data, i)=>
                     <Funding
                       validating={this.props.validating}
+                      validate={this.props.validate}
                       key={i}
                       funding={data}
                       remove={this.props.removeSection.bind(null, 'funding', i)}
@@ -167,7 +188,10 @@ export default class AddArticleCard extends Component {
                             <div className='field'>
                               <select
                                 name="freetolicense"
-                                onChange={this.props.handleChange}
+                                onChange={async (e) => {
+                                  await this.props.handleChange(e)
+                                  this.props.validate()
+                                }}
                                 className='height32'
                                 value={this.props.article.freetolicense}>
                                   <option key='-1' value={''}>{''}</option>
@@ -188,6 +212,7 @@ export default class AddArticleCard extends Component {
                   {this.props.license.map((data, i)=>
                     <License
                       validating={this.props.validating}
+                      validate={this.props.validate}
                       key={i}
                       license={data}
                       remove={this.props.removeSection.bind(null, 'license', i)}
@@ -209,6 +234,7 @@ export default class AddArticleCard extends Component {
                   {this.props.relatedItems.map((data, i)=>
                     <RelatedItems
                       validating={this.props.validating}
+                      validate={this.props.validate}
                       key={i}
                       relateditem={data}
                       remove={this.props.removeSection.bind(null, 'relatedItems', i)}
@@ -227,6 +253,7 @@ export default class AddArticleCard extends Component {
                   <AdditionalInformation
                     addInfo={this.props.addInfo}
                     handler={this.props.boundSetState}
+                    validate={this.props.validate}
                     simCheckError={this.props.errors.simCheckUrlInvalid}/>
               </SubItem>
 
@@ -239,6 +266,7 @@ export default class AddArticleCard extends Component {
                   CrossmarkAddButton={CrossmarkAddButton}>
                     <CrossmarkCards
                       showCards={this.props.showCards}
+                      validate={this.props.validate}
                       reduxDeleteCard={this.props.reduxDeleteCard}/>
                 </SubItem>
               }

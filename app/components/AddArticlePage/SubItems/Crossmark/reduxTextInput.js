@@ -42,6 +42,7 @@ export default class ReduxTextInput extends Component {
         type='text'
         name={this.props.name}
         onChange={this.handler}
+        onBlur={this.props.validate}
         value={this.props.reduxValue|| this.props.keyPath[2]!=='href'?this.props.reduxValue:'http://'}
       />
     )

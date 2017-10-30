@@ -104,6 +104,7 @@ export class CrossmarkCards extends Component {
           const Card = crossmarkCardSelector[cardName]
           return this.state.crossmarkCards[cardName] ?
             <Card key={`${cardName}-${index}`}
+              validate={this.props.validate}
               number={this.state.crossmarkCards[cardName] - 1}
               remove={() => this.removeCrossmarkCard(cardName)}/>
           : null

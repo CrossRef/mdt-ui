@@ -142,7 +142,7 @@ export default class ErrorBubble extends React.Component{
                   {(errors.printDateIncomplete || errors.onlineDateIncomplete) && this.errorMessage('printDateIncomplete')}
                   {errors.printDateInvalid && this.errorMessage('printDateInvalid')}
                   {errors.onlineDateInvalid && this.errorMessage('onlineDateInvalid')}
-                  {errors.firstPage && this.errorMessage('')}
+                  {errors.firstPage && this.errorMessage('firstPage')}
 
                   {errors.contributorLastName && this.errorMessage('contributorLastName')}
                   {errors.contributorRole && this.errorMessage('contributorRole')}

@@ -73,11 +73,11 @@ function generateCard (name, fields) {
   }
 }
 
-export const PublicationHistory = generateCard(pubHist, function fields (i) {
+export const PublicationHistory = generateCard(pubHist, function fields (i, card) {
   return (
     <div key={i} className='row'>
       <div className='fieldHolder'>
-        <Selector title='' keyPath={[pubHist, i, 'label']} style="dateAlignSelect" options={['', 'Received', 'Accepted', 'Published Online', 'Published Print']}/>
+        <Selector title='' validate={card.props.validate} keyPath={[pubHist, i, 'label']} style="dateAlignSelect" options={['', 'Received', 'Accepted', 'Published Online', 'Published Print']}/>
         <Date title="Date" keyPath={[pubHist, i]}/>
       </div>
       <div className='errorHolder'></div>
@@ -85,20 +85,20 @@ export const PublicationHistory = generateCard(pubHist, function fields (i) {
   )
 })
 
-export const PeerReview = generateCard(peer, function fields (i) {
+export const PeerReview = generateCard(peer, function fields (i, card) {
   return (
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector title='' keyPath={[peer, i, 'label']} style="textAlignSelect" options={['', 'Peer reviewed', 'Review Process']}/>
-          <TextInput title='Description' keyPath={[peer, i, 'explanation']}/>
+          <Selector title='' validate={card.props.validate} keyPath={[peer, i, 'label']} style="textAlignSelect" options={['', 'Peer reviewed', 'Review Process']}/>
+          <TextInput validate={card.props.validate} title='Description' keyPath={[peer, i, 'explanation']}/>
         </div>
         <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
       <div className='fieldHolder'>
-        <TextInput title='URL' keyPath={[peer, i, 'href']} style="floatRight"/>
+        <TextInput validate={card.props.validate} title='URL' keyPath={[peer, i, 'href']} style="floatRight"/>
       </div>
       <div className='errorHolder'></div>
       </div>
@@ -106,20 +106,20 @@ export const PeerReview = generateCard(peer, function fields (i) {
   )
 })
 
-export const Copyright = generateCard(copyright, function fields (i) {
+export const Copyright = generateCard(copyright, function fields (i, card) {
   return (
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector title='' keyPath={[copyright, i, 'label']} style="textAlignSelect" options={['', 'Copyright Statement', 'Licensing Information']}/>
-          <TextInput title='Description' keyPath={[copyright, i, 'explanation']}/>
+          <Selector title='' validate={card.props.validate} keyPath={[copyright, i, 'label']} style="textAlignSelect" options={['', 'Copyright Statement', 'Licensing Information']}/>
+          <TextInput validate={card.props.validate} title='Description' keyPath={[copyright, i, 'explanation']}/>
         </div>
         <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
       <div className='fieldHolder'>
-        <TextInput title='URL' keyPath={[copyright, i, 'href']} style="floatRight" />
+        <TextInput validate={card.props.validate} title='URL' keyPath={[copyright, i, 'href']} style="floatRight" />
       </div>
       <div className='errorHolder'></div>
       </div>
@@ -127,32 +127,32 @@ export const Copyright = generateCard(copyright, function fields (i) {
   )
 })
 
-export const SupplementaryMaterial = generateCard(supp, function fields (i) {
+export const SupplementaryMaterial = generateCard(supp, function fields (i, card) {
   return (
     <div key={i} className='row'>
       <div className='fieldHolder'>
-        <TextInput title='Description' keyPath={[supp, i, 'explanation']}/>
-        <TextInput title='URL' keyPath={[supp, i, 'href']} />
+        <TextInput validate={card.props.validate} title='Description' keyPath={[supp, i, 'explanation']}/>
+        <TextInput validate={card.props.validate} title='URL' keyPath={[supp, i, 'href']} />
       </div>
       <div className='errorHolder'></div>
     </div> 
   )
 })
 
-export const Other = generateCard(other, function fields (i) {
+export const Other = generateCard(other, function fields (i, card) {
   return (
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput title={`Label ${i+1}`} keyPath={[other, i, 'label']}/>
-          <TextInput title='Description' keyPath={[other, i, 'explanation']}/>
+          <TextInput validate={card.props.validate} title={`Label ${i+1}`} keyPath={[other, i, 'label']}/>
+          <TextInput validate={card.props.validate} title='Description' keyPath={[other, i, 'explanation']}/>
         </div>
         <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput title='URL' keyPath={[other, i, 'href']} style="floatRight" />
+          <TextInput validate={card.props.validate} title='URL' keyPath={[other, i, 'href']} style="floatRight" />
         </div>
         <div className='errorHolder'></div>
       </div>
@@ -165,15 +165,15 @@ export const StatusUpdate = generateCard(update, function fields (i, card) {
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector handler={card.requireHandler.bind(null, i)} title='Update Type (Required)' keyPath={[update, i, 'type']} style="textAlignSelect" options={['', ...updateTypes]}/>
-          <Date title="Update Date" keyPath={[update, i]} required={card.state[`require_${i}`]} />
+          <Selector validate={card.props.validate} handler={card.requireHandler.bind(null, i)} title='Update Type (Required)' keyPath={[update, i, 'type']} style="textAlignSelect" options={['', ...updateTypes]}/>
+          <Date title="Update Date" validate={card.props.validate}  keyPath={[update, i]} required={card.state[`require_${i}`]} />
         </div>
         <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput title='Original DOI updated' keyPath={[update, i, 'DOI']} required={card.state[`require_${i}`]}/>
+          <TextInput validate={card.props.validate} title='Original DOI updated' keyPath={[update, i, 'DOI']} required={card.state[`require_${i}`]}/>
         </div>
         <div className='errorHolder'></div>
       </div>
@@ -181,24 +181,25 @@ export const StatusUpdate = generateCard(update, function fields (i, card) {
   )
 })
 
-export const ClinicalTrials = generateCard(clinical, function fields (i) {
+export const ClinicalTrials = generateCard(clinical, function fields (i, card) {
   return (
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
           <Selector
             title='Clinical trial registry (Required)'
+            validate={card.props.validate}
             keyPath={[clinical, i, 'registry']}
             required={true}
             options={['', ...Object.keys(registryDois)]}/>
-          <TextInput title="Registered trial number (Required)" keyPath={[clinical, i, 'trialNumber']} required={true}/>
+          <TextInput validate={card.props.validate} title="Registered trial number (Required)" keyPath={[clinical, i, 'trialNumber']} required={true}/>
         </div>
         <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector title='Relationship of publication to trial' keyPath={[clinical, i, 'type']} options={['', 'Pre-Results', 'Results', 'Post-Results']}/>
+          <Selector title='Relationship of publication to trial' validate={card.props.validate} keyPath={[clinical, i, 'type']} options={['', 'Pre-Results', 'Results', 'Post-Results']}/>
         </div>
         <div className='errorHolder'></div>
       </div>
@@ -207,7 +208,7 @@ export const ClinicalTrials = generateCard(clinical, function fields (i) {
 })
 
 
-const TextInput = ({title, name, keyPath, number, style, required}) =>
+const TextInput = ({title, validate, name, keyPath, number, style, required}) =>
   <div className={`fieldinnerholder halflength ${style}`}>
     <div className='labelholder'>
       <div className='labelinnerholder'>
@@ -222,13 +223,14 @@ const TextInput = ({title, name, keyPath, number, style, required}) =>
       </div>
       <div className='field'>
         <ReduxTextInput
+          validate={validate}
           name={name} keyPath={keyPath} className="height32"/>
       </div>
     </div>
   </div>
 
 
-const Selector = ({ title, name, keyPath, number, style, handler, required, options=['', 1,2,3]}) =>
+const Selector = ({ title, validate, name, keyPath, number, style, handler, required, options=['', 1,2,3]}) =>
   <div className={`fieldinnerholder halflength ${style}`}>
     <div className='labelholder'>
       <div className='labelinnerholder'>
@@ -243,7 +245,7 @@ const Selector = ({ title, name, keyPath, number, style, handler, required, opti
       </div>
       <div className='field'>
         <ReduxSelectInput
-          handler={handler} name={name} keyPath={keyPath} className='height32' options={options}/>
+          handler={handler} name={name} keyPath={keyPath} className='height32' options={options} validate={validate}/>
       </div>
     </div>
   </div>
@@ -254,7 +256,7 @@ class Date extends Component {
   state = { month: '' }
 
   render() {
-    const { title, name, required } = this.props;
+    const { title, name, required, validate } = this.props;
     return (
       <div className='fieldinnerholder halflength'>
         <div className='labelholder'>
@@ -272,6 +274,7 @@ class Date extends Component {
                 <div>Year</div>
                 <ReduxSelectInput
                   name={`${name}_year`}
+                  validate={validate ? validate : ()=>{}}
                   keyPath={[...this.props.keyPath, 'year']}
                   className="height32"
                   options={dateOptions.years}/>
@@ -280,6 +283,7 @@ class Date extends Component {
                 <div>Month</div>
                 <ReduxSelectInput
                   name={`${name}_month`}
+                  validate={validate ? validate : ()=>{}}
                   keyPath={[...this.props.keyPath, 'month']}
                   className="height32"
                   handler={(e)=>this.setState({month:e.target.value})}
@@ -289,6 +293,7 @@ class Date extends Component {
                 <div>Day</div>
                 <ReduxSelectInput
                   name={`${name}_day`}
+                  validate={validate ? validate : ()=>{}}
                   keyPath={[...this.props.keyPath, 'day']}
                   className="height32"
                   options={dateOptions[this.state.month]}/>
