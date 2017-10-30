@@ -178,19 +178,27 @@ export default class AddIssueModal extends Component {
           )
         : undefined
 
+        //get article content
+        let articles = []
+        if(issueInfo && issueInfo.contains && issueInfo.contains.length) {
+          for (let article of issueInfo.contains) {
+            const getArticleContent = await api.getItem(article.doi)
+            const articleContent = getArticleContent.message.contains[0].contains[0]
+            articleContent['mdt-version'] = String(Number(articleContent['mdt-version']) + 1)
+            articles.push(articleContent)
+          }
+        }
+
         //delete old issue
         await api.deleteItem({doi: issueDoi, title: oldTitleId, pubDoi: publication.message.doi})
 
         //save new issue
         await api.submitItem(submissionPayload)
 
-        //save articles in contains to new issue
-        if(issueInfo && issueInfo.contains && issueInfo.contains.length) {
-          for (let article of issueInfo.contains) {
-            newRecord.contains = [article]
-            article['mdt-version'] = String(Number(article['mdt-version']) + 1)
-            await api.submitItem(submissionPayload)
-          }
+        //save articles to new issue
+        for (let articleContent of articles) {
+          newRecord.contains = [articleContent]
+          await api.submitItem(submissionPayload)
         }
 
       } else {

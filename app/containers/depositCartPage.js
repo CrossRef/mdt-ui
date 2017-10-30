@@ -71,6 +71,14 @@ export default class DepositCartPage extends Component {
       Promise.all(promises).then((fullData) => {
         let mergedCart = []
         for(let i in fullData){
+
+          //update mdt-version
+          if(fullData[i].message.contains[0].type === 'article') {
+            cart[i]['mdt-version'] = fullData[i].message.contains[0]['mdt-version']
+          } else {
+            cart[i]['mdt-version'] = fullData[i].message.contains[0].contains[0]['mdt-version']
+          }
+
           mergedCart.push({
             date: fullData[i].message.date,
             doi: fullData[i].message.doi,
