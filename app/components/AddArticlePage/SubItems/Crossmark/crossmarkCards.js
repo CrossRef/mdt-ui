@@ -78,7 +78,7 @@ export const PublicationHistory = generateCard(pubHist, function fields (i, card
     <div key={i} className='row'>
       <div className='fieldHolder'>
         <Selector title='' validate={card.props.validate} keyPath={[pubHist, i, 'label']} style="dateAlignSelect" options={['', 'Received', 'Accepted', 'Published Online', 'Published Print']}/>
-        <Date title="Date" keyPath={[pubHist, i]}/>
+        <Date title="Date" validate={card.props.validate} keyPath={[pubHist, i]}/>
       </div>
       <div className='errorHolder'></div>
     </div>
@@ -274,7 +274,7 @@ class Date extends Component {
                 <div>Year</div>
                 <ReduxSelectInput
                   name={`${name}_year`}
-                  validate={validate ? validate : ()=>{}}
+                  validate={validate}
                   keyPath={[...this.props.keyPath, 'year']}
                   className="height32"
                   options={dateOptions.years}/>
@@ -283,7 +283,7 @@ class Date extends Component {
                 <div>Month</div>
                 <ReduxSelectInput
                   name={`${name}_month`}
-                  validate={validate ? validate : ()=>{}}
+                  validate={validate}
                   keyPath={[...this.props.keyPath, 'month']}
                   className="height32"
                   handler={(e)=>this.setState({month:e.target.value})}
@@ -293,7 +293,7 @@ class Date extends Component {
                 <div>Day</div>
                 <ReduxSelectInput
                   name={`${name}_day`}
-                  validate={validate ? validate : ()=>{}}
+                  validate={validate}
                   keyPath={[...this.props.keyPath, 'day']}
                   className="height32"
                   options={dateOptions[this.state.month]}/>

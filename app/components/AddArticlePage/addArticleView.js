@@ -260,7 +260,7 @@ export default class AddArticleCard extends Component {
               {this.props.crossmark &&
                 <SubItem
                   title={'Crossmark'}
-                  showSection={!!Object.keys(this.props.showCards).length}
+                  showSection={!!Object.keys(this.props.showCards).length || !!this.props.reduxForm.size}
                   validating={this.props.validating}
                   deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                   CrossmarkAddButton={CrossmarkAddButton}>

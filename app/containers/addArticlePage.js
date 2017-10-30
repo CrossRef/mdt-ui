@@ -452,6 +452,7 @@ export default class AddArticlePage extends Component {
           removeSection={this.removeSection}
           addSection={this.addSection}
           reduxDeleteCard={this.props.reduxDeleteCard}
+          reduxForm={this.props.reduxForm}
           {...this.state}
         />
       </div>

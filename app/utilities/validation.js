@@ -254,6 +254,12 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     newReduxForm = newReduxForm.withMutations(map => {
       for (const errorData of allErrors) {
         const [keyPath, errors] = errorData
+
+        //check if only errors and no fields
+        const rowKeyPath = [keyPath[0], keyPath[1]]
+        if(map.getIn(rowKeyPath).size === 1 && map.getIn(keyPath) ) {
+          return map.deleteIn(rowKeyPath)
+        }
         map.setIn(keyPath, errors)
       }
     })
