@@ -20,6 +20,7 @@ export default class AdditionalInformation extends Component {
     }
   }
 
+
   displayLanguages () {
       var languages = [
         <option key='-1'></option>,
@@ -37,6 +38,7 @@ export default class AdditionalInformation extends Component {
           </select>
       )
   }
+
 
   displayArchiveLocations () {
       var locations = [
@@ -56,6 +58,7 @@ export default class AdditionalInformation extends Component {
       )
   }
 
+
   handleAddInfo = () => {
     this.props.handler({
       addInfo: update(this.props.addInfo, {$set:{
@@ -65,6 +68,7 @@ export default class AdditionalInformation extends Component {
       }})
     })
   }
+
 
   render () {
     return (
@@ -91,6 +95,7 @@ export default class AdditionalInformation extends Component {
                                         ref='similarityCheckURL'
                                         onChange={this.handleAddInfo}
                                         value={!!this.props.addInfo.similarityCheckURL?this.props.addInfo.similarityCheckURL:'http://'}
+                                        onBlur={this.props.validate}
                                     />
                                 </div>
                             </div>

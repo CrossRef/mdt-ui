@@ -217,6 +217,7 @@ export default class AddArticlePage extends Component {
     const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
 
     const validatedPayload = {
+      mode: 'edit',
       validating: true,
       error: false,
       errors: {...criticalErrors, ...warnings},
@@ -253,6 +254,16 @@ export default class AddArticlePage extends Component {
     }
 
     return {valid, validatedPayload}
+  }
+
+
+  validate = async () => {
+    if(this.state.mode === 'edit') {
+      const {validatedPayload} = await this.validation()
+      this.setState(validatedPayload, () => {
+        this.state.validating = false
+      })
+    }
   }
 
 
@@ -347,7 +358,7 @@ export default class AddArticlePage extends Component {
     this.save(addToCart)
   }
 
-  handleChange = (e) => {
+  handleChange = async (e) => {
     this.setState({
       article: {
         ...this.state.article,
@@ -432,6 +443,7 @@ export default class AddArticlePage extends Component {
         <AddArticleView
           back={this.back}
           addToCart={this.addToCart}
+          validate={this.validate}
           save={this.save}
           openReviewArticleModal={this.openReviewArticleModal}
           handleChange={this.handleChange}
@@ -440,6 +452,7 @@ export default class AddArticlePage extends Component {
           removeSection={this.removeSection}
           addSection={this.addSection}
           reduxDeleteCard={this.props.reduxDeleteCard}
+          reduxForm={this.props.reduxForm}
           {...this.state}
         />
       </div>

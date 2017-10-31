@@ -31,6 +31,12 @@ export default class ReduxSelectInput extends Component {
     handler:is.func
   }
 
+  componentWillReceiveProps (nextProps) {
+    if(nextProps.reduxValue !== this.props.reduxValue) {
+      this.props.validate()
+    }
+  }
+
   handler = (e) => {
     if(this.props.handler) this.props.handler(e);
     this.props.reduxEditForm(this.props.keyPath, e.target.value)

@@ -59,7 +59,7 @@ export function makeDateDropDown (handler, name, type, preset, validation) {
       ref={name}
       onChange={handler}
       value={parseInt(preset)}
-      >
+    >
       {s}
     </select>
   )

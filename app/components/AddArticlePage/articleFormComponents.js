@@ -75,6 +75,7 @@ export class ArticleTitleField extends Component {
                 name="title"
                 onChange={this.props.handleChange}
                 value={this.props.title}
+                onBlur={this.props.validate}
               />
             </div>
           </div>
@@ -115,6 +116,7 @@ export class OptionalTitleData extends Component {
                     name="subtitle"
                     onChange={this.props.handleChange}
                     value={this.props.subtitle}
+                    onBlur={this.props.validate}
                   />
                 </div>
               </div>
@@ -139,6 +141,7 @@ export class OptionalTitleData extends Component {
                     name="originallanguagetitle"
                     onChange={this.props.handleChange}
                     value={this.props.originallanguagetitle}
+                    onBlur={this.props.validate}
                   />
                 </div>
               </div>
@@ -163,6 +166,7 @@ export class OptionalTitleData extends Component {
                     name="originallanguagetitlesubtitle"
                     onChange={this.props.handleChange}
                     value={this.props.originallanguagetitlesubtitle}
+                    onBlur={this.props.validate}
                   />
                 </div>
               </div>
@@ -200,6 +204,7 @@ export class ArticleDOIField extends Component {
                 onChange={handleChange}
                 value={doi}
                 disabled={disabled}
+                onBlur={this.props.validate}
               />
             </div>
           </div>
@@ -232,6 +237,7 @@ export class ArticleUrlField extends Component {
                 name="url"
                 onChange={this.props.handleChange}
                 value={!!this.props.url?this.props.url:'http://'}
+                onBlur={this.props.validate}
               />
             </div>
           </div>
@@ -242,6 +248,11 @@ export class ArticleUrlField extends Component {
 }
 
 export class DatesRow extends Component {
+
+  onSelect = async (e) => {
+    await this.props.handleChange(e)
+    this.props.validate()
+  }
 
   render() {
     const errors = this.props.errors
@@ -269,19 +280,19 @@ export class DatesRow extends Component {
                   <div className='dateselectholder'>
                     <div>Year {((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateYear', 'y', printDateYear, printYearError)}
+                      {this.props.makeDateDropDown(this.onSelect, 'printDateYear', 'y', printDateYear, printYearError)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', printDateMonth, (printDateIncomplete && !printDateMonth) || printDateInvalid)}
+                      {this.props.makeDateDropDown(this.onSelect, 'printDateMonth', 'm', printDateMonth, (printDateIncomplete && !printDateMonth) || printDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Day</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateDay', 'd', printDateDay, printDateInvalid)}
+                      {this.props.makeDateDropDown(this.onSelect, 'printDateDay', 'd', printDateDay, printDateInvalid)}
                     </div>
                   </div>
                   <div>
@@ -307,18 +318,18 @@ export class DatesRow extends Component {
                 <div className='datepickerholder'>
                   <div className='dateselectholder'>
                     <div>Year {((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0 ? '(*)' : '')}</div>
-                    <div>{this.props.makeDateDropDown(this.props.handleChange, 'onlineDateYear', 'y', onlineDateYear, onlineYearError)}</div>
+                    <div>{this.props.makeDateDropDown(this.onSelect, 'onlineDateYear', 'y', onlineDateYear, onlineYearError)}</div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Month</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', onlineDateMonth, (onlineDateIncomplete && !onlineDateMonth) || onlineDateInvalid)}
+                      {this.props.makeDateDropDown(this.onSelect, 'onlineDateMonth', 'm', onlineDateMonth, (onlineDateIncomplete && !onlineDateMonth) || onlineDateInvalid)}
                     </div>
                   </div>
                   <div className='dateselectholder'>
                     <div>Day</div>
                     <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateDay', 'd', onlineDateDay, onlineDateInvalid)}
+                      {this.props.makeDateDropDown(this.onSelect, 'onlineDateDay', 'd', onlineDateDay, onlineDateInvalid)}
                     </div>
                   </div>
                   <div>
@@ -356,6 +367,7 @@ export class BottomFields extends Component {
                       type='text'
                       onChange={this.props.handleChange}
                       value={this.props.article.firstPage}
+                      onBlur={this.props.validate}
                   />
                 </div>
               </div>
@@ -378,6 +390,7 @@ export class BottomFields extends Component {
                     name='lastPage'
                     onChange={this.props.handleChange}
                     value={this.props.article.lastPage}
+                    onBlur={this.props.validate}
                   />
                 </div>
               </div>
@@ -407,6 +420,7 @@ export class BottomFields extends Component {
                       name='locationId'
                       onChange={this.props.handleChange}
                       value={this.props.article.locationId}
+                      onBlur={this.props.validate}
                   />
                 </div>
               </div>
@@ -437,6 +451,7 @@ export class BottomFields extends Component {
                       name='abstract'
                       onChange={this.props.handleChange}
                       value={this.props.article.abstract}
+                      onBlur={this.props.validate}
                   />
                 </div>
               </div>
