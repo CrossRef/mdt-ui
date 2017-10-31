@@ -128,7 +128,7 @@ export default class ErrorBubble extends React.Component{
             <div className="toolmsgholder" ref="ErrorBubble" style={{top: this.state.errorBubblePosition}}>
               <div className="errormsgholder">
                 <div className="errormsginnerholder">
-                  <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Caution.svg`}/></div>
+                  <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/></div>
 
                   {this.state.requiredMessageInUse = false}
                   {errors.title && this.errorMessage('title')}

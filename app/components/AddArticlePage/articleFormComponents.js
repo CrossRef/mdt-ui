@@ -49,7 +49,7 @@ export class InfoHelperRow extends Component {
 export const InfoBubble = () =>
   <ClassWrapper classNames={['errorHolder talltooltip helpers', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder']}>
     <div className='errormsginnerholder'>
-      <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} /></div>
+      <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
       <div>Please provide a Title that fully describes your Article</div>
     </div>
   </ClassWrapper>
