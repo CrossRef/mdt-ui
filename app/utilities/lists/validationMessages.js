@@ -343,6 +343,11 @@ export const ArticleMessages = {
     bold: 'Invalid Crossmark DOI',
     message: 'Please check your Status Update DOI.'
   },
+  [`${update} DOINotExist`]: {
+    type: 'invalid',
+    bold: 'Invalid DOI',
+    message: 'Please insert a valid Crossref DOI.'
+  },
   [`${clinical} Registry`]: {
     type: 'required',
     bold: 'Required Crossmark Field',

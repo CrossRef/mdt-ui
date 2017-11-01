@@ -173,6 +173,7 @@ export default class ErrorBubble extends React.Component{
                   {errors[`${update} Date`] && this.errorMessage(`${update} Date`)}
                   {errors[`${update} DOI`] && this.errorMessage(`${update} DOI`)}
                   {errors[`${update} DOIinvalid`] && this.errorMessage(`${update} DOIinvalid`)}
+                  {errors[`${update} DOINotExist`] && this.errorMessage(`${update} DOINotExist`)}
                   {errors[`${clinical} Registry`] && this.errorMessage(`${clinical} Registry`)}
                   {errors[`${clinical} TrialNumber`] && this.errorMessage(`${clinical} TrialNumber`)}
                 </div>

@@ -273,6 +273,7 @@ export default function (state, reduxForm) {
       return
     }
     var crossmarkElm = rootElem.ownerDocument.createElement("crossmark")
+    rootElem.appendChild(crossmarkElm)
     var el = rootElem.ownerDocument.createElement("crossmark_policy")
     el.textContent = state.ownerPrefix + "/something"
     crossmarkElm.appendChild(el)
@@ -283,6 +284,7 @@ export default function (state, reduxForm) {
     el = rootElem.ownerDocument.createElement("domain")
     el.textContent = "psychoceramics.labs.crossref.org"
     el2.appendChild(el)
+    appendUpdate(crossmarkElm, crossmarkForm[update])
     if (!crossmarkForm[update] || size > 1) {
       el = rootElem.ownerDocument.createElement("custom_metadata")
       appendOther(el, crossmarkForm[other])
@@ -294,6 +296,32 @@ export default function (state, reduxForm) {
       appendFunder(el)
       appendLicenseElm(el)
       crossmarkElm.appendChild(el)
+    }
+  }
+  function generateUpdate (card) {
+    let array = [`<updates>`]
+    for (let number in card) {
+      const { type, DOI, day, month, year } = card[number]
+      const date = `${year || ''}-${month || ''}-${day || ''}`
+      array.push(`<update${type ? ` type="${type.toLowerCase().replace(/\s+/g, '_')}"`:''}${year || month || day ? ` date="${date}"`:''}>${DOI ? DOI:''}</update>`)
+    }
+    array.push(`</updates>`)
+    return array.join('')
+  }
+  function appendUpdate(el, card) {
+    if (!card || ! Object.keys(card).length)
+    return
+
+    var elm = el.ownerDocument.createElement("updates")
+    el.appendChild(elm)
+    for (let number in card) {
+      const { type, DOI, day, month, year } = card[number]
+      const date = `${year || ''}-${month || ''}-${day || ''}`
+      var el2=  appendElm("update",DOI,elm)      
+      appendAttribute("type",type.toLowerCase().replace(/\s+/g, '_'),el2)
+      if(year || month || day){
+        appendAttribute("date",date,el2)
+      }      
     }
   }
     function appendOther(el, card) {
@@ -375,21 +403,14 @@ export default function (state, reduxForm) {
     }
 
     function appendClinical(el, card) {
+      const elm = el.ownerDocument.createElementNS("http://www.crossref.org/clinicaltrials.xsd", "program")
+      el.appendChild(elm)
       for (let number in card) {
-        const { explanation, href } = card[number]
-        var elm = el.ownerDocument.createElementNS("http://www.crossref.org/clinicaltrials.xsd", "program")
-
-        for (let number in card) {
-          const { registry, trialNumber, type } = card[number]
-          var el2 = el.ownerDocument.createElement("clinical-trial-number")
-          el2.setAttribute("registry", registryDois[registry])
-          if (type) el2.setAttribute("type", lowerCaseFirst(type).replace(/-/g, ''))
-          el2.textContent = trialNumber;
-        }
-        elm.appendChild(el2)
+        const { registry, trialNumber, type } = card[number]
+        var el2 =appendElm("clinical-trial-number",trialNumber,elm)
+        el2.setAttribute("registry", registryDois[registry])
+        appendAttribute("type", lowerCaseFirst(type).replace(/-/g, ''),el2)                      
       }
-      el.appendChild(el)
-
     }
   }
 

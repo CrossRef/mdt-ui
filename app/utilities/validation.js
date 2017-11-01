@@ -64,6 +64,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     [`${update} Type`]: false,
     [`${update} DOI`]: false,
     [`${update} DOIinvalid`]: false,
+    [`${update} DOINotExist`]: false,
     [`${update} Date`]: false,
 
     [`${clinical} Registry`]: false,
@@ -217,22 +218,33 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
     const updateMap = newReduxForm.get(update)
     if(updateMap) {
-      updateMap.entrySeq().forEach(([i, attributes])=>{
+      console.info("updateMap:"+updateMap)
+      const entries = Array.from(updateMap.values())
+
+      console.info("size"+ entries.length + "entries:"+entries)
+      for (var i in entries){
+        const attributes = entries[i]
+        
+        console.info("item"+i+"attributes"+attributes)
         const doi = attributes.get('DOI')
+
+        const isitvalid=await asyncCheckDupeDoi(doi)
         const errors = {
           type: !attributes.get('type'),
-          DOI: !doi || !isDOI((doi)),
+          DOI: !doi || !isDOI((doi)) || !isitvalid,
           year: !attributes.get('year'),
           month: !attributes.get('month'),
           day: !attributes.get('day')
         }
         if(errors.type) warnings[`${update} Type`] = true
-        if(errors.DOI) !doi ? warnings[`${update} DOI`] = true : warnings[`${update} DOIinvalid`] = true
+        if(errors.DOI) if(!doi){ warnings[`${update} DOI`] = true} 
+          else if(!isDOI(doi)){ warnings[`${update} DOIinvalid`] = true}
+            else{warnings[`${update} DOINotExist`]=true}
         if(errors.year || errors.month || errors.day) warnings[`${update} Date`] = true
 
         const keyPath = [update, i, 'errors']
         allErrors.push([keyPath, errors])
-      })
+      }
     }
 
     const clinicalMap =newReduxForm.get(clinical)
