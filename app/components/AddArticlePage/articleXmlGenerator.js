@@ -307,11 +307,13 @@ export default function (state, reduxForm) {
     el.appendChild(elm)
     for (let number in card) {
       const { type, DOI, day, month, year } = card[number]
-      var el2=  appendElm("update",DOI,elm)
-      appendAttribute("type",type.toLowerCase().replace(/\s+/g, '_'),el2)
+      var el2 =  elm.ownerDocument.createElement("update")
+      if(DOI) el2.textContent = DOI
+      if(type) appendAttribute("type",type.toLowerCase().replace(/\s+/g, '_'),el2)
       if(year || month || day){
         appendAttribute("date", `${year || ''}-${month || ''}-${day || ''}` ,el2)
-      }      
+      }
+      elm.appendChild(el2)
     }
   }
   function appendOther(el, card) {
