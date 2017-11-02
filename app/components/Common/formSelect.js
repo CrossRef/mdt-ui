@@ -51,7 +51,7 @@ export default class FormSelect extends React.Component {
   options = () => {
     var options = [
       <option key='-1'></option>,
-      ...this.props.options.map((option, i) => (<option key={i} value={option.value}>{option.name}</option>))
+      ...this.props.options.map((option, i) => (<option key={i} value={option.value || option}>{option.name || option}</option>))
     ]
 
     return (
@@ -76,7 +76,7 @@ export default class FormSelect extends React.Component {
 
   render() {
     return (
-      <div className='fieldinnerholder halflength'>
+      <div className={`fieldinnerholder halflength ${this.props.style || ''}`}>
         <div className='labelholder'>
           <div className='labelinnerholder'>
             <div className='label'>{this.props.label}</div>

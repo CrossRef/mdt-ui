@@ -4,12 +4,13 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import { editForm } from '../../../../actions/application'
+import FormSelect from '../../../Common/formSelect'
 
 
 
 const mapStateToProps = (state, props) => {
   return ({
-    reduxValue: state.reduxForm.getIn(props.keyPath),
+    reduxValue: state.reduxForm.getIn(props.keyPath) || '',
     error: !!(state.reduxForm.getIn([props.keyPath[0], props.keyPath[1], 'errors']) || {})[props.keyPath[2]]
   })
 }
@@ -33,7 +34,7 @@ export default class ReduxSelectInput extends Component {
 
   componentWillReceiveProps (nextProps) {
     if(nextProps.reduxValue !== this.props.reduxValue) {
-      this.props.validate()
+      this.props.onSelect()
     }
   }
 
@@ -44,16 +45,16 @@ export default class ReduxSelectInput extends Component {
 
   render() {
     return(
-      <select
-        className={`${this.props.className} ${this.props.error && 'fieldError'}`}
-        type='text'
-        onChange={this.handler}
+      <FormSelect
+        label={this.props.label}
+        name={this.props.name || ''}
         value={this.props.reduxValue}
-      >
-        {this.props.options.map((value, index)=>{
-          return ( <option key={index}>{value}</option> )
-        })}
-      </select>
+        required={this.props.required}
+        error={this.props.error}
+        options={this.props.options}
+        changeHandler={this.handler}
+        style={this.props.style}
+        tooltip={this.props.tooltip}/>
     )
   }
 }

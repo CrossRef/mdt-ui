@@ -12,7 +12,7 @@ import Funding from './SubItems/funding'
 import License from './SubItems/license'
 import RelatedItems from './SubItems/relatedItems'
 import AdditionalInformation from './SubItems/additionalInfo'
-import { CrossmarkCards, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
+import { Crossmark, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
 import FormInput from '../Common/formInput'
 import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
@@ -316,7 +316,7 @@ export default class AddArticleView extends Component {
                   validating={this.props.validating}
                   deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                   CrossmarkAddButton={CrossmarkAddButton}>
-                    <CrossmarkCards
+                    <Crossmark
                       showCards={this.props.showCards}
                       validate={this.props.validate}
                       tooltip={this.props.showHelper}

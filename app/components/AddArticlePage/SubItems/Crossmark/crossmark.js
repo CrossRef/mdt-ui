@@ -65,7 +65,7 @@ export class CrossmarkAddButton extends Component {
 
 
 
-export class CrossmarkCards extends Component {
+export class Crossmark extends Component {
 
   static propTypes = {
     showCards: is.object.isRequired,
@@ -107,6 +107,7 @@ export class CrossmarkCards extends Component {
               validate={this.props.validate}
               number={this.state.crossmarkCards[cardName] - 1}
               deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+              tooltip={this.props.tooltip}
               remove={() => this.removeCrossmarkCard(cardName)}/>
           : null
         })}
