@@ -104,6 +104,7 @@ export default class ErrorBubble extends React.Component{
     return <div><b>{ArticleMessages[error].bold}</b><br/>{ArticleMessages[error].message}</div>
   }
 
+
   scrollToError = () => {
     $('html, body').animate({
       scrollTop: this.state.errorBubblePosition
@@ -128,7 +129,7 @@ export default class ErrorBubble extends React.Component{
             <div className="toolmsgholder" ref="ErrorBubble" style={{top: this.state.errorBubblePosition}}>
               <div className="errormsgholder">
                 <div className="errormsginnerholder">
-                  <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Caution.svg`}/></div>
+                  <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/></div>
 
                   {this.state.requiredMessageInUse = false}
                   {errors.title && this.errorMessage('title')}
@@ -173,6 +174,7 @@ export default class ErrorBubble extends React.Component{
                   {errors[`${update} Date`] && this.errorMessage(`${update} Date`)}
                   {errors[`${update} DOI`] && this.errorMessage(`${update} DOI`)}
                   {errors[`${update} DOIinvalid`] && this.errorMessage(`${update} DOIinvalid`)}
+                  {errors[`${update} DOINotExist`] && this.errorMessage(`${update} DOINotExist`)}
                   {errors[`${clinical} Registry`] && this.errorMessage(`${clinical} Registry`)}
                   {errors[`${clinical} TrialNumber`] && this.errorMessage(`${clinical} TrialNumber`)}
                 </div>

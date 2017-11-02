@@ -45,6 +45,9 @@ function version () {
 Merged branches / tickets in this build
 
 MM-162
+MM-164
+MM-159
+MM-89
 MM-158
 MM-152
 MM-156

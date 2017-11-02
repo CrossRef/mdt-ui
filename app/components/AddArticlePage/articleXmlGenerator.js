@@ -4,7 +4,7 @@ import { XMLSerializer, DOMParser } from 'xmldom'
 
 import { getSubItems } from '../../utilities/getSubItems'
 import { cardNames, registryDois } from '../../utilities/crossmarkHelpers'
-import {appendElm,appendAttribute} from '../../utilities/helpers'
+import {appendElm,appendAttribute, lowerCaseFirst} from '../../utilities/helpers'
 const { pubHist, peer, copyright, supp, clinical, other, update } = cardNames
 
 
@@ -273,6 +273,7 @@ export default function (state, reduxForm) {
       return
     }
     var crossmarkElm = rootElem.ownerDocument.createElement("crossmark")
+    rootElem.appendChild(crossmarkElm)
     var el = rootElem.ownerDocument.createElement("crossmark_policy")
     el.textContent = state.ownerPrefix + "/something"
     crossmarkElm.appendChild(el)
@@ -283,6 +284,7 @@ export default function (state, reduxForm) {
     el = rootElem.ownerDocument.createElement("domain")
     el.textContent = "psychoceramics.labs.crossref.org"
     el2.appendChild(el)
+    appendUpdate(crossmarkElm, crossmarkForm[update])
     if (!crossmarkForm[update] || size > 1) {
       el = rootElem.ownerDocument.createElement("custom_metadata")
       appendOther(el, crossmarkForm[other])
@@ -296,101 +298,113 @@ export default function (state, reduxForm) {
       crossmarkElm.appendChild(el)
     }
   }
-    function appendOther(el, card) {
-      for (let number in card) {
-        const { label, explanation, href } = card[number]
-        var elm = el.ownerDocument.createElement("assertion")
-        if (label) {
-          elm.setAttribute("name", label.toLowerCase().replace(/\s+/g, '_'))
-          elm.setAttribute("label", label)
-        }
-        if (explanation) elm.setAttribute("explanation", explanation)
-        if (href) elm.setAttribute("href", href)
-        if (number) elm.setAttribute("order", number)
-        el.appendChild(elm)
-      }
-    }
-    function appendPeer(el, card) {
-      for (let number in card) {
-        const { label, explanation, href } = card[number]
-        var elm = el.ownerDocument.createElement("assertion")
 
-        if (label) {
-          elm.setAttribute("name", label.toLowerCase().replace(/\s+/g, '_'))
-          elm.setAttribute("label", label)
-        }
-        elm.setAttribute("group_name", "peer_review")
-        elm.setAttribute("group_label", "Peer review")
-        if (explanation) elm.setAttribute("explanation", explanation)
-        if (href) elm.setAttribute("href", href)
-        if (number) elm.setAttribute("order", number)
-        el.appendChild(elm)
-      }
-    }
-    function appendPubHist(el, card) {
-      for (let number in card) {
-        const { label, day, month, year } = card[number]
-        const date = `${year || ''}-${month || ''}-${day || ''}`
-        var elm = el.ownerDocument.createElement("assertion")
-        if (label) {
-          elm.setAttribute("name", label.toLowerCase().replace(/\s+/g, '_'))
-          elm.setAttribute("label", label)
-        }
-        elm.setAttribute("group_name", "publication_history")
-        elm.setAttribute("group_label", "Publication History")
-        elm.setAttribute("order", number)
-        elm.textContent = date
-        el.appendChild(elm)
-      }
-    }
-    function appendSupp(el, card) {
-      for (let number in card) {
-        const { explanation, href } = card[number]
-        var elm = el.ownerDocument.createElement("assertion")
-        elm.setAttribute("name", "supplementary_Material")
-        elm.setAttribute("label", "Supplementary Material")
-        if (explanation) elm.setAttribute("explanation", explanation)
-        if (href) elm.setAttribute("href", href)
-        if (number) elm.setAttribute("order", number)
-        el.appendChild(elm)
-      }
-    }
-    function appendCopyright(el, card) {
-      for (let number in card) {
-        const { label, explanation, href } = card[number]
-        var elm = el.ownerDocument.createElement("assertion")
-        elm.setAttribute("group_name", "copyright_licensing")
-        elm.setAttribute("group_label", "Copyright & Licensing")
-        if (label) elm.setAttribute("label", label)
-        if (explanation) elm.setAttribute("explanation", explanation)
-        if (href) elm.setAttribute("href", href)
-        if (number) elm.setAttribute("order", number)
-        if (label === 'Copyright Statement') {
-          elm.setAttribute("name", "copyright_statement")
-        } else if (label === 'Licensing Information') {
-          elm.setAttribute("name", "licensing")
-        }
-        el.appendChild(elm)
-      }
-    }
+  function appendUpdate(el, card) {
+    if (!card || ! Object.keys(card).length)
+    return
 
-    function appendClinical(el, card) {
-      for (let number in card) {
-        const { explanation, href } = card[number]
-        var elm = el.ownerDocument.createElementNS("http://www.crossref.org/clinicaltrials.xsd", "program")
-
-        for (let number in card) {
-          const { registry, trialNumber, type } = card[number]
-          var el2 = el.ownerDocument.createElement("clinical-trial-number")
-          el2.setAttribute("registry", registryDois[registry])
-          if (type) el2.setAttribute("type", lowerCaseFirst(type).replace(/-/g, ''))
-          el2.textContent = trialNumber;
-        }
-        elm.appendChild(el2)
+    var elm = el.ownerDocument.createElement("updates")
+    el.appendChild(elm)
+    for (let number in card) {
+      const { type, DOI, day, month, year } = card[number]
+      var el2 =  elm.ownerDocument.createElement("update")
+      if(DOI) el2.textContent = DOI
+      if(type) appendAttribute("type",type.toLowerCase().replace(/\s+/g, '_'),el2)
+      if(year || month || day){
+        appendAttribute("date", `${year || ''}-${month || ''}-${day || ''}` ,el2)
       }
-      el.appendChild(el)
-
+      elm.appendChild(el2)
     }
   }
+  function appendOther(el, card) {
+    for (let number in card) {
+      const { label, explanation, href } = card[number]
+      var elm = el.ownerDocument.createElement("assertion")
+      if (label) {
+        elm.setAttribute("name", label.toLowerCase().replace(/\s+/g, '_'))
+        elm.setAttribute("label", label)
+      }
+      if (explanation) elm.setAttribute("explanation", explanation)
+      if (href) elm.setAttribute("href", href)
+      if (number) elm.setAttribute("order", number)
+      el.appendChild(elm)
+    }
+  }
+  function appendPeer(el, card) {
+    for (let number in card) {
+      const { label, explanation, href } = card[number]
+      var elm = el.ownerDocument.createElement("assertion")
+
+      if (label) {
+        elm.setAttribute("name", label.toLowerCase().replace(/\s+/g, '_'))
+        elm.setAttribute("label", label)
+      }
+      elm.setAttribute("group_name", "peer_review")
+      elm.setAttribute("group_label", "Peer review")
+      if (explanation) elm.setAttribute("explanation", explanation)
+      if (href) elm.setAttribute("href", href)
+      if (number) elm.setAttribute("order", number)
+      el.appendChild(elm)
+    }
+  }
+  function appendPubHist(el, card) {
+    for (let number in card) {
+      const { label, day, month, year } = card[number]
+      var elm = el.ownerDocument.createElement("assertion")
+      if (label) {
+        elm.setAttribute("name", label.toLowerCase().replace(/\s+/g, '_'))
+        elm.setAttribute("label", label)
+      }
+      elm.setAttribute("group_name", "publication_history")
+      elm.setAttribute("group_label", "Publication History")
+      elm.setAttribute("order", number)
+      if (year || month || day) elm.textContent = `${year || ''}-${month || ''}-${day || ''}`
+      el.appendChild(elm)
+    }
+  }
+  function appendSupp(el, card) {
+    for (let number in card) {
+      const { explanation, href } = card[number]
+      var elm = el.ownerDocument.createElement("assertion")
+      elm.setAttribute("name", "supplementary_Material")
+      elm.setAttribute("label", "Supplementary Material")
+      if (explanation) elm.setAttribute("explanation", explanation)
+      if (href) elm.setAttribute("href", href)
+      if (number) elm.setAttribute("order", number)
+      el.appendChild(elm)
+    }
+  }
+  function appendCopyright(el, card) {
+    for (let number in card) {
+      const { label, explanation, href } = card[number]
+      var elm = el.ownerDocument.createElement("assertion")
+      elm.setAttribute("group_name", "copyright_licensing")
+      elm.setAttribute("group_label", "Copyright & Licensing")
+      if (label) elm.setAttribute("label", label)
+      if (explanation) elm.setAttribute("explanation", explanation)
+      if (href) elm.setAttribute("href", href)
+      if (number) elm.setAttribute("order", number)
+      if (label === 'Copyright Statement') {
+        elm.setAttribute("name", "copyright_statement")
+      } else if (label === 'Licensing Information') {
+        elm.setAttribute("name", "licensing")
+      }
+      el.appendChild(elm)
+    }
+  }
+
+  function appendClinical(el, card) {
+    const elm = el.ownerDocument.createElementNS("http://www.crossref.org/clinicaltrials.xsd", "program")
+    el.appendChild(elm)
+    for (let number in card) {
+      const { registry, trialNumber, type } = card[number]
+      var el2 = elm.ownerDocument.createElement("clinical-trial-number")
+      if(trialNumber) el2.textContent = trialNumber
+      if(registry) el2.setAttribute("registry", registryDois[registry])
+      if(type) appendAttribute("type", lowerCaseFirst(type).replace(/-/g, ''),el2)
+      elm.appendChild(el2)
+    }
+  }
+}
 
 
