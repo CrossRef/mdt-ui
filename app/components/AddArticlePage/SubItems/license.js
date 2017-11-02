@@ -2,6 +2,10 @@ import React, { Component } from 'react'
 import update from 'immutability-helper'
 
 import {routes} from '../../../routing'
+import {urlEntered} from '../../../utilities/helpers'
+import FormInput from '../../Common/formInput'
+import FormSelect from '../../Common/formSelect'
+import FormDate from '../../Common/formDate'
 const AppliesTo = require('../../../utilities/lists/appliesTo.json')
 
 
@@ -14,54 +18,35 @@ export default class License extends Component {
     }
   }
 
+
   componentWillReceiveProps (nextProps) {
     if(nextProps.validating || nextProps.freetolicense === 'yes') {
       this.setState({showSubItem: true})
     }
   }
 
+
   componentDidUpdate () {
     this.props.deferredErrorBubbleRefresh.resolve()
   }
 
-  displayAppliesTo () {
-      var appliesTo = [
-        <option key='-1'></option>,
-        ...AppliesTo.map((appliesto, i) => (<option key={i} value={appliesto.value}>{appliesto.name}</option>))
-      ]
-
-      return (
-          <select
-            ref='appliesto'
-            onChange={this.handleLicense}
-            className='height32'
-            value={this.props.license.appliesto}
-            >
-              {appliesTo}
-          </select>
-      )
-  }
 
   toggle () {
-      this.setState({
-        showSubItem: !this.state.showSubItem
-      })
+    this.setState({
+      showSubItem: !this.state.showSubItem
+    })
   }
 
-  handleLicense = () => {
+
+  handleLicense = (e) => {
     let license = {
-      errors: this.props.license.errors
-    }
-    for(var i in this.refs){
-      if(this.refs[i]){
-        license[i] = this.refs[i].value
-      }
+      ...this.props.license,
+      [e.target.name]: e.target.value
     }
 
     this.props.handler({
       license: update(this.props.data, {[this.props.index]: {$set: license }})
     })
-
   }
 
 
@@ -70,111 +55,73 @@ export default class License extends Component {
     const errors = this.props.license.errors || {};
     const thereIsDate = !!(acceptedDateYear || acceptedDateMonth || acceptedDateDay);
     return (
-        <div>
-            <div className='row subItemRow' onClick={this.toggle.bind(this)}>
-                <div className='subItemHeader subItemTitle'>
-                    <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
-                        <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
-                    </span>
-                    <span>License {this.props.index + 1}</span>
-                </div>
-                {this.props.index > 0 &&
-                    <div className='subItemHeader subItemButton'>
-                        <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
-                    </div>
-                }
+      <div>
+        <div className='row subItemRow' onClick={this.toggle.bind(this)}>
+          <div className='subItemHeader subItemTitle'>
+            <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
+              <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+            </span>
+            <span>License {this.props.index + 1}</span>
+          </div>
+          {this.props.index > 0 &&
+            <div className='subItemHeader subItemButton'>
+              <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
             </div>
-            {this.state.showSubItem &&
-                <div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Start Date</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'></div>
-                                    </div>
-                                    <div className='field'>
-                                        <div className='datepickerholder'>
-                                            <div className='dateselectholder'>
-                                                <div>Year</div>
-                                                <div>{this.props.makeDateDropDown(this.handleLicense, 'acceptedDateYear', 'y', acceptedDateYear, errors.licenseYear)}</div>
-                                            </div>
-                                            <div className='dateselectholder'>
-                                                <div>Month</div>
-                                                <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateMonth', 'm', acceptedDateMonth, errors.licenseMonth)}
-                                                </div>
-                                            </div>
-                                            <div className='dateselectholder'>
-                                                <div>Day</div>
-                                                <div>
-                                                {this.props.makeDateDropDown(this.handleLicense, 'acceptedDateDay', 'd', acceptedDateDay, errors.licenseDay)}
-                                                </div>
-                                            </div>
-                                            <div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>License URL</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${this.props.freetolicense !== 'yes' && !(thereIsDate || appliesto) && 'norequire'}`}>
-                                        <div className='required height32'>{(this.props.freetolicense === 'yes' || (thereIsDate || appliesto)) && <span>*</span>}</div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className={`height32 ${(errors.freetolicense || errors.licenseUrl || errors.licenseUrlInvalid) && 'fieldError'}`}
-                                            type='text'
-                                            ref='licenseurl'
-                                            onChange={this.handleLicense}
-                                            value={licenseurl ? licenseurl : 'http://'}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Applies to</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        {this.displayAppliesTo()}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                </div>
-            }
+          }
         </div>
+
+        {this.state.showSubItem &&
+          <div>
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormDate
+                  label="Start Date"
+                  name="acceptedDate"
+                  changeHandler={this.handleLicense}
+                  onSelect={this.props.validate}
+                  tooltip={this.props.tooltip}
+                  fields={{
+                    year: {
+                      value: acceptedDateYear,
+                      error: errors.licenseYear,
+                    },
+                    month: {
+                      value: acceptedDateMonth,
+                      error: errors.licenseMonth
+                    },
+                    day: {
+                      value: acceptedDateDay,
+                      error: errors.licenseDay
+                    }
+                  }}/>
+              </div>
+            </div>
+
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormInput
+                  label="License URL"
+                  name="licenseurl"
+                  required={!!(this.props.freetolicense === 'yes' || (thereIsDate || appliesto))}
+                  error={errors.freetolicense || errors.licenseUrl || errors.licenseUrlInvalid}
+                  value={ urlEntered(licenseurl) ? licenseurl : 'http://'}
+                  changeHandler={this.handleLicense}
+                  onBlur={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+                <FormSelect
+                  label="Applies to"
+                  name="appliesto"
+                  value={appliesto}
+                  options={AppliesTo}
+                  changeHandler={this.handleLicense}
+                  onSelect={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
     )
   }
 }

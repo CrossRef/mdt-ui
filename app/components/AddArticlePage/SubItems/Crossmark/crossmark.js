@@ -91,7 +91,7 @@ export class CrossmarkCards extends Component {
     delete newState[selection]
     this.props.reduxDeleteCard([selection]);
     openCards = newState
-    this.setState({ crossmarkCards: newState })
+    this.setState({ crossmarkCards: newState }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
   }
 
 
@@ -106,6 +106,7 @@ export class CrossmarkCards extends Component {
             <Card key={`${cardName}-${index}`}
               validate={this.props.validate}
               number={this.state.crossmarkCards[cardName] - 1}
+              deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
               remove={() => this.removeCrossmarkCard(cardName)}/>
           : null
         })}

@@ -48,6 +48,10 @@ function generateCard (name, fields) {
       else if (e.target.value === '') this.setState({[`require_${i}`]: false});
     }
 
+    addFields = () => {
+      this.setState({number: this.state.number+1}, () => this.props.deferredErrorBubbleRefresh.resolve())
+    }
+
     render() {
       return(
         <div className='optionalissueiinfo'>
@@ -65,7 +69,7 @@ function generateCard (name, fields) {
 
             {this.renderFields()}
 
-            <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
+            <button type='button' onClick={this.addFields} className="addFields">Add</button>
           </div>
         </div>
       )

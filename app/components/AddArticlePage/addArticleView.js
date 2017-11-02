@@ -2,17 +2,21 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import Switch from 'react-toggle-switch'
 
+import {routes} from '../../routing'
 import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
-import { TopBar, InfoBubble, InfoHelperRow, ArticleTitleField, OptionalTitleData, ArticleDOIField, ArticleUrlField, DatesRow, BottomFields } from './articleFormComponents'
+import { InfoBubble, InfoHelperRow, OptionalTitleData, DatesRow } from './articleFormComponents'
 import ErrorBubble from './errorBubble'
-import { makeDateDropDown } from '../../utilities/date'
 import Contributor from './SubItems/contributor'
 import Funding from './SubItems/funding'
 import License from './SubItems/license'
 import RelatedItems from './SubItems/relatedItems'
 import AdditionalInformation from './SubItems/additionalInfo'
 import { CrossmarkCards, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
+import FormInput from '../Common/formInput'
+import FormTextArea from '../Common/formTextArea'
+import FormSelect from '../Common/formSelect'
+import {urlEntered} from '../../utilities/helpers'
 
 
 
@@ -21,7 +25,7 @@ import { CrossmarkCards, CrossmarkAddButton } from './SubItems/Crossmark/crossma
 
 
 
-export default class AddArticleCard extends Component {
+export default class AddArticleView extends Component {
 
   static propTypes = {
     back: is.func.isRequired,
@@ -56,22 +60,40 @@ export default class AddArticleCard extends Component {
 
             <div className='articleInnerForm'>
 
-              <TopBar title={this.props.article.title} />
+              <div className="topbar">
+                <div className="titleholder">
+                  <div className="titleinnerholder">
+                    <div className='titleIconHolder'>
+                      <img src={`${routes.images}/AddArticle/Asset_Icons_White_Write.svg`} />
+                    </div>
+                    <div className='articletitle'>
+                      {this.props.article.title}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
 
               <div className='body'>
 
-                <InfoHelperRow setState={this.props.boundSetState} on={this.props.on}/>
+                <InfoHelperRow setState={this.props.boundSetState} showHelper={this.props.showHelper}/>
 
                 <div className='row'>
-                  <ArticleTitleField
-                    handleChange={this.props.handleChange}
-                    title={this.props.article.title}
-                    validate={this.props.validate}
-                    errors={this.props.errors}/>
+                  <div className='fieldHolder'>
+                    <FormTextArea
+                      label="Article Title (Required)"
+                      name="title"
+                      value={this.props.article.title}
+                      required={true}
+                      error={this.props.errors.title}
+                      changeHandler={this.props.handleChange}
+                      onBlur={this.props.validate}
+                      tooltip={this.props.showHelper}/>
+                  </div>
 
-                  {(!this.props.error && this.props.showHelper) && <InfoBubble/> }
+                  {this.props.showHelper && <InfoBubble/> }
 
-                  {(this.props.error) &&
+                  {this.props.error &&
                     <ErrorBubble
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                       errors={this.props.errors}
@@ -91,37 +113,84 @@ export default class AddArticleCard extends Component {
 
                 <div className='row'>
                   <div className="fieldHolder">
-                    <ArticleDOIField
+                    <FormInput
+                      label="Article DOI (Required)"
+                      name="doi"
+                      value={this.props.article.doi}
+                      required={true}
+                      error={this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi || this.props.errors.invalidDoiPrefix}
                       disabled={this.props.doiDisabled}
-                      doi={this.props.article.doi}
-                      handleChange={this.props.handleChange}
-                      validate={this.props.validate}
-                      errors={this.props.errors}/>
+                      changeHandler={this.props.handleChange}
+                      onBlur={this.props.validate}
+                      tooltip={this.props.showHelper}/>
 
-                    <ArticleUrlField url={this.props.article.url}
-                      handleChange={this.props.handleChange}
-                      validate={this.props.validate}
-                      errors={this.props.errors} />
+                    <FormInput
+                      label="Article URL (Required)"
+                      name="url"
+                      value={ urlEntered(this.props.article.url) ? this.props.article.url : 'http://' }
+                      required={true}
+                      error={this.props.errors.url || this.props.errors.invalidurl}
+                      changeHandler={this.props.handleChange}
+                      onBlur={this.props.validate}
+                      tooltip={this.props.showHelper}/>
                   </div>
                 </div>
 
                 <DatesRow
                   article={this.props.article}
                   errors={this.props.errors}
-                  makeDateDropDown={makeDateDropDown}
                   handleChange={this.props.handleChange}
                   validate={this.props.validate}
+                  tooltip={this.props.showHelper}
                 />
 
-                <BottomFields
-                  article={this.props.article}
-                  errors={this.props.errors}
-                  makeDateDropDown={makeDateDropDown}
-                  handleChange={this.props.handleChange}
-                  validate={this.props.validate}
-                />
+                <div className='row'>
+                  <div className='fieldHolder'>
+                    <FormInput
+                      label="First Page"
+                      name="firstPage"
+                      value={this.props.article.firstPage}
+                      required={!!this.props.article.lastPage}
+                      error={this.props.errors.firstPage}
+                      changeHandler={this.props.handleChange}
+                      onBlur={this.props.validate}
+                      tooltip={this.props.showHelper}/>
+
+                    <FormInput
+                      label="Last Page"
+                      name="lastPage"
+                      value={this.props.article.lastPage}
+                      changeHandler={this.props.handleChange}
+                      onBlur={this.props.validate}
+                      tooltip={this.props.showHelper}/>
+                  </div>
+                </div>
+
+                <div className='row'>
+                  <div className='fieldHolder'>
+                    <FormInput
+                      label="Article / Electronic Location ID"
+                      name="locationId"
+                      value={this.props.article.locationId}
+                      changeHandler={this.props.handleChange}
+                      onBlur={this.props.validate}
+                      tooltip={this.props.showHelper}/>
+                  </div>
+                </div>
+
+                <div className='row'>
+                  <div className='fieldHolder'>
+                    <FormTextArea
+                      label="Abstract"
+                      name="abstract"
+                      value={this.props.article.abstract}
+                      changeHandler={this.props.handleChange}
+                      tooltip={this.props.showHelper}/>
+                  </div>
+                </div>
 
               </div>
+
 
               <SubItem
                 title={'Contributor'}
@@ -139,6 +208,7 @@ export default class AddArticleCard extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.contributors}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      tooltip={this.props.showHelper}
                       index={i}/>
                   )}
               </SubItem>
@@ -159,6 +229,7 @@ export default class AddArticleCard extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.funding}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      tooltip={this.props.showHelper}
                       index={i}/>
                   )}
               </SubItem>
@@ -173,39 +244,18 @@ export default class AddArticleCard extends Component {
                   <div className="freeToLicense">
                     <div className='row'>
                       <div className='fieldHolder'>
-                        <div className='fieldinnerholder halflength'>
-                          <div className='labelholder'>
-                            <div></div>
-                            <div className='labelinnerholder'>
-                              <div className='label'>Free to License</div>
-                            </div>
-                          </div>
-                          <div className='requrefieldholder'>
-                            <div className='requiredholder norequire'>
-                              <div className='required height32'>
-                              </div>
-                            </div>
-                            <div className='field'>
-                              <select
-                                name="freetolicense"
-                                onChange={async (e) => {
-                                  await this.props.handleChange(e)
-                                  this.props.validate()
-                                }}
-                                className='height32'
-                                value={this.props.article.freetolicense}>
-                                  <option key='-1' value={''}>{''}</option>
-                                  <option key='0' value={'yes'}>Yes</option>
-                                  <option key='1' value={'no'}>No</option>
-                              </select>
-                            </div>
-                          </div>
-                        </div>
+                        <FormSelect
+                          label="Free to License"
+                          name="freetolicense"
+                          value={this.props.article.freetolicense}
+                          options={[
+                              {value: 'yes', name: 'Yes'},
+                              {value: 'no', name: 'No'}
+                          ]}
+                          changeHandler={this.props.handleChange}
+                          onSelect={this.props.validate}
+                          tooltip={this.props.showHelper}/>
                       </div>
-                      <div className='errorHolder'>
-                      </div>
-                    </div>
-                    <div className='errorHolder'>
                     </div>
                   </div>
 
@@ -219,8 +269,8 @@ export default class AddArticleCard extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.license}
                       index={i}
-                      makeDateDropDown={makeDateDropDown}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      tooltip={this.props.showHelper}
                       freetolicense={i===0 ? this.props.article.freetolicense : ''}/>
                   )}
               </SubItem>
@@ -241,6 +291,7 @@ export default class AddArticleCard extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.relatedItems}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      tooltip={this.props.showHelper}
                       index={i}/>
                   )}
               </SubItem>
@@ -254,6 +305,7 @@ export default class AddArticleCard extends Component {
                     addInfo={this.props.addInfo}
                     handler={this.props.boundSetState}
                     validate={this.props.validate}
+                    tooltip={this.props.showHelper}
                     simCheckError={this.props.errors.simCheckUrlInvalid}/>
               </SubItem>
 
@@ -267,6 +319,8 @@ export default class AddArticleCard extends Component {
                     <CrossmarkCards
                       showCards={this.props.showCards}
                       validate={this.props.validate}
+                      tooltip={this.props.showHelper}
+                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                       reduxDeleteCard={this.props.reduxDeleteCard}/>
                 </SubItem>
               }

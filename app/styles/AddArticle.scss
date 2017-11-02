@@ -450,6 +450,7 @@ input.height64, textarea.height64, select.height64 {
             .field {
               float: left;
               width: 95%;
+              position: relative;
               input, select, textarea{
                 border:1px solid #EDEFF1;
                 width: 100%
@@ -553,6 +554,7 @@ input.height64, textarea.height64, select.height64 {
           .requrefieldholder {
             .field {
               width: 90%;
+              position: relative;
             }
           }
         }
@@ -856,4 +858,11 @@ input.height64, textarea.height64, select.height64 {
 .freeToLicense {
   padding-top: 50px;
   padding-bottom: 20px
+}
+
+.infoFlag {
+  position: absolute;
+  right: 0;
+  top: -30px;
+  width: 35px;
 }

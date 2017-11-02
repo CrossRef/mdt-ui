@@ -3,6 +3,8 @@ import update from 'immutability-helper'
 
 import { Roles } from '../../../utilities/lists/roles.js'
 import {routes} from '../../../routing'
+import FormInput from '../../Common/formInput'
+import FormSelect from '../../Common/formSelect'
 
 
 
@@ -14,15 +16,18 @@ export default class Contributor extends Component {
     }
   }
 
+
   componentWillReceiveProps (nextProps) {
     if(nextProps.validating) {
       this.setState({showSubItem: true})
     }
   }
 
+
   componentDidUpdate () {
     this.props.deferredErrorBubbleRefresh.resolve()
   }
+
 
   toggle = () => {
     this.setState({
@@ -30,268 +35,144 @@ export default class Contributor extends Component {
     })
   }
 
-  displayRoles (ref) {
-    const {contributorRole, contributorGroupRole} = this.props.contributor.errors || {}
-    var roles = [
-      <option key='-1'></option>,
-      ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
-    ]
 
-    return (
-      <select
-        ref={ref}
-        onChange={ async (e) => {
-          await this.handleContributor(e)
-          this.props.validate()
-        }}
-        className={`height32 ${ref === 'role' ? contributorRole && 'fieldError' : contributorGroupRole && 'fieldError'}`}
-        value={this.props.contributor[ref]}
-        >
-          {roles}
-      </select>
-    )
-  }
-
-  handleContributor = () => {
+  handleContributor = (e) => {
     var contributor = {
-      errors: this.props.contributor.errors
-    }
-    for(var i in this.refs){
-      if(this.refs[i]){
-        contributor[i] = this.refs[i].value
-      }
+      ...this.props.contributor,
+      [e.target.name]: e.target.value
     }
 
-    this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
+    this.props.handler({
       contributors: update(this.props.data, {[this.props.index]: {$set: contributor }})
     })
   }
 
+
   render () {
     const errors = this.props.contributor.errors || {};
-    const {firstName, lastName, suffix, affiliation, orcid, groupAuthorName, groupAuthorRole} = this.props.contributor;
+    const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = this.props.contributor;
     const roleRequired = !!(firstName || lastName || suffix || affiliation || orcid)
     return (
-        <div>
-            <div className='row subItemRow' onClick={this.toggle}>
-                <div className='subItemHeader subItemTitle'>
-                    <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
-                        <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
-                    </span>
-                    <span>Contributor {this.props.index + 1}</span>
-                </div>
-                {this.props.index > 0 &&
-                    <div className='subItemHeader subItemButton'>
-                        <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
-                    </div>
-                }
+      <div>
+        <div className='row subItemRow' onClick={this.toggle}>
+          <div className='subItemHeader subItemTitle'>
+              <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
+                  <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+              </span>
+              <span>Contributor {this.props.index + 1}</span>
+          </div>
+          {this.props.index > 0 &&
+            <div className='subItemHeader subItemButton'>
+              <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
             </div>
-            {this.state.showSubItem &&
-                <div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>First Name</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='firstName'
-                                            onChange={this.handleContributor}
-                                            value={firstName}
-                                            onBlur={this.props.validate}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Last Name</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!this.props.contributor.firstName && 'norequire'}`}>
-                                        <div className='required height32'>{this.props.contributor.firstName && <span>*</span>}</div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className={`height32 ${errors.contributorLastName && 'fieldError'}`}
-                                            type='text'
-                                            ref='lastName'
-                                            onChange={this.handleContributor}
-                                            value={lastName}
-                                            onBlur={this.props.validate}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Suffix</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='suffix'
-                                            onChange={this.handleContributor}
-                                            value={suffix}
-                                            onBlur={this.props.validate}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Affiliation</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='affiliation'
-                                            onChange={this.handleContributor}
-                                            value={affiliation}
-                                            onBlur={this.props.validate}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>ORCID</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='orcid'
-                                            onChange={this.handleContributor}
-                                            value={orcid}
-                                            onBlur={this.props.validate}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Role</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!roleRequired && 'norequire'}`}>
-                                        <div className='required height32'>{roleRequired && <span>*</span>}</div>
-                                    </div>
-                                    <div className='field'>
-                                        {this.displayRoles('role')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <hr />
-                    </div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Group Author Name</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!groupAuthorRole && 'norequire'}`}>
-                                        <div className='required height32'>{groupAuthorRole && <span>*</span>}</div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className={`height32 ${errors.contributorGroupName && 'fieldError'}`}
-                                            type='text'
-                                            ref='groupAuthorName'
-                                            onChange={this.handleContributor}
-                                            value={groupAuthorName}
-                                            onBlur={this.props.validate}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Group Author Role</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!groupAuthorName && 'norequire'}`}>
-                                        <div className='required height32'>{groupAuthorName && <span>*</span>}</div>
-                                    </div>
-                                    <div className='field'>
-                                        {this.displayRoles('groupAuthorRole')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                </div>
-            }
+          }
         </div>
+        {this.state.showSubItem &&
+          <div>
+            <div className='row'>
+              <div className='fieldHolder'>
+
+                <FormInput
+                  label="First Name"
+                  name="firstName"
+                  value={firstName}
+                  changeHandler={this.handleContributor}
+                  onBlur={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+                <FormInput
+                  label="Last Name"
+                  required={!!firstName}
+                  error={errors.contributorLastName}
+                  name="lastName"
+                  value={lastName}
+                  changeHandler={this.handleContributor}
+                  onBlur={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+              </div>
+            </div>
+
+            <div className='row'>
+              <div className='fieldHolder'>
+
+                <FormInput
+                  label="Suffix"
+                  name="suffix"
+                  value={suffix}
+                  changeHandler={this.handleContributor}
+                  onBlur={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+                <FormInput
+                  label="Affiliation"
+                  name="affiliation"
+                  value={affiliation}
+                  changeHandler={this.handleContributor}
+                  onBlur={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+              </div>
+            </div>
+
+            <div className='row'>
+              <div className='fieldHolder'>
+
+                <FormInput
+                  label="ORCID"
+                  name="orcid"
+                  value={orcid}
+                  changeHandler={this.handleContributor}
+                  onBlur={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+                <FormSelect
+                  label="Role"
+                  required={roleRequired}
+                  error={errors.contributorRole}
+                  name="role"
+                  value={role}
+                  changeHandler={this.handleContributor}
+                  options={Roles}
+                  onSelect={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+                </div>
+            </div>
+
+            <div className='row'>
+                <hr />
+            </div>
+
+            <div className='row'>
+              <div className='fieldHolder'>
+
+                <FormInput
+                  label="Group Author Name"
+                  required={!!groupAuthorRole}
+                  error={errors.contributorGroupName}
+                  name="groupAuthorName"
+                  value={groupAuthorName}
+                  changeHandler={this.handleContributor}
+                  onBlur={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+                <FormSelect
+                  label="Group Author Role"
+                  required={!!groupAuthorName}
+                  error={errors.contributorGroupRole}
+                  name="groupAuthorRole"
+                  value={groupAuthorRole}
+                  changeHandler={this.handleContributor}
+                  options={Roles}
+                  onSelect={this.props.validate}
+                  tooltip={this.props.tooltip}/>
+
+              </div>
+            </div>
+          </div>
+        }
+      </div>
     )
   }
 }

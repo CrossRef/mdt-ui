@@ -3,6 +3,8 @@ import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
 
 import {routes} from '../../../routing'
+import FormInput from '../../Common/formInput'
+import FormSelect from '../../Common/formSelect'
 
 
 
@@ -224,8 +226,6 @@ export default class Funding extends Component {
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                        <div className='errorHolder'>
                         </div>
                     </div>
                     <div className='row'>

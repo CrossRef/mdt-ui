@@ -174,6 +174,8 @@ export default class AddArticlePage extends Component {
 
       const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
 
+      validatedPayload.validating = true
+
       setStatePayload = {
         ...setStatePayload,
         publication,
@@ -218,7 +220,6 @@ export default class AddArticlePage extends Component {
 
     const validatedPayload = {
       mode: 'edit',
-      validating: true,
       error: false,
       errors: {...criticalErrors, ...warnings},
       criticalErrors: criticalErrors,
@@ -260,9 +261,7 @@ export default class AddArticlePage extends Component {
   validate = async () => {
     if(this.state.mode === 'edit') {
       const {validatedPayload} = await this.validation()
-      this.setState(validatedPayload, () => {
-        this.state.validating = false
-      })
+      this.setState(validatedPayload)
     }
   }
 
@@ -272,6 +271,7 @@ export default class AddArticlePage extends Component {
     const {valid, validatedPayload} = await this.validation()
 
     validatedPayload.saving = true
+    validatedPayload.validating = true
 
     if (valid) {
       const publication = this.state.publication
@@ -293,6 +293,7 @@ export default class AddArticlePage extends Component {
         'content': new XMLSerializer().serializeToString(journalDoc)
       }
 
+      console.log(journalArticle, new XMLSerializer().serializeToString(journalDoc))
       // check if its part of a issue, the issue props will tell us
       let savePub
 

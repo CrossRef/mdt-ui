@@ -29,7 +29,7 @@ function yearOptionsFunc () {
 }
 
 
-export function makeDateDropDown (handler, name, type, preset, validation) {
+export function makeDateDropDown (handler, name, type, value, validation) {
   var s = [<option key='-1'></option>], start = 0, end = 0
   if (type === 'y') {
     start = 2017
@@ -58,12 +58,13 @@ export function makeDateDropDown (handler, name, type, preset, validation) {
       name={name}
       ref={name}
       onChange={handler}
-      value={parseInt(preset)}
+      value={parseInt(value)}
     >
       {s}
     </select>
   )
 }
+
 
 export function validDate ( yearfield, monthfield, dayfield ){
   yearfield = parseInt(yearfield); monthfield = parseInt(monthfield); dayfield = parseInt(dayfield);
