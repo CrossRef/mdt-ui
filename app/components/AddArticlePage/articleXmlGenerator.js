@@ -198,11 +198,11 @@ export default function (state, reduxForm) {
   }
   function appendRelatedItemsElm(root) {
     const relatedItems = getSubItems(state.relatedItems)
-    if (!relatedItems) {
+    if (!relatedItems || !relatedItems.length) {
       return
     }
     const relProgramElm = root.ownerDocument.createElementNS("http://www.crossref.org/relations.xsd", "program")
-
+    appendAttribute("name","relations",relProgramElm)
     for (var item of relatedItems) {
       const { description, relationType, identifierType, relatedItemIdentifier } = item
       var interRelElm
