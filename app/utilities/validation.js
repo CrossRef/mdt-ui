@@ -218,14 +218,11 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
     const updateMap = newReduxForm.get(update)
     if(updateMap) {
-      console.info("updateMap:"+updateMap)
       const entries = Array.from(updateMap.values())
 
-      console.info("size"+ entries.length + "entries:"+entries)
       for (var i in entries){
         const attributes = entries[i]
         
-        console.info("item"+i+"attributes"+attributes)
         const doi = attributes.get('DOI')
 
         const isitvalid=await asyncCheckDupeDoi(doi)

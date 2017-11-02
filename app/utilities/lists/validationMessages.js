@@ -345,7 +345,7 @@ export const ArticleMessages = {
   },
   [`${update} DOINotExist`]: {
     type: 'invalid',
-    bold: 'Invalid DOI',
+    bold: 'Invalid Crossmark DOI',
     message: 'Please insert a valid Crossref DOI.'
   },
   [`${clinical} Registry`]: {

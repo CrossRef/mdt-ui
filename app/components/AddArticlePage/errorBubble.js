@@ -104,6 +104,7 @@ export default class ErrorBubble extends React.Component{
     return <div><b>{ArticleMessages[error].bold}</b><br/>{ArticleMessages[error].message}</div>
   }
 
+
   scrollToError = () => {
     $('html, body').animate({
       scrollTop: this.state.errorBubblePosition
