@@ -3,7 +3,7 @@ import is from 'prop-types'
 import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 
-import AddPublicationCard from '../../containers/addPublicationModal'
+import AddPublicationModal from '../../containers/addPublicationModal'
 
 
 export default class Search extends Component {
@@ -44,7 +44,7 @@ export default class Search extends Component {
       this.props.reduxControlModal({
         showModal: true,
         title: 'Edit Journal Record',
-        Component: AddPublicationCard,
+        Component: AddPublicationModal,
         props: {
           mode: 'search',
           searchResult: item,

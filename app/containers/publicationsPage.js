@@ -6,7 +6,7 @@ import { bindActionCreators } from 'redux'
 import { controlModal, getPublications, addDOIs, submitPublication, cartUpdate, search } from '../actions/application'
 import PublicationCard from '../components/PublicationsPage/publicationCard'
 import Search from '../components/PublicationsPage/search'
-import AddPublicationCard from './addPublicationModal'
+import AddPublicationModal from './addPublicationModal'
 
 
 
@@ -47,7 +47,7 @@ export default class PublicationsPage extends Component {
   openAddPublicationModal = () => this.props.reduxControlModal({
     showModal:true,
     title:'Create Journal Record',
-    Component: AddPublicationCard,
+    Component: AddPublicationModal,
     props:{
       mode: 'add',
       reduxAddDOIs: this.props.reduxAddDOIs,
