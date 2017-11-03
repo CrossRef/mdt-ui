@@ -10,20 +10,27 @@ export default class Contributor extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showSubItem: true
+      showSubItem: true,
+      personDisabled: false,
+      groupDisabled: false
     }
   }
 
   componentWillReceiveProps (nextProps) {
     if(nextProps.validating) {
-      this.setState({showSubItem: true})
+        this.setState({showSubItem: true})
     }
+    const e=nextProps.contributor
+    this.setState({
+                groupDisabled: e.firstName||e.lastName||e.orcid||e.suffix||e.role|e.affiliation,
+                personDisabled: e.groupAuthorName||e.groupAuthorRole        
+            })
   }
 
-  componentDidUpdate () {
+  componentDidUpdate (props) {
     this.props.deferredErrorBubbleRefresh.resolve()
-  }
 
+  }
   toggle = () => {
     this.setState({
       showSubItem: !this.state.showSubItem
@@ -36,13 +43,14 @@ export default class Contributor extends Component {
       <option key='-1'></option>,
       ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
     ]
-
+    const disable = ref === 'role'? `${this.state.personDisabled && 'disabledDoi'}`  : `${this.state.groupDisabled && 'disabledDoi'}`
     return (
       <select
         ref={ref}
         onChange={this.handleContributor}
-        className={`height32 ${ref === 'role' ? contributorRole && 'fieldError' : contributorGroupRole && 'fieldError'}`}
+        className={`height32 ${ref === 'role' ? contributorRole && 'fieldError' : contributorGroupRole && 'fieldError' } ${disable}`}
         value={this.props.contributor[ref]}
+        disabled={!!disable}
         >
           {roles}
       </select>
@@ -52,13 +60,13 @@ export default class Contributor extends Component {
   handleContributor = () => {
     var contributor = {
       errors: this.props.contributor.errors
-    }
+    }    
     for(var i in this.refs){
       if(this.refs[i]){
         contributor[i] = this.refs[i].value
       }
     }
-
+    
     this.props.handler({ // this situation, state did NOT update immediately to see change, must pass in a call back
       contributors: update(this.props.data, {[this.props.index]: {$set: contributor }})
     })
@@ -101,7 +109,8 @@ export default class Contributor extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${this.state.personDisabled && 'disabledDoi'}`}
+                                            disabled={!!this.state.personDisabled}
                                             type='text'
                                             ref='firstName'
                                             onChange={this.handleContributor}
@@ -123,7 +132,8 @@ export default class Contributor extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className={`height32 ${errors.contributorLastName && 'fieldError'}`}
+                                            className={`height32 ${errors.contributorLastName && 'fieldError'} ${this.state.personDisabled && 'disabledDoi'} `}
+                                            disabled={!!this.state.personDisabled}
                                             type='text'
                                             ref='lastName'
                                             onChange={this.handleContributor}
@@ -152,7 +162,8 @@ export default class Contributor extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                        className={`height32 ${this.state.personDisabled && 'disabledDoi'}`}
+                                            disabled={!!this.state.personDisabled}
                                             type='text'
                                             ref='suffix'
                                             onChange={this.handleContributor}
@@ -175,8 +186,9 @@ export default class Contributor extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${this.state.personDisabled && 'disabledDoi'}`}
                                             type='text'
+                                            disabled={!!this.state.personDisabled}
                                             ref='affiliation'
                                             onChange={this.handleContributor}
                                             value={affiliation}
@@ -204,8 +216,9 @@ export default class Contributor extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className='height32'
+                                            className={`height32 ${this.state.personDisabled && 'disabledDoi'}`}
                                             type='text'
+                                            disabled={!!this.state.personDisabled}
                                             ref='orcid'
                                             onChange={this.handleContributor}
                                             value={orcid}
@@ -224,7 +237,7 @@ export default class Contributor extends Component {
                                     <div className={`requiredholder ${!roleRequired && 'norequire'}`}>
                                         <div className='required height32'>{roleRequired && <span>*</span>}</div>
                                     </div>
-                                    <div className='field'>
+                                    <div className={`field  ${this.state.personDisabled && 'disabledDoi'}`} disabled={!!this.state.personDisabled}>
                                         {this.displayRoles('role')}
                                     </div>
                                 </div>
@@ -251,8 +264,9 @@ export default class Contributor extends Component {
                                     </div>
                                     <div className='field'>
                                         <input
-                                            className={`height32 ${errors.contributorGroupName && 'fieldError'}`}
+                                            className={`height32 ${errors.contributorGroupName && 'fieldError'} ${this.state.groupDisabled && 'disabledDoi'}`}
                                             type='text'
+                                            disabled={!!this.state.groupDisabled}
                                             ref='groupAuthorName'
                                             onChange={this.handleContributor}
                                             value={groupAuthorName}
@@ -268,10 +282,10 @@ export default class Contributor extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!groupAuthorName && 'norequire'}`}>
+                                    <div className={`requiredholder ${!groupAuthorName && 'norequire'}  ${this.state.groupDisabled && 'disabledDoi'}`}>
                                         <div className='required height32'>{groupAuthorName && <span>*</span>}</div>
                                     </div>
-                                    <div className='field'>
+                                    <div className={`field  ${this.state.groupDisabled && 'disabledDoi'}`} disabled={!!this.state.groupDisabled}>
                                         {this.displayRoles('groupAuthorRole')}
                                     </div>
                                 </div>
