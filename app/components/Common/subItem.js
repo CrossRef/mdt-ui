@@ -15,7 +15,8 @@ export default class SubItem extends Component {
     addHandler: is.func,
     CrossmarkAddButton: is.func,
     arrowType: is.string,
-    deferredErrorBubbleRefresh: is.object.isRequired
+    deferredErrorBubbleRefresh: is.object.isRequired,
+    deferredTooltipBubbleRefresh: is.object
   }
 
 

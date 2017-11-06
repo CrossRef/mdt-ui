@@ -3,11 +3,11 @@ import ReactDom from 'react-dom'
 import is from 'prop-types'
 import $ from 'jquery'
 
-import {ClassWrapper} from '../../utilities/helpers'
-import {cardNames} from '../../utilities/crossmarkHelpers'
-const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
+import {ClassWrapper, getErrorPosition} from '../../utilities/helpers'
 import {ArticleMessages} from '../../utilities/lists/validationMessages'
 import {routes} from '../../routing'
+import {cardNames} from '../../utilities/crossmarkHelpers'
+const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
 
 
 
@@ -15,7 +15,9 @@ import {routes} from '../../routing'
 export default class ErrorBubble extends React.Component{
 
   static propTypes = {
-    errors: is.object.isRequired
+    errors: is.object.isRequired,
+    deferredErrorBubbleRefresh: is.object.isRequired,
+    deferredTooltipBubbleRefresh: is.object.isRequired
   }
 
   constructor() {
@@ -31,18 +33,12 @@ export default class ErrorBubble extends React.Component{
   componentDidMount() {
     this.refreshErrorBubble()
     this.deferredErrorBubbleRefresh()
+    //this.props.deferredTooltipBubbleRefresh.resolve()
   }
 
 
   refreshErrorBubble = () => {
-    const firstError = $('.fieldError').first()
-    const switchLicense = $('.switchLicense').first()
-    let newErrorBubblePosition
-    try {
-      newErrorBubblePosition = `${((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9)) - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15))) + 25}px`
-    } catch (e) {
-      newErrorBubblePosition = false
-    }
+    const newErrorBubblePosition = getErrorPosition()
 
     if(!newErrorBubblePosition && this.state.errorBubblePosition) {
       document.removeEventListener('scroll', this.refreshStickyError, false)
@@ -51,7 +47,11 @@ export default class ErrorBubble extends React.Component{
     }
 
     if(this.state.errorBubblePosition !== newErrorBubblePosition) {
-      this.setState({errorBubblePosition: newErrorBubblePosition}, newErrorBubblePosition ? this.refreshStickyError : null)
+      this.setState({errorBubblePosition: newErrorBubblePosition}, ()=>{
+        if(newErrorBubblePosition) this.refreshStickyError()
+        setTimeout(()=>{this.props.deferredTooltipBubbleRefresh.resolve()}, 5)
+        //need to delay updating the tooltip bubble for some reason, otherwise it calculates the errorBubble size incorrectly
+      })
     }
   }
 
@@ -115,6 +115,7 @@ export default class ErrorBubble extends React.Component{
   componentWillUnmount () {
     document.removeEventListener('scroll', this.refreshStickyError, false)
     this.props.deferredErrorBubbleRefresh.reject()
+    this.props.deferredTooltipBubbleRefresh.resolve()
   }
 
 
@@ -126,7 +127,7 @@ export default class ErrorBubble extends React.Component{
           <ClassWrapper
             classNames={['errorHolder talltooltip fullError', 'toolTipHolder', ['a', "tooltips"]]}>
 
-            <div className="toolmsgholder" ref="ErrorBubble" style={{top: this.state.errorBubblePosition}}>
+            <div className="toolmsgholder fullErrorHolder" ref="ErrorBubble" style={{top: this.state.errorBubblePosition}}>
               <div className="errormsgholder">
                 <div className="errormsginnerholder">
                   <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/></div>

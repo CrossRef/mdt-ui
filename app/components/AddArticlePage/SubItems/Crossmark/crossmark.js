@@ -91,7 +91,10 @@ export class Crossmark extends Component {
     delete newState[selection]
     this.props.reduxDeleteCard([selection]);
     openCards = newState
-    this.setState({ crossmarkCards: newState }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
+    this.setState({ crossmarkCards: newState }, ()=>{
+      this.props.deferredErrorBubbleRefresh.resolve()
+      this.props.deferredTooltipBubbleRefresh.resolve()
+    })
   }
 
 
@@ -107,8 +110,10 @@ export class Crossmark extends Component {
               validate={this.props.validate}
               number={this.state.crossmarkCards[cardName] - 1}
               deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
               tooltip={this.props.tooltip}
-              remove={() => this.removeCrossmarkCard(cardName)}/>
+              cardName={cardName}
+              remove={this.removeCrossmarkCard}/>
           : null
         })}
       </div>

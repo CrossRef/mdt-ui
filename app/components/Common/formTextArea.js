@@ -17,8 +17,8 @@ export default class FormInput extends React.Component {
     changeHandler: is.func.isRequired,
     onBlur: is.func,
     onFocus: is.func,
-    tooltip: is.bool.isRequired
-
+    tooltip: is.oneOfType([is.string, is.bool]),
+    deferredTooltipBubbleRefresh: is.object
   }
 
 
@@ -31,10 +31,12 @@ export default class FormInput extends React.Component {
     if(this.props.onFocus) {
       this.props.onFocus()
     }
-    if(this.props.tooltip) {
-      console.log('do tooltip stuff')
-    }
-    this.setState({focus: true})
+
+    this.setState({focus: true}, ()=>{
+      if(this.props.tooltip) {
+        this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
+      }
+    })
   }
 
 
@@ -42,7 +44,11 @@ export default class FormInput extends React.Component {
     if(this.props.onBlur) {
       this.props.onBlur()
     }
-    this.setState({focus: false})
+    this.setState({focus: false}, ()=>{
+      if(this.props.tooltip) {
+        this.props.deferredTooltipBubbleRefresh.resolve()
+      }
+    })
   }
 
 
@@ -59,9 +65,9 @@ export default class FormInput extends React.Component {
             <div className='required height64'>{this.props.required && <span>*</span>}</div>
           </div>
           <div className='field'>
-            {this.state.focus && this.props.tooltip && <img className='infoFlag' src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} />}
+            {this.state.focus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
             <textarea
-              className={`height64 ${this.props.error && 'fieldError'}`}
+              className={`height64 ${this.props.error ? 'fieldError' : ''} ${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
               type='text'
               name={this.props.name}
               onChange={this.props.changeHandler}

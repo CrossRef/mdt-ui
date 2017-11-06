@@ -20,7 +20,8 @@ export default class FormSelect extends React.Component {
     onBlur: is.func,
     onFocus: is.func,
     disabled: is.bool,
-    tooltip: is.bool.isRequired
+    tooltip: is.oneOfType([is.string, is.bool]),
+    deferredTooltipBubbleRefresh: is.object
   }
 
 
@@ -33,10 +34,12 @@ export default class FormSelect extends React.Component {
     if(this.props.onFocus) {
       this.props.onFocus()
     }
-    if(this.props.tooltip) {
-      console.log('do tooltip stuff')
-    }
-    this.setState({focus: true})
+
+    this.setState({focus: true}, ()=>{
+      if(this.props.tooltip) {
+        this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
+      }
+    })
   }
 
 
@@ -44,7 +47,11 @@ export default class FormSelect extends React.Component {
     if(this.props.onBlur) {
       this.props.onBlur()
     }
-    this.setState({focus: false})
+    this.setState({focus: false}, ()=>{
+      if(this.props.tooltip) {
+        this.props.deferredTooltipBubbleRefresh.resolve()
+      }
+    })
   }
 
 
@@ -63,7 +70,7 @@ export default class FormSelect extends React.Component {
             this.props.onSelect(e)
           }
         }}
-        className={`height32 ${this.props.error && 'fieldError'}`}
+        className={`height32 ${this.props.error ? 'fieldError' : ''} ${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
         value={this.props.value}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
@@ -88,7 +95,7 @@ export default class FormSelect extends React.Component {
           </div>
           <div className='field'>
 
-            {this.state.focus && this.props.tooltip && <img className='infoFlag' src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} />}
+            {this.state.focus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
 
             {this.options()}
           </div>

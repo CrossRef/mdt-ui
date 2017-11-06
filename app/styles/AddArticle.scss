@@ -110,7 +110,7 @@ input.height64, textarea.height64, select.height64 {
         color: #646464;
         background: #FFD164;
         &:after {
-          border-right: 8px solid #FFD164;
+          border-right: 0px solid #FFD164;
         }
       }
     }
@@ -529,7 +529,15 @@ input.height64, textarea.height64, select.height64 {
                 .grantRow {
                   width: 500px;
                   display: flex;
+                  position: relative;
                   flex-direction: row;
+
+                  .infoFlagGrant {
+                    position: absolute;
+                    right: 186px;
+                    top: -29px;
+                    width: 35px;
+                  }
                 }
                 .grantInput {
                   flex: .6
@@ -860,9 +868,66 @@ input.height64, textarea.height64, select.height64 {
   padding-bottom: 20px
 }
 
-.infoFlag {
+.infoFlagInput {
   position: absolute;
-  right: 0;
-  top: -30px;
+  right: 0px;
+  top: -29px;
   width: 35px;
+}
+
+.infoFlagTextArea {
+  position: absolute;
+  right: 1px;
+  top: -29px;
+  width: 35px;
+}
+
+.infoFlagDate {
+  position: absolute;
+  right: -1px;
+  top: -13px;
+  width: 35px;
+}
+
+.infoFlagBorder {
+  outline: 1px solid #ffc72c;
+}
+
+.infoFlagCalendarBorder {
+  border-top: 1px solid #ffc72c !important;
+  border-right: 1px solid #ffc72c !important;
+  border-bottom: 1px solid #ffc72c !important;
+}
+
+.dateicon {
+  width: 30px !important;
+  display: inline-block;
+  margin: 0 0 0 -11.5px;
+}
+.iconHolder {
+  background: #FFF;
+  display: inline-block;
+  margin: 0;
+  width: 37px;
+  border-top: 1px solid black;
+  border-right: 1px solid black;
+  border-bottom: 1px solid black;
+
+  .calendarButton {
+    display: inline-block;
+    height:auto;
+    padding: 2px 0 0 1px;
+
+    .calendarIcon {
+      display: inline-block;
+      width: 27px;
+    }
+  }
+
+}
+
+.infoFlagIconHolder {
+  border-top: 1px solid #ffc72c !important;
+  border-right: 1px solid #ffc72c !important;
+  border-bottom: 1px solid #ffc72c !important;
 }

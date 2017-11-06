@@ -2,7 +2,7 @@ import React from 'react'
 import is from 'prop-types'
 
 import {routes} from '../../routing'
-import {makeDateDropDown} from '../../utilities/date'
+import {MakeDateDropDown} from '../../utilities/date'
 
 
 
@@ -18,7 +18,8 @@ export default class FormDate extends React.Component {
     onSelect: is.func,
     onBlur: is.func,
     onFocus: is.func,
-    tooltip: is.bool.isRequired,
+    tooltip: is.oneOfType([is.string, is.bool]),
+    deferredTooltipBubbleRefresh: is.object,
     fields: is.shape({
       year: is.shape({
         value: is.string.isRequired,
@@ -48,10 +49,12 @@ export default class FormDate extends React.Component {
     if(this.props.onFocus) {
       this.props.onFocus()
     }
-    if(this.props.tooltip) {
-      console.log('do tooltip stuff')
-    }
-    this.setState({focus: true})
+
+    this.setState({focus: true}, ()=>{
+      if(this.props.tooltip) {
+        this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
+      }
+    })
   }
 
 
@@ -59,7 +62,12 @@ export default class FormDate extends React.Component {
     if(this.props.onBlur) {
       this.props.onBlur()
     }
-    this.setState({focus: false})
+
+    this.setState({focus: false}, ()=>{
+      if(this.props.tooltip) {
+        this.props.deferredTooltipBubbleRefresh.resolve()
+      }
+    })
   }
 
 
@@ -87,28 +95,52 @@ export default class FormDate extends React.Component {
           </div>
           <div className='field' onBlur={this.onBlur} onFocus={this.onFocus}>
 
-            {this.state.focus && this.props.tooltip && <img className='infoFlag' src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} />}
+            {this.state.focus && this.props.tooltip && <img className='infoFlagDate' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
 
             <div className='datepickerholder'>
               <div className='dateselectholder'>
                 <div>Year {this.props.fields.year.required ? '(*)' : ''}</div>
                 <div>
-                  {makeDateDropDown(this.onSelect, `${this.props.name}Year`, 'y', this.props.fields.year.value, this.props.error || this.props.fields.year.error)}
+                  <MakeDateDropDown
+                    handler={this.onSelect}
+                    name={`${this.props.name}Year`}
+                    type="y"
+                    value={this.props.fields.year.value}
+                    validation={this.props.error || this.props.fields.year.error}
+                    style={`${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}/>
                 </div>
               </div>
               <div className='dateselectholder'>
                 <div>Month</div>
                 <div>
-                  {makeDateDropDown(this.onSelect, `${this.props.name}Month`, 'm', this.props.fields.month.value, this.props.error || this.props.fields.month.error)}
+                  <MakeDateDropDown
+                    handler={this.onSelect}
+                    name={`${this.props.name}Month`}
+                    type="m"
+                    value={this.props.fields.month.value}
+                    validation={this.props.error || this.props.fields.month.error}
+                    style={`${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}/>
                 </div>
               </div>
               <div className='dateselectholder'>
                 <div>Day</div>
                 <div>
-                  {makeDateDropDown(this.onSelect, `${this.props.name}Day`, 'd', this.props.fields.day.value, this.props.error || this.props.fields.day.error)}
+                  <MakeDateDropDown
+                    handler={this.onSelect}
+                    name={`${this.props.name}Day`}
+                    type="d"
+                    value={this.props.fields.day.value}
+                    validation={this.props.error || this.props.fields.day.error}
+                    style={`${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}/>
                 </div>
               </div>
-              <div>
+              <div className='dateicon'>
+                <div>&nbsp;</div>
+                <div className={`iconHolder ${this.state.focus && this.props.tooltip ? 'infoFlag infoFlagIconHolder' : ''}`}>
+                  <a className="calendarButton">
+                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                  </a>
+                </div>
               </div>
             </div>
           </div>

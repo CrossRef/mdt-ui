@@ -47,6 +47,7 @@ export default class ReduxTextInput extends Component {
         error={this.props.error}
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
+        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
         tooltip={this.props.tooltip}/>
     )
   }

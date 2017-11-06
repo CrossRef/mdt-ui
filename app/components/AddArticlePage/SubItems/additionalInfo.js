@@ -6,6 +6,7 @@ import FormSelect from '../../Common/formSelect'
 import {urlEntered} from '../../../utilities/helpers'
 const Languages = require('../../../utilities/lists/language.json')
 import { ArchiveLocations } from '../../../utilities/lists/archiveLocations'
+import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
 
 
 
@@ -51,7 +52,8 @@ export default class AdditionalInformation extends Component {
                 error={this.props.simCheckError}
                 changeHandler={this.handleAddInfo}
                 onBlur={this.props.validate}
-                tooltip={this.props.tooltip}/>
+                deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                tooltip={this.props.tooltip && tooltips.similarityCheckURL}/>
 
               <FormSelect
                 label="Archive Location"
@@ -60,7 +62,8 @@ export default class AdditionalInformation extends Component {
                 options={ArchiveLocations}
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
-                tooltip={this.props.tooltip}/>
+                deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                tooltip={this.props.tooltip && tooltips.archiveLocation}/>
             </div>
           </div>
           <div className='row'>
@@ -72,7 +75,8 @@ export default class AdditionalInformation extends Component {
                 options={Languages}
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
-                tooltip={this.props.tooltip}/>
+                deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                tooltip={this.props.tooltip && tooltips.language}/>
             </div>
           </div>
         </div>

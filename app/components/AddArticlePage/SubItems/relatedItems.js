@@ -6,6 +6,7 @@ import FormInput from '../../Common/formInput'
 import FormSelect from '../../Common/formSelect'
 const RelationTypes = require('../../../utilities/lists/relationTypes.json')
 const IdentifierTypes = require('../../../utilities/lists/identifierTypes.json')
+import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
 
 
 export default class RelatedItems extends Component {
@@ -77,8 +78,7 @@ export default class RelatedItems extends Component {
                   error={relatedItemDoiInvalid}
                   value={relatedItemIdentifier}
                   changeHandler={this.handleRelatedItems}
-                  onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onBlur={this.props.validate}/>
 
                 <FormSelect
                   label="Identifier Type"
@@ -88,8 +88,7 @@ export default class RelatedItems extends Component {
                   value={identifierType}
                   options={IdentifierTypes}
                   changeHandler={this.handleRelatedItems}
-                  onSelect={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onSelect={this.props.validate}/>
               </div>
             </div>
 
@@ -100,8 +99,7 @@ export default class RelatedItems extends Component {
                   name="description"
                   value={description}
                   changeHandler={this.handleRelatedItems}
-                  onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onBlur={this.props.validate}/>
 
                 <FormSelect
                   label="Relation Type"
@@ -112,7 +110,8 @@ export default class RelatedItems extends Component {
                   options={RelationTypes}
                   changeHandler={this.handleRelatedItems}
                   onSelect={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltip={this.props.tooltip && tooltips.relationType}/>
               </div>
             </div>
           </div>

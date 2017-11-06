@@ -7,6 +7,7 @@ import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
 import { InfoBubble, InfoHelperRow, OptionalTitleData, DatesRow } from './articleFormComponents'
 import ErrorBubble from './errorBubble'
+import TooltipBubble from './tooltipBubble'
 import Contributor from './SubItems/contributor'
 import Funding from './SubItems/funding'
 import License from './SubItems/license'
@@ -17,6 +18,7 @@ import FormInput from '../Common/formInput'
 import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
 import {urlEntered} from '../../utilities/helpers'
+import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
 
 
 
@@ -87,17 +89,18 @@ export default class AddArticleView extends Component {
                       required={true}
                       error={this.props.errors.title}
                       changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}
-                      tooltip={this.props.showHelper}/>
+                      onBlur={this.props.validate}/>
                   </div>
 
-                  {this.props.showHelper && <InfoBubble/> }
+                  {this.props.showHelper &&
+                    <TooltipBubble
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}/> }
 
                   {this.props.error &&
                     <ErrorBubble
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
-                      errors={this.props.errors}
-                      crossmarkErrors={this.props.crossmarkErrors}/>}
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                      errors={this.props.errors}/>}
                 </div>
 
                 <div className='row'>
@@ -108,6 +111,8 @@ export default class AddArticleView extends Component {
                     originallanguagetitle={this.props.article.originallanguagetitle}
                     originallanguagetitlesubtitle={this.props.article.originallanguagetitlesubtitle}
                     validate={this.props.validate}
+                    deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                    tooltip={this.props.showHelper}
                     handleChange={this.props.handleChange}/>
                 </div>
 
@@ -121,8 +126,7 @@ export default class AddArticleView extends Component {
                       error={this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi || this.props.errors.invalidDoiPrefix}
                       disabled={this.props.doiDisabled}
                       changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}
-                      tooltip={this.props.showHelper}/>
+                      onBlur={this.props.validate}/>
 
                     <FormInput
                       label="Article URL (Required)"
@@ -131,8 +135,7 @@ export default class AddArticleView extends Component {
                       required={true}
                       error={this.props.errors.url || this.props.errors.invalidurl}
                       changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}
-                      tooltip={this.props.showHelper}/>
+                      onBlur={this.props.validate}/>
                   </div>
                 </div>
 
@@ -141,6 +144,7 @@ export default class AddArticleView extends Component {
                   errors={this.props.errors}
                   handleChange={this.props.handleChange}
                   validate={this.props.validate}
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   tooltip={this.props.showHelper}
                 />
 
@@ -153,16 +157,14 @@ export default class AddArticleView extends Component {
                       required={!!this.props.article.lastPage}
                       error={this.props.errors.firstPage}
                       changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}
-                      tooltip={this.props.showHelper}/>
+                      onBlur={this.props.validate}/>
 
                     <FormInput
                       label="Last Page"
                       name="lastPage"
                       value={this.props.article.lastPage}
                       changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}
-                      tooltip={this.props.showHelper}/>
+                      onBlur={this.props.validate}/>
                   </div>
                 </div>
 
@@ -174,7 +176,8 @@ export default class AddArticleView extends Component {
                       value={this.props.article.locationId}
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}
-                      tooltip={this.props.showHelper}/>
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                      tooltip={this.props.showHelper && tooltip.locationId}/>
                   </div>
                 </div>
 
@@ -184,8 +187,7 @@ export default class AddArticleView extends Component {
                       label="Abstract"
                       name="abstract"
                       value={this.props.article.abstract}
-                      changeHandler={this.props.handleChange}
-                      tooltip={this.props.showHelper}/>
+                      changeHandler={this.props.handleChange}/>
                   </div>
                 </div>
 
@@ -208,6 +210,7 @@ export default class AddArticleView extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.contributors}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       tooltip={this.props.showHelper}
                       index={i}/>
                   )}
@@ -229,6 +232,7 @@ export default class AddArticleView extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.funding}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       tooltip={this.props.showHelper}
                       index={i}/>
                   )}
@@ -253,8 +257,7 @@ export default class AddArticleView extends Component {
                               {value: 'no', name: 'No'}
                           ]}
                           changeHandler={this.props.handleChange}
-                          onSelect={this.props.validate}
-                          tooltip={this.props.showHelper}/>
+                          onSelect={this.props.validate}/>
                       </div>
                     </div>
                   </div>
@@ -270,7 +273,6 @@ export default class AddArticleView extends Component {
                       data={this.props.license}
                       index={i}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
-                      tooltip={this.props.showHelper}
                       freetolicense={i===0 ? this.props.article.freetolicense : ''}/>
                   )}
               </SubItem>
@@ -291,6 +293,7 @@ export default class AddArticleView extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.relatedItems}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       tooltip={this.props.showHelper}
                       index={i}/>
                   )}
@@ -306,6 +309,7 @@ export default class AddArticleView extends Component {
                     handler={this.props.boundSetState}
                     validate={this.props.validate}
                     tooltip={this.props.showHelper}
+                    deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                     simCheckError={this.props.errors.simCheckUrlInvalid}/>
               </SubItem>
 
@@ -321,6 +325,7 @@ export default class AddArticleView extends Component {
                       validate={this.props.validate}
                       tooltip={this.props.showHelper}
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       reduxDeleteCard={this.props.reduxDeleteCard}/>
                 </SubItem>
               }

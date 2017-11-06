@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Switch from 'react-toggle-switch'
 
 import { ClassWrapper } from '../../utilities/helpers'
+import {articleTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
 import {routes} from '../../routing'
 import FormDate from '../Common/formDate'
 import FormTextArea from '../Common/formTextArea'
@@ -32,22 +33,18 @@ export class InfoHelperRow extends Component {
 }
 
 
-export const InfoBubble = () =>
-  <ClassWrapper classNames={['errorHolder talltooltip helpers', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder']}>
-    <div className='errormsginnerholder'>
-      <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
-      <div>Please provide a Title that fully describes your Article</div>
-    </div>
-  </ClassWrapper>
-
-
 
 
 export class OptionalTitleData extends Component {
+
+  toggle = () => {
+    this.props.toggleFields()
+  }
+
   render() {
     return(
       <div className='OptionalTitleFields'>
-        <div className='toggleButton' onClick={this.props.toggleFields}>
+        <div className='toggleButton' onClick={this.toggle}>
             <span className={'arrowHolder' + (this.props.show ? ' openArrowHolder' : '')}>
               <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </span>
@@ -61,7 +58,8 @@ export class OptionalTitleData extends Component {
               value={this.props.subtitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
-              tooltip={false}/>
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltip={this.props.tooltip && tooltips.articleSubtitle}/>
           </div>
 
           <div className='fieldHolder'>
@@ -71,7 +69,8 @@ export class OptionalTitleData extends Component {
               value={this.props.originallanguagetitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
-              tooltip={false}/>
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltip={this.props.tooltip && tooltips.alternateTitle}/>
           </div>
 
           <div className='fieldHolder'>
@@ -81,7 +80,8 @@ export class OptionalTitleData extends Component {
               value={this.props.originallanguagetitlesubtitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
-              tooltip={false}/>
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltip={this.props.tooltip && tooltips.alternateSubtitle}/>
           </div>
         </div>
       </div>
@@ -103,9 +103,10 @@ export class DatesRow extends Component {
             name="printDate"
             changeHandler={this.props.handleChange}
             onSelect={this.props.validate}
-            tooltip={this.props.tooltip}
+            tooltip={this.props.tooltip && tooltips.printDate}
             error={printDateInvalid}
             required={!onlineDateYear}
+            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
             fields={{
               year: {
                 value: printDateYear,
@@ -126,9 +127,10 @@ export class DatesRow extends Component {
             name="onlineDate"
             changeHandler={this.props.handleChange}
             onSelect={this.props.validate}
-            tooltip={this.props.tooltip}
+            tooltip={this.props.tooltip && tooltips.onlineDate}
             error={onlineDateInvalid}
             required={!printDateYear}
+            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
             fields={{
               year: {
                 value: onlineDateYear,

@@ -88,7 +88,8 @@ export default class AddArticlePage extends Component {
       ownerPrefix,
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
       version: '1',
-      deferredErrorBubbleRefresh: new DeferredTask()
+      deferredErrorBubbleRefresh: new DeferredTask(),
+      deferredTooltipBubbleRefresh: new DeferredTask()
     }
     this.state.article.doi = ownerPrefix + '/'
   }

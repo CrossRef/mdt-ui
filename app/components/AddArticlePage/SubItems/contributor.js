@@ -5,6 +5,7 @@ import { Roles } from '../../../utilities/lists/roles.js'
 import {routes} from '../../../routing'
 import FormInput from '../../Common/formInput'
 import FormSelect from '../../Common/formSelect'
+import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
 
 
 
@@ -77,8 +78,7 @@ export default class Contributor extends Component {
                   name="firstName"
                   value={firstName}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onBlur={this.props.validate}/>
 
                 <FormInput
                   label="Last Name"
@@ -87,8 +87,7 @@ export default class Contributor extends Component {
                   name="lastName"
                   value={lastName}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onBlur={this.props.validate}/>
 
               </div>
             </div>
@@ -101,16 +100,14 @@ export default class Contributor extends Component {
                   name="suffix"
                   value={suffix}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onBlur={this.props.validate}/>
 
                 <FormInput
                   label="Affiliation"
                   name="affiliation"
                   value={affiliation}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onBlur={this.props.validate}/>
 
               </div>
             </div>
@@ -124,7 +121,8 @@ export default class Contributor extends Component {
                   value={orcid}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltip={this.props.tooltip && tooltips.orcid}/>
 
                 <FormSelect
                   label="Role"
@@ -134,8 +132,7 @@ export default class Contributor extends Component {
                   value={role}
                   changeHandler={this.handleContributor}
                   options={Roles}
-                  onSelect={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onSelect={this.props.validate}/>
 
                 </div>
             </div>
@@ -155,7 +152,8 @@ export default class Contributor extends Component {
                   value={groupAuthorName}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltip={this.props.tooltip && tooltips.groupAuthorName}/>
 
                 <FormSelect
                   label="Group Author Role"
@@ -166,7 +164,8 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   options={Roles}
                   onSelect={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltip={this.props.tooltip && tooltips.groupAuthorRole}/>
 
               </div>
             </div>

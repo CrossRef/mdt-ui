@@ -79,7 +79,6 @@ export default class License extends Component {
                   name="acceptedDate"
                   changeHandler={this.handleLicense}
                   onSelect={this.props.validate}
-                  tooltip={this.props.tooltip}
                   fields={{
                     year: {
                       value: acceptedDateYear,
@@ -106,8 +105,7 @@ export default class License extends Component {
                   error={errors.freetolicense || errors.licenseUrl || errors.licenseUrlInvalid}
                   value={ urlEntered(licenseurl) ? licenseurl : 'http://'}
                   changeHandler={this.handleLicense}
-                  onBlur={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onBlur={this.props.validate}/>
 
                 <FormSelect
                   label="Applies to"
@@ -115,8 +113,7 @@ export default class License extends Component {
                   value={appliesto}
                   options={AppliesTo}
                   changeHandler={this.handleLicense}
-                  onSelect={this.props.validate}
-                  tooltip={this.props.tooltip}/>
+                  onSelect={this.props.validate}/>
               </div>
             </div>
           </div>

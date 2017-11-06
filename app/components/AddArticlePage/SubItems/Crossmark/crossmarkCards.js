@@ -6,6 +6,7 @@ import Selector from './reduxSelectInput'
 import Date from './reduxDate'
 import { registryDois, updateTypes, cardNames } from '../../../../utilities/crossmarkHelpers'
 const { pubHist, peer, update, copyright, clinical, supp, other } = cardNames;
+import {articleTooltips as tooltips} from '../../../../utilities/lists/tooltipMessages'
 
 
 export class Blank extends Component {
@@ -28,13 +29,16 @@ function generateCard (name, fields) {
   return class CrossmarkCard extends Component {
     static propTypes = {
       number: is.number.isRequired,
-      remove: is.func.isRequired
+      remove: is.func.isRequired,
+      cardName: is.string.isRequired,
+      tooltip: is.oneOfType([is.string, is.bool]),
+      deferredTooltipBubbleRefresh: is.object
     }
 
     state={ number: this.props.number || 0 }
 
-    renderFields = () => {
 
+    renderFields = () => {
       let fieldArray = [];
       let i = 0;
       while (i <= this.state.number) {
@@ -45,7 +49,10 @@ function generateCard (name, fields) {
 
 
     addFields = () => {
-      this.setState({number: this.state.number+1}, () => this.props.deferredErrorBubbleRefresh.resolve())
+      this.setState({number: this.state.number+1}, () => {
+        this.props.deferredErrorBubbleRefresh.resolve()
+        this.props.deferredTooltipBubbleRefresh.resolve()
+      })
     }
 
     render() {
@@ -59,7 +66,7 @@ function generateCard (name, fields) {
               </div>
 
               <div className='subItemHeader subItemButton'>
-                <a onClick={this.props.remove}>Remove</a>
+                <a onClick={()=>this.props.remove(this.props.cardName)}>Remove</a>
               </div>
             </div>
 
@@ -82,13 +89,15 @@ export const PublicationHistory = generateCard(pubHist, function fields (i, card
           onSelect={card.props.validate}
           keyPath={[pubHist, i, 'label']}
           style="dateAlignSelect"
-          tooltip={card.props.tooltip}
+          tooltip={card.props.tooltip && tooltips.publicationHistory}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
           options={['Received', 'Accepted', 'Published Online', 'Published Print']}/>
 
         <Date
           label="Date"
           onSelect={card.props.validate}
-          tooltip={card.props.tooltip}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+          tooltip={card.props.tooltip && tooltips.publicationHistory}
           keyPath={[pubHist, i]}/>
       </div>
     </div>
@@ -105,13 +114,15 @@ export const PeerReview = generateCard(peer, function fields (i, card) {
             onSelect={card.props.validate}
             keyPath={[peer, i, 'label']}
             style="textAlignSelect"
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.peerReview}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             options={['Peer reviewed', 'Review Process']}/>
 
           <TextInput
             label='Description'
             onBlur={card.props.validate}
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.peerReview}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             keyPath={[peer, i, 'explanation']}/>
         </div>
       </div>
@@ -122,7 +133,8 @@ export const PeerReview = generateCard(peer, function fields (i, card) {
           label='URL'
           onBlur={card.props.validate}
           keyPath={[peer, i, 'href']}
-          tooltip={card.props.tooltip}
+          tooltip={card.props.tooltip && tooltips.peerReview}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
           style="floatRight"/>
       </div>
       </div>
@@ -140,13 +152,15 @@ export const Copyright = generateCard(copyright, function fields (i, card) {
             onSelect={card.props.validate}
             keyPath={[copyright, i, 'label']}
             style="textAlignSelect"
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.copyrightLicensing}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             options={['Copyright Statement', 'Licensing Information']}/>
 
           <TextInput
             label='Description'
             onBlur={card.props.validate}
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.copyrightLicensing}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             keyPath={[copyright, i, 'explanation']}/>
         </div>
       </div>
@@ -157,7 +171,8 @@ export const Copyright = generateCard(copyright, function fields (i, card) {
           label='URL'
           onBlur={card.props.validate}
           keyPath={[copyright, i, 'href']}
-          tooltip={card.props.tooltip}
+          tooltip={card.props.tooltip && tooltips.copyrightLicensing}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
           style="floatRight" />
       </div>
       </div>
@@ -172,13 +187,11 @@ export const SupplementaryMaterial = generateCard(supp, function fields (i, card
         <TextInput
           label='Description'
           onBlur={card.props.validate}
-          tooltip={card.props.tooltip}
           keyPath={[supp, i, 'explanation']}/>
 
         <TextInput
           label='URL'
           onBlur={card.props.validate}
-          tooltip={card.props.tooltip}
           keyPath={[supp, i, 'href']} />
       </div>
     </div>
@@ -193,13 +206,15 @@ export const Other = generateCard(other, function fields (i, card) {
           <TextInput
             label={`Label ${i+1}`}
             onBlur={card.props.validate}
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.other}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             keyPath={[other, i, 'label']}/>
 
           <TextInput
             label='Description'
             onBlur={card.props.validate}
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.other}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             keyPath={[other, i, 'explanation']}/>
         </div>
       </div>
@@ -210,7 +225,8 @@ export const Other = generateCard(other, function fields (i, card) {
             label='URL'
             onBlur={card.props.validate}
             keyPath={[other, i, 'href']}
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.other}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             style="floatRight" />
         </div>
       </div>
@@ -228,7 +244,8 @@ export const StatusUpdate = generateCard(update, function fields (i, card) {
             onSelect={card.props.validate}
             keyPath={[update, i, 'type']}
             style="textAlignSelect"
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.update}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             required={true}
             options={updateTypes}/>
 
@@ -236,7 +253,8 @@ export const StatusUpdate = generateCard(update, function fields (i, card) {
             label="Update Date"
             onSelect={card.props.validate}
             keyPath={[update, i]}
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.update}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             required={true} />
         </div>
       </div>
@@ -247,7 +265,8 @@ export const StatusUpdate = generateCard(update, function fields (i, card) {
             label='Original DOI updated'
             onBlur={card.props.validate}
             keyPath={[update, i, 'DOI']}
-            tooltip={card.props.tooltip}
+            tooltip={card.props.tooltip && tooltips.update}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
             required={true}/>
         </div>
       </div>
@@ -265,14 +284,12 @@ export const ClinicalTrials = generateCard(clinical, function fields (i, card) {
             onSelect={card.props.validate}
             keyPath={[clinical, i, 'registry']}
             required={true}
-            tooltip={card.props.tooltip}
             options={Object.keys(registryDois)}/>
 
           <TextInput
             label="Registered trial number (Required)"
             onBlur={card.props.validate}
             keyPath={[clinical, i, 'trialNumber']}
-            tooltip={card.props.tooltip}
             required={true}/>
         </div>
       </div>
@@ -283,7 +300,6 @@ export const ClinicalTrials = generateCard(clinical, function fields (i, card) {
             label='Relationship of publication to trial'
             onSelect={card.props.validate}
             keyPath={[clinical, i, 'type']}
-            tooltip={card.props.tooltip}
             options={['Pre-Results', 'Results', 'Post-Results']}/>
         </div>
       </div>

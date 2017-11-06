@@ -61,6 +61,7 @@ export default class ReduxSelectInput extends Component {
         options={this.props.options}
         changeHandler={this.handler}
         tooltip={this.props.tooltip}
+        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
         fields={{
           year: {
             value: this.props.yearValue,
