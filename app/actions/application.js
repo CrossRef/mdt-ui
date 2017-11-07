@@ -13,6 +13,14 @@ export function loginData(data) {
   return { type: 'LOGIN', data }
 }
 
+export function resetLogin() {
+  return { type: 'RESETLOGIN' }
+}
+
+export function firstLogin(status) {
+  return { type: 'FIRSTLOGIN', status }
+}
+
 export function searchResult(result, value) {
   return { type: 'SEARCH_RESULT', result, value }
 }

@@ -29,20 +29,20 @@ export const routes = {
   depositHistory: base + 'deposit-history'
 };
 
-export default () => {
+export default ({resetPage}) => {
 
   return (
     <Route path={routes.base} component={App}>
-      <IndexRoute component={LoginPage} />
-      <Route path={routes.publications} component={PublicationsPage} />
-      <Route path={routes.publicationsModal} component={PublicationsPage} />
-      <Route path={routes.publication} component={PublicationPage} />
-      <Route path={routes.addArticle} component={AddArticlePage} />
-      <Route path={routes.editArticle} component={AddArticlePage} />
-      <Route path={routes.addArticleUnderIssue} component={AddArticlePage} />
-      <Route path={routes.editArticleUnderIssue} component={AddArticlePage} />
-      <Route path={routes.depositCart} component={DepositCartPage} />
-      <Route path={routes.depositHistory} component={DepositHistoryPage} />
+      <IndexRoute component={LoginPage} onEnter={resetPage}/>
+      <Route path={routes.publications} component={PublicationsPage} onEnter={resetPage} />
+      <Route path={routes.publicationsModal} component={PublicationsPage} onEnter={resetPage} />
+      <Route path={routes.publication} component={PublicationPage} onEnter={resetPage} />
+      <Route path={routes.addArticle} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.editArticle} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.addArticleUnderIssue} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.editArticleUnderIssue} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.depositCart} component={DepositCartPage} onEnter={resetPage} />
+      <Route path={routes.depositHistory} component={DepositHistoryPage} onEnter={resetPage} />
     </Route>
   )
 }
