@@ -15,7 +15,8 @@ export default class SubItem extends Component {
     addHandler: is.func,
     CrossmarkAddButton: is.func,
     arrowType: is.string,
-    deferredErrorBubbleRefresh: is.object.isRequired
+    deferredErrorBubbleRefresh: is.object.isRequired,
+    deferredTooltipBubbleRefresh: is.object
   }
 
 
@@ -28,7 +29,7 @@ export default class SubItem extends Component {
 
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.validating) {
+    if (nextProps.saving) {
       this.setState({
         showSection: nextProps.showSection || false
       })
@@ -39,12 +40,7 @@ export default class SubItem extends Component {
   toggle = () => {
     this.setState({
       showSection: !this.state.showSection
-    })
-  }
-
-
-  componentDidUpdate () {
-    this.props.deferredErrorBubbleRefresh.resolve()
+    }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
   }
 
 

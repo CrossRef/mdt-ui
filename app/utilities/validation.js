@@ -4,6 +4,7 @@ import { getSubItems } from './getSubItems'
 import {cardNames} from './crossmarkHelpers'
 import { validDate } from './date'
 import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered} from './helpers'
+import defaultArticleState from '../components/AddArticlePage/defaultState'
 
 
 
@@ -74,14 +75,14 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   warnings.invalidurl = !warnings.url && !isURL(url)
 
   warnings.printDateYear = hasDate ? false : !printDateYear
-  warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay)) || (printDateYear && printDateDay && !printDateMonth)
+  warnings.printDateIncomplete = !!(!printDateYear && (printDateMonth || printDateDay)) || !!(printDateYear && printDateDay && !printDateMonth)
   warnings.printDateInvalid = warnings.printDateIncomplete ? false : !validDate(printDateYear, printDateMonth, printDateDay)
 
   warnings.onlineDateYear = hasDate ? false : !onlineDateYear
-  warnings.onlineDateIncomplete = !!(!onlineDateYear && (onlineDateMonth || onlineDateDay)) || (onlineDateYear && onlineDateDay && !onlineDateMonth)
+  warnings.onlineDateIncomplete = !!(!onlineDateYear && (onlineDateMonth || onlineDateDay)) || !!(onlineDateYear && onlineDateDay && !onlineDateMonth)
   warnings.onlineDateInvalid = warnings.onlineDateIncomplete ? false : !validDate(onlineDateYear, onlineDateMonth, onlineDateDay)
 
-  warnings.firstPage = lastPage && !firstPage
+  warnings.firstPage = !!lastPage && !firstPage
   warnings.simCheckUrlInvalid = urlEntered(data.addInfo.similarityCheckURL) && !isURL(data.addInfo.similarityCheckURL)
 
 
@@ -139,11 +140,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
   if(criticalErrors.freetolicense) {
     if(!licenses.length) {
-      licenses[0] = {
-        errors: {
-          freetolicense: true
-        }
-      }
+      licenses[0] = defaultArticleState.license[0]
+      licenses[0].errors.freetolicense = true
     }
   }
 
@@ -152,10 +150,10 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   const contributors = getSubItems(data.contributors).map( contributor => {
     const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = contributor
     const errors = {
-      contributorLastName: firstName && !lastName,
-      contributorRole: (lastName || firstName || suffix || affiliation || orcid) && !role,
-      contributorGroupName: groupAuthorRole && !groupAuthorName,
-      contributorGroupRole: groupAuthorName && !groupAuthorRole
+      contributorLastName: !!(firstName && !lastName),
+      contributorRole: !!((lastName || firstName || suffix || affiliation || orcid) && !role),
+      contributorGroupName: !!(groupAuthorRole && !groupAuthorName),
+      contributorGroupRole: !!(groupAuthorName && !groupAuthorRole)
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
     if(errors.contributorRole) warnings.contributorRole = true
@@ -263,6 +261,12 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     newReduxForm = newReduxForm.withMutations(map => {
       for (const errorData of allErrors) {
         const [keyPath, errors] = errorData
+
+        //check if only errors and no fields
+        const rowKeyPath = [keyPath[0], keyPath[1]]
+        if(map.getIn(rowKeyPath).size === 1 && map.getIn(keyPath) ) {
+          return map.deleteIn(rowKeyPath)
+        }
         map.setIn(keyPath, errors)
       }
     })

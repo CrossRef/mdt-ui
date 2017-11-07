@@ -4,12 +4,13 @@ import { bindActionCreators } from 'redux'
 import { connect } from 'react-redux'
 
 import { editForm } from '../../../../actions/application'
+import FormInput from '../../../Common/formInput'
 
 
 
 const mapStateToProps = (state, props) => {
   return ({
-    reduxValue: state.reduxForm.getIn(props.keyPath),
+    reduxValue: state.reduxForm.getIn(props.keyPath) || '',
     error: !!(state.reduxForm.getIn([props.keyPath[0], props.keyPath[1], 'errors']) || {})[props.keyPath[2]]
   })
 }
@@ -37,13 +38,17 @@ export default class ReduxTextInput extends Component {
 
   render() {
     return(
-      <input
-        className={`${this.props.className} ${this.props.error && 'fieldError'}`}
-        type='text'
-        name={this.props.name}
-        onChange={this.handler}
+      <FormInput
+        label={this.props.label}
+        name={this.props.name || ''}
         value={this.props.reduxValue|| this.props.keyPath[2]!=='href'?this.props.reduxValue:'http://'}
-      />
+        changeHandler={this.handler}
+        required={this.props.required}
+        error={this.props.error}
+        onFocus={this.props.onFocus}
+        onBlur={this.props.onBlur}
+        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+        tooltip={this.props.tooltip}/>
     )
   }
 }
