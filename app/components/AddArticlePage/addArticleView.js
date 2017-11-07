@@ -99,6 +99,7 @@ export default class AddArticleView extends Component {
                   {this.props.error &&
                     <ErrorBubble
                       deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      tooltip={this.props.showHelper}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       errors={this.props.errors}/>}
                 </div>
@@ -196,13 +197,13 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Contributor'}
-                validating={this.props.validating}
+                saving={this.props.saving}
                 showSection={this.props.openItems.Contributors}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'contributors')}>
                   {this.props.contributors.map((data, i)=>
                     <Contributor
-                      validating={this.props.validating}
+                      saving={this.props.saving}
                       validate={this.props.validate}
                       key={i}
                       contributor={data}
@@ -218,13 +219,13 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Funding'}
-                validating={this.props.validating}
+                saving={this.props.saving}
                 showSection={this.props.openItems.Funding}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'funding')}>
                   {this.props.funding.map((data, i)=>
                     <Funding
-                      validating={this.props.validating}
+                      saving={this.props.saving}
                       validate={this.props.validate}
                       key={i}
                       funding={data}
@@ -240,7 +241,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'License'}
-                validating={this.props.validating}
+                saving={this.props.saving}
                 showSection={this.props.openItems.Licenses}
                 addHandler={this.props.addSection.bind(null, 'license')}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}>
@@ -264,7 +265,7 @@ export default class AddArticleView extends Component {
 
                   {this.props.license.map((data, i)=>
                     <License
-                      validating={this.props.validating}
+                      saving={this.props.saving}
                       validate={this.props.validate}
                       key={i}
                       license={data}
@@ -279,13 +280,13 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Related Items'}
-                validating={this.props.validating}
+                saving={this.props.saving}
                 showSection={this.props.openItems.relatedItems}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'relatedItems')}>
                   {this.props.relatedItems.map((data, i)=>
                     <RelatedItems
-                      validating={this.props.validating}
+                      saving={this.props.saving}
                       validate={this.props.validate}
                       key={i}
                       relateditem={data}
@@ -301,7 +302,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Additional Information'}
-                validating={this.props.validating}
+                saving={this.props.saving}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 showSection={this.props.openItems.addInfo}>
                   <AdditionalInformation
@@ -317,7 +318,7 @@ export default class AddArticleView extends Component {
                 <SubItem
                   title={'Crossmark'}
                   showSection={!!Object.keys(this.props.showCards).length || !!this.props.reduxForm.size}
-                  validating={this.props.validating}
+                  saving={this.props.saving}
                   deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                   CrossmarkAddButton={CrossmarkAddButton}>
                     <Crossmark

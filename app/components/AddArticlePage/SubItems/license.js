@@ -20,7 +20,7 @@ export default class License extends Component {
 
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.validating || nextProps.freetolicense === 'yes') {
+    if(nextProps.saving || nextProps.freetolicense === 'yes') {
       this.setState({showSubItem: true})
     }
   }

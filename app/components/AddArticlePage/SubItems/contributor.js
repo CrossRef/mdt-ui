@@ -19,21 +19,16 @@ export default class Contributor extends Component {
 
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.validating) {
+    if(nextProps.saving) {
       this.setState({showSubItem: true})
     }
-  }
-
-
-  componentDidUpdate () {
-    this.props.deferredErrorBubbleRefresh.resolve()
   }
 
 
   toggle = () => {
     this.setState({
       showSubItem: !this.state.showSubItem
-    })
+    }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
   }
 
 

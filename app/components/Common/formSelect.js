@@ -49,7 +49,7 @@ export default class FormSelect extends React.Component {
     }
     this.setState({focus: false}, ()=>{
       if(this.props.tooltip) {
-        this.props.deferredTooltipBubbleRefresh.resolve()
+       this.props.deferredTooltipBubbleRefresh.resolve()
       }
     })
   }

@@ -29,6 +29,19 @@ export default class TooltipBubble extends React.Component{
   }
 
 
+  deferredTooltipBubbleRefresh = () => {
+    this.props.deferredTooltipBubbleRefresh.reset()
+    this.props.deferredTooltipBubbleRefresh.promise
+      .then((tooltip)=>{
+        if(this._calledComponentWillUnmount) {
+          return
+        }
+        this.deferredTooltipBubbleRefresh()
+        this.refreshBubble(tooltip)
+      })
+  }
+
+
   refreshBubble = (tooltip) => {
     let newBubblePosition = getTooltipPosition()
     const error = $('.fullErrorHolder')
@@ -48,19 +61,6 @@ export default class TooltipBubble extends React.Component{
         tooltip: tooltip || this.state.tooltip
       })
     }
-  }
-
-
-  deferredTooltipBubbleRefresh = () => {
-    this.props.deferredTooltipBubbleRefresh.reset()
-    this.props.deferredTooltipBubbleRefresh.promise
-      .then((tooltip)=>{
-        if(this._calledComponentWillUnmount) {
-          return
-        }
-        this.refreshBubble(tooltip)
-        this.deferredTooltipBubbleRefresh()
-      })
   }
 
 

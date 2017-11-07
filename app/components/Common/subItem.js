@@ -29,7 +29,7 @@ export default class SubItem extends Component {
 
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.validating) {
+    if (nextProps.saving) {
       this.setState({
         showSection: nextProps.showSection || false
       })
@@ -40,12 +40,7 @@ export default class SubItem extends Component {
   toggle = () => {
     this.setState({
       showSection: !this.state.showSection
-    })
-  }
-
-
-  componentDidUpdate () {
-    this.props.deferredErrorBubbleRefresh.resolve()
+    }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
   }
 
 

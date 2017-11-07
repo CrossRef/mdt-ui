@@ -19,7 +19,7 @@ export default class RelatedItems extends Component {
 
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.validating) {
+    if(nextProps.saving) {
       this.setState({showSubItem: true})
     }
   }

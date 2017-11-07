@@ -175,7 +175,7 @@ export default class AddArticlePage extends Component {
 
       const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
 
-      validatedPayload.validating = true
+      validatedPayload.saving = true //this flag notifies subitems to open
 
       setStatePayload = {
         ...setStatePayload,
@@ -195,7 +195,7 @@ export default class AddArticlePage extends Component {
         ...validatedPayload
       }
 
-      this.setState(setStatePayload, () => this.state.validating = false)
+      this.setState(setStatePayload)
     } else /*if add mode*/ {
       this.setState({
         publication,
@@ -220,6 +220,7 @@ export default class AddArticlePage extends Component {
     const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
 
     const validatedPayload = {
+      validating: true,
       mode: 'edit',
       error: false,
       errors: {...criticalErrors, ...warnings},
@@ -272,7 +273,6 @@ export default class AddArticlePage extends Component {
     const {valid, validatedPayload} = await this.validation()
 
     validatedPayload.saving = true
-    validatedPayload.validating = true
 
     if (valid) {
       const publication = this.state.publication
@@ -294,7 +294,6 @@ export default class AddArticlePage extends Component {
         'content': new XMLSerializer().serializeToString(journalDoc)
       }
 
-      console.log(journalArticle, new XMLSerializer().serializeToString(journalDoc))
       // check if its part of a issue, the issue props will tell us
       let savePub
 
@@ -339,17 +338,11 @@ export default class AddArticlePage extends Component {
         validatedPayload.version = (Number(this.state.version) + 1).toString()
         validatedPayload.inCart = inCart
 
-        this.setState(validatedPayload, () => {
-          this.state.validating = false
-          this.state.saving = false
-        })
+        this.setState(validatedPayload)
       }
 
     } else /*if not valid */{
-      this.setState(validatedPayload, () => {
-        this.state.validating = false
-        this.state.saving = false
-      })
+      this.setState(validatedPayload)
       return false
     }
   }
@@ -394,7 +387,7 @@ export default class AddArticlePage extends Component {
         newArray.splice(index, 1)
         newArray
       }
-    })
+    }, ()=>this.state.deferredErrorBubbleRefresh.resolve())
   }
 
 
@@ -424,7 +417,11 @@ export default class AddArticlePage extends Component {
 
 
   componentDidUpdate() {
-    this.state.deferredErrorBubbleRefresh.resolve()
+    if(this.state.validating) {
+      this.state.deferredErrorBubbleRefresh.resolve()
+    }
+    this.state.validating = false
+    this.state.saving = false
   }
 
 
