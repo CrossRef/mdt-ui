@@ -72,13 +72,20 @@ export default class FormInput extends React.Component {
             {this.state.focus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
 
             <input
-              className={`height32 ${this.props.error ? 'fieldError' : ''} ${this.props.disabled ? 'disabledDoi' : ''} ${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
+              className={
+                `height32 ${
+                this.props.error ? 'fieldError' : ''} ${
+                this.props.disabled ? 'disabledDoi' : ''} ${
+                this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''} ${
+                this.props.disabled ? 'disabledDoi' : ''}`
+              }
               type='text'
               name={this.props.name}
               onChange={this.props.changeHandler}
               value={this.props.value || this.props.defaultValue}
               onFocus={this.onFocus}
               onBlur={this.onBlur}
+              disabled={this.props.disabled}
               {...(this.props.inputProps ? this.props.inputProps : {})}
 
             />

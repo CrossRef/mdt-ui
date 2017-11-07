@@ -70,10 +70,16 @@ export default class FormSelect extends React.Component {
             this.props.onSelect(e)
           }
         }}
-        className={`height32 ${this.props.error ? 'fieldError' : ''} ${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
+        className={
+          `height32 ${
+          this.props.error ? 'fieldError' : ''} ${
+          this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''} ${
+          this.props.disabled ? 'disabledDoi' : ''}`
+        }
         value={this.props.value}
         onFocus={this.onFocus}
         onBlur={this.onBlur}
+        disabled={this.props.disabled}
       >
         {options}
       </select>

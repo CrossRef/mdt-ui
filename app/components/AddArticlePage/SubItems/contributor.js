@@ -82,7 +82,8 @@ export default class Contributor extends Component {
                   name="firstName"
                   value={firstName}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}/>
+                  onBlur={this.props.validate}
+                  disabled={this.state.personDisabled}/>
 
                 <FormInput
                   label="Last Name"
@@ -91,7 +92,8 @@ export default class Contributor extends Component {
                   name="lastName"
                   value={lastName}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}/>
+                  onBlur={this.props.validate}
+                  disabled={this.state.personDisabled}/>
 
               </div>
             </div>
@@ -104,14 +106,16 @@ export default class Contributor extends Component {
                   name="suffix"
                   value={suffix}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}/>
+                  onBlur={this.props.validate}
+                  disabled={this.state.personDisabled}/>
 
                 <FormInput
                   label="Affiliation"
                   name="affiliation"
                   value={affiliation}
                   changeHandler={this.handleContributor}
-                  onBlur={this.props.validate}/>
+                  onBlur={this.props.validate}
+                  disabled={this.state.personDisabled}/>
 
               </div>
             </div>
@@ -126,7 +130,8 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                  tooltip={this.props.tooltip && tooltips.orcid}/>
+                  tooltip={this.props.tooltip && tooltips.orcid}
+                  disabled={this.state.personDisabled}/>
 
                 <FormSelect
                   label="Role"
@@ -136,6 +141,7 @@ export default class Contributor extends Component {
                   value={role}
                   changeHandler={this.handleContributor}
                   options={Roles}
+                  disabled={this.state.personDisabled}
                   onSelect={this.props.validate}/>
 
                 </div>
@@ -157,7 +163,8 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                  tooltip={this.props.tooltip && tooltips.groupAuthorName}/>
+                  tooltip={this.props.tooltip && tooltips.groupAuthorName}
+                  disabled={this.state.groupDisabled}/>
 
                 <FormSelect
                   label="Group Author Role"
@@ -169,7 +176,8 @@ export default class Contributor extends Component {
                   options={Roles}
                   onSelect={this.props.validate}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                  tooltip={this.props.tooltip && tooltips.groupAuthorRole}/>
+                  tooltip={this.props.tooltip && tooltips.groupAuthorRole}
+                  disabled={this.state.groupDisabled}/>
 
               </div>
             </div>
