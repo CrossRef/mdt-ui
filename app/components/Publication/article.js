@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import moment from 'moment'
 import { Link } from 'react-router'
 import is from 'prop-types'
-
+import * as api from '../../actions/api'
 import {routes} from '../../routing'
 
 
@@ -15,7 +15,11 @@ export default class Article extends Component {
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired
   }
+constructor(){
+  super()
+  this.state = {showUrl:false}
 
+}
   toggleCheckBox (e) {
     const { record } = this.props
     if(e.currentTarget.checked) {
@@ -25,8 +29,15 @@ export default class Article extends Component {
       this.props.handleRemoveFromList({ article: record })
     }
   }
-
-  render () {
+  componentDidMount = async()=>{
+    let {  status,doi } = this.props.record
+    var showUrl = !(status==='Failed')
+    if (showUrl) {   
+    await api.getItem(doi, true).catch(e => {showUrl=false})     
+    }
+    this.setState({showUrl: showUrl})
+  }
+  render() {
     let { title, status, type, date, doi } = this.props.record
     const publicationDoi = this.props.publication.message.doi
     const issueDoi = this.props.issueDoi
@@ -36,8 +47,10 @@ export default class Article extends Component {
     if(title.length > 35) {
       title = title.substring(0, 35) + '...'
     }
-    const url = (doi && doi.length > 25) ? `http://doi.org/${doi.substr(0,25)}...` : (doi ? `http://doi.org/${doi}` : '')
+   const showUrl=this.state.showUrl
+    const url = showUrl?(doi && doi.length > 25) ? `https://doi.org/${doi.substr(0,25)}...` : (doi ? `https://doi.org/${doi}` : ''):''
 
+    
     const checked = !this.props.selections.length ? {checked:false} : {}
 
     return (<tr className={status}>
