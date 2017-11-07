@@ -96,7 +96,15 @@ export default class ActionBar extends Component {
     return (
       <div>
         <div className="reviewArticleButtonDiv">
-          <button type='button' onClick={this.props.back} className="addPublication pull-left backbutton"><img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} /><span>Back</span></button>
+
+          <button
+            type='button'
+            onClick={this.props.back}
+            className="addPublication pull-left backbutton">
+              <img className='backbuttonarrow' src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+              <span>Back</span>
+          </button>
+
           <div onClick={this.toggleMenu} className={'addPublication saveButton articleTooltip'}>
             Action
             {this.state.menuOpen && <div className='actionBarDropDown'>
@@ -106,6 +114,7 @@ export default class ActionBar extends Component {
             </div>}
           </div>
         </div>
+
         <div className={`saveConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
       </div>
     )

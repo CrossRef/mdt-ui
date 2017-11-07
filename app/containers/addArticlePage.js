@@ -88,7 +88,8 @@ export default class AddArticlePage extends Component {
       ownerPrefix,
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
       version: '1',
-      deferredErrorBubbleRefresh: new DeferredTask()
+      deferredErrorBubbleRefresh: new DeferredTask(),
+      deferredTooltipBubbleRefresh: new DeferredTask()
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -174,6 +175,8 @@ export default class AddArticlePage extends Component {
 
       const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
 
+      validatedPayload.saving = true //this flag notifies subitems to open
+
       setStatePayload = {
         ...setStatePayload,
         publication,
@@ -192,7 +195,7 @@ export default class AddArticlePage extends Component {
         ...validatedPayload
       }
 
-      this.setState(setStatePayload, () => this.state.validating = false)
+      this.setState(setStatePayload)
     } else /*if add mode*/ {
       this.setState({
         publication,
@@ -218,6 +221,7 @@ export default class AddArticlePage extends Component {
 
     const validatedPayload = {
       validating: true,
+      mode: 'edit',
       error: false,
       errors: {...criticalErrors, ...warnings},
       criticalErrors: criticalErrors,
@@ -253,6 +257,14 @@ export default class AddArticlePage extends Component {
     }
 
     return {valid, validatedPayload}
+  }
+
+
+  validate = async () => {
+    if(this.state.mode === 'edit') {
+      const {validatedPayload} = await this.validation()
+      this.setState(validatedPayload)
+    }
   }
 
 
@@ -326,17 +338,11 @@ export default class AddArticlePage extends Component {
         validatedPayload.version = (Number(this.state.version) + 1).toString()
         validatedPayload.inCart = inCart
 
-        this.setState(validatedPayload, () => {
-          this.state.validating = false
-          this.state.saving = false
-        })
+        this.setState(validatedPayload)
       }
 
     } else /*if not valid */{
-      this.setState(validatedPayload, () => {
-        this.state.validating = false
-        this.state.saving = false
-      })
+      this.setState(validatedPayload)
       return false
     }
   }
@@ -347,7 +353,7 @@ export default class AddArticlePage extends Component {
     this.save(addToCart)
   }
 
-  handleChange = (e) => {
+  handleChange = async (e) => {
     this.setState({
       article: {
         ...this.state.article,
@@ -381,7 +387,7 @@ export default class AddArticlePage extends Component {
         newArray.splice(index, 1)
         newArray
       }
-    })
+    }, ()=>this.state.deferredErrorBubbleRefresh.resolve())
   }
 
 
@@ -411,7 +417,11 @@ export default class AddArticlePage extends Component {
 
 
   componentDidUpdate() {
-    this.state.deferredErrorBubbleRefresh.resolve()
+    if(this.state.validating) {
+      this.state.deferredErrorBubbleRefresh.resolve()
+    }
+    this.state.validating = false
+    this.state.saving = false
   }
 
 
@@ -432,6 +442,7 @@ export default class AddArticlePage extends Component {
         <AddArticleView
           back={this.back}
           addToCart={this.addToCart}
+          validate={this.validate}
           save={this.save}
           openReviewArticleModal={this.openReviewArticleModal}
           handleChange={this.handleChange}
@@ -440,6 +451,7 @@ export default class AddArticlePage extends Component {
           removeSection={this.removeSection}
           addSection={this.addSection}
           reduxDeleteCard={this.props.reduxDeleteCard}
+          reduxForm={this.props.reduxForm}
           {...this.state}
         />
       </div>

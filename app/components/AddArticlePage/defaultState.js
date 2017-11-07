@@ -12,7 +12,6 @@ export default {
   showRelatedItems: false,
   showAdditionalInformation: false,
   showHelper: false,
-  on: false,
   error: false,
   doiDisabled: false,
   version: '1',
