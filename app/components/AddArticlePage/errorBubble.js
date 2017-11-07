@@ -33,7 +33,6 @@ export default class ErrorBubble extends React.Component{
   componentDidMount() {
     this.refreshErrorBubble()
     this.deferredErrorBubbleRefresh()
-    //this.props.deferredTooltipBubbleRefresh.resolve()
   }
 
 
@@ -49,7 +48,7 @@ export default class ErrorBubble extends React.Component{
     if(this.state.errorBubblePosition !== newErrorBubblePosition) {
       this.setState({errorBubblePosition: newErrorBubblePosition}, ()=>{
         if(newErrorBubblePosition) this.refreshStickyError()
-        setTimeout(()=>{this.props.deferredTooltipBubbleRefresh.resolve()}, 5)
+        setTimeout(()=>{this.props.deferredTooltipBubbleRefresh.resolve()}, 15)
         //need to delay updating the tooltip bubble for some reason, otherwise it calculates the errorBubble size incorrectly
       })
     }
