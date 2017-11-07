@@ -9,10 +9,12 @@ import {routes} from '../../../routing'
 export default class Contributor extends Component {
   constructor (props) {
     super(props)
+    const e=props.contributor
+   
     this.state = {
       showSubItem: true,
-      personDisabled: false,
-      groupDisabled: false
+      groupDisabled: e.firstName||e.lastName||e.orcid||e.suffix||e.role|e.affiliation,
+      personDisabled: e.groupAuthorName||e.groupAuthorRole        
     }
   }
 
@@ -43,7 +45,7 @@ export default class Contributor extends Component {
       <option key='-1'></option>,
       ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
     ]
-    const disable = ref === 'role'? `${this.state.personDisabled && 'disabledDoi'}`  : `${this.state.groupDisabled && 'disabledDoi'}`
+    const disable = ref === 'role'? `${this.state.personDisabled?'': 'disabledDoi'}`  : `${this.state.groupDisabled?'': 'disabledDoi'}`
     return (
       <select
         ref={ref}
