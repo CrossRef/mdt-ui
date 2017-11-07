@@ -13,7 +13,7 @@ export default class Contributor extends Component {
    
     this.state = {
       showSubItem: true,
-      groupDisabled: e.firstName||e.lastName||e.orcid||e.suffix||e.role|e.affiliation,
+      groupDisabled: e.firstName||e.lastName||e.orcid||e.suffix||e.role||e.affiliation,
       personDisabled: e.groupAuthorName||e.groupAuthorRole        
     }
   }
@@ -24,7 +24,7 @@ export default class Contributor extends Component {
     }
     const e=nextProps.contributor
     this.setState({
-                groupDisabled: e.firstName||e.lastName||e.orcid||e.suffix||e.role|e.affiliation,
+                groupDisabled: e.firstName||e.lastName||e.orcid||e.suffix||e.role||e.affiliation,
                 personDisabled: e.groupAuthorName||e.groupAuthorRole        
             })
   }
