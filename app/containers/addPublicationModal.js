@@ -7,7 +7,7 @@ import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
 const languages = require('../utilities/lists/language.json')
 
 
-export default class AddPublicationCard extends Component {
+export default class AddPublicationModal extends Component {
 
   static propTypes = {
     mode: is.string.isRequired,
@@ -20,7 +20,7 @@ export default class AddPublicationCard extends Component {
     searchResult: is.shape({
       doi: is.string.isRequired,
       issns: is.array.isRequired,
-      prefix: is.string.isRequired,
+      "owner-prefix": is.string.isRequired,
       publicationId: is.node,
       title: is.string
     }),
@@ -303,7 +303,7 @@ export default class AddPublicationCard extends Component {
 
   render () {
 
-    const isEdit = this.props.mode !== 'add'
+    const isEdit = this.props.mode === 'edit'
     const disabledInput = isEdit ? {disabled: true, className: 'disabledDoi'} : {}
 
     const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false

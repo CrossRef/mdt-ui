@@ -65,7 +65,7 @@ export class CrossmarkAddButton extends Component {
 
 
 
-export class CrossmarkCards extends Component {
+export class Crossmark extends Component {
 
   static propTypes = {
     showCards: is.object.isRequired,
@@ -91,7 +91,10 @@ export class CrossmarkCards extends Component {
     delete newState[selection]
     this.props.reduxDeleteCard([selection]);
     openCards = newState
-    this.setState({ crossmarkCards: newState })
+    this.setState({ crossmarkCards: newState }, ()=>{
+      this.props.deferredErrorBubbleRefresh.resolve()
+      this.props.deferredTooltipBubbleRefresh.resolve()
+    })
   }
 
 
@@ -104,8 +107,13 @@ export class CrossmarkCards extends Component {
           const Card = crossmarkCardSelector[cardName]
           return this.state.crossmarkCards[cardName] ?
             <Card key={`${cardName}-${index}`}
+              validate={this.props.validate}
               number={this.state.crossmarkCards[cardName] - 1}
-              remove={() => this.removeCrossmarkCard(cardName)}/>
+              deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltip={this.props.tooltip}
+              cardName={cardName}
+              remove={this.removeCrossmarkCard}/>
           : null
         })}
       </div>

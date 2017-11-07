@@ -1,11 +1,12 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import ReduxTextInput from './reduxTextInput'
-import ReduxSelectInput from './reduxSelectInput'
-import dateOptions from '../../../../utilities/date'
+import TextInput from './reduxTextInput'
+import Selector from './reduxSelectInput'
+import Date from './reduxDate'
 import { registryDois, updateTypes, cardNames } from '../../../../utilities/crossmarkHelpers'
 const { pubHist, peer, update, copyright, clinical, supp, other } = cardNames;
+import {articleTooltips as tooltips} from '../../../../utilities/lists/tooltipMessages'
 
 
 export class Blank extends Component {
@@ -28,13 +29,16 @@ function generateCard (name, fields) {
   return class CrossmarkCard extends Component {
     static propTypes = {
       number: is.number.isRequired,
-      remove: is.func.isRequired
+      remove: is.func.isRequired,
+      cardName: is.string.isRequired,
+      tooltip: is.oneOfType([is.string, is.bool]),
+      deferredTooltipBubbleRefresh: is.object
     }
 
     state={ number: this.props.number || 0 }
 
-    renderFields = () => {
 
+    renderFields = () => {
       let fieldArray = [];
       let i = 0;
       while (i <= this.state.number) {
@@ -43,9 +47,12 @@ function generateCard (name, fields) {
       return fieldArray
     }
 
-    requireHandler = (i, e) => {
-      if(e.target.value) this.setState({[`require_${i}`]: true});
-      else if (e.target.value === '') this.setState({[`require_${i}`]: false});
+
+    addFields = () => {
+      this.setState({number: this.state.number+1}, () => {
+        this.props.deferredErrorBubbleRefresh.resolve()
+        this.props.deferredTooltipBubbleRefresh.resolve()
+      })
     }
 
     render() {
@@ -59,13 +66,13 @@ function generateCard (name, fields) {
               </div>
 
               <div className='subItemHeader subItemButton'>
-                <a onClick={this.props.remove}>Remove</a>
+                <a onClick={()=>this.props.remove(this.props.cardName)}>Remove</a>
               </div>
             </div>
 
             {this.renderFields()}
 
-            <button type='button' onClick={() => this.setState({number: this.state.number+1})} className="addFields">Add</button>
+            <button type='button' onClick={this.addFields} className="addFields">Add</button>
           </div>
         </div>
       )
@@ -73,88 +80,155 @@ function generateCard (name, fields) {
   }
 }
 
-export const PublicationHistory = generateCard(pubHist, function fields (i) {
+export const PublicationHistory = generateCard(pubHist, function fields (i, card) {
   return (
     <div key={i} className='row'>
       <div className='fieldHolder'>
-        <Selector title='' keyPath={[pubHist, i, 'label']} style="dateAlignSelect" options={['', 'Received', 'Accepted', 'Published Online', 'Published Print']}/>
-        <Date title="Date" keyPath={[pubHist, i]}/>
-      </div>
-      <div className='errorHolder'></div>
-    </div>
-  )
-})
+        <Selector
+          label=''
+          onSelect={card.props.validate}
+          keyPath={[pubHist, i, 'label']}
+          style="dateAlignSelect"
+          tooltip={card.props.tooltip && tooltips.publicationHistory}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+          options={['Received', 'Accepted', 'Published Online', 'Published Print']}/>
 
-export const PeerReview = generateCard(peer, function fields (i) {
-  return (
-    <div key={i}>
-      <div className='row'>
-        <div className='fieldHolder'>
-          <Selector title='' keyPath={[peer, i, 'label']} style="textAlignSelect" options={['', 'Peer reviewed', 'Review Process']}/>
-          <TextInput title='Description' keyPath={[peer, i, 'explanation']}/>
-        </div>
-        <div className='errorHolder'></div>
-      </div>
-
-      <div className='row'>
-      <div className='fieldHolder'>
-        <TextInput title='URL' keyPath={[peer, i, 'href']} style="floatRight"/>
-      </div>
-      <div className='errorHolder'></div>
+        <Date
+          label="Date"
+          onSelect={card.props.validate}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+          tooltip={card.props.tooltip && tooltips.publicationHistory}
+          keyPath={[pubHist, i]}/>
       </div>
     </div>
   )
 })
 
-export const Copyright = generateCard(copyright, function fields (i) {
+export const PeerReview = generateCard(peer, function fields (i, card) {
   return (
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector title='' keyPath={[copyright, i, 'label']} style="textAlignSelect" options={['', 'Copyright Statement', 'Licensing Information']}/>
-          <TextInput title='Description' keyPath={[copyright, i, 'explanation']}/>
+          <Selector
+            label=''
+            onSelect={card.props.validate}
+            keyPath={[peer, i, 'label']}
+            style="textAlignSelect"
+            tooltip={card.props.tooltip && tooltips.peerReview}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            options={['Peer reviewed', 'Review Process']}/>
+
+          <TextInput
+            label='Description'
+            onBlur={card.props.validate}
+            tooltip={card.props.tooltip && tooltips.peerReview}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            keyPath={[peer, i, 'explanation']}/>
         </div>
-        <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
       <div className='fieldHolder'>
-        <TextInput title='URL' keyPath={[copyright, i, 'href']} style="floatRight" />
+        <TextInput
+          label='URL'
+          onBlur={card.props.validate}
+          keyPath={[peer, i, 'href']}
+          tooltip={card.props.tooltip && tooltips.peerReview}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+          style="floatRight"/>
       </div>
-      <div className='errorHolder'></div>
+      </div>
+    </div>
+  )
+})
+
+export const Copyright = generateCard(copyright, function fields (i, card) {
+  return (
+    <div key={i}>
+      <div className='row'>
+        <div className='fieldHolder'>
+          <Selector
+            label=''
+            onSelect={card.props.validate}
+            keyPath={[copyright, i, 'label']}
+            style="textAlignSelect"
+            tooltip={card.props.tooltip && tooltips.copyrightLicensing}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            options={['Copyright Statement', 'Licensing Information']}/>
+
+          <TextInput
+            label='Description'
+            onBlur={card.props.validate}
+            tooltip={card.props.tooltip && tooltips.copyrightLicensing}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            keyPath={[copyright, i, 'explanation']}/>
+        </div>
+      </div>
+
+      <div className='row'>
+      <div className='fieldHolder'>
+        <TextInput
+          label='URL'
+          onBlur={card.props.validate}
+          keyPath={[copyright, i, 'href']}
+          tooltip={card.props.tooltip && tooltips.copyrightLicensing}
+          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+          style="floatRight" />
+      </div>
       </div>
     </div>  
   )
 })
 
-export const SupplementaryMaterial = generateCard(supp, function fields (i) {
+export const SupplementaryMaterial = generateCard(supp, function fields (i, card) {
   return (
     <div key={i} className='row'>
       <div className='fieldHolder'>
-        <TextInput title='Description' keyPath={[supp, i, 'explanation']}/>
-        <TextInput title='URL' keyPath={[supp, i, 'href']} />
+        <TextInput
+          label='Description'
+          onBlur={card.props.validate}
+          keyPath={[supp, i, 'explanation']}/>
+
+        <TextInput
+          label='URL'
+          onBlur={card.props.validate}
+          keyPath={[supp, i, 'href']} />
       </div>
-      <div className='errorHolder'></div>
-    </div> 
+    </div>
   )
 })
 
-export const Other = generateCard(other, function fields (i) {
+export const Other = generateCard(other, function fields (i, card) {
   return (
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput title={`Label ${i+1}`} keyPath={[other, i, 'label']}/>
-          <TextInput title='Description' keyPath={[other, i, 'explanation']}/>
+          <TextInput
+            label={`Label ${i+1}`}
+            onBlur={card.props.validate}
+            tooltip={card.props.tooltip && tooltips.other}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            keyPath={[other, i, 'label']}/>
+
+          <TextInput
+            label='Description'
+            onBlur={card.props.validate}
+            tooltip={card.props.tooltip && tooltips.other}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            keyPath={[other, i, 'explanation']}/>
         </div>
-        <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput title='URL' keyPath={[other, i, 'href']} style="floatRight" />
+          <TextInput
+            label='URL'
+            onBlur={card.props.validate}
+            keyPath={[other, i, 'href']}
+            tooltip={card.props.tooltip && tooltips.other}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            style="floatRight" />
         </div>
-        <div className='errorHolder'></div>
       </div>
     </div>
   )
@@ -165,139 +239,70 @@ export const StatusUpdate = generateCard(update, function fields (i, card) {
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector handler={card.requireHandler.bind(null, i)} title='Update Type (Required)' keyPath={[update, i, 'type']} style="textAlignSelect" options={['', ...updateTypes]}/>
-          <Date title="Update Date" keyPath={[update, i]} required={card.state[`require_${i}`]} />
+          <Selector
+            label='Update Type (Required)'
+            onSelect={card.props.validate}
+            keyPath={[update, i, 'type']}
+            style="textAlignSelect"
+            tooltip={card.props.tooltip && tooltips.update}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            required={true}
+            options={updateTypes}/>
+
+          <Date
+            label="Update Date"
+            onSelect={card.props.validate}
+            keyPath={[update, i]}
+            tooltip={card.props.tooltip && tooltips.update}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            required={true} />
         </div>
-        <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput title='Original DOI updated' keyPath={[update, i, 'DOI']} required={card.state[`require_${i}`]}/>
+          <TextInput
+            label='Original DOI updated'
+            onBlur={card.props.validate}
+            keyPath={[update, i, 'DOI']}
+            tooltip={card.props.tooltip && tooltips.update}
+            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            required={true}/>
         </div>
-        <div className='errorHolder'></div>
       </div>
     </div>
   )
 })
 
-export const ClinicalTrials = generateCard(clinical, function fields (i) {
+export const ClinicalTrials = generateCard(clinical, function fields (i, card) {
   return (
     <div key={i}>
       <div className='row'>
         <div className='fieldHolder'>
           <Selector
-            title='Clinical trial registry (Required)'
+            label='Clinical trial registry (Required)'
+            onSelect={card.props.validate}
             keyPath={[clinical, i, 'registry']}
             required={true}
-            options={['', ...Object.keys(registryDois)]}/>
-          <TextInput title="Registered trial number (Required)" keyPath={[clinical, i, 'trialNumber']} required={true}/>
+            options={Object.keys(registryDois)}/>
+
+          <TextInput
+            label="Registered trial number (Required)"
+            onBlur={card.props.validate}
+            keyPath={[clinical, i, 'trialNumber']}
+            required={true}/>
         </div>
-        <div className='errorHolder'></div>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector title='Relationship of publication to trial' keyPath={[clinical, i, 'type']} options={['', 'Pre-Results', 'Results', 'Post-Results']}/>
+          <Selector
+            label='Relationship of publication to trial'
+            onSelect={card.props.validate}
+            keyPath={[clinical, i, 'type']}
+            options={['Pre-Results', 'Results', 'Post-Results']}/>
         </div>
-        <div className='errorHolder'></div>
       </div>
     </div>
   )
 })
-
-
-const TextInput = ({title, name, keyPath, number, style, required}) =>
-  <div className={`fieldinnerholder halflength ${style}`}>
-    <div className='labelholder'>
-      <div className='labelinnerholder'>
-        <div className='label'>{title}</div>
-      </div>
-    </div>
-    <div className='requrefieldholder'>
-      <div className={`requiredholder ${!required ? 'norequire' : ''}`}>
-        <div className='required height32'>
-          {required && <span>*</span>}
-        </div>
-      </div>
-      <div className='field'>
-        <ReduxTextInput
-          name={name} keyPath={keyPath} className="height32"/>
-      </div>
-    </div>
-  </div>
-
-
-const Selector = ({ title, name, keyPath, number, style, handler, required, options=['', 1,2,3]}) =>
-  <div className={`fieldinnerholder halflength ${style}`}>
-    <div className='labelholder'>
-      <div className='labelinnerholder'>
-        <div className='label'>{title}</div>
-      </div>
-    </div>
-    <div className='requrefieldholder'>
-      <div className={`requiredholder ${!required ? 'norequire' : ''}`}>
-        <div className='required height32'>
-          {required && <span>*</span>}
-        </div>
-      </div>
-      <div className='field'>
-        <ReduxSelectInput
-          handler={handler} name={name} keyPath={keyPath} className='height32' options={options}/>
-      </div>
-    </div>
-  </div>
-
-
-
-class Date extends Component {
-  state = { month: '' }
-
-  render() {
-    const { title, name, required } = this.props;
-    return (
-      <div className='fieldinnerholder halflength'>
-        <div className='labelholder'>
-          <div className='labelinnerholder'>
-            <div className='label'>{title}</div>
-          </div>
-        </div>
-        <div className='requrefieldholder'>
-          <div className={`requiredholder adjustDateRequire ${!required ? 'norequire' : ''}`}>
-            <div className='required height32'>{required && <span>*</span>}</div>
-          </div>
-          <div className='field'>
-            <div className='datepickerholder'>
-              <div className='dateselectholder'>
-                <div>Year</div>
-                <ReduxSelectInput
-                  name={`${name}_year`}
-                  keyPath={[...this.props.keyPath, 'year']}
-                  className="height32"
-                  options={dateOptions.years}/>
-              </div>
-              <div className='dateselectholder'>
-                <div>Month</div>
-                <ReduxSelectInput
-                  name={`${name}_month`}
-                  keyPath={[...this.props.keyPath, 'month']}
-                  className="height32"
-                  handler={(e)=>this.setState({month:e.target.value})}
-                  options={dateOptions.months}/>
-              </div>
-              <div className='dateselectholder'>
-                <div>Day</div>
-                <ReduxSelectInput
-                  name={`${name}_day`}
-                  keyPath={[...this.props.keyPath, 'day']}
-                  className="height32"
-                  options={dateOptions[this.state.month]}/>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-
-}

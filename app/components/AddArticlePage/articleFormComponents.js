@@ -2,21 +2,12 @@ import React, { Component } from 'react'
 import Switch from 'react-toggle-switch'
 
 import { ClassWrapper } from '../../utilities/helpers'
-import {cardNames} from '../../utilities/crossmarkHelpers'
-const {pubHist, peer, update, clinical, copyright, other, supp} = cardNames
+import {articleTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
 import {routes} from '../../routing'
+import FormDate from '../Common/formDate'
+import FormTextArea from '../Common/formTextArea'
 
 
-
-export const TopBar = ({title}) =>
-  <ClassWrapper classNames={['topbar', 'titleholder', 'titleinnerholder']}>
-    <div className='titleIconHolder'>
-      <img src={`${routes.images}/AddArticle/Asset_Icons_White_Write.svg`} />
-    </div>
-    <div className='articletitle'>
-      {title}
-    </div>
-  </ClassWrapper>
 
 
 export class InfoHelperRow extends Component {
@@ -32,12 +23,8 @@ export class InfoHelperRow extends Component {
           <div className='switchLabel'><span>Show Help</span></div>
           <Switch
             ref='showHelper'
-            onClick={() => {
-              this.props.setState({on: !this.props.on}, ()=>{
-                this.props.setState({showHelper: this.props.on})
-              })
-            }}
-            on={this.props.on}
+            onClick={() => this.props.setState({showHelper: !this.props.showHelper})}
+            on={this.props.showHelper}
           />
         </ClassWrapper>
       </div>
@@ -46,51 +33,18 @@ export class InfoHelperRow extends Component {
 }
 
 
-export const InfoBubble = () =>
-  <ClassWrapper classNames={['errorHolder talltooltip helpers', 'toolTipHolder', ['a', "tooltips"], 'toolmsgholder', 'errormsgholder']}>
-    <div className='errormsginnerholder'>
-      <div><img src={`${routes.images}/AddArticle/Asset_Icons_White_Help.svg`} /></div>
-      <div>Please provide a Title that fully describes your Article</div>
-    </div>
-  </ClassWrapper>
-
-
-
-
-
-
-export class ArticleTitleField extends Component {
-  render() {
-    return(
-
-      <div className='fieldHolder'>
-        <div className='fieldinnerholder fulllength'>
-          <ClassWrapper classNames={['labelholder', 'labelinnerholder']}> <div className='label'>Article Title (Required)</div> </ClassWrapper>
-          <div className='requrefieldholder'>
-            <ClassWrapper classNames={['requiredholder', 'required height64']}><span>*</span></ClassWrapper>
-            <div className='field'>
-              <textarea
-                className={'height64' + ((this.props.errors.title) ? ' fieldError': '')}
-                type='text'
-                name="title"
-                onChange={this.props.handleChange}
-                value={this.props.title}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
-
 
 
 export class OptionalTitleData extends Component {
+
+  toggle = () => {
+    this.props.toggleFields()
+  }
+
   render() {
     return(
       <div className='OptionalTitleFields'>
-        <div className='toggleButton' onClick={this.props.toggleFields}>
+        <div className='toggleButton' onClick={this.toggle}>
             <span className={'arrowHolder' + (this.props.show ? ' openArrowHolder' : '')}>
               <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </span>
@@ -98,75 +52,36 @@ export class OptionalTitleData extends Component {
         </div>
         <div className={'hiddenFields' + (this.props.show ? 'showOptionalTitle':'')}>
           <div className='fieldHolder first'>
-            <div className='fieldinnerholder fulllength'>
-              <div className='labelholder'>
-                <div className='labelinnerholder'>
-                  <div className='label'>Subtitle (Optional)</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height64'></div>
-                </div>
-                <div className='field'>
-                  <textarea
-                    className='height64'
-                    type='text'
-                    name="subtitle"
-                    onChange={this.props.handleChange}
-                    value={this.props.subtitle}
-                  />
-                </div>
-              </div>
-            </div>
+            <FormTextArea
+              label="Subtitle (Optional)"
+              name="subtitle"
+              value={this.props.subtitle}
+              changeHandler={this.props.handleChange}
+              onBlur={this.props.validate}
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltip={this.props.tooltip && tooltips.articleSubtitle}/>
           </div>
 
           <div className='fieldHolder'>
-            <div className='fieldinnerholder fulllength'>
-              <div className='labelholder'>
-                <div className='labelinnerholder'>
-                  <div className='label'>Original Language Title (Optional)</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height64'></div>
-                </div>
-                <div className='field'>
-                  <textarea
-                    className='height64'
-                    type='text'
-                    name="originallanguagetitle"
-                    onChange={this.props.handleChange}
-                    value={this.props.originallanguagetitle}
-                  />
-                </div>
-              </div>
-            </div>
+            <FormTextArea
+              label="Original Language Title (Optional)"
+              name="originallanguagetitle"
+              value={this.props.originallanguagetitle}
+              changeHandler={this.props.handleChange}
+              onBlur={this.props.validate}
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltip={this.props.tooltip && tooltips.alternateTitle}/>
           </div>
+
           <div className='fieldHolder'>
-            <div className='fieldinnerholder fulllength'>
-              <div className='labelholder'>
-                <div></div>
-                <div className='labelinnerholder'>
-                  <div className='label'>Original Language Title Subtitle</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height64'></div>
-                </div>
-                <div className='field'>
-                  <textarea
-                    className='height64'
-                    type='text'
-                    name="originallanguagetitlesubtitle"
-                    onChange={this.props.handleChange}
-                    value={this.props.originallanguagetitlesubtitle}
-                  />
-                </div>
-              </div>
-            </div>
+            <FormTextArea
+              label="Original Language Title Subtitle"
+              name="originallanguagetitlesubtitle"
+              value={this.props.originallanguagetitlesubtitle}
+              changeHandler={this.props.handleChange}
+              onBlur={this.props.validate}
+              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltip={this.props.tooltip && tooltips.alternateSubtitle}/>
           </div>
         </div>
       </div>
@@ -174,280 +89,67 @@ export class OptionalTitleData extends Component {
   }
 }
 
-
-export class ArticleDOIField extends Component {
-  render() {
-    const {errors, disabled, handleChange, doi} = this.props
-    return(
-      <div >
-        <div className='fieldinnerholder halflength'>
-          <div className='labelholder'>
-            <div className='labelinnerholder'>
-              <div className='label'>Article DOI (Required)</div>
-            </div>
-          </div>
-          <div className='requrefieldholder'>
-            <div className='requiredholder'>
-              <div className='required height32'>
-                <span>*</span>
-              </div>
-            </div>
-            <div className='field'>
-              <input
-                className={`height32 ${(errors.doi || errors.dupedoi || errors.invaliddoi || errors.invalidDoiPrefix) && 'fieldError'} ${disabled && 'disabledDoi'}`}
-                type='text'
-                name="doi"
-                onChange={handleChange}
-                value={doi}
-                disabled={disabled}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
-
-export class ArticleUrlField extends Component {
-  render() {
-    return(
-      <div >
-        <div className='fieldinnerholder halflength'>
-          <div className='labelholder'>
-            <div className='labelinnerholder'>
-              <div className='label'>Article URL (Required)</div>
-            </div>
-          </div>
-          <div className='requrefieldholder'>
-            <div className='requiredholder'>
-              <div className='required height32'>
-                <span>*</span>
-              </div>
-            </div>
-            <div className='field'>
-              <input
-                className={'height32' + ((this.props.errors.url || this.props.errors.invalidurl) ? ' fieldError': '')}
-                type='text'
-                name="url"
-                onChange={this.props.handleChange}
-                value={!!this.props.url?this.props.url:'http://'}
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
 
 export class DatesRow extends Component {
-
   render() {
     const errors = this.props.errors
     const {printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay} = this.props.article
     const {printDateInvalid, printDateIncomplete, onlineDateInvalid, onlineDateIncomplete} = this.props.errors
-    const printYearError = errors.printDateYear || (!printDateYear && printDateIncomplete) || printDateInvalid
-    const onlineYearError = errors.onlineDateYear || (!onlineDateYear && onlineDateIncomplete) || onlineDateInvalid
     return (
       <div className='row'>
         <div className='fieldHolder'>
-          <div className='fieldinnerholder halflength'>
-            <div className='labelholder'>
-              <div className='labelinnerholder'>
-                <div className='label'>Print Date</div>
-              </div>
-            </div>
-            <div className='requrefieldholder'>
-              <div className={'requiredholder' + (((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>
-                <div className='required height32'>
-                  {((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0 ? <span>*</span> : <span></span>)}
-                </div>
-              </div>
-              <div className='field'>
-                <div className='datepickerholder'>
-                  <div className='dateselectholder'>
-                    <div>Year {((this.props.article.onlineDateYear ? this.props.article.onlineDateYear : '').length === 0 ? '(*)' : '')}</div>
-                    <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateYear', 'y', printDateYear, printYearError)}
-                    </div>
-                  </div>
-                  <div className='dateselectholder'>
-                    <div>Month</div>
-                    <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateMonth', 'm', printDateMonth, (printDateIncomplete && !printDateMonth) || printDateInvalid)}
-                    </div>
-                  </div>
-                  <div className='dateselectholder'>
-                    <div>Day</div>
-                    <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'printDateDay', 'd', printDateDay, printDateInvalid)}
-                    </div>
-                  </div>
-                  <div>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <FormDate
+            label="Print Date"
+            name="printDate"
+            changeHandler={this.props.handleChange}
+            onSelect={this.props.validate}
+            tooltip={this.props.tooltip && tooltips.printDate}
+            error={printDateInvalid}
+            required={!onlineDateYear}
+            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+            fields={{
+              year: {
+                value: printDateYear,
+                error: errors.printDateYear || (!printDateYear && printDateIncomplete),
+                required: !onlineDateYear
+              },
+              month: {
+                value: printDateMonth,
+                error: printDateIncomplete && !printDateMonth
+              },
+              day: {
+                value: printDateDay
+              }
+            }}/>
 
-          </div>
-          <div className='fieldinnerholder halflength'>
-            <div className='labelholder'>
-              <div className='labelinnerholder'>
-                <div className='label'>Online Date</div>
-              </div>
-            </div>
-            <div className='requrefieldholder'>
-              <div className={'requiredholder' + (((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0)? ' dateselectrequire':' norequire')}>
-                <div className='required height32'>
-                  {((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0 ? <span>*</span> : <span></span>)}
-                </div>
-              </div>
-              <div className='field'>
-                <div className='datepickerholder'>
-                  <div className='dateselectholder'>
-                    <div>Year {((this.props.article.printDateYear ? this.props.article.printDateYear : '').length === 0 ? '(*)' : '')}</div>
-                    <div>{this.props.makeDateDropDown(this.props.handleChange, 'onlineDateYear', 'y', onlineDateYear, onlineYearError)}</div>
-                  </div>
-                  <div className='dateselectholder'>
-                    <div>Month</div>
-                    <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateMonth', 'm', onlineDateMonth, (onlineDateIncomplete && !onlineDateMonth) || onlineDateInvalid)}
-                    </div>
-                  </div>
-                  <div className='dateselectholder'>
-                    <div>Day</div>
-                    <div>
-                      {this.props.makeDateDropDown(this.props.handleChange, 'onlineDateDay', 'd', onlineDateDay, onlineDateInvalid)}
-                    </div>
-                  </div>
-                  <div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <FormDate
+            label="Online Date"
+            name="onlineDate"
+            changeHandler={this.props.handleChange}
+            onSelect={this.props.validate}
+            tooltip={this.props.tooltip && tooltips.onlineDate}
+            error={onlineDateInvalid}
+            required={!printDateYear}
+            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+            fields={{
+              year: {
+                value: onlineDateYear,
+                error: errors.onlineDateYear || (!onlineDateYear && onlineDateIncomplete),
+                required: !printDateYear
+              },
+              month: {
+                value: onlineDateMonth,
+                error: onlineDateIncomplete && !onlineDateMonth
+              },
+              day: {
+                value: onlineDateDay
+              }
+            }}/>
         </div>
       </div>
     )
   }
 }
 
-export class BottomFields extends Component {
-  render() {
-    return(
-      <div>
-        <div className='row'>
-          <div className='fieldHolder'>
-            <div className='fieldinnerholder halflength'>
-              <div className='labelholder'>
-                <div className='labelinnerholder'>
-                  <div className='label'>First Page</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className={`requiredholder ${!this.props.article.lastPage && 'norequire'}`}>
-                  <div className='required height32'>{this.props.article.lastPage && <span>*</span>}</div>
-                </div>
-                <div className='field'>
-                  <input
-                      name="firstPage"
-                      className={`height32 ${this.props.errors.firstPage && 'fieldError'}`}
-                      type='text'
-                      onChange={this.props.handleChange}
-                      value={this.props.article.firstPage}
-                  />
-                </div>
-              </div>
-            </div>
-            <div className='fieldinnerholder halflength'>
-              <div className='labelholder'>
-                <div className='labelinnerholder'>
-                  <div className='label'>Last Page</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height32'>
-                  </div>
-                </div>
-                <div className='field'>
-                  <input
-                    className='height32'
-                    type='text'
-                    name='lastPage'
-                    onChange={this.props.handleChange}
-                    value={this.props.article.lastPage}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='errorHolder'>
-          </div>
-        </div>
-
-        <div className='row'>
-          <div className='fieldHolder'>
-            <div className='fieldinnerholder halflength'>
-              <div className='labelholder'>
-                <div className='labelinnerholder'>
-                  <div className='label'>Article / Electronic Location ID</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height32'>
-                  </div>
-                </div>
-                <div className='field'>
-                  <input
-                      className='height32'
-                      type='text'
-                      name='locationId'
-                      onChange={this.props.handleChange}
-                      value={this.props.article.locationId}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='errorHolder'>
-          </div>
-        </div>
-
-        <div className='row'>
-          <div className='fieldHolder'>
-            <div className='fieldinnerholder fulllength'>
-              <div className='labelholder'>
-                <div></div>
-                <div className='labelinnerholder'>
-                  <div className='label'>Abstract</div>
-                </div>
-              </div>
-              <div className='requrefieldholder'>
-                <div className='requiredholder norequire'>
-                  <div className='required height64'>
-                  </div>
-                </div>
-                <div className='field'>
-                  <textarea
-                      className='height64'
-                      type='text'
-                      name='abstract'
-                      onChange={this.props.handleChange}
-                      value={this.props.article.abstract}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-          <div className='errorHolder'>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
 
 

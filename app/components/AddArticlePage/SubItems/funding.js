@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
+import is from 'prop-types'
 import update from 'immutability-helper'
 import Autosuggest from 'react-autosuggest'
 
 import {routes} from '../../../routing'
+import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
 
 
 
@@ -18,31 +20,38 @@ export default class Funding extends Component {
       funderName: funding.funderName || '',
       funder_identifier: funding.funder_identifier.trim().length ? funding.funder_identifier : '',
       isLoading: false,
-      grantNumbers: funding.grantNumbers.length > 0 ? funding.grantNumbers : ['']
+      grantNumbers: funding.grantNumbers.length > 0 ? funding.grantNumbers : [''],
+      focusFunder: false,
+      focusGrant: false
     }
   }
+
 
   componentDidUpdate () {
     this.props.deferredErrorBubbleRefresh.resolve()
   }
 
+
   componentWillReceiveProps(nextProps) {
     this.setState({
-      showSubItem: nextProps.validating ? true : this.state.showSubItem,
+      showSubItem: nextProps.saving ? true : this.state.showSubItem,
       funder_identifier: nextProps.funding.funder_identifier,
       grantNumbers: nextProps.funding.grantNumbers
     })
   }
 
+
   getSuggestionValue = (suggestion) => {
     return suggestion
   }
+
 
   renderSuggestion = (suggestion) => {
     return (
       <span>{suggestion.name}&nbsp;&nbsp;&nbsp;<span className="funderLocation">{suggestion.location}</span></span>
     );
   }
+
 
   onChange = (e, {newValue}) => {
     if (newValue.uri || newValue === '') {
@@ -65,6 +74,7 @@ export default class Funding extends Component {
     }
   }
 
+
   onSuggestionsFetchRequested = ({ value }) => {
     this.setState({
       isLoading: true
@@ -82,11 +92,13 @@ export default class Funding extends Component {
       })
   }
 
+
   onSuggestionsClearRequested = () => {
     this.setState({
       suggestions: []
     })
   }
+
 
   toggle = () => {
       this.setState({
@@ -94,17 +106,20 @@ export default class Funding extends Component {
       })
   }
 
+
   addGrant = () => {
     this.props.handler({
      funding: update(this.props.data, {[this.props.index]: {grantNumbers: {$push: ['']}}})
     })
   }
 
+
   removeGrant = (grantIndex) => {
     this.props.handler({
       funding: update(this.props.data, {[this.props.index]: {grantNumbers: {$splice: [[grantIndex, 1]]}}})
     })
   }
+
 
   handleFunding = (e) => {
     const funder = {
@@ -118,8 +133,8 @@ export default class Funding extends Component {
       funder.funderName = e.target.funderName
     } else if (e.target.name === 'grantNumber') {
       const grants = [];
-      for (const i in this.refs) {
-        grants.push(this.refs[i].value)
+      for (const i in this.grantInputNodes) {
+        grants.push(this.grantInputNodes[i].value)
       }
       funder.grantNumbers = grants
     } else {
@@ -131,29 +146,30 @@ export default class Funding extends Component {
     })
   }
 
+
+  grantInputNodes = {}
+
   displayGrants () {
-      var renderRet = [
-        ...this.state.grantNumbers.map((grantNumber, i) => (
-          <div className='grantSection' key={i} >
-            <div className='grantTitle'>Grant Number {i + 1}</div>
-            <div className="grantRow">
-              <input
-                  className='height32 grantInput'
-                  type='text'
-                  ref={'grantNumbers_'+i}
-                  name="grantNumber"
-                  onChange={this.handleFunding}
-                  value={grantNumber}
-              />
-              {i > 0 &&
-                  <div className='grantRemove'><a onClick={() => this.removeGrant(i)}>Remove</a></div>
-              }
-            </div>
-          </div>
-        ))
-      ];
-      return renderRet
+    this.grantInputNodes = {}
+    var renderRet = [
+      ...this.state.grantNumbers.map((grantNumber, i) => {
+        return (
+          <GrantField
+            key={i}
+            grantInputNodes={this.grantInputNodes}
+            handleFunding={this.handleFunding}
+            index={i}
+            value={grantNumber}
+            removeGrant={this.removeGrant}
+            tooltip={this.props.tooltip}
+            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+          />
+        )
+      })
+    ];
+    return renderRet
   }
+
 
   render () {
     return (
@@ -195,6 +211,31 @@ export default class Funding extends Component {
                                       onSuggestionsFetchRequested={this.onSuggestionsFetchRequested}
                                       onSuggestionsClearRequested={this.onSuggestionsClearRequested}
                                       getSuggestionValue={this.getSuggestionValue}
+                                      renderInputComponent={(inputProps) =>
+                                        <div>
+                                          {this.props.tooltip && this.state.focusFunder && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+                                          <input
+                                            {...inputProps}
+                                            className={`${this.props.tooltip && this.state.focusFunder ? 'infoFlagBorder' : ''}`}
+                                            onFocus={()=>{
+                                              this.setState({focusFunder:true}, ()=>{
+                                                if(this.props.tooltip) {
+                                                  this.props.deferredTooltipBubbleRefresh.resolve(tooltips.funderId)
+                                                }
+                                                inputProps.onFocus()
+                                              })
+                                            }}
+                                            onBlur={()=>{
+                                              this.setState({focusFunder:false}, ()=>{
+                                                if(this.props.tooltip) {
+                                                  this.props.deferredTooltipBubbleRefresh.resolve()
+                                                }
+                                                inputProps.onBlur()
+                                              })
+                                            }}
+                                          />
+                                        </div>
+                                      }
                                       inputProps={{
                                         placeholder: 'Search for funders.',
                                         value: this.state.funderName,
@@ -225,8 +266,6 @@ export default class Funding extends Component {
                                 </div>
                             </div>
                         </div>
-                        <div className='errorHolder'>
-                        </div>
                     </div>
                     <div className='row'>
                       <div className='fieldHolder'>
@@ -247,6 +286,64 @@ export default class Funding extends Component {
                 </div>
             }
         </div>
+    )
+  }
+}
+
+
+
+
+class GrantField extends React.Component {
+
+  static propTypes = {
+    handleFunding: is.func.isRequired,
+    index: is.number.isRequired,
+    value: is.string.isRequired,
+    removeGrant: is.func.isRequired,
+    tooltip:is.oneOfType([is.string, is.bool]).isRequired,
+    deferredTooltipBubbleRefresh: is.object.isRequired,
+    grantInputNodes: is.object.isRequired
+  }
+
+  state = {focus: false}
+
+
+  render() {
+    return (
+      <div className='grantSection' key={this.props.index} >
+        <div className='grantTitle'>Grant Number {this.props.index + 1}</div>
+        <div className="grantRow">
+          {this.props.tooltip && this.state.focus && <img className='infoFlag infoFlagGrant' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+          <input
+            className={`height32 grantInput ${this.props.tooltip && this.state.focus ? 'infoFlagBorder' : ''}`}
+            type='text'
+            ref={(node)=>{
+              this.props.grantInputNodes[`grantNumber_${this.props.index}`] = node
+            }}
+            name="grantNumber"
+            onChange={this.props.handleFunding}
+            value={this.props.value}
+            onFocus={()=>{
+              this.setState({focus:true}, ()=>{
+                if(this.props.tooltip) {
+                  this.props.deferredTooltipBubbleRefresh.resolve(tooltips.grantNumber)
+                }
+              })
+            }}
+            onBlur={()=>{
+              console.log('blurring')
+              this.setState({focus:false}, ()=>{
+                if(this.props.tooltip) {
+                  this.props.deferredTooltipBubbleRefresh.resolve()
+                }
+              })
+            }}
+          />
+          {this.props.index > 0 &&
+          <div className='grantRemove'><a onClick={() => this.props.removeGrant(this.props.index)}>Remove</a></div>
+          }
+        </div>
+      </div>
     )
   }
 }

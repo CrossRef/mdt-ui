@@ -47,17 +47,17 @@ export default class DepositResult extends Component{
 
     for (let pub in resultData) {
       const publication = resultData[pub]
-      const publicationUrl = `http://dx.doi.org/${publication.doi}`
+      const publicationUrl = `https://doi.org/${publication.doi}`
       const records = []
 
       for (let thisRecord in publication.contains) {
         const record = publication.contains[thisRecord]
-        const recordUrl = `http://dx.doi.org/${record.doi}`
+        const recordUrl = `https://doi.org/${record.doi}`
         const articles = []
 
         for (let thisArticle in record.contains) {
           const article = record.contains[thisArticle]
-          const articleUrl = `http://dx.doi.org/${article.doi}`
+          const articleUrl = `https://doi.org/${article.doi}`
 
           const articleCard =
             <div className={`articleBar white ${article.errorMessage ? 'errorBorder' : 'normalBorder'}`} key={article.doi}>
