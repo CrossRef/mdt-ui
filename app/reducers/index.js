@@ -36,10 +36,14 @@ export default (state, action) => {
 }
 
 
-function loginReducer (state = {'crossmark-prefixes': [], prefixes: []}, action) {
+function loginReducer (state = {'crossmark-prefixes': [], prefixes: [], firstLogin: undefined}, action) {
   switch (action.type) {
     case 'LOGIN':
       return {...state, ...action.data}
+    case 'RESETLOGIN':
+      return {'crossmark-prefixes': [], prefixes: [], firstLogin: undefined}
+    case 'FIRSTLOGIN':
+      return {...state, firstLogin: action.status}
     default:
       return state
   }

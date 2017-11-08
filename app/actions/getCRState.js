@@ -1,4 +1,4 @@
-import {getPublications} from './application'
+import {getPublications, firstLogin} from './application'
 import {getCRState} from './api'
 import {routes} from '../routing'
 
@@ -36,7 +36,12 @@ export default function _getCRState (type, currentLocation, error = (reason) => 
 
         let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.
 
-        if(type === 'login') delete scrubbedState.login //do not retrieve old login state if this is a new login
+        if(type === 'login' && scrubbedState.login) {
+          delete scrubbedState.login //do not retrieve old login state if this is a new login
+          dispatch(firstLogin(false)) //if it has a saved login state, its not the first login
+        } else if (type === 'login') {
+          dispatch(firstLogin(true))
+        }
         delete scrubbedState.toast
         delete scrubbedState.publications
 

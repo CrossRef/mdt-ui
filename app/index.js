@@ -21,16 +21,20 @@ if(currentLocation !== routes.base) {
   store.dispatch(getCRState('newLoad', currentLocation))
 }
 
+
+const routerActions = {
+  resetPage: () => {
+    store.dispatch(controlModal({ showModal: false }))
+    window.scrollTo(0, 0)
+  }
+}
+
+
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
-      <Router history={history} onUpdate={()=>{
-        if(!store.getState().routing.locationBeforeTransitions.query.modal) {
-          store.dispatch(controlModal({ showModal: false }))
-        }
-        window.scrollTo(0, 0)
-      }}>
-        {Routing()}
+      <Router history={history}>
+        {Routing(routerActions)}
       </Router>
     </div>
   </Provider>, document.querySelector('#root'))
@@ -44,6 +48,8 @@ function version () {
 `
 Merged branches / tickets in this build
 
+MM-29
+MM-24
 MM-69
 MM-116
 MM-24

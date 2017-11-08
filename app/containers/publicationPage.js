@@ -4,11 +4,12 @@ import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords } from '../actions/application'
+import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, firstLogin } from '../actions/application'
 import Listing from '../components/Publication/listing'
 import Filter from '../components/Publication/filter'
 import ActionBar from '../components/Publication/actionBar'
 import TitleBar from '../components/Publication/titleBar'
+import TourModal from '../components/Publication/tourModal'
 import {routes} from  '../routing'
 import {compareDois} from '../utilities/helpers'
 
@@ -18,13 +19,15 @@ import {compareDois} from '../utilities/helpers'
 const mapStateToProps = (state, props) => ({
   publication: state.publications[props.routeParams.pubDoi] || state.publications[props.routeParams.pubDoi.toLowerCase()],
   cart: state.cart,
-  search: state.search
+  search: state.search,
+  firstLogin: state.login.firstLogin
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxCartUpdate: cartUpdate,
   reduxClearCart: clearCart,
+  reduxFirstLogin: firstLogin,
 
   asyncGetPublications: getPublications,
   asyncDeleteRecord: deleteRecord,
@@ -47,8 +50,12 @@ export default class PublicationPage extends Component {
         modal: is.string
       })
     }),
+    firstLogin: is.bool,
 
     reduxControlModal: is.func.isRequired,
+    reduxCartUpdate: is.func.isRequired,
+    reduxClearCart: is.func.isRequired,
+    reduxFirstLogin: is.func.isRequired,
 
     asyncGetPublications: is.func.isRequired,
     asyncSearchRecords: is.func.isRequired,
@@ -71,7 +78,29 @@ export default class PublicationPage extends Component {
     this.props.asyncGetPublications(this.props.routeParams.pubDoi, undefined, error => {
       this.setState({ serverError: error })
     })
+    if(this.props.firstLogin) {
+      this.showTour()
+    }
   }
+
+
+  componentWillReceiveProps (nextProps) {
+    if(nextProps.firstLogin && !this.props.firstLogin) {
+      this.showTour()
+    }
+  }
+
+
+  showTour = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: '',
+      style: 'tourModal',
+      Component: TourModal
+    })
+    this.props.reduxFirstLogin(false)
+  }
+
 
   handleAddToList = (item) => {
     const selections = this.state.selections;
@@ -86,6 +115,7 @@ export default class PublicationPage extends Component {
     this.setState({selections: newSelections})
   }
 
+
   handleRemoveFromList = (item) => {
     var selections = this.state.selections
     const filteredSelections = selections.filter((selection)=>{
@@ -95,6 +125,7 @@ export default class PublicationPage extends Component {
       selections: filteredSelections
     })
   }
+
 
   handleAddCart = () => {
     const selections = this.state.selections
@@ -119,6 +150,7 @@ export default class PublicationPage extends Component {
     asyncLoop(0)
   }
 
+
   deleteSelections = () => {
     this.props.reduxControlModal({
       showModal: true,
@@ -137,6 +169,7 @@ export default class PublicationPage extends Component {
       }
     });
   }
+
 
   DeleteConfirmModal = ({confirm, selections, close}) => {
 
@@ -168,6 +201,7 @@ export default class PublicationPage extends Component {
     )
   }
 
+
   duplicateSelection = () => {
     if(this.state.selections[0].article.type === 'article') {
       const parentIssue = this.state.selections[0].article.issueDoi ? { issueDoi: this.state.selections[0].article.issueDoi } : {}
@@ -181,11 +215,13 @@ export default class PublicationPage extends Component {
     }
   }
 
+
   handleFilter = (type) => {
     this.setState({
       filterBy: type
     })
   }
+
 
   render () {
     const { publication, reduxControlModal } = this.props
