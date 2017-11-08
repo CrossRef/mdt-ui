@@ -84,7 +84,7 @@ export default class TooltipBubble extends React.Component{
           <div className="toolmsgholder" ref="tooltipBubble" style={{top: this.state.bubblePosition}}>
             <div className="errormsgholder">
               <div className="errormsginnerholder">
-                <div><img src={`${routes.images}/AddArticle/Asset_Icons_Black_Help.svg`} /></div>
+                <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} /></div>
                 {this.tooltipMessage()}
               </div>
             </div>

@@ -197,13 +197,13 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Contributor'}
-                saving={this.props.saving}
+                openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Contributors}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'contributors')}>
                   {this.props.contributors.map((data, i)=>
                     <Contributor
-                      saving={this.props.saving}
+                      openSubItems={this.props.openSubItems}
                       validate={this.props.validate}
                       key={i}
                       contributor={data}
@@ -219,13 +219,13 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Funding'}
-                saving={this.props.saving}
+                openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Funding}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'funding')}>
                   {this.props.funding.map((data, i)=>
                     <Funding
-                      saving={this.props.saving}
+                      openSubItems={this.props.openSubItems}
                       validate={this.props.validate}
                       key={i}
                       funding={data}
@@ -241,7 +241,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'License'}
-                saving={this.props.saving}
+                openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Licenses}
                 addHandler={this.props.addSection.bind(null, 'license')}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}>
@@ -265,7 +265,7 @@ export default class AddArticleView extends Component {
 
                   {this.props.license.map((data, i)=>
                     <License
-                      saving={this.props.saving}
+                      openSubItems={this.props.openSubItems}
                       validate={this.props.validate}
                       key={i}
                       license={data}
@@ -280,13 +280,13 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Related Items'}
-                saving={this.props.saving}
+                openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.relatedItems}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'relatedItems')}>
                   {this.props.relatedItems.map((data, i)=>
                     <RelatedItems
-                      saving={this.props.saving}
+                      openSubItems={this.props.openSubItems}
                       validate={this.props.validate}
                       key={i}
                       relateditem={data}
@@ -302,7 +302,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Additional Information'}
-                saving={this.props.saving}
+                openSubItems={this.props.openSubItems}
                 deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 showSection={this.props.openItems.addInfo}>
                   <AdditionalInformation
@@ -318,7 +318,7 @@ export default class AddArticleView extends Component {
                 <SubItem
                   title={'Crossmark'}
                   showSection={!!Object.keys(this.props.showCards).length || !!this.props.reduxForm.size}
-                  saving={this.props.saving}
+                  openSubItems={this.props.openSubItems}
                   deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                   CrossmarkAddButton={CrossmarkAddButton}>
                     <Crossmark

@@ -34,7 +34,7 @@ export default class Funding extends Component {
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      showSubItem: nextProps.saving ? true : this.state.showSubItem,
+      showSubItem: nextProps.openSubItems ? true : this.state.showSubItem,
       funder_identifier: nextProps.funding.funder_identifier,
       grantNumbers: nextProps.funding.grantNumbers
     })

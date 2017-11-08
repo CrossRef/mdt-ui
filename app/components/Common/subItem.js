@@ -16,7 +16,8 @@ export default class SubItem extends Component {
     CrossmarkAddButton: is.func,
     arrowType: is.string,
     deferredErrorBubbleRefresh: is.object.isRequired,
-    deferredTooltipBubbleRefresh: is.object
+    deferredTooltipBubbleRefresh: is.object,
+    openSubItems: is.bool
   }
 
 
@@ -29,7 +30,7 @@ export default class SubItem extends Component {
 
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.saving) {
+    if (nextProps.openSubItems) {
       this.setState({
         showSection: nextProps.showSection || false
       })
