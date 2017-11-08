@@ -20,15 +20,6 @@ export default class AdditionalInformation extends Component {
   }
 
 
-  componentWillMount () {
-    if (this.props.addInfo.freetolicense) {
-      this.setState({
-          on: true
-      })
-    }
-  }
-
-
   handleAddInfo = (e) => {
     this.props.handler({
       addInfo: update(this.props.addInfo, {$set:{

@@ -41,8 +41,8 @@ input.height64, textarea.height64, select.height64 {
         color: #FFFFFF;
         background: #EE6068;
         text-align: center;
-        padding: 10px;
-        border-radius: 6px;
+        padding: 4px 5px 10px 5px;
+        border-radius: 5px;
         word-break: break-word;
         .errormsgholder{
           display: inline-table;
@@ -62,7 +62,7 @@ input.height64, textarea.height64, select.height64 {
               width: 100%;
             }
             img {
-              width: 35px;
+              width: 25px;
             }
           }
         }
@@ -122,16 +122,50 @@ input.height64, textarea.height64, select.height64 {
   display: block;
 }
 
-.dateselectholder {
-  margin: 0 5px 0 0;
-  width: 85px !important;
-  float: left;
-  .datepickselects {
+
+.datepickerholder {
+
+  .dateselectholder {
+    margin: 0 5px 0 0;
     width: 85px !important;
     float: left;
-    padding: 0 10px;
+
+    .datepickselects {
+      width: 85px !important;
+      float: left;
+      padding: 0 10px;
+    }
   }
+
+  .dateicon {
+    width: 30px !important;
+    display: inline-block;
+    margin: 0 0 0 -11.5px;
+
+    .iconHolder {
+      background: #FFF;
+      display: inline-block;
+      margin: 0;
+      width: 37px;
+      border-top: 1px solid black;
+      border-right: 1px solid black;
+      border-bottom: 1px solid black;
+
+      .calendarButton {
+        display: inline-block;
+        height:auto;
+        padding: 2px 0 0 1px;
+
+        .calendarIcon {
+          display: inline-block;
+          width: 27px;
+        }
+      }
+    }
+  }
+
 }
+
 
 .addArticles {
   margin: 40px 0;
@@ -885,9 +919,10 @@ input.height64, textarea.height64, select.height64 {
 
 .infoFlagDate {
   position: absolute;
-  right: -1px;
+  right: -0.5px;
   top: -13px;
   width: 35px;
+  height: auto;
 }
 
 .infoFlagBorder {
@@ -900,32 +935,6 @@ input.height64, textarea.height64, select.height64 {
   border-bottom: 1px solid #ffc72c !important;
 }
 
-.dateicon {
-  width: 30px !important;
-  display: inline-block;
-  margin: 0 0 0 -11.5px;
-}
-.iconHolder {
-  background: #FFF;
-  display: inline-block;
-  margin: 0;
-  width: 37px;
-  border-top: 1px solid black;
-  border-right: 1px solid black;
-  border-bottom: 1px solid black;
-
-  .calendarButton {
-    display: inline-block;
-    height:auto;
-    padding: 2px 0 0 1px;
-
-    .calendarIcon {
-      display: inline-block;
-      width: 27px;
-    }
-  }
-
-}
 
 .infoFlagIconHolder {
   border-top: 1px solid #ffc72c !important;

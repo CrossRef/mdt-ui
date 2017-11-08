@@ -23,7 +23,7 @@ export default class Contributor extends Component {
 
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.saving) {
+    if(nextProps.openSubItems) {
       this.setState({showSubItem: true})
     }
     const e=nextProps.contributor

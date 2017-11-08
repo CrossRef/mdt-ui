@@ -175,7 +175,7 @@ export default class AddArticlePage extends Component {
 
       const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
 
-      validatedPayload.saving = true //this flag notifies subitems to open
+      validatedPayload.openSubItems = true
 
       setStatePayload = {
         ...setStatePayload,
@@ -272,6 +272,7 @@ export default class AddArticlePage extends Component {
 
     const {valid, validatedPayload} = await this.validation()
 
+    validatedPayload.openSubItems = true
     validatedPayload.saving = true
 
     if (valid) {
@@ -422,6 +423,7 @@ export default class AddArticlePage extends Component {
     }
     this.state.validating = false
     this.state.saving = false
+    this.state.openSubItems = false
   }
 
 
