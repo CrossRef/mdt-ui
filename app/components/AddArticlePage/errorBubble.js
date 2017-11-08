@@ -192,10 +192,8 @@ export default class ErrorBubble extends React.PureComponent{
         {do {
           if(this.props.tooltip) {
             setTimeout(()=>this.props.deferredTooltipBubbleRefresh.resolve(), 10)
-            null
-          } else {
-            null
           }
+          null
         }}
       </div>
     )
