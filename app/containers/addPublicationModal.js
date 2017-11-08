@@ -221,19 +221,27 @@ export default class AddPublicationModal extends Component {
     const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>','text/xml')
     const pubElm = doc.createElement("journal_metadata")
     doc.documentElement.appendChild(pubElm)
-    appendAttribute("language",form.language,pubElm)
+    if(form.language) appendAttribute("language",form.language,pubElm)
 
     appendElm("full_title",form.title,pubElm)
-    appendElm("abbrev_title",form.abbreviation,pubElm)
-    var el = appendElm("issn",form.electISSN,pubElm)
-    appendAttribute("media_type","electronic",el)
-    el = appendElm("issn",form.printISSN,pubElm)
-    appendAttribute("media_type","print",el)
-    el = doc.createElement("archive_locations")
-    var el2 = doc.createElement("archive")
-    appendAttribute("name", form.archivelocation, el2)
-    el.appendChild(el2)
-    pubElm.appendChild(el)
+    if(form.abbreviation) appendElm("abbrev_title",form.abbreviation,pubElm)
+    var el
+    if(form.electISSN) {
+      el = appendElm("issn",form.electISSN,pubElm)
+      appendAttribute("media_type","electronic",el)
+    }
+    if(form.printISSN) {
+      el = appendElm("issn",form.printISSN,pubElm)
+      appendAttribute("media_type","print",el)
+    }
+    if(form.archivelocation) {
+      el = doc.createElement("archive_locations")
+      var el2 = doc.createElement("archive")
+      appendAttribute("name", form.archivelocation, el2)
+      el.appendChild(el2)
+      pubElm.appendChild(el)
+    }
+
     el = doc.createElement("doi_data")
     appendElm("doi",form.DOI,el)
     appendElm("resource",form.url,el)
