@@ -32,25 +32,28 @@
         }
         .dateicon {
             width: 30px !important;
-        }
-        .iconHolder {
-            background: #FFF;
-            display: inline-block;
-            margin: 0;
 
-            .calendarButton {
+            .iconHolder {
+                background: #FFF;
                 display: inline-block;
-                width:39px;
-                height:auto;
-                padding: 2px 6px;
+                margin-left: 6.5px;
 
-                .calendarIcon {
+                .calendarButton {
                     display: inline-block;
-                    width: 27px;
-                }
-            }
+                    width:39px;
+                    height:auto;
+                    padding: 1px 4.5px;
+                    cursor: pointer;
 
+                    .calendarIcon {
+                        display: inline-block;
+                        width: 27px;
+                    }
+                }
+
+            }
         }
+
     }
     .doiSearchHolder {
         height: 32px;
