@@ -7,14 +7,15 @@ import {routes} from '../../routing'
 export default class TourModal extends React.Component {
 
   static propTypes = {
-    reduxControlModal: is.func.isRequired
+    reduxControlModal: is.func.isRequired,
+    close: is.func.isRequired
   }
 
   state = {slide: 1}
 
   nextSlide = () => {
     if(this.state.slide === 5) {
-      return this.props.reduxControlModal({showModal:false})
+      return this.props.close()
     } else {
       this.setState({slide: this.state.slide + 1})
     }

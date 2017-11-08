@@ -9,7 +9,7 @@ import Listing from '../components/Publication/listing'
 import Filter from '../components/Publication/filter'
 import ActionBar from '../components/Publication/actionBar'
 import TitleBar from '../components/Publication/titleBar'
-import TourModal from '../components/Modal/tourModal'
+import TourModal from '../components/Publication/tourModal'
 import {routes} from  '../routing'
 import {compareDois} from '../utilities/helpers'
 
@@ -96,10 +96,7 @@ export default class PublicationPage extends Component {
       showModal: true,
       title: '',
       style: 'tourModal',
-      Component: TourModal,
-      props: {
-        reduxControlModal: this.props.reduxControlModal
-      }
+      Component: TourModal
     })
     this.props.reduxFirstLogin(false)
   }
