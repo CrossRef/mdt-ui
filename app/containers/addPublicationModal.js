@@ -224,7 +224,7 @@ export default class AddPublicationModal extends Component {
     if(form.language) appendAttribute("language",form.language,pubElm)
 
     appendElm("full_title",form.title,pubElm)
-    if(form.abbreviation) appendElm("abbrev_title",form.abbreviation,pubElm)
+    appendElm("abbrev_title",form.abbreviation,pubElm)
     var el
     if(form.electISSN) {
       el = appendElm("issn",form.electISSN,pubElm)

@@ -189,7 +189,14 @@ export default class ErrorBubble extends React.PureComponent{
           </ClassWrapper>
         }
 
-        {this.props.tooltip ? this.props.deferredTooltipBubbleRefresh.resolve() : null}
+        {do {
+          if(this.props.tooltip) {
+            setTimeout(()=>this.props.deferredTooltipBubbleRefresh.resolve(), 10)
+            null
+          } else {
+            null
+          }
+        }}
       </div>
     )
   }
