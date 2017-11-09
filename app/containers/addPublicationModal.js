@@ -5,6 +5,7 @@ import {appendElm,appendAttribute} from '../utilities/helpers'
 import { XMLSerializer, DOMParser } from 'xmldom'
 import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
 const languages = require('../utilities/lists/language.json')
+import { ArchiveLocations } from '../utilities/lists/archiveLocations'
 
 
 export default class AddPublicationModal extends Component {
@@ -435,12 +436,9 @@ export default class AddPublicationModal extends Component {
                   <select name='archivelocation' value={this.state.archivelocation}
                     onChange={this.inputHandler}>
                       <option value='' />
-                      <option value='CLOCKSS'>CLOCKSS</option>
-                      <option value='LOCKSS'>LOCKSS</option>
-                      <option value='Portico'>Portico</option>
-                      <option value='KB'>Koninklijke Bibliotheek</option>
-                      <option value='DWT'>Deep Web Technologies</option>
-                      <option value='Internet Archive'>Internet Archive</option>
+                      {ArchiveLocations.map((location)=>
+                        <option key={location.value} value={location.value}>{location.name}</option>
+                      )}
                   </select>
                 </div>
               </div>

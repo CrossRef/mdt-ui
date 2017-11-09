@@ -60,7 +60,7 @@ export default function (state, reduxForm) {
     el2 = doc.createElement("archive")
     el2.setAttribute("name", state.addInfo.archiveLocation)
     el.appendChild(el2)
-    doc.appendChild(el)
+    doc.documentElement.appendChild(el)
   }
   el = doc.createElement("doi_data")
   el2 = doc.createElement("doi")
