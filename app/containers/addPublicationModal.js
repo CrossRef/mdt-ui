@@ -120,7 +120,7 @@ export default class AddPublicationModal extends Component {
   getLanguages () {
     var lgOpt = [
       <option key='-1' />,
-      ...languages.map((language, i) => (<option key={i} value={language.abbr}>{language.name}</option>))
+      ...languages.map((language, i) => (<option key={i} value={language.value}>{language.name}</option>))
     ]
 
     return (

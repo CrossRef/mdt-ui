@@ -58,7 +58,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                 }
             })
             var attributes = <span key={i}>{license.appliesto ? appliesto.name : ''}: {license.licenseurl} ({license.acceptedDateDay}, {months[parseInt(license.acceptedDateMonth)-1]} {license.acceptedDateYear}) {
-                    reviewData.addInfo.freetolicense ? ', Free to Read: Yes' : ', Free to Read: No'
+                    reviewData.article.freetolicense ? ', Free to License: Yes' : ', Free to License: No'
                 }<br /></span>
             return attributes
         })
@@ -97,7 +97,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
         }
         if (reviewData.addInfo.language.length > 0) {
             const lang= _.find(Languages, (language) => {
-            if (language.abbr.trim().toLowerCase() === reviewData.addInfo.language.trim().toLowerCase()){
+            if (language.value.trim().toLowerCase() === reviewData.addInfo.language.trim().toLowerCase()){
                 return language
             }
             })
