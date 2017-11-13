@@ -97,7 +97,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
         }
         if (reviewData.addInfo.language.length > 0) {
             const lang= _.find(Languages, (language) => {
-            if (language.abbr.trim().toLowerCase() === reviewData.addInfo.language.trim().toLowerCase()){
+            if (language.value.trim().toLowerCase() === reviewData.addInfo.language.trim().toLowerCase()){
                 return language
             }
             })
