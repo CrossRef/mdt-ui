@@ -173,6 +173,11 @@
 
           .title {
             width: 59%;
+            max-width: 290px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            padding-right: 10px ;
           }
 
           .status {
