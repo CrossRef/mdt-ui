@@ -9,21 +9,7 @@ const { pubHist, peer, update, copyright, clinical, supp, other } = cardNames;
 import {articleTooltips as tooltips} from '../../../../utilities/lists/tooltipMessages'
 
 
-export class Blank extends Component {
-  render() {
-    return(
-      <div className='optionalissueiinfo'>
-        <div className='innerCardHolder'>
-          <div className='row subItemRow'>
-            <div className='subItemHeader subItemTitle'>
-              <span>Please add a card</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    )
-  }
-}
+
 
 function generateCard (name, fields) {
   return class CrossmarkCard extends Component {

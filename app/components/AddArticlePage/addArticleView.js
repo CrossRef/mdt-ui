@@ -6,7 +6,7 @@ import {routes} from '../../routing'
 import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
 import { InfoBubble, InfoHelperRow, OptionalTitleData, DatesRow } from './articleFormComponents'
-import ErrorBubble from './errorBubble'
+import ErrorBubble from '../Common/errorBubble'
 import TooltipBubble from './tooltipBubble'
 import Contributor from './SubItems/contributor'
 import Funding from './SubItems/funding'
@@ -17,6 +17,7 @@ import { Crossmark, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
 import FormInput from '../Common/formInput'
 import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
+import {ErrorHolder, ErrorBar} from '../Common/errorBar'
 import {urlEntered} from '../../utilities/helpers'
 import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
 
@@ -40,10 +41,13 @@ export default class AddArticleView extends Component {
     boundSetState: is.func.isRequired,
     removeSection: is.func.isRequired,
     addSection: is.func.isRequired,
-    deferredErrorBubbleRefresh: is.object.isRequired
+    deferredErrorBubbleRefresh: is.object.isRequired,
+    deferredTooltipBubbleRefresh: is.object.isRequired
   }
 
   render () {
+    const errors = this.props.errors
+
     return (
       <div>
 
@@ -78,7 +82,32 @@ export default class AddArticleView extends Component {
 
               <div className='body'>
 
-                <InfoHelperRow setState={this.props.boundSetState} showHelper={this.props.showHelper}/>
+                <div className='row infohelper'>
+                  <div className="fieldHolder">
+                    <div className="fieldinnerholder fulllength">
+                      <div className="labelholder">
+                        <div className="labelinnerholder">
+                          <div className='label'>* Indicates Required fields</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="errorHolder">
+                    <div className="switchOuterHolder">
+                      <div className="switchInnerHolder">
+                        <div className="switchLicense">
+                          <div className='switchLabel'><span>Show Help</span></div>
+                          <Switch
+                            ref='showHelper'
+                            onClick={() => this.props.boundSetState({showHelper: !this.props.showHelper})}
+                            on={this.props.showHelper}
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
 
                 <div className='row'>
                   <div className='fieldHolder'>
@@ -92,16 +121,18 @@ export default class AddArticleView extends Component {
                       onBlur={this.props.validate}/>
                   </div>
 
+                  <ErrorHolder errors={['title']}/>
+
                   {this.props.showHelper &&
                     <TooltipBubble
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}/> }
 
+
                   {this.props.error &&
-                    <ErrorBubble
-                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
-                      tooltip={this.props.showHelper}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                      errors={this.props.errors}/>}
+                    <ErrorBar
+                      errors={this.props.errors}
+                      validating={this.props.validating}/>}
+
                 </div>
 
                 <div className='row'>
@@ -138,6 +169,8 @@ export default class AddArticleView extends Component {
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}/>
                   </div>
+
+                  <ErrorHolder errors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}/>
                 </div>
 
                 <DatesRow
@@ -167,6 +200,8 @@ export default class AddArticleView extends Component {
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}/>
                   </div>
+
+                  <ErrorHolder errors={['firstPage']}/>
                 </div>
 
                 <div className='row'>

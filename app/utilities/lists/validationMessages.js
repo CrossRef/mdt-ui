@@ -183,8 +183,8 @@ export const ArticleMessages = {
   },
   printDateIncomplete: {
     type: 'required',
-    bold: 'Required',
-    message: 'Print date incomplete.'
+    bold: 'Incomplete Print Date',
+    message: 'Please provide year with month and/or day.'
   },
   printDateInvalid: {
     type: 'invalid',

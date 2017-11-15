@@ -2,7 +2,7 @@ import React from 'react'
 import is from 'prop-types'
 import $ from 'jquery'
 
-import {ClassWrapper, getErrorPosition, getTooltipPosition} from '../../utilities/helpers'
+import {getErrorPosition, getTooltipPosition} from '../../utilities/helpers'
 import {routes} from '../../routing'
 
 
@@ -78,19 +78,16 @@ export default class TooltipBubble extends React.Component{
     return (
       <div>
         {this.state.bubblePosition &&
-        <ClassWrapper
-          classNames={['errorHolder talltooltip helpers', 'toolTipHolder', ['a', "tooltips"]]}>
-
-          <div className="toolmsgholder" ref="tooltipBubble" style={{top: this.state.bubblePosition}}>
-            <div className="errormsgholder">
-              <div className="errormsginnerholder">
-                <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} /></div>
-                {this.tooltipMessage()}
+          <div className="bubbleHolder">
+            <div className="toolmsgholder" ref="tooltipBubble" style={{top: this.state.bubblePosition}}>
+              <div className="errormsgholder">
+                <div className="errormsginnerholder">
+                  <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} /></div>
+                  {this.tooltipMessage()}
+                </div>
               </div>
             </div>
           </div>
-
-        </ClassWrapper>
         }
       </div>
     )

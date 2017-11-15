@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial, Blank } from './crossmarkCards'
+import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial } from './crossmarkCards'
 import {cardNames} from '../../../../utilities/crossmarkHelpers'
 const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
 
@@ -102,7 +102,6 @@ export class Crossmark extends Component {
     const crossmarkCardKeys = Object.keys(this.state.crossmarkCards)
     return (
       <div>
-        {!crossmarkCardKeys.length && <Blank/>}
         {crossmarkCardKeys.map((cardName, index) => {
           const Card = crossmarkCardSelector[cardName]
           return this.state.crossmarkCards[cardName] ?

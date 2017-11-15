@@ -1,36 +1,12 @@
 import React, { Component } from 'react'
-import Switch from 'react-toggle-switch'
 
-import { ClassWrapper } from '../../utilities/helpers'
 import {articleTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
+import {articleErrors as e} from '../../utilities/lists/validationMessages'
 import {routes} from '../../routing'
 import FormDate from '../Common/formDate'
 import FormTextArea from '../Common/formTextArea'
+import {ErrorHolder} from '../Common/errorBar'
 
-
-
-
-export class InfoHelperRow extends Component {
-  render() {
-    return (
-      <div className='row infohelper'>
-
-        <ClassWrapper classNames={['fieldHolder', 'fieldinnerholder fulllength', 'labelholder', 'labelinnerholder']}>
-          <div className='label'>* Indicates Required fields</div>
-        </ClassWrapper>
-
-        <ClassWrapper classNames={['errorHolder','switchOuterHolder','switchInnerHolder','switchLicense']}>
-          <div className='switchLabel'><span>Show Help</span></div>
-          <Switch
-            ref='showHelper'
-            onClick={() => this.props.setState({showHelper: !this.props.showHelper})}
-            on={this.props.showHelper}
-          />
-        </ClassWrapper>
-      </div>
-    )
-  }
-}
 
 
 
@@ -146,6 +122,8 @@ export class DatesRow extends Component {
               }
             }}/>
         </div>
+
+        <ErrorHolder date errors={['printDateYear', 'printDateIncomplete', 'printDateInvalid', 'onlineDateYear', 'onlineDateIncomplete', 'onlineDateInvalid']}/>
       </div>
     )
   }

@@ -49,7 +49,8 @@ export default class SubItem extends Component {
     if(this.props.addHandler || this.props.optionalIssueInfoHandlers) {
       return (
         <div className='addholder'>
-          <a onClick={()=>{
+          <hr/>
+          <a className="addNewButton" onClick={()=>{
             if (!this.state.showSection) {
               this.setState({showSection: true})
             }
@@ -82,13 +83,14 @@ export default class SubItem extends Component {
               </span>
               <span>{title}</span>
             </div>
-            {this.addButton()}
+
           </div>
         </div>
 
         {this.state.showSection &&
           <div className='body'>
             {this.props.children}
+            {this.addButton()}
           </div>
         }
       </div>
