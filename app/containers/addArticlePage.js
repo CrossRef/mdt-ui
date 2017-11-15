@@ -7,7 +7,7 @@ import $ from 'jquery'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {xmldoc, jsEscape, compareDois, DeferredTask} from '../utilities/helpers'
+import {xmldoc, compareDois, DeferredTask} from '../utilities/helpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
@@ -282,10 +282,10 @@ export default class AddArticlePage extends Component {
       const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
       const journalElm = journalDoc.getElementsByTagName("journal")[0]
       journalElm.appendChild(journalArticle)    
-      const title = jsEscape(this.state.article.title)
+      const title = this.state.article.title
 
       const newRecord = {
-        'title': {'title': title},
+        'title':JSON.parse(JSON.stringify({'title': title})),
         'date': new Date(),
         'doi': this.state.article.doi,
         'owner-prefix': this.state.ownerPrefix,
