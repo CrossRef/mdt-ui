@@ -1,419 +1,324 @@
-@import 'mixins.scss';
-@import 'switch.min.css';
-@import 'AddArticle.scss';
 
-.deposittitle {
-    background: #596565;
-    width: 50px;
-}
+.cartContainer {
+  position: relative;
 
-.waitMessage {
-    text-align: center;
-    position:fixed;
-    width: 400px;
-    height: 100px;
-    left: 34%;
-    top: 46%;
-    img {
-        height: 100px;
-        animation: spin 2s linear infinite;
-    }
-}
+  .rightBorderBox {
+    position: absolute;
+    top:0;
+    left:0;
+    background-color: transparent;
+    width: 847px;
+    height: 55px;
+    border-right: 1px solid #E3E6E9;
+  }
 
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-.result {
-    margin-top: 40px
-}
-
-.resultDiv {
-    margin-top:50px;
-    margin-bottom:100px;
-    .resultTopbar {
-        border: 1px solid #dbdbdb;
-        text-align: center;
-        height: 96px;
-        background-color: #f2f2f2;
-        padding-top: 20px;
-        h3 { margin:0; padding: 0; }
-        p{ margin:0; padding:0; font-size:.9em }
-    }
-    .resultIndicatorBar {
-        border: 1px solid #dbdbdb;
-        height: 144px;
-        .leftIndicator {
-            float: left;
-            margin-top: 15px;
-            margin-left: 96px;
-            .leftImage {
-                width: 112px;
-            }
-            .leftMessage {
-                margin-left: 35px;
-                float: right;
-                width: 272px;
-            }
-        }
-        .rightIndicator {
-            float: right;
-            margin-top: 15px;
-            .rightImage {
-                width: 112px;
-            }
-            .rightMessage {
-                margin-left: 35px;
-                float:right;
-                width: 272px;
-            }
-        }
-
-    }
-    .titleStatusBar {
-        border: 1px solid #dbdbdb;
-        height: 32px;
-        background-color: rgb(89, 101, 101);
-        color: white;
-        padding-top: 7px;
-        .leftTitle {
-            float: left;
-            margin-left: 70px;
-        }
-        .rightStatus {
-            float:right;
-            margin-right: 340px;
-        }
-    }
-    .resultCard {
-        border-left: 1px solid #dbdbdb;
-        border-right: 1px solid #dbdbdb;
-        .publicationTitleBar {
-            height: 48px;
-            background-color: rgb(89, 101, 101);
-            color:white;
-            h3{
-                margin:0;
-                padding:0
-            }
-            padding-left: 70px;
-            padding-top: 13px;
-        }
-        .errorBorder {
-            border: 1px solid red;
-        }
-        .normalBorder {
-            border-bottom: 1px solid grey;
-        }
-        .issueBar {
-          background-color: #dddddd;
-        }
-        .articleBar {
-            height: 48px;
-            .articleTitle {
-                float:left;
-                margin-left: 70px;
-            }
-            .articleResult {
-                float:right;
-                p {
-                  margin-right: 210px;
-                  float:left;
-                }
-                .emptyBox {
-                  position: relative;
-                  width: 128px;
-                  height: 48px;
-                  float:right;
-                  padding-top: 14px;
-                  a {
-                    margin-left: -170px;
-                    background: transparent;
-                    background-color: transparent;
-                  }
-                }
-                .errorBox {
-                  position: relative;
-                  background-color: #ee6068;
-                  width: 128px;
-                  height: 46px;
-                  float:right;
-                  visibility:visible;
-                  ul {
-                    padding:0;
-                    margin:0;
-                    list-style: none;
-                    li {
-                      width:128px;
-                      height: 44px;
-                      text-align: center;
-                      img {
-                        margin-top:6px;
-                        height: 33px;
-                      }
-                      a.tooltips {
-                        position: relative !important;
-                        display: inline;
-                      }
-                      a.tooltips div {
-                        font-size: .8em;
-                        position: absolute;
-                        width: 400px;
-                        color: #FFFFFF;
-                        background: #616B6B;
-                        height: auto;
-                        line-height: 30px;
-                        text-align: left;
-                        visibility: hidden;
-                        border-radius: 0px;
-                        padding: 10px 0 10px 17px;
-                        visibility: visible;
-                        opacity: 1;
-                        bottom: 63px;
-                        margin-left: -300px;
-                        z-index: 999;
-                        background-color: #ee6068 !important;
-                        border: 1px solid black;
-                        img {
-                          height:30px;
-                          float: left
-                        }
-                        p {
-                          clear:both;
-                          margin:0;
-                        }
-                      }
-                      a.tooltips div:after {
-                        content: '';
-                        position: absolute;
-                        top: 100%;
-                        left: 90%;
-                        margin-left: -8px;
-                        width: 0;
-                        border-top: 8px solid #ee6068;
-                        border-right: 12px solid transparent;
-                        border-left: 12px solid transparent;
-                      }
-                    }
-                  }
-
-                }
-
-            }
-        }
-    }
-
-
-}
-
-
-
-
-.opacity {
-    opacity: .1;
-
-}
-
-.depositPage {
-    margin: 0 auto;
-    text-align: left;
+  table {
+    margin: 0;
+    padding: 0;
+    border-spacing: 0;
+    border-collapse: separate;
     width: 960px;
-    .pageTitle {
-        font-size: 26px;
-        text-align: left;
-        margin: 0;
-        color: #4f5858;
-        padding: 35px 0;
+
+    tr {
+      width: 100%;
+
+      .tall {padding: 20px 0 15px 0}
+      .short {padding: 3px 0 3px 0}
+      .underIssue {
+        padding-left: 30px;
+        height: 34px;
+      }
+
+      td:first-child {
+        padding: 10px 0 10px 10px;
+      }
+      .errorholder {
+        width: 11.8%;
+        border-bottom: none;
+      }
     }
-    .buttonHolder {
-        display: block;
-        padding: 0 0 35px 0;
-        width: 100%;
-        .buttonInnerHolder {
-            width: 100%;
-            display: block;
-            padding: 0 0 35px 0;
-            .ReviewButtonHolder {
-                float: left;
-                a {
-                    cursor: pointer;
-                    color: black;
-                    background: #FFF;
-                    border: 1px solid #4f5858;
-                    display: inline-block;
-                    width: 192px;
-                    height: 48px;
-                    line-height: 48px;
-                    font-size: 16px;
-                    text-decoration: none;
-                    text-align: center;
-                }
-            }
-            .DepositButtonHolder {
-                float: right;
-                a {
-                    cursor: pointer;
-                    display: inline-block;
-                    width: 192px;
-                    height: 48px;
-                    line-height: 48px;
-                    background: #3eb1c8;
-                    color: #fff;
-                    font-size: 16px;
-                    text-decoration: none;
-                    text-align: center;
-                }
-            }
-        }
-    }
+  }
 
-
-}
-
-.depositTopBorder{
+  .depositTopBorder {
     border: 1px solid #E3E6E9;
     border-bottom: 0px;
     margin: 0 auto;
-    padding: 15px 0;
+    padding: 7px 0 7px 0;
     text-align: left;
     width: 960px;
+    position: relative;
+
     .item {
-        margin: 0;
-        padding: 0;
-        .stateIcon{
-            width: 10%;
-            .iconHolder {
-                display: inline-block;
-                width: 35%;
-                img {
-                    display: block;
-                    width: 100%;
-                }
-            }
+      margin: 0;
+      padding: 0;
+
+      .stateIcon{
+        width: 5%;
+
+        .iconHolder {
+          display: inline-block;
+          width: 35%;
+
+          img {
+            display: block;
+            width: 100%;
+          }
         }
-        .title {
-            width: 30%;
-        }
-        .status {
-            width: 10%;
-        }
-        .action {
-            width: 10%;
-        }
-        .errorholder {
-            width: 30%;
-        }
+      }
+
+      .aboveTitle {
+        width: 59%;
+      }
+
+      .title {
+        width: 30%;
+      }
+
+      .status {
+        width: 10%;
+      }
+
+      .action {
+        width: 13.5%;
+      }
+
+      .errorholder {
+        width: 30%;
+      }
     }
-}
-.depositCartRows {
+  }
+
+  .depositCartRows {
     border: 1px solid #E3E6E9;
     border-top: 0px;
-}
-.depositpage {
-    margin: 0 auto;
-    text-align: left;
-    width: 960px;
-    table {
-        margin: 0;
-        padding: 0;
-        border-spacing: 0;
-        border-collapse: separate;
-    }
-    table, tr {
-        width: 93%;
-        td {
-            height: initial;
-            padding: 10px 0;
-        }
-        td:first-child {
-            padding: 10px 0 10px 10px;
-        }
-        .errorholder {
-            width: 10%;
-        }
-    }
+    margin-bottom: 50px;
 
-    .itemholder {
+    .depositCartItem {
+      width: 960px;
+
+      .titleHolderTD {
+        padding: 0 !important;
+        left: -1px;
+        position:relative;
+
+        .status {
+          background: #596565;
+          width: 10.7%;
+          color: white;
+        }
+
+        .action {
+          background: #596565;
+          width: 13.7%;
+          color: white;
+
+          a {
+            cursor: pointer;
+          }
+        }
+      }
+
+      .itemholder {
+
+        .deposittitle {
+          background: #596565;
+          width: 30px;
+        }
+
+        .depositpubtitle {
+
+          background: #596565;
+          color: #FFF;
+          padding: 20px 0 15px 0px;
+          width: 61%;
+
+          a:visited {
+            color: white;
+          }
+        }
+
+        .articleUnderIssueSpace {
+          height: 50px;
+        }
+
         .item {
-            margin: 0;
-            padding: 0;
-            .stateIcon{
-                width: 10%;
-                .iconHolder {
-                    display: inline-block;
-                    width: 35%;
-                    img {
-                        display: block;
-                        width: 100%;
-                    }
-                }
-            }
-            .title {
-                width: 60%;
-            }
-            .status {
-                width: 10%;
-            }
-            .action {
-                width: 10%;
-                a {
-                    cursor: pointer;
-                }
-            }
-            .errorholder {
-                width: 30%;
-                position: relative;
-                @extend .errorHolder;
-                .fullError {
-                    height: initial;
-                    right: 70px;
-                }
-                .errorHolder {
-                    .toolTipHolder {
-                        .tooltips {
-                            .toolmsgholder {
-                                top: -70px;
-                                width: 187px;
-                                &:after {
-                                    top: 70px;
-                                }
-                            }
-                        }
-                    }
-                }
+          margin: 0;
+          padding: 0;
 
+          .stateIcon{
+            width: 5%;
+
+            .iconHolder {
+              display: inline-block;
+              width: 35%;
+
+              img {
+                display: block;
+                width: 100%;
+              }
             }
-        }
-        .rowError {
+          }
+
+          .stateIcon:last-child{
+            border-bottom: 1px solid #E3E6E9;
+          }
+
+          .rowError {
             background: #fff0f0;
-        }
-        .issuerow {
+          }
+
+          .issuerow {
             background: #E7E7E7;
+          }
+
+          .title {
+            width: 59%;
+            max-width: 290px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            padding-right: 10px ;
+          }
+
+          .status {
+            width: 10.7%;
+          }
+
+          .action {
+            border-right: 1px solid #E3E6E9;
+            width: 13.5%;
+
+            a {
+              cursor: pointer;
+            }
+          }
+
+          .errorholder {
+            width: 90%;
+            position: relative;
+            border-bottom: none;
+            //@extend .errorHolder;
+
+            .errorBox {
+              height: 32px;
+              width: 80px;
+              margin-left: 15px;
+              background-color: #ee6068;
+
+              ul {
+                height:100%;
+                padding:0;
+                margin:0;
+                list-style: none;
+
+                li {
+                  height: 100%;
+                  text-align: center;
+
+                  img {
+                    margin-top: 2px;
+                    height: 95%;
+                  }
+
+                  a.tooltips {
+                    position: relative !important;
+                    display: inline;
+                  }
+
+                  a.tooltips .popup {
+                    font-size: .8em;
+                    position: absolute;
+                    width: 336px;
+                    color: #FFFFFF;
+                    height: auto;
+                    line-height: 30px;
+                    text-align: left;
+                    border-radius: 0px;
+                    padding: 30px 0 10px 17px;
+                    visibility: visible;
+                    opacity: 1;
+                    top: -80px;
+                    margin-left: -352px;
+                    z-index: 999;
+                    background-color: #ee6068 !important;
+                    min-height: 112px;
+                    max-height: 352px;
+
+                    .scrollContainer {
+                      max-height:283px;
+                      width: 312px;
+                      overflow-y: auto;
+                      padding-right: 5px;
+                    }
+
+                    .scrollContainer::-webkit-scrollbar-track {
+                      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,0.3);
+                      border-radius: 10px;
+                      background-color: rgb(255, 141, 144);
+                    }
+
+                    .scrollContainer::-webkit-scrollbar {
+                      width: 8px;
+                      background-color: #ee6068;
+                    }
+
+                    .scrollContainer::-webkit-scrollbar-thumb {
+                      border-radius: 10px;
+                      -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.3);
+                      background-color: #ebebeb;
+                    }
+
+                    .closeButton {
+                      position: absolute;
+                      right: 8px;
+                      top: 5px;
+                      width: 13px;
+                      height:13px
+                    }
+
+                    img {
+                      height:30px;
+                      float: left
+                    }
+
+                    p {
+                      clear:both;
+                      margin:0 0 0 0;
+                      line-height: 17px;
+
+                      b {
+                        font-size: 1.1em;
+                      }
+                    }
+
+                    .errorText {
+                      margin-bottom: 10px;
+                    }
+                  }
+
+                  a.tooltips .popup:after {
+
+                    -ms-transform: rotate(270deg); /* IE 9 */
+                    -webkit-transform: rotate(270deg); /* Chrome, Safari, Opera */
+                    transform: rotate(270deg);
+                    content: '';
+                    position: absolute;
+                    top: 73px;
+                    left: 97.7%;
+                    width: 0;
+                    border-top: 8px solid #ee6068;
+                    border-right: 12px solid transparent;
+                    border-left: 12px solid transparent;
+                  }
+                }
+              }
+            }
+
+          }
         }
+      }
     }
-    .depositpubtitle {
-        background: #596565;
-        color: #FFF;
-        padding: 10px 0 10px 37px;
-    }
-}
-
-.titleHolderTD {
-    padding: 0 !important;
-}
-
-.aboveTitle {
-    width: 50%;
-}
-
-.disabledDeposit {
-    background: #A6D8E5 !important;
-}
-
-.emptycartbutton {
-    background: #FFF !important;
-    color: #000;
+  }
 }
 
 .EmptyHolder {
@@ -439,6 +344,13 @@
         }
     }
 }
-.articleUnderIssue {
-    padding: 10px 0 0 30px !important;
+
+.borderRight {
+  border-right: 1px solid #dbdbdb;
+}
+
+.borderBottom {
+  td {
+    border-bottom: 1px solid #dbdbdb;
+  }
 }

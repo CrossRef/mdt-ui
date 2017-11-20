@@ -5,27 +5,6 @@
     input, select {
         border: 1px solid #DEE1E5;
     }
-    .orderBy {
-        -webkit-transform: rotate(180deg);
-        -moz-transform: rotate(180deg);
-        -o-transform: rotate(180deg);
-        -ms-transform: rotate(180deg);
-        transform: rotate(180deg);
-        width: 15px;
-        height: 15px;
-        padding: 0;
-        margin: 0;
-        position: relative;
-        top: 5px;
-        left: 5px;
-    }
-    .ordered {
-        -webkit-transform: rotate(0deg);
-        -moz-transform: rotate(0deg);
-        -o-transform: rotate(0deg);
-        -ms-transform: rotate(0deg);
-        transform: rotate(0deg);
-    }
     .labelHolder {
         position: relative;
         top: 8px;
@@ -44,7 +23,7 @@
             padding: 22px 32px;
         }
         .start{
-            background: #F5F5F5;
+            background: #EAEAEA;
             float: left;
         }
         .end{
@@ -53,17 +32,28 @@
         }
         .dateicon {
             width: 30px !important;
-        }
-        .iconHolder {
-            background: #FFF;
-            display: inline-block;
-            padding: 2px 6px;
-            margin: 0;
-            .calendarIcon {
+
+            .iconHolder {
+                background: #FFF;
                 display: inline-block;
-                width: 27px;
+                margin-left: 6.5px;
+
+                .calendarButton {
+                    display: inline-block;
+                    width:39px;
+                    height:auto;
+                    padding: 1px 4.5px;
+                    cursor: pointer;
+
+                    .calendarIcon {
+                        display: inline-block;
+                        width: 27px;
+                    }
+                }
+
             }
         }
+
     }
     .doiSearchHolder {
         height: 32px;
@@ -88,17 +78,35 @@
                 border-right: 0px;
                 padding: 8px 0;
             }
-            td {
-                padding-top: 32px;
+            .titleCell {
+                width: 290px;
             }
+            .dateCell {
+                width: 120px;
+            }
+            .typeCell {
+                width: 75px
+            }
+            .statusCell {
+                width: 85px
+            }
+            td {
+                max-width: 290px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                padding-top: 32px;
+            }            
             .first {
                 border-left: 1px solid #DEE1E5;
                 padding: 8px 0 8px 32px;
+                width: 140px;
             }
             .last {
                 border-right: 1px solid #DEE1E5;
             }
             .firstTd {
+
                 padding: 32px 0 0 32px;
             }
         }
@@ -129,9 +137,9 @@
                 border: 1px solid #000;
             }
         }
-        .next {
-            a{
-                margin: 0;
+
+        .rc-pagination-next {
+           
                 .nex {
                     -webkit-transform: rotate(90deg);
                     -moz-transform: rotate(90deg);
@@ -143,13 +151,13 @@
                     padding: 0;
                     margin: 0;
                     position: relative;
-                    top: 3px;
+                    top: 8px;
                     right: 1px;
                 }
-            }
+            
         }
-        .previous {
-            a {
+        .rc-pagination-prev {
+          
                 .prev {
                     -webkit-transform: rotate(270deg);
                     -moz-transform: rotate(270deg);
@@ -161,10 +169,34 @@
                     padding: 0;
                     margin: 0;
                     position: relative;
-                    top: 3px;
+                    top: 8px;
                     right: 1px;
                 }
-            }
+            
         }
     }
 }
+
+.orderBy {
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+    transform: rotate(180deg);
+    width: 15px;
+    height: 15px;
+    padding: 0;
+    margin: 0;
+    position: relative;
+    top: 5px;
+    left: 5px;
+    cursor: pointer;
+}
+.ordered {
+    -webkit-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    -ms-transform: rotate(0deg);
+    transform: rotate(0deg);
+}
+

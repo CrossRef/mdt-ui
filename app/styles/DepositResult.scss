@@ -1,0 +1,222 @@
+.resultDiv {
+  margin-top:50px;
+  margin-bottom:100px;
+
+  .resultTopbar {
+    border: 1px solid #dbdbdb;
+    text-align: center;
+    height: 96px;
+    background-color: #f2f2f2;
+    padding-top: 20px;
+
+    h3 { margin:0; padding: 0; }
+
+    p{ margin:0; padding:0; font-size:.9em }
+  }
+
+  .resultIndicatorBar {
+    border: 1px solid #dbdbdb;
+    height: 144px;
+
+    .leftIndicator {
+      float: left;
+      margin-top: 15px;
+      margin-left: 96px;
+
+      .leftImage {
+        width: 112px;
+      }
+
+      .leftMessage {
+        margin-left: 35px;
+        float: right;
+        width: 272px;
+      }
+    }
+
+    .rightIndicator {
+      float: right;
+      margin-top: 15px;
+
+      .rightImage {
+        width: 112px;
+      }
+
+      .rightMessage {
+        margin-left: 35px;
+        float:right;
+        width: 272px;
+      }
+    }
+
+  }
+
+  .titleStatusBar {
+    border: 1px solid #dbdbdb;
+    height: 32px;
+    background-color: rgb(89, 101, 101);
+    color: white;
+    padding-top: 7px;
+
+    .leftTitle {
+      float: left;
+      margin-left: 60px;
+    }
+
+    .rightStatus {
+      float:right;
+      margin-right: 340px;
+    }
+  }
+
+  .resultCard {
+    border-left: 1px solid #dbdbdb;
+    border-right: 1px solid #dbdbdb;
+
+    .publicationTitleBar {
+      height: 48px;
+      width: 1000px;
+      background-color: rgb(89, 101, 101);
+      color:white;
+
+      .publicationTitle {
+        vertical-align: middle;
+        padding-left: 60px;
+        width: 100%;
+      }
+    }
+
+    .errorBorder {
+      border: 1px solid red;
+    }
+
+    .normalBorder {
+      border-bottom: 1px solid #dbdbdb;
+    }
+
+    .white { background-color: white !important;}
+
+    .issueBar {
+      background-color: #dddddd;
+    }
+
+    .articleBar {
+
+      .depositResultRow {
+        height: 48px;
+        vertical-align: middle;
+
+        .articleTitle {
+          padding-left: 80px;
+          max-width: 572px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          padding-right: 10px ;
+          width: 572px;
+        }
+
+        .articleUnderIssueTitle {
+          padding-left: 110px;
+          width: 572px;
+        }
+
+        .articleResult {
+          width: 100px;
+        }
+
+        .errorResult {
+          width: 258px;
+        }
+
+        .urlBox {
+          white-space: nowrap;
+          max-width: 260px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .errorBox {
+          background-color: #ee6068;
+
+          ul {
+            padding:0;
+            margin:0;
+            list-style: none;
+
+            li {
+              width:128px;
+              height: 44px;
+              text-align: center;
+
+              img {
+                margin-top:6px;
+                height: 33px;
+              }
+
+              a.tooltips {
+                position: relative !important;
+                display: inline;
+              }
+
+              a.tooltips div {
+                font-size: .8em;
+                position: absolute;
+                width: 400px;
+                color: #FFFFFF;
+                height: auto;
+                line-height: 30px;
+                text-align: left;
+                border-radius: 0px;
+                padding: 10px 0 10px 17px;
+                visibility: visible;
+                opacity: 1;
+                bottom: 63px;
+                margin-left: -300px;
+                z-index: 999;
+                background-color: #ee6068 !important;
+                border: 1px solid black;
+
+                img {
+                  height:30px;
+                  float: left
+                }
+
+                p {
+                  clear:both;
+                  margin:0;
+                }
+
+                .closeButton {
+                  position: absolute;
+                  right: 8px;
+                  top: 5px;
+                  width: 13px;
+                  height:13px
+                }
+              }
+
+              a.tooltips div:after {
+                content: '';
+                position: absolute;
+                top: 100%;
+                left: 90%;
+                margin-left: -8px;
+                width: 0;
+                border-top: 8px solid #ee6068;
+                border-right: 12px solid transparent;
+                border-left: 12px solid transparent;
+              }
+            }
+          }
+
+        }
+      }
+
+
+
+    }
+  }
+
+
+}

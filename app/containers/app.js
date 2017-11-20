@@ -1,38 +1,49 @@
 import React, { Component } from 'react'
+import {bindActionCreators} from 'redux'
 import is from 'prop-types'
 import { connect } from 'react-redux'
-import { bindActionCreators } from 'redux'
-import { stateTrackerII } from 'my_decorators'
 
-import { controlModal, getPublications, addDOIs, submitPublication, cartUpdate, logout } from '../actions/application'
-import Header from '../components/header'
-import Footer from '../components/footer'
-import Modal from './modal'
+import Header from '../components/App/header'
+import Footer from '../components/App/footer'
+import Modal from '../components/App/modal'
+import {clearToast, controlModal} from '../actions/application'
 
 
-const mapStateToProps = (state) => ({
-  path: window.location.pathname,
-  reduxControlModal: controlModal,
-  cart: state.cart,
-  reduxLogout: logout
-})
+const mapStateToProps = (state) => {
+  return {
+    cart: state.cart,
+    toast: state.toast,
+    modalState: state.modal
+  }
+}
 
-@connect(mapStateToProps)
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  reduxClearToast: clearToast,
+  reduxControlModal: controlModal
+}, dispatch)
+
+@connect(mapStateToProps, mapDispatchToProps)
 export default class App extends Component {
 
-  static propTypes = {}
+  static propTypes = {
+    cart: is.array.isRequired,
+    toast: is.object.isRequired,
+    modalState: is.object.isRequired,
+    reduxClearToast: is.func.isRequired,
+    reduxControlModal: is.func.isRequired
+  }
 
   render () {
     return (
       <div className='app'>
         <div className='app-contents'>
-          <Header path={this.props.path} cart={this.props.cart} reduxControlModal={this.props.reduxControlModal} reduxLogout={this.props.reduxLogout} />
+          <Header cart={this.props.cart} toast={this.props.toast} reduxClearToast={this.props.reduxClearToast}/>
           <div className='page-contents'>
             {this.props.children}
           </div>
         </div>
         <Footer />
-        <Modal />
+        <Modal modalState={this.props.modalState} reduxControlModal={this.props.reduxControlModal}/>
       </div>
     )
   }

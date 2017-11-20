@@ -5,13 +5,16 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import _ from 'lodash'
 
-import { controlModal, cartUpdate, getItem, removeFromCart, deposit } from '../actions/application'
-import Header from '../components/header'
-import Footer from '../components/footer'
-import DepositCart from '../components/depositCart'
-import reviewDepositCart from '../components/reviewDepositCart'
-import DepositResult from '../components/depositResult'
+import { controlModal, cartUpdate, removeFromCart, clearCart } from '../actions/application'
+import DepositCart from '../components/DepositCartPage/depositCart'
+import {TopOfPage, EmptyCart, WaitMessage} from '../components/DepositCartPage/depositCartComponents'
+import reviewDepositCart from '../components/DepositCartPage/reviewDepositCartModal'
+import DepositResult from '../components/DepositCartPage/depositResult'
 import {routes} from '../routing'
+import processDepositResult from '../components/DepositCartPage/processDepositResult'
+import {errorHandler} from '../utilities/helpers'
+import * as api from '../actions/api'
+
 
 
 
@@ -24,8 +27,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxCartUpdate: cartUpdate,
   reduxRemoveFromCart: removeFromCart,
-  asyncGetItem: getItem,
-  asyncDeposit: deposit
+  reduxClearCart: clearCart,
 }, dispatch)
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -35,8 +37,7 @@ export default class DepositCartPage extends Component {
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
-    asyncGetItem: is.func.isRequired,
-    asyncDeposit: is.func.isRequired,
+    reduxClearCart: is.func.isRequired,
     cart: is.array.isRequired,
     publications: is.object.isRequired
   }
@@ -44,40 +45,40 @@ export default class DepositCartPage extends Component {
   constructor (props) {
     super(props)
     this.state = {
-      showDeposit: true,
+      showDeposit: false,
       fullCart: [],
-      falseCnt: 0,
-      status: 'cart'
+      status: 'cart',
+      result: {
+        resultData: '',
+        resultCount: '',
+        depositId: ''
+      }
     }
   }
 
-  toggleDeposit = (showDeposit) => {
-    if (!showDeposit) {
-      var falseCnt = this.state.falseCnt
-      this.setState({
-        falseCnt: falseCnt + 1,
-        showDeposit: false
-      })
-    }
+  componentDidMount() {
+    this.getFullCart()
   }
 
   getFullCart (cart = this.props.cart) {
-
-    var promises = [];
-    var _this = this;
+    const promises = []
+    const _this = this
     if(cart.length > 0) {
       _.each(cart, (item) => {
-
-        var doi = item.doi
-        if (!doi) {
-          doi = item.article.doi
-        }
-        promises.push(this.props.asyncGetItem(doi).then((data)=>{return data}))
+        promises.push(api.getItem(item.doi).then( data => data))
       })
 
       Promise.all(promises).then((fullData) => {
-        var mergedCart = []
-        for(var i = 0; i < fullData.length; i++){
+        let mergedCart = []
+        for(let i in fullData){
+
+          //update mdt-version
+          if(fullData[i].message.contains[0].type === 'article') {
+            cart[i]['mdt-version'] = fullData[i].message.contains[0]['mdt-version']
+          } else {
+            cart[i]['mdt-version'] = fullData[i].message.contains[0].contains[0]['mdt-version']
+          }
+
           mergedCart.push({
             date: fullData[i].message.date,
             doi: fullData[i].message.doi,
@@ -90,58 +91,56 @@ export default class DepositCartPage extends Component {
 
 
         mergedCart = _.uniqBy(mergedCart, function (cartItem) { // merging publications
-          return cartItem.doi;
-        });
-
+          return cartItem.doi
+        })
 
         function mergeByDoi(arr) {
           return _(arr)
-            .groupBy(function(item) { // group the items using the lower case
-              return item.doi;
+            .groupBy(function(item) {
+              return item.doi || JSON.stringify(item.title)
             })
             .map(function(group) { // map each group
               return _.mergeWith.apply(_, [{}].concat(group, function(obj, src) { // merge all items, and if a property is an array concat the content
                 if (Array.isArray(obj)) {
-                  return obj.concat(src);
+                  return obj.concat(src)
                 }
               }))
             })
             .values() // get the values from the groupBy object
-            .value();
+            .value()
         }
 
-        for(var i = 0; i < mergedCart.length; i++) {
-          for(var j = 0; j < fullData.length; j++) {
+        for(let i in mergedCart) {
+          for(let j in fullData) {
             if(fullData[j]) {
-              if (mergedCart[i].doi === fullData[j].message.doi) {
+              if (mergedCart[i].doi === fullData[j].message.doi && fullData[j].message.contains.length) {
                 mergedCart[i].contains.push(fullData[j].message.contains[0])
               }
             }
           }
         }
 
-        for(var k = 0; k < mergedCart.length; k++){
-          var result = mergeByDoi(mergedCart[k].contains)
-          mergedCart[k].contains = result
+        for(let k in mergedCart){
+          mergedCart[k].contains = mergeByDoi(mergedCart[k].contains)
         }
 
         //need to get publication meta data as well
-        var promises = []
+        const promises = []
 
-        for(var i = 0; i < mergedCart.length; i++) {
-          promises.push(this.props.asyncGetItem(mergedCart[i].doi).then((data)=>{ // this gets publication content
+        for(let i in mergedCart) {
+          promises.push(api.getItem(mergedCart[i].doi).then((data)=>{ // this gets publication content
             return data
           }))
         }
         Promise.all(promises).then((publicationData) => {
-          var issuePromises = []
-          for(var i = 0; i < publicationData.length; i++) {
+          const issuePromises = []
+          for(let i in publicationData) {
             mergedCart[i].content = publicationData[i].message.content
             for(let item of mergedCart[i].contains) {
               if (item.type === 'issue') {
-                issuePromises.push(this.props.asyncGetItem(item.doi).then((data)=>{ // this gets publication content
-                  item.content = data.message.contains[0].content
-                  return;
+                issuePromises.push(api.getItem(item.doi || {title: item.title, pubDoi: mergedCart[i].doi})
+                  .then((data)=>{
+                    item.content = data.message.contains[0].content
                 }))
               }
             }
@@ -163,16 +162,6 @@ export default class DepositCartPage extends Component {
     if (this.props.cart !== nextProps.cart) {
       this.getFullCart(nextProps.cart)
     }
-
-    if ((this.state.falseCnt !== nextState.falseCnt) && (nextState.falseCnt > 0)) {
-      this.setState({
-        showDeposit: false
-      })
-    }
-  }
-
-  componentDidMount() {
-    this.getFullCart()
   }
 
   review = () => {
@@ -197,82 +186,29 @@ export default class DepositCartPage extends Component {
   }
 
   deposit = () => {
-    if(!this.state.showDeposit || this.state.status === 'processing') return;
+    if(!this.state.showDeposit || this.state.status === 'processing') return
 
     const toDeposit = this.props.cart.map((item) => {
       return { 'doi': item.doi, 'version': item['mdt-version'] }
-    });
+    })
 
     this.setState({status:`processing`})
 
-    const errorHandler = (error) => {
-      this.setState({status: 'cart'});
-      this.props.reduxControlModal({
-        showModal: true,
-        title: 'Server Response - ' + error,
-        style: 'errorModal',
-        Component: ()=>null
-      })
-    }
-
-    this.props.asyncDeposit(toDeposit, (resultArray) => {
-      this.setState({status:'result', depositResult:resultArray})
-    }, errorHandler);
-
-
+    api.deposit(toDeposit).then( result => {
+      this.setState({status:'result', result: processDepositResult(result, this.props.publications, this.props.cart)})
+      this.props.reduxClearCart()
+    })
+    .catch(reason => errorHandler(reason, ()=>this.setState({status: 'cart'})))
   }
 
-  processDepositResult = () => {
-    const resultCount = {Success: 0, Failure: 0};
-    const resultData = {};
-    let depositId = [];
 
-    this.state.depositResult.forEach((result, index)=>{
-      let pubDoi, pubTitle, resultTitle, resultStatus, resultType;
-      let error = {};
-      const articleInfo = this.props.cart.find((cartItem)=>{
-        return cartItem.doi === result['DOI:']
-      });
-      pubDoi = articleInfo.pubDoi;
-      resultType = articleInfo.type;
-      pubTitle = this.props.publications[pubDoi].message.title.title;
-      resultTitle = articleInfo.title.title;
 
-      if(typeof result.result === 'string') {
-        resultStatus = 'Failure';
-        error.errorMessage = result.result;
-      } else if (typeof result.result === 'object') {
-        depositId.push(result.result.doi_batch_diagnostic.submission_id);
-        const recordDiagnostic = result.result.doi_batch_diagnostic.record_diagnostic;
-        resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status'];
-        if(resultStatus === 'Failure') {
-          error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg;
-        }
-      } else {
-        resultStatus = 'Failure';
-        error.errorMessage = 'Unknown Error';
-      }
-
-      resultCount[resultStatus]++;
-
-      resultData[pubTitle] = [...(resultData[pubTitle] || []), {
-        title: resultTitle,
-        status:resultStatus,
-        type:resultType,
-        doi: result['DOI:'],
-        pubDoi: pubDoi,
-        ...error
-      }];
-
-    });
-
-    depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0];
-
-    return {resultData, resultCount, depositId}
+  toggleDeposit = (showDeposit) => {
+    this.setState({showDeposit})
   }
 
   render () {
-    const {resultData, resultCount, depositId} = (this.state.status === 'result' && this.state.depositResult) ? this.processDepositResult() : {};
+    const {resultData, resultCount, depositId} = this.state.result
 
     return (
       <div className='depositPage'>
@@ -287,13 +223,12 @@ export default class DepositCartPage extends Component {
 
         {this.state.status !== 'result' &&
           <div className={this.state.status === 'processing' ? "opacity" : ''} >
-            {(this.props.cart.length > 0) ?
+            {(this.props.cart.length) ?
                 <DepositCart
-                  reduxCartUpdate={this.props.reduxCartUpdate}
-                  reduxControlModal={this.props.reduxControlModal}
-                  reduxCart={this.props.cart}
                   reduxRemoveFromCart={this.props.reduxRemoveFromCart}
                   fullCart={this.state.fullCart}
+                  cart={this.props.cart}
+                  showDeposit={this.state.showDeposit}
                   toggleDeposit={this.toggleDeposit}
                 />
               : <EmptyCart/>
@@ -310,52 +245,4 @@ export default class DepositCartPage extends Component {
 }
 
 
-const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {
-  return (
-    <div>
-      {status !== 'result' &&
-        <div className='pageTitle'>
-          Deposit Cart
-        </div>
-      }
 
-      <div className='buttonHolder'>
-        <div className='buttonInnerHolder'>
-          <div className='ReviewButtonHolder'>
-            {status !== 'result' ? (cart.length > 0 ? <a onClick={review}>Review All</a> : '') : <div className='pageTitle'>Deposit Result</div>}
-          </div>
-          <div className={`DepositButtonHolder ${status === 'result' ? 'result' : ''}`}>
-            <a
-              onClick={deposit}
-              className={((!showDeposit || status === 'processing') ? 'disabledDeposit' : '') + (cart.length <= 0 ? ' emptycartbutton': '')}>
-              {(cart.length > 0 && status !== 'processing') ? 'Deposit' : 'Processing...'}
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  )
-}
-
-const EmptyCart = () => {
-  return (
-    <div className='EmptyHolder'>
-      <div className='emptyTitle'>
-        Deposit Cart is Empty
-      </div>
-      <div className='emptyBoxHolder'>
-        <img src={`${routes.images}/Deposit/Asset_Empty_Box_Empty Box Yellow.svg`} />
-      </div>
-    </div>
-  )
-}
-
-const WaitMessage = () => {
-  return (
-    <div className="waitMessage">
-      <div>Just a moment...</div>
-      <div>Please wait while we process your deposit</div>
-      <img src={`${routes.images}/Deposit/Asset_Load_Throbber_Load Throbber Grey.svg`} />
-    </div>
-  )
-}

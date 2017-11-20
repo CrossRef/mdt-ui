@@ -1,14 +1,18 @@
 // See http://brunch.io for documentation.
+var config = require('./deployConfig')
+
+exports.sourceMaps = true
+
 exports.files = {
   javascripts: {
     joinTo: {
-      'js/app.js': /^app/,
-      'js/libs.js': /^(?!app)/
+      'assets/js/app.js': /^app/,
+      'assets/js/libs.js': /^(?!app)/
     }
   },
-  stylesheets: {joinTo: 'app.css'},
+  stylesheets: {joinTo: 'assets/app.css'},
   templates: {
-    joinTo: 'js/app.js'
+    joinTo: 'assets/js/app.js'
   },
   conventions: {
     vendor: /^vendor[\\/]/
@@ -19,6 +23,10 @@ exports.files = {
       return path.replace(/^(app|bower_components\/.*(\/dist)?)\//, '')
     }
   }
+}
+
+exports.paths = {
+  public: 'metadatamanager'
 }
 
 exports.watcher = {
@@ -32,10 +40,16 @@ exports.plugins = {
   sass: {
     mode: 'native'
   },
-  babel: {presets: ['latest', 'react', 'stage-0'], plugins: ['transform-runtime', 'transform-decorators-legacy']}
+  babel: {
+    presets: [
+      'env', 'stage-0', "react"
+    ],
+    plugins: ['transform-decorators-legacy', 'transform-runtime', 'system-import-transformer']
+  }
 }
 
 exports.server = {
-  hostname: '0.0.0.0'
+  hostname: '0.0.0.0',
+  base: config.baseUrl
 }
 

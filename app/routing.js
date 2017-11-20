@@ -3,55 +3,49 @@ import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
 import App from './containers/app'
-import ArticlesPage from './containers/articlesPage'
-import AddArticlesPage from './containers/addArticlesPage'
+import AddArticlePage from './containers/addArticlePage'
 import LoginPage from './containers/loginPage'
-import LoggedInPage from './containers/loggedIn'
 import PublicationsPage from './containers/publicationsPage'
 import PublicationPage from './containers/publicationPage'
 import DepositCartPage from './containers/depositCartPage'
 import DepositHistoryPage from './containers/depositHistoryPage'
 
 
-// ------------------ Set base url here ------------------
-const base = "/mdt";
 
+let base = `/${window.location.pathname.split('/')[1]}/`;
+if(base === '//') base = '/';
 
 export const routes = {
-  base: base || '/',
-  images: base + '/images',
-  loggedInPage: base + '/loggedin',
-  publications: base + '/publications',
-  publicationsModal: base + '/publications?modal=:doi',
-  publication: base + '/publications/:doi',
-  articles: base + '/articles',
-  addArticle: base + '/publications/:pubDoi/addarticle',
-  editArticle: base + '/publications/:pubDoi/addarticle/:articleDoi',
-  addArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle',
-  editArticleUnderIssue: base + '/publications/:pubDoi/:issueDoi/addarticle/:articleDoi',
-  depositCart: base + '/cart',
-  depositHistory: base + '/deposit-history'
+  base: base,
+  images: base + 'assets/images',
+  publications: base + 'publications',
+  publicationsModal: base + 'publications?modal=:issueId',
+  publication: base + 'publications/:pubDoi',
+  addArticle: base + 'publications/:pubDoi/addarticle',
+  editArticle: base + 'publications/:pubDoi/addarticle/:articleDoi',
+  addArticleUnderIssue: base + 'publications/:pubDoi/:issueId/addarticle',
+  editArticleUnderIssue: base + 'publications/:pubDoi/:issueId/addarticle/:articleDoi',
+  depositCart: base + 'cart',
+  depositHistory: base + 'deposit-history'
 };
 
-export default () => {
+export default ({resetPage}) => {
 
   return (
-    <Route path={routes.base} component={App} basename={'mdt'}>
-      <IndexRoute component={LoginPage} />
-      <Route path={routes.loggedInPage} component={LoggedInPage} />
-      <Route path={routes.publications} component={PublicationsPage} />
-      <Route path={routes.publicationsModal} component={PublicationsPage} />
-      <Route path={routes.publication} component={PublicationPage} />
-      <Route path={routes.articles} component={ArticlesPage} />
-      <Route path={routes.addArticle} component={AddArticlesPage} />
-      <Route path={routes.editArticle} component={AddArticlesPage} />
-      <Route path={routes.addArticleUnderIssue} component={AddArticlesPage} />
-      <Route path={routes.editArticleUnderIssue} component={AddArticlesPage} />
-      <Route path={routes.depositCart} component={DepositCartPage} />
-      <Route path={routes.depositHistory} component={DepositHistoryPage} />
+    <Route path={routes.base} component={App}>
+      <IndexRoute component={LoginPage} onEnter={resetPage}/>
+      <Route path={routes.publications} component={PublicationsPage} onEnter={resetPage} />
+      <Route path={routes.publicationsModal} component={PublicationsPage} onEnter={resetPage} />
+      <Route path={routes.publication} component={PublicationPage} onEnter={resetPage} />
+      <Route path={routes.addArticle} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.editArticle} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.addArticleUnderIssue} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.editArticleUnderIssue} component={AddArticlePage} onEnter={resetPage} />
+      <Route path={routes.depositCart} component={DepositCartPage} onEnter={resetPage} />
+      <Route path={routes.depositHistory} component={DepositHistoryPage} onEnter={resetPage} />
     </Route>
   )
 }
 
-// Is ArticlesPage doing anything? Remove?
+
 

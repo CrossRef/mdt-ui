@@ -1,4 +1,6 @@
-import fetch from '../utilities/fetch'
+import {removeDuplicates} from '../utilities/helpers'
+import {routes} from '../routing'
+import * as api from '../actions/api'
 
 
 var blacklistActions = [
@@ -13,7 +15,8 @@ var blacklistActions = [
   'SEARCH_RESULT',
   'SEARCH_STATUS',
   'SEARCH_VALUE',
-  'LOGIN'
+  'LOGIN',
+  'CLEAR_TOAST'
 ]
 
 const BREAKER_ACTION = 'SET_STATE'
@@ -25,8 +28,12 @@ export default store => next => action => {
 
   if (action) {
 
-    let actionType = action.type;
-    const authHeader = localStorage.getItem('auth');
+    if(action.type === '@@router/LOCATION_CHANGE' && action.payload.pathname === routes.base) {
+      return
+    }
+
+    let actionType = action.type
+    const authHeader = localStorage.getItem('auth')
 
     if (!breakerActionSeen && actionType === BREAKER_ACTION) {
       breakerActionSeen = true
@@ -47,24 +54,22 @@ export default store => next => action => {
           if (reduxState.hasOwnProperty(property) && !reduxState[property].hasOwnProperty('sync')) {
             if( //scrub data being synced to server
               property !== 'modal' &&
+              property !== 'publications' &&
               property !== 'reduxForm' &&
-              property !== 'search'
+              property !== 'search' &&
+              property !== 'toast'
             )
               postingState[property] = reduxState[property]
           }
         }
         //Scrub dois array
         postingState.dois = postingState.dois.filter( element => {
-          return element ? true : false
-        });
-        postingState.dois = removeDuplicates(postingState.dois);
+          return !!element
+        })
+        postingState.dois = removeDuplicates(postingState.dois)
 
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
-        fetch('http://mdt.crossref.org/mdt/v1/state', {
-          method: 'POST',
-          headers: {Authorization: authHeader},
-          body: JSON.stringify(postingState)
-        })
+        api.syncState(postingState)
 
         // Reset pending state
         pendingAction = false
@@ -75,26 +80,4 @@ export default store => next => action => {
   return nextState
 }
 
-var isEmpty = (obj) => {
-  for (var key in obj) {
-    if (obj.hasOwnProperty(key)) {
-      return false
-    }
-  }
-  return true
-}
 
-function removeDuplicates(a) {
-  var seen = {};
-  var out = [];
-  var len = a.length;
-  var j = 0;
-  for(var i = 0; i < len; i++) {
-    var item = a[i];
-    if(seen[item] !== 1) {
-      seen[item] = 1;
-      out[j++] = item;
-    }
-  }
-  return out;
-}

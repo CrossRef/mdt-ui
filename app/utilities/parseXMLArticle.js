@@ -1,18 +1,17 @@
-import React, { Component } from 'react'
+import React from 'react'
 import _ from 'lodash'
-import { deParseCrossmark } from './crossmarkHelpers'
 
-const Languages = require('./language.json')
-import { ArchiveLocations } from './archiveLocations'
-const PublicationTypes = require('./publicationTypes.json')
-const AppliesTo = require('./appliesTo.json')
-const IdentifierTypes = require('./identifierTypes.json')
-import xmldoc from './xmldoc'
-import objectSearch from './objectSearch'
+import { parseCrossmark } from './crossmarkHelpers'
+import {objectSearch, objectDelete, xmldoc} from './helpers'
+
+
 
 const parseXMLArticle = function (articleXML) {
     var retObj = {}
     const parsedArticle = xmldoc(articleXML)
+
+    objectDelete(parsedArticle, 'journal_metadata')
+
     // article loading
     let publication_date = objectSearch(parsedArticle, 'publication_date');
     if(publication_date && !Array.isArray(publication_date)) publication_date = [publication_date];
@@ -45,17 +44,6 @@ const parseXMLArticle = function (articleXML) {
         onlineDateYear = onlinePubDate['year'] ? onlinePubDate['year'] : ''
         onlineDateMonth = onlinePubDate['month'] ? onlinePubDate['month'] : ''
         onlineDateDay = onlinePubDate['day'] ? onlinePubDate['day'] : ''
-    }
-
-    const acceptedPubDate = objectSearch(parsedArticle, 'acceptance_date')
-
-    var acceptedDateYear = ''
-    var acceptedDateMonth = ''
-    var acceptedDateDay = ''
-    if (acceptedPubDate) {
-        acceptedDateYear = acceptedPubDate['year'] ? acceptedPubDate['year'] : ''
-        acceptedDateMonth = acceptedPubDate['month'] ? acceptedPubDate['month'] : ''
-        acceptedDateDay = acceptedPubDate['day'] ? acceptedPubDate['day'] : ''
     }
 
     const titles = objectSearch(parsedArticle, 'titles')
@@ -115,13 +103,11 @@ const parseXMLArticle = function (articleXML) {
         onlineDateYear: onlineDateYear,
         onlineDateMonth: onlineDateMonth,
         onlineDateDay: onlineDateDay,
-        acceptedDateYear: acceptedDateYear,
-        acceptedDateMonth: acceptedDateMonth,
-        acceptedDateDay: acceptedDateDay,
         firstPage: firstPage,
         lastPage: lastPage,
         locationId: locationId,
-        abstract: abstract
+        abstract: abstract,
+        freetolicense: (objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1) ? 'yes' : ''
     }
 
     retObj = _.extend(retObj, {
@@ -142,101 +128,26 @@ const parseXMLArticle = function (articleXML) {
     }
     const language = objectSearch(parsedArticle, '-language')
 
-    const freeToRead = objectSearch(parsedArticle, 'ai:free_to_read')
-
     const addInfo = {
         archiveLocation: archive,
         language: language ? language : '',
-        publicationType: publicationType ? publicationType : '',
         similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
-        freetolicense: freeToRead ? 'yes' : 'no'
     }
 
     retObj = _.extend(retObj, {
         addInfo: addInfo
     })
 
+    retObj.openItems={}
+    retObj.openItems.addInfo = !!(archiveLocations || language || publicationType || similarityCheckURL);
+
     // contributor loading
-    const contributors = objectSearch(parsedArticle, 'contributors')
-    var contributee = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    var person_name = undefined
-    var organization = undefined
-    if (contributors) {
-        person_name = objectSearch(contributors, 'person_name')
-        organization = objectSearch(contributors, 'organization')
+    const getOrganization = true;
+    var contributee = getContributors(parsedArticle, getOrganization);
 
-        if (person_name) { // if exist
-        if (!Array.isArray(person_name)) {
-            // there is ONE funder
-            contributee.push(
-            {
-                firstName: person_name.given_name ? person_name.given_name : '',
-                lastName: person_name.surname ? person_name.surname : '',
-                suffix: person_name.suffix ? person_name.suffix : '',
-                affiliation: person_name.affiliation ? person_name.affiliation : '',
-                orcid: person_name.ORCID ? person_name.ORCID : '',
-                role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
-                groupAuthorName: '',
-                groupAuthorRole: ''
-            }
-            )
-        } else { // its an array
-            _.each(person_name, (person) => {
-            contributee.push(
-                {
-                firstName: person.given_name ? person.given_name : '',
-                lastName: person.surname ? person.surname : '',
-                suffix: person.suffix ? person.suffix : '',
-                affiliation: person.affiliation ? person.affiliation : '',
-                orcid: person.ORCID ? person.ORCID : '',
-                role: person['-contributor_role'] ? person['-contributor_role'] : '',
-                groupAuthorName: '',
-                groupAuthorRole: ''
-                }
-            )
-            })
-        }
-        }
-
-        if (organization) { // if exist
-        if (!Array.isArray(organization)) {
-            // there is ONE organization
-            contributee.push(
-            {
-                firstName: '',
-                lastName: '',
-                suffix: '',
-                affiliation: '',
-                orcid: '',
-                role: '',
-                groupAuthorName: organization['#text'] ? organization['#text'] : '',
-                groupAuthorRole: organization['-contributor_role'] ? organization['-contributor_role'] : ''
-            }
-            )
-        } else { // its an array
-            _.each(organization, (org) => {
-            contributee.push(
-                {
-                firstName: '',
-                lastName: '',
-                suffix: '',
-                affiliation: '',
-                orcid: '',
-                role: '',
-                groupAuthorName: org['#text'] ? org['#text'] : '',
-                groupAuthorRole: org['-contributor_role'] ? org['-contributor_role'] : ''
-                }
-            )
-            })
-        }
-        }
-    }
-
-    if (contributee.length <= 0) {
-        contributee.push(
-        {
+    const thereAreContributors = contributee.length > 0;
+    if (!thereAreContributors) {
+        contributee.push({
             firstName: '',
             lastName: '',
             suffix: '',
@@ -245,92 +156,66 @@ const parseXMLArticle = function (articleXML) {
             role: '',
             groupAuthorName: '',
             groupAuthorRole: ''
-        }
-        )
+        })
     }
+
+    retObj.openItems.Contributors = thereAreContributors;
 
     retObj = _.extend(retObj, {
         contributors: contributee
     })
 
     // fundings loading
-    const fundings = objectSearch(parsedArticle, 'fr:assertion')
-    var funders = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    if (fundings) {
-        if (!Array.isArray(fundings)) {
-            // only 1 funder
-            // 0 is the actual funder data
-            // 1 is the grantnumbers
-            const thefunder = objectSearch(fundings, 'fr:assertion')
-            var funderName = ''
-            var funderRegId = ''
-            var funderIdent = ''
-            var grants = []
-            // because I don't know what is returned back from backend cause there is no validation, I need to loop
-            for(var i = 0; i < thefunder.length; i++) {
-            if (thefunder[i]['-name'] === 'funder_name'){
-                funderName = thefunder[i]['#text'].trim()
-                // within hte name, there is the funder ID
-                const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
-                if (thefunderReg) {
-                    funderIdent = thefunderReg['#text']
-                    funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
-                }
+    let fundings = objectSearch(parsedArticle, 'fr:assertion')
+    const funders = [];
+    retObj.openItems.Funding=!!fundings
 
-            } else if (thefunder[i]['-name'] === 'award_number'){
-                grants.push(thefunder[i]['#text'])
-            }
-            }
-            funders.push({
-            fundername: funderName,
-            funderRegistryID: funderRegId,
-            funder_identifier: funderIdent,
-            grantNumbers: grants.length > 0 ? grants : ['']
-            })
-        } else {
-            _.each(fundings, (fund) => {
-            const thefunder = objectSearch(fund, 'fr:assertion')
-            var funderName = ''
-            var funderRegId = ''
-            var funderIdent = ''
-            var grants = []
-            // because I don't know what is returned back from backend cause there is no validation, I need to loop
-            for(var i = 0; i < thefunder.length; i++) {
-                if (thefunder[i]['-name'] === 'funder_name'){
-                funderName = thefunder[i]['#text'].trim()
-                // within hte name, there is the funder ID
-                const thefunderReg = objectSearch(thefunder[i], 'fr:assertion')
-                if (thefunderReg) {
-                    funderIdent = thefunderReg['#text']
-                    funderRegId = funderIdent.substr(funderIdent.lastIndexOf('/')+1, funderIdent.length -1)
-                }
-                } else if (thefunder[i]['-name'] === 'award_number'){
-                grants.push(thefunder[i]['#text'])
-                }
-            }
-            funders.push(
-                {
-                fundername: funderName,
-                funderRegistryID: funderRegId,
-                funder_identifier: funderIdent,
-                grantNumbers: grants.length > 0 ? grants : ['']
-                }
-            )
-            })
+    if (fundings) {
+      if (!Array.isArray(fundings)) {
+        fundings = [fundings]
+      }
+
+      _.each(fundings, (fund) => {
+        let thefunder = objectSearch(fund, 'fr:assertion')
+        let funderName = ''
+        let funderIdent = ''
+        let grants = []
+
+        if(!Array.isArray(thefunder)) {
+          thefunder = [thefunder];
         }
+        for(const element of thefunder) {
+          if (element['-name'] === 'funder_identifier') {
+            funderIdent = element['#text']
+          } else if (element['-name'] === 'funder_name'){
+            funderName = element['#text'].trim()
+            // within the name, there is the funder ID
+            const thefunderId = objectSearch(element, 'fr:assertion')
+            if (thefunderId) {
+              funderIdent = thefunderId['#text']
+            }
+
+          } else if (element['-name'] === 'award_number'){
+            grants.push(element['#text'])
+          }
+        }
+
+
+        funders.push({
+          funderName: funderName,
+          funder_identifier: funderIdent,
+          grantNumbers: grants.length > 0 ? grants : ['']
+        })
+      })
     }
 
     if (funders.length <= 0) {
-        funders.push(
-        {
+        funders.push({
             fundername: '',
             funderRegistryID: '',
             funder_identifier: '',
             grantNumbers: ['']
-        }
-        )
+        })
     }
 
     retObj = _.extend(retObj, {
@@ -338,101 +223,199 @@ const parseXMLArticle = function (articleXML) {
     })
 
     // license loading
-    const licences = objectSearch(parsedArticle, 'ai:license_ref')
-    var lic = []
-    // contributors are divied into 2 types
-    // person_name and organization
-    if (licences) {
-        if (!Array.isArray(licences)) {
-        const licAcceptedDate = licences['-start_date'].split('-')
-        lic.push({
-            acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-            acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-            acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-            appliesto: licences['-applies_to'] ? licences['-applies_to'] : '',
-            licenseurl: licences['#text'] ? licences['#text'] : ''
-            })
-        } else {
-        for(var i = 0; i < licences.length; i++) {
-            const licAcceptedDate = licences[i]['-start_date'].split('-')
-            lic.push({
-                acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
-                acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
-                acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
-                appliesto: licences[i]['-applies_to'] ? licences[i]['-applies_to'] : '',
-                licenseurl: licences[i]['#text'] ? licences[i]['#text'] : ''
-            })
-        }
-        }
-    }
+    var lic = getLicenses(parsedArticle, retObj)
 
-    if (lic.length <= 0) {
-        lic.push(
-        {
+    const thereAreLicenses = lic.length > 0;
+
+    if (!thereAreLicenses) {
+        lic.push({
             acceptedDateDay: '',
             acceptedDateMonth: '',
             acceptedDateYear: '',
             appliesto: '',
             licenseurl: ''
-        }
-        )
+        })
     }
 
+    retObj.openItems.Licenses = thereAreLicenses || article.freetolicense === 'yes'
     retObj = _.extend(retObj, {
         license: lic
     })
 
     // related items
     const relatedItems = objectSearch(parsedArticle, 'related_item')
+    retObj.openItems.relatedItems= !!relatedItems;
     var relItem = []
-    // contributors are divied into 2 types
-    // person_name and organization
     if (relatedItems) {
         if (!Array.isArray(relatedItems)) {
-        const inter_work_relation = objectSearch(relatedItems, 'inter_work_relation')
-        relItem.push({
-            description: relatedItems['description'] ? relatedItems['description'] : '',
-            identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
-            relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
-            relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
-            })
+          const inter_work_relation = objectSearch(relatedItems, 'inter_work_relation') || {}
+          relItem.push({
+              description: relatedItems['description'] || '',
+              identifierType: inter_work_relation['-identifier-type'] || '',
+              relatedItemIdentifier: (typeof inter_work_relation === 'string') ? inter_work_relation : inter_work_relation['#text'] || '',
+              relationType: inter_work_relation['-relationship-type'] || ''
+          })
         } else {
-        for(var i = 0; i < relatedItems.length; i++) {
-            const inter_work_relation = objectSearch(relatedItems[i], 'inter_work_relation')
+          for(var i = 0; i < relatedItems.length; i++) {
+            const inter_work_relation = objectSearch(relatedItems[i], 'inter_work_relation') || {}
             relItem.push({
-            description: relatedItems[i]['description'] ? relatedItems[i]['description'] : '',
-            identifierType: inter_work_relation['-identifier-type'] ? inter_work_relation['-identifier-type'] : '',
-            relatedItemIdentifier: inter_work_relation['#text'] ? inter_work_relation['#text'] : '',
-            relationType: inter_work_relation['-relationship-type'] ? inter_work_relation['-relationship-type'] : ''
+              description: relatedItems[i]['description'] || '',
+              identifierType: inter_work_relation['-identifier-type'] || '',
+              relatedItemIdentifier: (typeof inter_work_relation === 'string') ? inter_work_relation : inter_work_relation['#text'] || '',
+              relationType: inter_work_relation['-relationship-type'] || ''
             })
-        }
+          }
         }
     }
 
     if (relItem.length <= 0) {
-        relItem.push(
-        {
+        relItem.push({
             description: '',
             identifierType: '',
             relatedItemIdentifier: '',
             relationType: ''
-        }
-        )
+        })
     }
 
     retObj = _.extend(retObj, {
         relatedItems: relItem
     })
 
-    if(parsedArticle.crossref) {
-      if(parsedArticle.crossref.journal.journal_article.crossmark) {
-        const {reduxForm, showCards} = deParseCrossmark(parsedArticle.crossref.journal.journal_article.crossmark);
-        if(reduxForm && showCards) {
-          retObj.crossmark = {reduxForm, showCards};
-        }
+    const crossmark = objectSearch(parsedArticle, 'crossmark')
+    if(crossmark) {
+      const {reduxForm, showCards} = parseCrossmark(crossmark)
+      if(reduxForm && showCards) {
+        retObj.crossmark = {reduxForm, showCards}
       }
     }
 
     return retObj
 }
 export default parseXMLArticle
+
+
+
+
+export function getLicenses (parsedArticle) {
+  // license loading
+  const licences = objectSearch(parsedArticle, 'ai:license_ref')
+
+  var lic = []
+
+  if (licences) {
+    if (typeof licences === 'string') {
+      lic.push({
+        acceptedDateDay: '',
+        acceptedDateMonth: '',
+        acceptedDateYear: '',
+        appliesto: '',
+        licenseurl: licences
+      })
+    } else if (!Array.isArray(licences)) {
+      const licAcceptedDate = licences['-start_date'] ? licences['-start_date'].split('-') : [];
+      lic.push({
+        acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
+        acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
+        acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
+        appliesto: licences['-applies_to'] ? licences['-applies_to'] : '',
+        licenseurl: licences['#text'] ? licences['#text'] : ''
+      })
+    } else {
+      for(var i = 0; i < licences.length; i++) {
+        const licAcceptedDate = licences[i]['-start_date'] ? licences[i]['-start_date'].split('-') : [];
+        lic.push({
+          acceptedDateDay: licAcceptedDate[2] ? licAcceptedDate[2] : '',
+          acceptedDateMonth: licAcceptedDate[1] ? licAcceptedDate[1] : '',
+          acceptedDateYear: licAcceptedDate[0] ? licAcceptedDate[0] : '',
+          appliesto: licences[i]['-applies_to'] ? licences[i]['-applies_to'] : '',
+          licenseurl: licences[i]['#text'] ? licences[i]['#text'] : ''
+        })
+      }
+    }
+  }
+  return lic
+}
+
+
+export function getContributors (parsedArticle, getOrganization) {
+  // contributor loading
+  var contributors = objectSearch(parsedArticle, 'contributors');
+
+  var contributee = []
+  // contributors are divied into 2 types
+  // person_name and organization
+  var person_name = undefined
+  var organization = undefined
+  if (contributors) {
+    person_name = objectSearch(contributors, 'person_name')
+    if (getOrganization) organization = objectSearch(contributors, 'organization')
+
+    if (person_name) { // if exist
+      if (!Array.isArray(person_name)) {
+        // there is ONE funder
+        contributee.push(
+          {
+            firstName: person_name.given_name ? person_name.given_name : '',
+            lastName: person_name.surname ? person_name.surname : '',
+            suffix: person_name.suffix ? person_name.suffix : '',
+            affiliation: person_name.affiliation ? person_name.affiliation : '',
+            orcid: person_name.ORCID ? person_name.ORCID : '',
+            role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
+            groupAuthorName: '',
+            groupAuthorRole: ''
+          }
+        )
+      } else { // its an array
+        _.each(person_name, (person) => {
+          contributee.push(
+            {
+              firstName: person.given_name ? person.given_name : '',
+              lastName: person.surname ? person.surname : '',
+              suffix: person.suffix ? person.suffix : '',
+              affiliation: person.affiliation ? person.affiliation : '',
+              orcid: person.ORCID ? person.ORCID : '',
+              role: person['-contributor_role'] ? person['-contributor_role'] : '',
+              groupAuthorName: '',
+              groupAuthorRole: ''
+            }
+          )
+        })
+      }
+    }
+
+    if (organization) {
+
+      if (!Array.isArray(organization)) {
+        // there is ONE organization
+        contributee.push(
+          {
+            firstName: '',
+            lastName: '',
+            suffix: '',
+            affiliation: '',
+            orcid: '',
+            role: '',
+            groupAuthorName: organization['#text'] ? organization['#text'] : '',
+            groupAuthorRole: organization['-contributor_role'] ? organization['-contributor_role'] : ''
+          }
+        )
+      } else { // its an array
+        _.each(organization, (org) => {
+          contributee.push(
+            {
+              firstName: '',
+              lastName: '',
+              suffix: '',
+              affiliation: '',
+              orcid: '',
+              role: '',
+              groupAuthorName: org['#text'] ? org['#text'] : '',
+              groupAuthorRole: org['-contributor_role'] ? org['-contributor_role'] : ''
+            }
+          )
+        })
+      }
+    }
+  }
+  return contributee
+}

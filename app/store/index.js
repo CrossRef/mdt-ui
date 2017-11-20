@@ -7,6 +7,7 @@ import { routerMiddleware } from 'react-router-redux'
 import rootReducer from '../reducers'
 import remoteSync from '../middleware/remote-sync'
 
+export let exposedStore = {}
 
 export default function configure () {
   const create = window.devToolsExtension
@@ -14,7 +15,7 @@ export default function configure () {
     : createStore
 
   const browserHistoryNew = useRouterHistory(createHistory)({
-    basename: 'mdt'
+    basename: 'metadatamanager'
   })
 
   const createStoreWithMiddleware = applyMiddleware(
@@ -25,5 +26,6 @@ export default function configure () {
 
   const store = createStoreWithMiddleware(rootReducer)
 
+  exposedStore = store
   return store
 }
