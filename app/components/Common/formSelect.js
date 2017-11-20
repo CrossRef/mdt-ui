@@ -15,6 +15,9 @@ export default class FormSelect extends React.Component {
     options: is.array.isRequired,
     required: is.bool,
     error: is.bool,
+    trackErrors: is.array,
+    allErrors: is.object,
+    setErrorMessages: is.func.isRequired,
     changeHandler: is.func.isRequired,
     onSelect: is.func,
     onBlur: is.func,
@@ -35,9 +38,22 @@ export default class FormSelect extends React.Component {
       this.props.onFocus()
     }
 
+    const setErrorMessages = () => {
+      if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
+        if(this.props.subItemIndex) {
+          this.props.errorUtility.subItemIndex = this.props.subItemIndex
+        }
+        this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+      }
+    }
+
     this.setState({focus: true}, ()=>{
       if(this.props.tooltip) {
+        this.props.setErrorMessages([])
+        setErrorMessages()
         this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
+      } else {
+        setErrorMessages()
       }
     })
   }
@@ -55,6 +71,15 @@ export default class FormSelect extends React.Component {
   }
 
 
+  onSelect = async (e) => {
+    await this.props.changeHandler(e)
+    if(this.props.onSelect) {
+      this.props.onSelect()
+    }
+    this.node.blur()
+  }
+
+
   options = () => {
     var options = [
       <option key='-1'></option>,
@@ -64,12 +89,7 @@ export default class FormSelect extends React.Component {
     return (
       <select
         name={this.props.name}
-        onChange={ async (e) => {
-          await this.props.changeHandler(e)
-          if(this.props.onSelect) {
-            this.props.onSelect(e)
-          }
-        }}
+        onChange={this.onSelect}
         className={
           `height32 ${
           this.props.error ? 'fieldError' : ''} ${
@@ -80,6 +100,7 @@ export default class FormSelect extends React.Component {
         onFocus={this.onFocus}
         onBlur={this.onBlur}
         disabled={this.props.disabled}
+        ref={(node)=>this.node=node}
       >
         {options}
       </select>

@@ -3,20 +3,21 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import {browserHistory} from 'react-router'
-import $ from 'jquery'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {xmldoc, jsEscape, compareDois, DeferredTask} from '../utilities/helpers'
+import {DeferredTask} from '../utilities/helpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
 import {getSubItems} from '../utilities/getSubItems'
-import * as api from '../actions/api'
-import parseXMLArticle from '../utilities/parseXMLArticle'
-import journalArticleXml from '../components/AddArticlePage/articleXmlGenerator'
 import ReviewArticle from '../components/AddArticlePage/reviewArticleModal'
 import { XMLSerializer, DOMParser } from 'xmldom'
+import componentDidMount from '../components/AddArticlePage/helpers/componentDidMount'
+import save from '../components/AddArticlePage/helpers/save'
+
+
+
 
 
 const mapStateToProps = (state, props) => {
@@ -88,123 +89,16 @@ export default class AddArticlePage extends Component {
       ownerPrefix,
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
       version: '1',
-      deferredErrorBubbleRefresh: new DeferredTask(),
-      deferredTooltipBubbleRefresh: new DeferredTask()
+      deferredTooltipBubbleRefresh: new DeferredTask(),
+      errorMessages: []
     }
     this.state.article.doi = ownerPrefix + '/'
   }
 
 
-  async componentDidMount () {
+  componentDidMount = componentDidMount.bind(this)
 
-    const { pubDoi } = this.props.routeParams;
-    const getItems = []
-
-    if(this.state.editArticleDoi) {
-      getItems.push(api.getItem(this.state.editArticleDoi))
-    }
-    const checkForAcceptedPub = this.state.mode === 'edit'
-    getItems.push(api.getItem(pubDoi, checkForAcceptedPub).catch(e => api.getItem(pubDoi)))
-
-    const publications = await Promise.all(getItems)
-
-    const publicationData = publications[1] || publications[0]
-    const articleFullHierarchy = publications[0]
-
-    let publMeta = publicationData.message.content
-    const publicationMetaData = publMeta ? xmldoc(publMeta) : {}
-    const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
-
-    
-    if(this.state.editArticleDoi) {
-      delete articleFullHierarchy.message.content
-      articleFullHierarchy.message.date = publicationData.message.date
-      articleFullHierarchy.message.doi = articleFullHierarchy.message.doi || pubDoi
-      articleFullHierarchy.message['owner-prefix'] = articleFullHierarchy.message['owner-prefix'] || this.state.ownerPrefix
-      articleFullHierarchy.message['mdt-version'] = articleFullHierarchy.message['mdt-version'] || '0'
-    }
-
-    let publication = articleFullHierarchy
-
-    if (this.state.issueDoi || this.state.issueTitle) {
-      if(!this.state.editArticleDoi) { //New article means publicationData includes all records and need to locate the correct issue
-        articleFullHierarchy.message.contains[0] = articleFullHierarchy.message.contains.find((item)=>{
-          if(item.type !== 'issue') {
-            return false
-          }
-          return compareDois(this.state.issueDoi, item.doi) || JSON.stringify(this.state.issueTitle) === JSON.stringify(item.title)
-        })
-      }
-
-      let articleUnderPub = {
-        ...articleFullHierarchy,
-        message: {
-          ...articleFullHierarchy.message,
-          contains: [articleFullHierarchy.message.contains[0].contains[0]]
-        }
-      }
-      const issue = articleFullHierarchy.message.contains[0]
-      delete issue.content
-      issue['mdt-version'] = issue['mdt-version'] || '1'
-      issue['owner-prefix'] = issue['owner-prefix'] || this.state.ownerPrefix
-      issue.date = issue.date || new Date()
-
-      publication = articleUnderPub
-    }
-
-    if(this.state.mode === 'edit') {
-
-      let setStatePayload = {}
-
-      if(this.state.issueDoi || this.state.issueTitle) {
-        setStatePayload.issueTitle = articleFullHierarchy.message.contains[0].title
-      }
-
-      const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
-      let reduxForm
-      if(parsedArticle.crossmark) {
-        reduxForm = parsedArticle.crossmark.reduxForm
-        setStatePayload.showCards = parsedArticle.crossmark.showCards
-      }
-
-      const isDuplicate = this.props.location.state ? !!this.props.location.state.duplicateFrom : false
-      let doiDisabled = !isDuplicate
-      if(isDuplicate) {
-        parsedArticle.article.doi = this.state.ownerPrefix
-      }
-
-      const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
-
-      validatedPayload.openSubItems = true
-
-      setStatePayload = {
-        ...setStatePayload,
-        publication,
-        issuePublication: this.state.issueDoi || this.state.issueTitle ? articleFullHierarchy : undefined,
-        publicationMetaData,
-        publicationXml,
-        doiDisabled,
-        version: String( Number(publication.message.contains[0]['mdt-version'] || 0) + 1),
-        addInfo: parsedArticle.addInfo,
-        article: parsedArticle.article,
-        contributors: parsedArticle.contributors,
-        funding: parsedArticle.funding,
-        license: parsedArticle.license,
-        relatedItems: parsedArticle.relatedItems,
-        openItems: parsedArticle.openItems,
-        ...validatedPayload
-      }
-
-      this.setState(setStatePayload)
-    } else /*if add mode*/ {
-      this.setState({
-        publication,
-        issuePublication: publications[0],
-        publicationMetaData,
-        publicationXml
-      })
-    }
-  }
+  save = save.bind(this)
 
 
   componentWillReceiveProps (nextProps) {
@@ -256,6 +150,8 @@ export default class AddArticlePage extends Component {
       this.props.reduxEditForm(keyPath, newReduxForm)
     }
 
+    validatedPayload.errorMessages = this.errorUtility.onValidate(validatedPayload.errors, validatedPayload.contributors, validatedPayload.license, validatedPayload.relatedItems)
+
     return {valid, validatedPayload}
   }
 
@@ -268,83 +164,76 @@ export default class AddArticlePage extends Component {
   }
 
 
-  save = async (addToCart) => {
+  errorUtility = {
+    errorIndicators: [],
 
-    const {valid, validatedPayload} = await this.validation()
+    activeIndicator: -1,
 
-    validatedPayload.openSubItems = true
-    validatedPayload.saving = true
+    openingSubItem: false,
+    subItemIndex: "0",
 
-    if (valid) {
-      const publication = this.state.publication
+    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex) => {
+      if(node){
+        this.errorUtility.errorIndicators.push({
+          activeErrors,
+          trackErrors,
+          node,
+          subItem,
+          subItemIndex
+        })
 
-      const journalArticle = journalArticleXml(this.state, this.props.reduxForm)
-      const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
-      const journalElm = journalDoc.getElementsByTagName("journal")[0]
-      journalElm.appendChild(journalArticle)    
-      const title = jsEscape(this.state.article.title)
-
-      const newRecord = {
-        'title': {'title': title},
-        'date': new Date(),
-        'doi': this.state.article.doi,
-        'owner-prefix': this.state.ownerPrefix,
-        'type': 'article',
-        'mdt-version': this.state.version,
-        'status': 'draft',
-        'content': new XMLSerializer().serializeToString(journalDoc)
-      }
-
-      // check if its part of a issue, the issue props will tell us
-      let savePub
-
-      if (this.state.issueDoi || this.state.issueTitle) {
-        const issuePublication = this.state.issuePublication
-        const theIssue = issuePublication.message.contains[0]
-
-        theIssue.contains = [newRecord]
-        issuePublication.message.contains = [theIssue]
-
-        savePub = issuePublication
-      } else { // not issue, so just put directly under the publication
-        publication.message.contains = [newRecord]
-        savePub = publication
-      }
-
-      try {
-        await api.submitItem(savePub)
-      } catch (e) {
-        console.error('Error in save article: ', e)
-      }
-
-
-
-      const inCart = this.state.mode === 'edit' ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi)) : false
-
-      if(addToCart || inCart) {
-        newRecord.doi = newRecord.doi.toLowerCase()
-        newRecord.pubDoi = publication.message.doi
-        if(this.state.issueDoi || this.state.issueTitle) {
-          newRecord.issueDoi = this.state.issueDoi
-          newRecord.issueTitle = this.state.issueTitle
+        if(node.id === 'errorBubble') {
+          this.errorUtility.activeIndicator = this.errorUtility.errorIndicators.length - 1
         }
-        this.props.reduxCartUpdate(newRecord, inCart, addToCart)
-
       }
-      if (addToCart) {
-        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.message.doi)}`)
+    },
+
+    setErrorMessages: (setErrors, allErrors = this.state.errors) => {
+      const filteredErrorMessage = setErrors.filter((error)=>{
+        return allErrors[error]
+      })
+      this.setState({errorMessages: filteredErrorMessage})
+    },
+
+    onValidate: (newValidationErrors, contributors, license, relatedItems) => {
+      const {errorIndicators, activeIndicator} = this.errorUtility
+      const activeIndicatorObj = errorIndicators[activeIndicator]
+      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+      let newErrorMessages
+      const {subItem, subItemIndex} = activeIndicatorObj || {}
+
+      if(subItem) {
+        const subItemErrors = {
+          contributor: contributors,
+          license: license,
+          relatedItems: relatedItems
+        }
+
+        newErrorMessages = trackedIndicatorErrors.filter((error) => {
+          return subItemErrors[subItem][subItemIndex].errors[error]
+        })
+
       } else {
-
-        validatedPayload.doiDisabled = true
-        validatedPayload.version = (Number(this.state.version) + 1).toString()
-        validatedPayload.inCart = inCart
-
-        this.setState(validatedPayload)
+        newErrorMessages = trackedIndicatorErrors.filter((error)=>{
+          return newValidationErrors[error]
+        })
+        this.errorUtility.subItemIndex = "0"
       }
 
-    } else /*if not valid */{
-      this.setState(validatedPayload)
-      return false
+      if(!newErrorMessages.length) {
+        const indicatorBelow = errorIndicators[activeIndicator + 1]
+        const indicatorAbove = errorIndicators[activeIndicator - 1]
+
+        if(indicatorBelow) {
+          newErrorMessages = indicatorBelow.activeErrors
+          this.errorUtility.subItemIndex = indicatorBelow.subItemIndex || "0"
+        } else if(indicatorAbove) {
+          newErrorMessages = indicatorAbove.activeErrors
+          this.errorUtility.subItemIndex = indicatorAbove.subItemIndex || "0"
+        }
+      }
+
+      return newErrorMessages
     }
   }
 
@@ -353,6 +242,54 @@ export default class AddArticlePage extends Component {
     const addToCart = true
     this.save(addToCart)
   }
+
+
+  componentDidUpdate() {
+    if(this.state.validating) {
+      this.state.deferredTooltipBubbleRefresh.resolve()
+    }
+
+    //Select first error if first validation
+    if(
+      this.state.validating &&
+      this.state.error &&
+      (this.errorUtility.activeIndicator === -1 || this.errorUtility.errorIndicators.length === 1)
+    ) {
+      try {
+        this.errorUtility.setErrorMessages(this.errorUtility.errorIndicators[0].activeErrors)
+      } catch (e) {}
+    }
+
+    this.state.validating = false
+    this.state.saving = false
+    this.state.openSubItems = false
+  }
+
+
+  openReviewArticleModal = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title:
+        <div className='innerTitleHolder'>
+          <div className='innterTitleHolderIcon'>
+            <img src={`${routes.images}/ReviewArticle/Asset_Icons_White_Review.svg`} />
+          </div>
+          <div className='innerTitleHolderText'>
+            {this.state.article.title}
+          </div>
+        </div>,
+      style: 'defaultModal reviewModal',
+      Component: ReviewArticle,
+      props: {
+        submit: this.addToCart,
+        reviewData: this.state,
+        publication: this.state.publication,
+        publicationMetaData: this.state.publicationMetaData,
+        issue: this.state.issuePublication ? this.state.issuePublication.message.contains[0] : undefined,
+      }
+    })
+  }
+
 
   handleChange = async (e) => {
     this.setState({
@@ -388,42 +325,7 @@ export default class AddArticlePage extends Component {
         newArray.splice(index, 1)
         newArray
       }
-    }, ()=>this.state.deferredErrorBubbleRefresh.resolve())
-  }
-
-
-  openReviewArticleModal = () => {
-    this.props.reduxControlModal({
-      showModal: true,
-      title:
-        <div className='innerTitleHolder'>
-          <div className='innterTitleHolderIcon'>
-            <img src={`${routes.images}/ReviewArticle/Asset_Icons_White_Review.svg`} />
-          </div>
-          <div className='innerTitleHolderText'>
-            {this.state.article.title}
-          </div>
-        </div>,
-      style: 'defaultModal reviewModal',
-      Component: ReviewArticle,
-      props: {
-        submit: this.addToCart,
-        reviewData: this.state,
-        publication: this.state.publication,
-        publicationMetaData: this.state.publicationMetaData,
-        issue: this.state.issuePublication ? this.state.issuePublication.message.contains[0] : undefined,
-      }
     })
-  }
-
-
-  componentDidUpdate() {
-    if(this.state.validating) {
-      this.state.deferredErrorBubbleRefresh.resolve()
-    }
-    this.state.validating = false
-    this.state.saving = false
-    this.state.openSubItems = false
   }
 
 
@@ -438,6 +340,8 @@ export default class AddArticlePage extends Component {
 
 
   render () {
+    this.errorUtility.errorIndicators = []  //Saving refs of any errorIndicators rendered so need to clear it before each render
+    this.errorUtility.openingSubItem = false
     return (
       <div className='addArticles'>
 
@@ -454,6 +358,7 @@ export default class AddArticlePage extends Component {
           addSection={this.addSection}
           reduxDeleteCard={this.props.reduxDeleteCard}
           reduxForm={this.props.reduxForm}
+          errorUtility={this.errorUtility}
           {...this.state}
         />
       </div>

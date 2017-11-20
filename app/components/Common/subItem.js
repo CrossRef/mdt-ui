@@ -4,7 +4,6 @@ import is from 'prop-types'
 import {routes} from '../../routing'
 
 
-
 export default class SubItem extends Component {
 
   static propTypes = {
@@ -15,7 +14,6 @@ export default class SubItem extends Component {
     addHandler: is.func,
     CrossmarkAddButton: is.func,
     arrowType: is.string,
-    deferredErrorBubbleRefresh: is.object.isRequired,
     deferredTooltipBubbleRefresh: is.object,
     openSubItems: is.bool
   }
@@ -41,7 +39,7 @@ export default class SubItem extends Component {
   toggle = () => {
     this.setState({
       showSection: !this.state.showSection
-    }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
+    })
   }
 
 
@@ -72,6 +70,23 @@ export default class SubItem extends Component {
 
   render () {
     const { title, addHandler, arrowType } = this.props
+    let subItemErrorIndicator = null
+    let children = Array.isArray(this.props.children) ? [...this.props.children] : this.props.children
+
+    if(this.props.children[0] && this.props.children[0].type.name === 'ErrorIndicator') {
+      const ErrorIndicator = this.props.children[0]
+      subItemErrorIndicator = React.cloneElement(ErrorIndicator, {openSubItem: this.toggle, subItemIndex: "0"})
+      children.shift()
+      children = children.map((child)=>{
+        if(Array.isArray(child)) {
+          return child.map((anotherChild)=>{
+            return React.cloneElement(anotherChild, {ErrorIndicator: ErrorIndicator})
+          })
+        } else {
+          return child
+        }
+      })
+    }
 
     return (
       <div>
@@ -83,13 +98,13 @@ export default class SubItem extends Component {
               </span>
               <span>{title}</span>
             </div>
-
           </div>
+          {!this.state.showSection && subItemErrorIndicator}
         </div>
 
         {this.state.showSection &&
           <div className='body'>
-            {this.props.children}
+            {children}
             {this.addButton()}
           </div>
         }

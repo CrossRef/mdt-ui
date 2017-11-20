@@ -14,6 +14,9 @@ export default class FormInput extends React.Component {
     value: is.string.isRequired,
     required: is.bool,
     error: is.bool,
+    trackErrors: is.array,
+    allErrors: is.object,
+    setErrorMessages: is.func,
     changeHandler: is.func.isRequired,
     onBlur: is.func,
     onFocus: is.func,
@@ -32,9 +35,22 @@ export default class FormInput extends React.Component {
       this.props.onFocus()
     }
 
+    const setErrorMessages = () => {
+      if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
+        if(this.props.subItemIndex) {
+          this.props.errorUtility.subItemIndex = this.props.subItemIndex
+        }
+        this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+      }
+    }
+
     this.setState({focus: true}, ()=>{
       if(this.props.tooltip) {
+        this.props.setErrorMessages([])
+        setErrorMessages()
         this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
+      } else {
+        setErrorMessages()
       }
     })
   }

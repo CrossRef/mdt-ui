@@ -6,6 +6,7 @@ import {urlEntered} from '../../../utilities/helpers'
 import FormInput from '../../Common/formInput'
 import FormSelect from '../../Common/formSelect'
 import FormDate from '../../Common/formDate'
+import ErrorIndicator from '../../Common/errorIndicator'
 const AppliesTo = require('../../../utilities/lists/appliesTo.json')
 
 
@@ -26,12 +27,7 @@ export default class License extends Component {
   }
 
 
-  componentDidUpdate () {
-    this.props.deferredErrorBubbleRefresh.resolve()
-  }
-
-
-  toggle () {
+  toggle = () => {
     this.setState({
       showSubItem: !this.state.showSubItem
     })
@@ -54,9 +50,20 @@ export default class License extends Component {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, licenseurl, appliesto} = this.props.license;
     const errors = this.props.license.errors || {};
     const thereIsDate = !!(acceptedDateYear || acceptedDateMonth || acceptedDateDay);
+
+    const subItemErrorIndicator = React.cloneElement(
+      this.props.ErrorIndicator,
+      {
+        openSubItem: this.toggle,
+        allErrors: errors,
+        subItemIndex: String(this.props.index),
+        subItem: 'license'
+      }
+    )
+
     return (
       <div>
-        <div className='row subItemRow' onClick={this.toggle.bind(this)}>
+        <div className='row subItemRow' onClick={this.toggle}>
           <div className='subItemHeader subItemTitle'>
             <span className={'arrowHolder' + (this.state.showSubItem ? ' openArrowHolder' : '')}>
               <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
@@ -68,6 +75,7 @@ export default class License extends Component {
               <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
             </div>
           }
+          {!this.state.showSubItem && subItemErrorIndicator}
         </div>
 
         {this.state.showSubItem &&
@@ -79,6 +87,11 @@ export default class License extends Component {
                   name="acceptedDate"
                   changeHandler={this.handleLicense}
                   onSelect={this.props.validate}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   fields={{
                     year: {
                       value: acceptedDateYear,
@@ -94,6 +107,14 @@ export default class License extends Component {
                     }
                   }}/>
               </div>
+
+              <ErrorIndicator
+                trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                allErrors={errors}
+                subItem='license'
+                subItemIndex={String(this.props.index)}/>
             </div>
 
             <div className='row'>
@@ -105,6 +126,11 @@ export default class License extends Component {
                   error={errors.freetolicense || errors.licenseUrl || errors.licenseUrlInvalid}
                   value={ urlEntered(licenseurl) ? licenseurl : 'http://'}
                   changeHandler={this.handleLicense}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['licenseUrl', 'licenseUrlInvalid']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
@@ -113,8 +139,17 @@ export default class License extends Component {
                   value={appliesto}
                   options={AppliesTo}
                   changeHandler={this.handleLicense}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   onSelect={this.props.validate}/>
               </div>
+
+              <ErrorIndicator
+                trackErrors={['licenseUrl', 'licenseUrlInvalid']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                allErrors={errors}
+                subItem='license'
+                subItemIndex={String(this.props.index)}/>
             </div>
           </div>
         }

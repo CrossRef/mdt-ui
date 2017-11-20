@@ -347,7 +347,7 @@ export function getTooltipPosition () {
   try {
     bubblePosition =
       ((infoFlag.offset().top + (infoFlag.position().top - (infoFlag.position().top * .9))
-      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15))) + 40
+      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15)))
   } catch (e) {
     bubblePosition = false
   }
@@ -359,4 +359,24 @@ export function getTooltipPosition () {
 
 
 
+
+
+if(Array.prototype.equals)
+  console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
+Array.prototype.equals = function (array) {
+  if (!array)
+    return false;
+
+  // compare lengths - can save a lot of time
+  if (this.length !== array.length)
+    return false;
+
+  for (let i in this) {
+    if (this[i] !== array[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 

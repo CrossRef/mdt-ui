@@ -36,7 +36,6 @@ function generateCard (name, fields) {
 
     addFields = () => {
       this.setState({number: this.state.number+1}, () => {
-        this.props.deferredErrorBubbleRefresh.resolve()
         this.props.deferredTooltipBubbleRefresh.resolve()
       })
     }

@@ -7,6 +7,7 @@ import {urlEntered} from '../../../utilities/helpers'
 const Languages = require('../../../utilities/lists/language.json')
 import { ArchiveLocations } from '../../../utilities/lists/archiveLocations'
 import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
+import ErrorIndicator from '../../Common/errorIndicator'
 
 
 
@@ -43,6 +44,8 @@ export default class AdditionalInformation extends Component {
                 error={this.props.simCheckError}
                 changeHandler={this.handleAddInfo}
                 onBlur={this.props.validate}
+                setErrorMessages={this.props.errorUtility.setErrorMessages}
+                trackErrors={['simCheckUrlInvalid']}
                 deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                 tooltip={this.props.tooltip && tooltips.similarityCheckURL}/>
 
@@ -53,9 +56,16 @@ export default class AdditionalInformation extends Component {
                 options={ArchiveLocations}
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
+                setErrorMessages={this.props.errorUtility.setErrorMessages}
                 deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                 tooltip={this.props.tooltip && tooltips.archiveLocation}/>
             </div>
+
+            <ErrorIndicator
+              trackErrors={['simCheckUrlInvalid']}
+              errorMessages={this.props.errorMessages}
+              errorUtility={this.props.errorUtility}
+              allErrors={this.props.allErrors}/>
           </div>
           <div className='row'>
             <div className='fieldHolder'>
@@ -66,6 +76,7 @@ export default class AdditionalInformation extends Component {
                 options={Languages}
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
+                setErrorMessages={this.props.errorUtility.setErrorMessages}
                 deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                 tooltip={this.props.tooltip && tooltips.language}/>
             </div>

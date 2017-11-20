@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactDOM from 'react-dom'
 import is from 'prop-types'
 
 import {routes} from '../../routing'
@@ -14,6 +15,9 @@ export default class FormDate extends React.Component {
     name: is.string.isRequired,
     required: is.bool,
     error: is.bool,
+    trackErrors: is.array,
+    allErrors: is.object,
+    setErrorMessages: is.func,
     changeHandler: is.func.isRequired,
     onSelect: is.func,
     onBlur: is.func,
@@ -50,9 +54,28 @@ export default class FormDate extends React.Component {
       this.props.onFocus()
     }
 
+    const fieldErrors = this.props.fields
+    const isError = this.props.error || fieldErrors.year.error || fieldErrors.month.error || fieldErrors.day.error
+    if(this.props.setErrorMessages && isError) {
+      this.props.setErrorMessages(this.props.trackErrors)
+    }
+
+    const setErrorMessages = () => {
+      if(this.props.setErrorMessages && isError && this.props.trackErrors) {
+        if(this.props.subItemIndex) {
+          this.props.errorUtility.subItemIndex = this.props.subItemIndex
+        }
+        this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+      }
+    }
+
     this.setState({focus: true}, ()=>{
       if(this.props.tooltip) {
+        this.props.setErrorMessages([])
+        setErrorMessages()
         this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
+      } else {
+        setErrorMessages()
       }
     })
   }
@@ -72,11 +95,16 @@ export default class FormDate extends React.Component {
 
 
   onSelect = async (e) => {
+    const name = e.target.name
     await this.props.changeHandler(e)
     if(this.props.onSelect) {
       this.props.onSelect()
     }
+    this.nodeRef[name].blur()
   }
+
+
+  nodeRef = {}
 
 
   render() {
@@ -93,7 +121,7 @@ export default class FormDate extends React.Component {
               {this.props.required && <span>*</span>}
             </div>
           </div>
-          <div className='field' onBlur={this.onBlur} onFocus={this.onFocus}>
+          <div className='field' onBlur={this.onBlur} ref={(node)=>this.node=node} onFocus={this.onFocus}>
 
             {this.state.focus && this.props.tooltip && <img className='infoFlagDate' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
 
@@ -107,6 +135,7 @@ export default class FormDate extends React.Component {
                     type="y"
                     value={this.props.fields.year.value}
                     validation={this.props.error || this.props.fields.year.error}
+                    nodeRef={this.nodeRef}
                     style={`${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}/>
                 </div>
               </div>
@@ -119,6 +148,7 @@ export default class FormDate extends React.Component {
                     type="m"
                     value={this.props.fields.month.value}
                     validation={this.props.error || this.props.fields.month.error}
+                    nodeRef={this.nodeRef}
                     style={`${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}/>
                 </div>
               </div>
@@ -131,6 +161,7 @@ export default class FormDate extends React.Component {
                     type="d"
                     value={this.props.fields.day.value}
                     validation={this.props.error || this.props.fields.day.error}
+                    nodeRef={this.nodeRef}
                     style={`${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}/>
                 </div>
               </div>

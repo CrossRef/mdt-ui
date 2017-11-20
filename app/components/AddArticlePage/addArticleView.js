@@ -6,8 +6,7 @@ import {routes} from '../../routing'
 import SubItem from '../Common/subItem'
 import ActionBar from './actionBar'
 import { InfoBubble, InfoHelperRow, OptionalTitleData, DatesRow } from './articleFormComponents'
-import ErrorBubble from '../Common/errorBubble'
-import TooltipBubble from './tooltipBubble'
+import TooltipBubble from '../Common/tooltipBubble'
 import Contributor from './SubItems/contributor'
 import Funding from './SubItems/funding'
 import License from './SubItems/license'
@@ -17,7 +16,7 @@ import { Crossmark, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
 import FormInput from '../Common/formInput'
 import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
-import {ErrorHolder, ErrorBar} from '../Common/errorBar'
+import ErrorIndicator from '../Common/errorIndicator'
 import {urlEntered} from '../../utilities/helpers'
 import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
 
@@ -41,8 +40,8 @@ export default class AddArticleView extends Component {
     boundSetState: is.func.isRequired,
     removeSection: is.func.isRequired,
     addSection: is.func.isRequired,
-    deferredErrorBubbleRefresh: is.object.isRequired,
-    deferredTooltipBubbleRefresh: is.object.isRequired
+    deferredTooltipBubbleRefresh: is.object.isRequired,
+    errorUtility: is.object.isRequired
   }
 
   render () {
@@ -99,7 +98,6 @@ export default class AddArticleView extends Component {
                         <div className="switchLicense">
                           <div className='switchLabel'><span>Show Help</span></div>
                           <Switch
-                            ref='showHelper'
                             onClick={() => this.props.boundSetState({showHelper: !this.props.showHelper})}
                             on={this.props.showHelper}
                           />
@@ -117,21 +115,23 @@ export default class AddArticleView extends Component {
                       value={this.props.article.title}
                       required={true}
                       error={this.props.errors.title}
+                      trackErrors={['title']}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}/>
                   </div>
 
-                  <ErrorHolder errors={['title']}/>
+                  <ErrorIndicator
+                    trackErrors={['title']}
+                    allErrors={this.props.errors}
+                    errorMessages={this.props.errorMessages}
+                    errorUtility={this.props.errorUtility}/>
+
 
                   {this.props.showHelper &&
                     <TooltipBubble
+                      errorUtility={this.props.errorUtility}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}/> }
-
-
-                  {this.props.error &&
-                    <ErrorBar
-                      errors={this.props.errors}
-                      validating={this.props.validating}/>}
 
                 </div>
 
@@ -145,6 +145,7 @@ export default class AddArticleView extends Component {
                     validate={this.props.validate}
                     deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                     tooltip={this.props.showHelper}
+                    setErrorMessages={this.props.errorUtility.setErrorMessages}
                     handleChange={this.props.handleChange}/>
                 </div>
 
@@ -156,6 +157,8 @@ export default class AddArticleView extends Component {
                       value={this.props.article.doi}
                       required={true}
                       error={this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi || this.props.errors.invalidDoiPrefix}
+                      trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix']}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
                       disabled={this.props.doiDisabled}
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}/>
@@ -166,11 +169,17 @@ export default class AddArticleView extends Component {
                       value={ urlEntered(this.props.article.url) ? this.props.article.url : 'http://' }
                       required={true}
                       error={this.props.errors.url || this.props.errors.invalidurl}
+                      trackErrors={['url', 'invalidurl']}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}/>
                   </div>
 
-                  <ErrorHolder errors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}/>
+                  <ErrorIndicator
+                    trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}
+                    allErrors={this.props.errors}
+                    errorMessages={this.props.errorMessages}
+                    errorUtility={this.props.errorUtility}/>
                 </div>
 
                 <DatesRow
@@ -180,6 +189,8 @@ export default class AddArticleView extends Component {
                   validate={this.props.validate}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   tooltip={this.props.showHelper}
+                  errorUtility={this.props.errorUtility}
+                  errorMessages={this.props.errorMessages}
                 />
 
                 <div className='row'>
@@ -190,6 +201,8 @@ export default class AddArticleView extends Component {
                       value={this.props.article.firstPage}
                       required={!!this.props.article.lastPage}
                       error={this.props.errors.firstPage}
+                      trackErrors={['firstPage']}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}/>
 
@@ -198,10 +211,15 @@ export default class AddArticleView extends Component {
                       name="lastPage"
                       value={this.props.article.lastPage}
                       changeHandler={this.props.handleChange}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
                       onBlur={this.props.validate}/>
                   </div>
 
-                  <ErrorHolder errors={['firstPage']}/>
+                  <ErrorIndicator
+                    trackErrors={['firstPage']}
+                    allErrors={this.props.errors}
+                    errorMessages={this.props.errorMessages}
+                    errorUtility={this.props.errorUtility}/>
                 </div>
 
                 <div className='row'>
@@ -212,6 +230,7 @@ export default class AddArticleView extends Component {
                       value={this.props.article.locationId}
                       changeHandler={this.props.handleChange}
                       onBlur={this.props.validate}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       tooltip={this.props.showHelper && tooltip.locationId}/>
                   </div>
@@ -223,6 +242,7 @@ export default class AddArticleView extends Component {
                       label="Abstract"
                       name="abstract"
                       value={this.props.article.abstract}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
                       changeHandler={this.props.handleChange}/>
                   </div>
                 </div>
@@ -234,8 +254,13 @@ export default class AddArticleView extends Component {
                 title={'Contributor'}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Contributors}
-                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'contributors')}>
+                  <ErrorIndicator
+                    trackErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole']}
+                    errorMessages={[]}
+                    errorUtility={this.props.errorUtility}
+                    allErrors={this.props.errors}/>
+
                   {this.props.contributors.map((data, i)=>
                     <Contributor
                       openSubItems={this.props.openSubItems}
@@ -245,18 +270,20 @@ export default class AddArticleView extends Component {
                       remove={this.props.removeSection.bind(null, 'contributors', i)}
                       handler={this.props.boundSetState}
                       data={this.props.contributors}
-                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       tooltip={this.props.showHelper}
+                      errorMessages={this.props.errorMessages}
+                      errorUtility={this.props.errorUtility}
+                      allErrors={this.props.errors}
                       index={i}/>
                   )}
               </SubItem>
+
 
               <SubItem
                 title={'Funding'}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Funding}
-                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'funding')}>
                   {this.props.funding.map((data, i)=>
                     <Funding
@@ -267,19 +294,23 @@ export default class AddArticleView extends Component {
                       remove={this.props.removeSection.bind(null, 'funding', i)}
                       handler={this.props.boundSetState}
                       data={this.props.funding}
-                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       tooltip={this.props.showHelper}
                       index={i}/>
                   )}
               </SubItem>
 
+
               <SubItem
                 title={'License'}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Licenses}
-                addHandler={this.props.addSection.bind(null, 'license')}
-                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}>
+                addHandler={this.props.addSection.bind(null, 'license')}>
+                  <ErrorIndicator
+                    trackErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete']}
+                    errorMessages={[]}
+                    errorUtility={this.props.errorUtility}
+                    allErrors={this.props.errors}/>
 
                   <div className="freeToLicense">
                     <div className='row'>
@@ -292,6 +323,7 @@ export default class AddArticleView extends Component {
                               {value: 'yes', name: 'Yes'},
                               {value: 'no', name: 'No'}
                           ]}
+                          setErrorMessages={this.props.errorUtility.setErrorMessages}
                           changeHandler={this.props.handleChange}
                           onSelect={this.props.validate}/>
                       </div>
@@ -308,17 +340,25 @@ export default class AddArticleView extends Component {
                       handler={this.props.boundSetState}
                       data={this.props.license}
                       index={i}
-                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
+                      errorMessages={this.props.errorMessages}
+                      errorUtility={this.props.errorUtility}
+                      allErrors={this.props.errors}
                       freetolicense={i===0 ? this.props.article.freetolicense : ''}/>
                   )}
               </SubItem>
+
 
               <SubItem
                 title={'Related Items'}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.relatedItems}
-                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 addHandler={this.props.addSection.bind(null, 'relatedItems')}>
+                  <ErrorIndicator
+                    trackErrors={['relatedItemIdType', 'relatedItemRelType', 'relatedItemDoiInvalid']}
+                    errorMessages={[]}
+                    errorUtility={this.props.errorUtility}
+                    allErrors={this.props.errors}/>
+
                   {this.props.relatedItems.map((data, i)=>
                     <RelatedItems
                       openSubItems={this.props.openSubItems}
@@ -328,39 +368,49 @@ export default class AddArticleView extends Component {
                       remove={this.props.removeSection.bind(null, 'relatedItems', i)}
                       handler={this.props.boundSetState}
                       data={this.props.relatedItems}
-                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       tooltip={this.props.showHelper}
+                      errorMessages={this.props.errorMessages}
+                      errorUtility={this.props.errorUtility}
+                      allErrors={this.props.errors}
                       index={i}/>
                   )}
               </SubItem>
 
+
               <SubItem
                 title={'Additional Information'}
                 openSubItems={this.props.openSubItems}
-                deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                 showSection={this.props.openItems.addInfo}>
+                  <ErrorIndicator
+                    trackErrors={['simCheckUrlInvalid']}
+                    errorMessages={[]}
+                    errorUtility={this.props.errorUtility}
+                    allErrors={this.props.errors}/>
+
                   <AdditionalInformation
                     addInfo={this.props.addInfo}
                     handler={this.props.boundSetState}
                     validate={this.props.validate}
                     tooltip={this.props.showHelper}
                     deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                    errorMessages={this.props.errorMessages}
+                    errorUtility={this.props.errorUtility}
+                    allErrors={this.props.errors}
                     simCheckError={this.props.errors.simCheckUrlInvalid}/>
               </SubItem>
+
 
               {this.props.crossmark &&
                 <SubItem
                   title={'Crossmark'}
                   showSection={!!Object.keys(this.props.showCards).length || !!this.props.reduxForm.size}
                   openSubItems={this.props.openSubItems}
-                  deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                   CrossmarkAddButton={CrossmarkAddButton}>
                     <Crossmark
                       showCards={this.props.showCards}
                       validate={this.props.validate}
                       tooltip={this.props.showHelper}
-                      deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                       reduxDeleteCard={this.props.reduxDeleteCard}/>
                 </SubItem>
