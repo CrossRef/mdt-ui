@@ -43,6 +43,11 @@ export default class ErrorBubble extends React.Component{
   }
 
 
+  componentDidMount() {
+    console.log('when does error bubble mount?')
+  }
+
+
   render() {
     return (
       <div id="errorBubble" className="fullErrorHolder" ref={(node)=>this.props.saveRef(node)}>
@@ -64,13 +69,7 @@ export default class ErrorBubble extends React.Component{
 
 
 
-// {this.state.errorBubbleOffscreen &&
-// <div className={`stickyError ${this.state.errorBubbleOffscreen === 'below' ? 'errorBelow' : 'errorAbove'}`} ref="StickyError"
-//      onClick={this.scrollToError}>
-//   <p>More Errors</p>
-//   <img className={this.state.errorBubbleOffscreen === 'below' && 'rotate'} src={`${routes.images}/AddArticle/Triangle.svg`}/>
-// </div>
-// }
+
 
 
 // refreshStickyError = () => {

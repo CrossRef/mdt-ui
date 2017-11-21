@@ -17,6 +17,7 @@ import FormInput from '../Common/formInput'
 import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
 import ErrorIndicator from '../Common/errorIndicator'
+import StickyError from '../Common/stickyError'
 import {urlEntered} from '../../utilities/helpers'
 import {crossmarkErrors} from '../../utilities/crossmarkHelpers'
 import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
@@ -132,7 +133,13 @@ export default class AddArticleView extends Component {
                   {this.props.showHelper &&
                     <TooltipBubble
                       errorUtility={this.props.errorUtility}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}/> }
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}/>
+                  }
+
+                  <StickyError
+                    errorUtility={this.props.errorUtility}
+                    deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  />
 
                 </div>
 

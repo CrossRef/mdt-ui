@@ -981,6 +981,18 @@ input.height64, textarea.height64, select.height64 {
   pointer-events: none;
 }
 
+.hideSticky {
+  background-color: transparent !important;
+
+  img {
+    display: none
+  }
+
+  p {
+    display: none
+  }
+}
+
 
 .errorIndicator2 {
   position: absolute;
@@ -1008,6 +1020,7 @@ input.height64, textarea.height64, select.height64 {
       float: right;
       width: auto !important;
       top: 18px;
+      right: 1px;
       position: relative;
 
 

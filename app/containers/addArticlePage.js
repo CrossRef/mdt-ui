@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import ReactDOM from 'react-dom'
 import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
