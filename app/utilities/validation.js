@@ -49,27 +49,27 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     relatedItemDoiInvalid: false,
 
     // crossmark errors
-    [`${pubHist} Label`]: false,
+    [`${pubHist} label`]: false,
 
-    [`${peer} Label`]: false,
-    [`${peer} Href`]: false,
+    [`${peer} label`]: false,
+    [`${peer} href`]: false,
 
-    [`${copyright} Label`]: false,
-    [`${copyright} Href`]: false,
+    [`${copyright} label`]: false,
+    [`${copyright} href`]: false,
 
-    [`${other} Label`]: false,
-    [`${other} Href`]: false,
+    [`${other} label`]: false,
+    [`${other} href`]: false,
 
-    [`${supp} Href`]: false,
+    [`${supp} href`]: false,
 
-    [`${update} Type`]: false,
-    [`${update} DOI`]: false,
-    [`${update} DOIinvalid`]: false,
-    [`${update} DOINotExist`]: false,
-    [`${update} Date`]: false,
+    [`${update} type`]: false,
+    [`${update} doi`]: false,
+    [`${update} doiInvalid`]: false,
+    [`${update} doiNotExist`]: false,
+    [`${update} date`]: false,
 
-    [`${clinical} Registry`]: false,
-    [`${clinical} TrialNumber`]: false
+    [`${clinical} registry`]: false,
+    [`${clinical} trialNumber`]: false
   }
   warnings.url = !urlEntered(url)
   warnings.invalidurl = !warnings.url && !isURL(url)
@@ -192,15 +192,21 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
       if(map) {
         map.entrySeq().forEach(([i, attributes])=>{
           const errors = {
-            label: !attributes.get('label'),
-            href: (()=>{
+            [`${card} label`]: !attributes.get('label'),
+            [`${card} href`]: (()=>{
               const href = attributes.get('href')
               return href ? !isURL(href) : false
             })()
           }
 
-          if(errors.label) warnings[`${card} Label`] = true
-          if(errors.href) warnings[`${card} Href`] = true
+
+          if(errors[[`${card} label`]]) {
+            warnings[`${card} label`] = true
+          }
+
+          if(errors[`${card} href`]) {
+            warnings[`${card} href`] = true
+          }
 
           const keyPath = [card, i, 'errors']
           allErrors.push([keyPath, errors])
@@ -222,20 +228,42 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
         const attributes = entries[i]
         
         const doi = attributes.get('DOI')
+        const doiInvalid = !!doi && !isDOI(doi)
+        const doiNotExist = !!doi && !doiInvalid && !await asyncCheckDupeDoi(doi)
 
-        const isitvalid=await asyncCheckDupeDoi(doi)
+        const yearError = !attributes.get('year')
+        const monthError = !attributes.get('month')
+        const dayError = !attributes.get('day')
+
         const errors = {
-          type: !attributes.get('type'),
-          DOI: !doi || !isDOI((doi)) || !isitvalid,
-          year: !attributes.get('year'),
-          month: !attributes.get('month'),
-          day: !attributes.get('day')
+          [`${update} type`]: !attributes.get('type'),
+          [`${update} doi`]: !doi,
+          [`${update} doiInvalid`]: doiInvalid,
+          [`${update} doiNotExist`]: doiNotExist,
+          [`${update} Date`]: yearError || monthError || dayError,
+          year: yearError,
+          month: monthError,
+          day: dayError
         }
-        if(errors.type) warnings[`${update} Type`] = true
-        if(errors.DOI) if(!doi){ warnings[`${update} DOI`] = true} 
-          else if(!isDOI(doi)){ warnings[`${update} DOIinvalid`] = true}
-            else{warnings[`${update} DOINotExist`]=true}
-        if(errors.year || errors.month || errors.day) warnings[`${update} Date`] = true
+        if(errors[`${update} type`]) {
+          warnings[`${update} type`] = true
+        }
+
+        if(errors[`${update} doi`]) {
+          warnings[`${update} doi`] = true
+        }
+
+        if(errors[`${update} doiInvalid`]){
+          warnings[`${update} doiInvalid`] = true
+        }
+
+        if (errors[`${update} doiNotExist`]) {
+          warnings[`${update} doiNotExist`] = true
+        }
+
+        if(errors[`${update} date`]) {
+          warnings[`${update} date`] = true
+        }
 
         const keyPath = [update, i, 'errors']
         allErrors.push([keyPath, errors])
@@ -246,11 +274,17 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     if(clinicalMap) {
       clinicalMap.entrySeq().forEach(([i, attributes])=>{
         const errors = {
-          registry: !attributes.get('registry'),
-          trialNumber: !attributes.get('trialNumber')
+          [`${clinical} registry`]: !attributes.get('registry'),
+          [`${clinical} trialNumber`]: !attributes.get('trialNumber')
         }
-        if(errors.registry) warnings[`${clinical} Registry`] = true
-        if(errors.trialNumber) warnings[`${clinical} TrialNumber`] = true
+
+        if(errors[`${clinical} registry`]) {
+          warnings[`${clinical} registry`] = true
+        }
+
+        if(errors[`${clinical} trialNumber`]) {
+          warnings[`${clinical} trialNumber`] = true
+        }
 
         const keyPath = [clinical, i, 'errors']
         allErrors.push([keyPath, errors])

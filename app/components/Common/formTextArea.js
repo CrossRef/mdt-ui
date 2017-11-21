@@ -17,6 +17,8 @@ export default class FormInput extends React.Component {
     trackErrors: is.array,
     allErrors: is.object,
     setErrorMessages: is.func,
+    errorUtility: is.object,
+    subItemIndex: is.string,
     changeHandler: is.func.isRequired,
     onBlur: is.func,
     onFocus: is.func,

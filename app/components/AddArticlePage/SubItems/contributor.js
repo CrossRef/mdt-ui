@@ -175,6 +175,7 @@ export default class Contributor extends Component {
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   trackErrors={['contributorRole']}
                   allErrors={errors}
+                  subItemIndex={String(this.props.index)}
                   onSelect={this.props.validate}/>
 
               </div>

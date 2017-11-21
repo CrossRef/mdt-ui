@@ -69,7 +69,12 @@ export class Crossmark extends Component {
 
   static propTypes = {
     showCards: is.object.isRequired,
-    reduxDeleteCard: is.func.isRequired
+    reduxDeleteCard: is.func.isRequired,
+    validate: is.func.isRequired,
+    tooltip: is.bool.isRequired,
+    deferredTooltipBubbleRefresh: is.object.isRequired,
+    errorMessages: is.array.isRequired,
+    errorUtility: is.object.isRequired
   }
 
   constructor (props) {
@@ -110,6 +115,8 @@ export class Crossmark extends Component {
               deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
               tooltip={this.props.tooltip}
               cardName={cardName}
+              errorMessages={this.props.errorMessages}
+              errorUtility={this.props.errorUtility}
               remove={this.removeCrossmarkCard}/>
           : null
         })}

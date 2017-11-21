@@ -283,77 +283,77 @@ export const ArticleMessages = {
     message: 'Please check your URL format.'
   },
 
-  [`${pubHist} Label`]: {
+  [`${pubHist} label`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Publication History label.'
   },
-  [`${peer} Label`]: {
+  [`${peer} label`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Peer Review label.'
   },
-  [`${peer} Href`]: {
+  [`${peer} href`]: {
     type: 'invalid',
     bold: 'Invalid Crossmark URL',
     message: 'Please check your Peer Review URL format.'
   },
-  [`${copyright} Label`]: {
+  [`${copyright} label`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Copyright & Licensing label.'
   },
-  [`${copyright} Href`]: {
+  [`${copyright} href`]: {
     type: 'invalid',
     bold: 'Invalid Crossmark URL',
     message: 'Please check your Copyright & Licensing URL format.'
   },
-  [`${other} Label`]: {
+  [`${other} label`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Other label.'
   },
-  [`${other} Href`]: {
+  [`${other} href`]: {
     type: 'invalid',
     bold: 'Invalid Crossmark URL',
     message: 'Please check your Other URL format.'
   },
-  [`${supp} Href`]: {
+  [`${supp} href`]: {
     type: 'invalid',
     bold: 'Invalid Crossmark URL',
     message: 'Please check your Supplementary Material URL format.'
   },
-  [`${update} Type`]: {
+  [`${update} type`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Status Update type.'
   },
-  [`${update} Date`]: {
+  [`${update} date`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Status Update date.'
   },
-  [`${update} DOI`]: {
+  [`${update} doi`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Status Update DOI.'
   },
-  [`${update} DOIinvalid`]: {
+  [`${update} doiInvalid`]: {
     type: 'invalid',
     bold: 'Invalid Crossmark DOI',
     message: 'Please check your Status Update DOI.'
   },
-  [`${update} DOINotExist`]: {
+  [`${update} doiNotExist`]: {
     type: 'invalid',
     bold: 'Invalid Crossmark DOI',
     message: 'Please insert a valid Crossref DOI.'
   },
-  [`${clinical} Registry`]: {
+  [`${clinical} registry`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Linked Clinical Trials registry.'
   },
-  [`${clinical} TrialNumber`]: {
+  [`${clinical} trialNumber`]: {
     type: 'required',
     bold: 'Required Crossmark Field',
     message: 'Please provide Linked Clinical Trials trial number.'

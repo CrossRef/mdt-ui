@@ -18,6 +18,8 @@ export default class FormDate extends React.Component {
     trackErrors: is.array,
     allErrors: is.object,
     setErrorMessages: is.func,
+    errorUtility: is.object,
+    subItemIndex: is.string,
     changeHandler: is.func.isRequired,
     onSelect: is.func,
     onBlur: is.func,

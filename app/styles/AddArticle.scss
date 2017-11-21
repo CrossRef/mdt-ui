@@ -35,7 +35,7 @@ input.height64, textarea.height64, select.height64 {
   text-align: center;
   padding: 4px 5px 10px 8px;
   border-radius: 5px;
-  top: 25px;
+  top: 24px;
   z-index: 1;
   .errormsgholder{
     display: inline-table;
@@ -209,29 +209,7 @@ input.height64, textarea.height64, select.height64 {
       float: right;
       right: 220px;
       position: relative;
-      bottom: 25px;
-      .errorIndicator {
-        position: absolute;
-        top: 0;
-        left: 2px;
-        background-color: #ffc8ca;
-        width: 196px;
-        height: 33.5px;
-        border-radius: 5px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: flex-start;
-        padding-left: 8px;
-
-        img {
-          width: 25px;
-        }
-      }
-      .hideIndicator {
-        display: none;
-        pointer-events: none;
-      }
+      bottom: 51px;
     }
     .titleholder {
       display: table;
@@ -685,29 +663,7 @@ input.height64, textarea.height64, select.height64 {
         float: right;
         width: 20%;
         position: relative;
-        .errorIndicator {
-          position: absolute;
-          top:0;
-          left: 2px;
-          background-color: #ffc8ca;
-          width: 196px;
-          height: 33.5px;
-          border-radius: 5px;
-          margin-top: 26.5px;
-          display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: flex-start;
-          padding-left: 8px;
 
-          img {
-            width: 25px;
-          }
-        }
-        .hideIndicator {
-          display: none;
-          pointer-events: none;
-        }
         .switchOuterHolder {
           width: 100%;
           .switchInnerHolder {
@@ -779,27 +735,6 @@ input.height64, textarea.height64, select.height64 {
         right: 160px;
         position: absolute;
         top: -15px;
-        .errorIndicator {
-          position: absolute;
-          top: 0;
-          left: 2px;
-          background-color: #ffc8ca;
-          width: 196px;
-          height: 33.5px;
-          border-radius: 5px;display: flex;
-          flex-direction: column;
-          justify-content: center;
-          align-items: flex-start;
-          padding-left: 8px;
-
-          img {
-            width: 25px;
-          }
-        }
-        .hideIndicator {
-          display: none;
-          pointer-events: none;
-        }
       }
     }
     .infohelper {
@@ -1023,6 +958,30 @@ input.height64, textarea.height64, select.height64 {
 }
 
 
+.errorIndicator {
+  position: absolute;
+  top: 26px;
+  left: 2px;
+  background-color: #ffc8ca;
+  width: 196px;
+  height: 33.5px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 8px;
+
+  img {
+    width: 25px;
+  }
+}
+.hideIndicator {
+  display: none;
+  pointer-events: none;
+}
+
+
 .errorIndicator2 {
   position: absolute;
   top: 2px;
@@ -1039,5 +998,19 @@ input.height64, textarea.height64, select.height64 {
 
   img {
     width: 25px;
+  }
+}
+
+
+.innerCardHolder {
+  .row {
+    .errorHolder {
+      float: right;
+      width: auto !important;
+      top: 18px;
+      position: relative;
+
+
+    }
   }
 }

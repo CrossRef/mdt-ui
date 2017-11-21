@@ -7,6 +7,7 @@ import {browserHistory} from 'react-router'
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
 import {DeferredTask} from '../utilities/helpers'
+import {cardNamesArray} from '../utilities/crossmarkHelpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
 import {asyncValidateArticle} from '../utilities/validation'
@@ -145,12 +146,12 @@ export default class AddArticlePage extends Component {
       }
     }
 
+    validatedPayload.errorMessages = this.errorUtility.onValidate(validatedPayload.errors, validatedPayload.contributors, validatedPayload.license, validatedPayload.relatedItems, newReduxForm)
+
     if(newReduxForm && newReduxForm.size) {
       const keyPath = []
       this.props.reduxEditForm(keyPath, newReduxForm)
     }
-
-    validatedPayload.errorMessages = this.errorUtility.onValidate(validatedPayload.errors, validatedPayload.contributors, validatedPayload.license, validatedPayload.relatedItems)
 
     return {valid, validatedPayload}
   }
@@ -195,7 +196,7 @@ export default class AddArticlePage extends Component {
       this.setState({errorMessages: filteredErrorMessage})
     },
 
-    onValidate: (newValidationErrors, contributors, license, relatedItems) => {
+    onValidate: (newValidationErrors, contributors, license, relatedItems, newReduxForm) => {
       const {errorIndicators, activeIndicator} = this.errorUtility
       const activeIndicatorObj = errorIndicators[activeIndicator]
       const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
@@ -206,11 +207,20 @@ export default class AddArticlePage extends Component {
         const subItemErrors = {
           contributor: contributors,
           license: license,
-          relatedItems: relatedItems
+          relatedItems: relatedItems,
+        }
+
+        let allErrors
+        if(cardNamesArray.indexOf(subItem) > -1) {
+          //Is crossmark subItem
+          allErrors = newReduxForm.getIn([subItem, subItemIndex, 'errors'])
+
+        } else {
+          allErrors = subItemErrors[subItem][subItemIndex].errors
         }
 
         newErrorMessages = trackedIndicatorErrors.filter((error) => {
-          return subItemErrors[subItem][subItemIndex].errors[error]
+          return allErrors[error]
         })
 
       } else {

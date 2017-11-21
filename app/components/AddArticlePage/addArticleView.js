@@ -18,6 +18,7 @@ import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
 import ErrorIndicator from '../Common/errorIndicator'
 import {urlEntered} from '../../utilities/helpers'
+import {crossmarkErrors} from '../../utilities/crossmarkHelpers'
 import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
 
 
@@ -407,11 +408,19 @@ export default class AddArticleView extends Component {
                   showSection={!!Object.keys(this.props.showCards).length || !!this.props.reduxForm.size}
                   openSubItems={this.props.openSubItems}
                   CrossmarkAddButton={CrossmarkAddButton}>
+                    <ErrorIndicator
+                      trackErrors={crossmarkErrors}
+                      errorMessages={[]}
+                      errorUtility={this.props.errorUtility}
+                      allErrors={this.props.errors}/>
+
                     <Crossmark
                       showCards={this.props.showCards}
                       validate={this.props.validate}
                       tooltip={this.props.showHelper}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                      errorMessages={this.props.errorMessages}
+                      errorUtility={this.props.errorUtility}
                       reduxDeleteCard={this.props.reduxDeleteCard}/>
                 </SubItem>
               }
