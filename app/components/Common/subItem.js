@@ -4,18 +4,17 @@ import is from 'prop-types'
 import {routes} from '../../routing'
 
 
-
 export default class SubItem extends Component {
 
   static propTypes = {
     title: is.string.isRequired,
+    boundSetState: is.func.isRequired,
     freetolicense: is.string,
     showSection: is.bool.isRequired,
     optionalIssueInfoHandlers: is.func,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
     arrowType: is.string,
-    deferredErrorBubbleRefresh: is.object.isRequired,
     deferredTooltipBubbleRefresh: is.object,
     openSubItems: is.bool
   }
@@ -41,7 +40,8 @@ export default class SubItem extends Component {
   toggle = () => {
     this.setState({
       showSection: !this.state.showSection
-    }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
+    })
+    this.props.boundSetState({})
   }
 
 
@@ -49,7 +49,8 @@ export default class SubItem extends Component {
     if(this.props.addHandler || this.props.optionalIssueInfoHandlers) {
       return (
         <div className='addholder'>
-          <a onClick={()=>{
+          <hr/>
+          <a className="addNewButton" onClick={()=>{
             if (!this.state.showSection) {
               this.setState({showSection: true})
             }
@@ -71,6 +72,23 @@ export default class SubItem extends Component {
 
   render () {
     const { title, addHandler, arrowType } = this.props
+    let subItemErrorIndicator = null
+    let children = Array.isArray(this.props.children) ? [...this.props.children] : this.props.children
+
+    if(this.props.children[0] && this.props.children[0].type.name === 'ErrorIndicator') {
+      const ErrorIndicator = this.props.children[0]
+      subItemErrorIndicator = React.cloneElement(ErrorIndicator, {openSubItem: this.toggle, subItemIndex: "0"})
+      children.shift()
+      children = children.map((child)=>{
+        if(Array.isArray(child)) {
+          return child.map((anotherChild)=>{
+            return React.cloneElement(anotherChild, {ErrorIndicator: ErrorIndicator})
+          })
+        } else {
+          return child
+        }
+      })
+    }
 
     return (
       <div>
@@ -82,13 +100,14 @@ export default class SubItem extends Component {
               </span>
               <span>{title}</span>
             </div>
-            {this.addButton()}
           </div>
+          {!this.state.showSection && subItemErrorIndicator}
         </div>
 
         {this.state.showSection &&
           <div className='body'>
-            {this.props.children}
+            {children}
+            {this.addButton()}
           </div>
         }
       </div>

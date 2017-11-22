@@ -271,34 +271,6 @@ export class SearchableRecords {
 
 
 
-
-export function ClassWrapper ({classNames, children}) {
-  const Reducer = () => classNames.reduceRight((previousValue, currentValue, index, array) => {
-    if (index == array.length - 2) {
-
-      const LastChild = Array.isArray(previousValue) ? (lastChildProps) => React.createElement(previousValue[0], {className: previousValue[1]}, lastChildProps.children)
-        : (lastChildProps) => <div className={previousValue}>{lastChildProps.children}</div>
-
-      const NextChild = Array.isArray(currentValue) ? (nextChildProps) => React.createElement(currentValue[0], {className: currentValue[1]}, nextChildProps.children)
-        : (nextChildProps) => <div className={currentValue}>{nextChildProps.children}</div>
-
-      return <NextChild><LastChild>{children}</LastChild></NextChild>
-
-    } else {
-
-      const ThisChild = Array.isArray(currentValue) ? (thisChildProps) => React.createElement(currentValue[0], {className: currentValue[1]}, thisChildProps.children)
-        : (thisChildProps) => <div className={currentValue}>{thisChildProps.children}</div>
-
-      return <ThisChild>{previousValue}</ThisChild>
-    }
-  });
-  return <Reducer />
-}
-
-
-
-
-
 export function removeDuplicates(a) {
   var seen = {}
   var out = []
@@ -340,7 +312,7 @@ export const errorHandler = (error, action = ()=>{}) => {
 
 
 export function getErrorPosition () {
-  const firstError = $('.fieldError').first()
+  const firstError = $('.errorIndicator').first()
   const switchLicense = $('.switchLicense').first()
   let errorBubblePosition
   try {
@@ -364,7 +336,7 @@ export function getTooltipPosition () {
   try {
     bubblePosition =
       ((infoFlag.offset().top + (infoFlag.position().top - (infoFlag.position().top * .9))
-      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15))) + 40
+      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15)))
   } catch (e) {
     bubblePosition = false
   }
@@ -376,4 +348,24 @@ export function getTooltipPosition () {
 
 
 
+
+
+if(Array.prototype.equals)
+  console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
+Array.prototype.equals = function (array) {
+  if (!array)
+    return false;
+
+  // compare lengths - can save a lot of time
+  if (this.length !== array.length)
+    return false;
+
+  for (let i in this) {
+    if (this[i] !== array[i]) {
+      return false;
+    }
+  }
+  return true;
+}
+Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 

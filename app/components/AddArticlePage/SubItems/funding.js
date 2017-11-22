@@ -27,11 +27,6 @@ export default class Funding extends Component {
   }
 
 
-  componentDidUpdate () {
-    this.props.deferredErrorBubbleRefresh.resolve()
-  }
-
-
   componentWillReceiveProps(nextProps) {
     this.setState({
       showSubItem: nextProps.openSubItems ? true : this.state.showSubItem,
@@ -101,9 +96,10 @@ export default class Funding extends Component {
 
 
   toggle = () => {
-      this.setState({
-        showSubItem: !this.state.showSubItem
-      })
+    this.setState({
+      showSubItem: !this.state.showSubItem
+    })
+    this.props.handler({})
   }
 
 
@@ -331,7 +327,6 @@ class GrantField extends React.Component {
               })
             }}
             onBlur={()=>{
-              console.log('blurring')
               this.setState({focus:false}, ()=>{
                 if(this.props.tooltip) {
                   this.props.deferredTooltipBubbleRefresh.resolve()

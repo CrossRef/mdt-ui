@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial, Blank } from './crossmarkCards'
+import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial } from './crossmarkCards'
 import {cardNames} from '../../../../utilities/crossmarkHelpers'
 const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
 
@@ -69,7 +69,12 @@ export class Crossmark extends Component {
 
   static propTypes = {
     showCards: is.object.isRequired,
-    reduxDeleteCard: is.func.isRequired
+    reduxDeleteCard: is.func.isRequired,
+    validate: is.func.isRequired,
+    tooltip: is.bool.isRequired,
+    deferredTooltipBubbleRefresh: is.object.isRequired,
+    errorMessages: is.array.isRequired,
+    errorUtility: is.object.isRequired
   }
 
   constructor (props) {
@@ -92,7 +97,6 @@ export class Crossmark extends Component {
     this.props.reduxDeleteCard([selection]);
     openCards = newState
     this.setState({ crossmarkCards: newState }, ()=>{
-      this.props.deferredErrorBubbleRefresh.resolve()
       this.props.deferredTooltipBubbleRefresh.resolve()
     })
   }
@@ -102,17 +106,17 @@ export class Crossmark extends Component {
     const crossmarkCardKeys = Object.keys(this.state.crossmarkCards)
     return (
       <div>
-        {!crossmarkCardKeys.length && <Blank/>}
         {crossmarkCardKeys.map((cardName, index) => {
           const Card = crossmarkCardSelector[cardName]
           return this.state.crossmarkCards[cardName] ?
             <Card key={`${cardName}-${index}`}
               validate={this.props.validate}
               number={this.state.crossmarkCards[cardName] - 1}
-              deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
               deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
               tooltip={this.props.tooltip}
               cardName={cardName}
+              errorMessages={this.props.errorMessages}
+              errorUtility={this.props.errorUtility}
               remove={this.removeCrossmarkCard}/>
           : null
         })}

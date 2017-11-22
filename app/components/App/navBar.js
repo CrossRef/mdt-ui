@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { Link } from 'react-router'
 import { browserHistory } from 'react-router'
-import { ToastContainer, ToastMessage } from "react-toastr"
+import { ToastContainer, ToastMessageAnimated } from "react-toastr"
 
 import {pascaleCase} from '../../utilities/helpers'
 import { routes } from '../../routing'
 
-const ToastMessageFactory = React.createFactory(ToastMessage.animation)
+const ToastMessageFactory = React.createFactory(ToastMessageAnimated)
 
 
 export default class NavBar extends Component {
@@ -65,21 +65,7 @@ export default class NavBar extends Component {
         <div className='message'>{pascaleCase(recordType)} {messages[updateType]} ({title})</div>
       </div>,
       <div className='toastTitle'><div className='arrow'></div></div>,
-      {
-        closeButton: false,
-        showDuration: '300',
-        hideDuration: '1000',
-        timeOut: '5000',
-        extendedTimeOut: '1000',
-        showAnimation: false,
-        hideAnimation: false,
-        showEasing: 'none',
-        hideEasing: 'linear',
-        showMethod: 'show',
-        hideMethod: 'hide',
-        preventDuplicates: true,
-        limit: 1
-    })
+      )
   }
 
   openProfileMenu () {

@@ -1,6 +1,3 @@
-@import 'mixins.scss';
-@import 'switch.min.css';
-
 .height16 {
   height: 16px;
 }
@@ -29,94 +26,112 @@ input.height64, textarea.height64, select.height64 {
   padding: 30px 0 0px 0;
 }
 
-.errorHolder {
-  .toolTipHolder {
-    a.tooltips {
-      position: relative;
-      display: inline;
-      z-index: 1;
-      .toolmsgholder {
-        position: absolute;
-        width: 200px;
-        color: #FFFFFF;
-        background: #EE6068;
-        text-align: center;
-        padding: 4px 5px 10px 8px;
-        border-radius: 5px;
-        word-break: break-word;
-        .errormsgholder{
-          display: inline-table;
-          width: 100%;
-          height: 100%;
-          .errormsginnerholder {
-            display: table-cell;
-            vertical-align: middle;
-            width: 100%;
-            height: 100%;
-            div {
-              display: block;
-              padding: 0 0 15px;
-              text: {
-                align: left;
-              }
-              width: 100%;
-            }
-            img {
-              width: 25px;
-            }
-          }
-        }
-        &:after {
-          content: '';
-          position: absolute;
-          top: 30px;
-          right: 100%;
-          margin-top: -8px;
-          width: 0; height: 0;
-          border-right: 8px solid #EE6068;
-          border-top: 8px solid transparent;
-          border-bottom: 8px solid transparent;
+
+.fullErrorHolder {
+  position: absolute;
+  width: 200px;
+  color: #FFFFFF;
+  background: #EE6068;
+  text-align: center;
+  padding: 4px 5px 10px 8px;
+  border-radius: 5px;
+  top: 24px;
+  z-index: 1;
+  .errormsgholder{
+    display: inline-table;
+    width: 100%;
+    height: 100%;
+    .errormsginnerholder {
+      display: table-cell;
+      vertical-align: middle;
+      width: 100%;
+      height: 100%;
+      padding-top: 55px;
+      .msgContainer {
+        display: block;
+        padding: 0 0 15px;
+        text-align: left;
+        width: 100%;
+
+        span {
+          font-size: .9em;
         }
       }
-      &:hover.tooltips {
-        span {
-          visibility: visible;
-          opacity: 0.8;
-          left: 100%;
-          top: 50%;
-          margin-top: -15px;
-          margin-left: 15px;
-          z-index: 999;
-        }
+      img {
+        width: 25px;
       }
     }
   }
 }
 
-.fullError {
-   position:absolute;
-   height:1000px;
-   right: 0;
+.stickyError {
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  position: fixed;
+  background-color: #EE6068;
+  width: 200px;
+  height: 50px;
+  border-radius: 6px;
+  padding-left: 20px;
+  padding-right: 25px;
+  z-index: 9000;
+
+  img {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    height: 15px;
+  }
+  .rotate {
+    -ms-transform: rotate(180deg); /* IE 9 */
+    -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+    transform: rotate(180deg);
+  }
 }
+
+.toolmsgholder {
+  right: -27.5px;
+  color: #646464;
+  background: #ffcc66;
+  position: absolute;
+  width: 200px;
+  text-align: center;
+  padding: 4px 5px 10px 8px;
+  border-radius: 5px;
+  z-index: 9999;
+  .errormsgholder{
+    display: inline-table;
+    width: 100%;
+    height: 100%;
+    .errormsginnerholder {
+      display: table-cell;
+      vertical-align: middle;
+      width: 100%;
+      height: 100%;
+      div {
+        display: block;
+        padding: 0 0 15px;
+        text-align: left;
+        width: 100%;
+      }
+      img {
+        width: 25px;
+      }
+    }
+  }
+}
+
+
+
 
 .fieldError {
   background: #FFE9E8;
   border: 1px solid #EE6068 !important;
 }
 
-.helpers {
-  .toolTipHolder {
-    a.tooltips {
-      .toolmsgholder {
-        color: #646464;
-        background: #ffc72c;
-        &:after {
-          border-right: 0px solid #FFD164;
-        }
-      }
-    }
-  }
-}
 
 .showOptionalTitle {
   display: block;
@@ -190,6 +205,12 @@ input.height64, textarea.height64, select.height64 {
     min-height: 67px;
     padding: 10px 0 0;
     width: 100%;
+    .errorHolder {
+      float: right;
+      right: 220px;
+      position: relative;
+      bottom: 51px;
+    }
     .titleholder {
       display: table;
       height: 100%;
@@ -252,22 +273,33 @@ input.height64, textarea.height64, select.height64 {
         }
       }
     }
+  }
+  .body {
+    width: 100%;
+
     .addholder {
-      float: right;
-      padding: 15px 0 0 0;
-      a {
+      margin-top:20px;
+      padding: 0 0 0 0;
+      height: 100px;
+      width: 100%;
+      display: inline-flex;
+      justify-content: flex-start;
+      align-content: center;
+      flex-direction: column;
+      hr {width: 90%}
+      .addNewButton {
+        top: 24px;
+        left: 78px;
+        width: 120px;
+        border: 1px solid black;
         background: #F9F9F9;
         color: #646464;
         cursor: pointer;
         display: block;
         padding: 4px 20px;
         position: relative;
-        top: -3px;
       }
     }
-  }
-  .body {
-    width: 100%;
     .row {
       clear: both;
       display: inline-block;
@@ -624,9 +656,14 @@ input.height64, textarea.height64, select.height64 {
           }
         }
       }
+      .dateErrorHolder {
+        top: 16.5px
+      }
       .errorHolder {
         float: right;
         width: 20%;
+        position: relative;
+
         .switchOuterHolder {
           width: 100%;
           .switchInnerHolder {
@@ -692,6 +729,13 @@ input.height64, textarea.height64, select.height64 {
       margin: 0 0 10px 0;
       padding: 5px 0;
       width: 100%;
+
+      .errorHolder {
+        float: right;
+        right: 160px;
+        position: absolute;
+        top: -15px;
+      }
     }
     .infohelper {
       padding: 40px 0 0;
@@ -857,35 +901,6 @@ input.height64, textarea.height64, select.height64 {
     background: #A6D8E5 !important;
 }
 
-.stickyError {
-  cursor: pointer;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  color: white;
-  position: fixed;
-  margin-left: 173px;
-  background-color: #EE6068;
-  width: 200px;
-  height: 50px;
-  border-radius: 6px;
-  padding-left: 20px;
-  padding-right: 25px;
-  z-index: 9000;
-
-  img {
-    margin-top: 10px;
-    margin-bottom: 10px;
-    height: 15px;
-  }
-  .rotate {
-    -ms-transform: rotate(180deg); /* IE 9 */
-    -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
-    transform: rotate(180deg);
-  }
-}
-
 .errorAbove {
   top: 2px;
 }
@@ -926,18 +941,94 @@ input.height64, textarea.height64, select.height64 {
 }
 
 .infoFlagBorder {
-  outline: 1px solid #ffc72c;
+  outline: 1px solid #ffcc66;
 }
 
 .infoFlagCalendarBorder {
-  border-top: 1px solid #ffc72c !important;
-  border-right: 1px solid #ffc72c !important;
-  border-bottom: 1px solid #ffc72c !important;
+  border-top: 1px solid #ffcc66 !important;
+  border-right: 1px solid #ffcc66 !important;
+  border-bottom: 1px solid #ffcc66 !important;
 }
 
 
 .infoFlagIconHolder {
-  border-top: 1px solid #ffc72c !important;
-  border-right: 1px solid #ffc72c !important;
-  border-bottom: 1px solid #ffc72c !important;
+  border-top: 1px solid #ffcc66 !important;
+  border-right: 1px solid #ffcc66 !important;
+  border-bottom: 1px solid #ffcc66 !important;
+}
+
+
+.errorIndicator {
+  position: absolute;
+  top: 26px;
+  left: 2px;
+  background-color: #ffc8ca;
+  width: 196px;
+  height: 33.5px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 8px;
+
+  img {
+    width: 25px;
+  }
+}
+.hideIndicator {
+  background-color: transparent !important;
+  pointer-events: none;
+
+  img {
+    display: none
+  }
+}
+
+.hideSticky {
+  background-color: transparent !important;
+  pointer-events: none;
+
+  img {
+    display: none
+  }
+
+  p {
+    display: none
+  }
+}
+
+
+.errorIndicator2 {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  background-color: #ffc8ca;
+  width: 196px !important;
+  height: 33.5px;
+  border-radius: 5px;
+  display: flex !important;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 0 0 0 8px !important;
+
+  img {
+    width: 25px;
+  }
+}
+
+
+.innerCardHolder {
+  .row {
+    .errorHolder {
+      float: right;
+      width: auto !important;
+      top: 18px;
+      right: 1px;
+      position: relative;
+
+
+    }
+  }
 }

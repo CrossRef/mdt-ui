@@ -11,7 +11,7 @@ import FormInput from '../../../Common/formInput'
 const mapStateToProps = (state, props) => {
   return ({
     reduxValue: state.reduxForm.getIn(props.keyPath) || '',
-    error: !!(state.reduxForm.getIn([props.keyPath[0], props.keyPath[1], 'errors']) || {})[props.keyPath[2]]
+    errors: state.reduxForm.getIn([props.keyPath[0], props.keyPath[1], 'errors']) || {}
   })
 }
 
@@ -26,7 +26,10 @@ export default class ReduxTextInput extends Component {
   static propTypes = {
     className: is.string,
     reduxValue: is.string,
-    error: is.bool,
+    errors: is.object.isRequired,
+    trackErrors: is.array,
+    setErrorMessages: is.func,
+    errorUtility: is.object,
     keyPath: is.array,
     handler:is.func
   }
@@ -37,6 +40,14 @@ export default class ReduxTextInput extends Component {
   }
 
   render() {
+    let error = !!this.props.errors[`${this.props.keyPath[0]} ${this.props.keyPath[2]}`]
+    if(this.props.keyPath[2] === 'doi') {
+      error =
+        !!this.props.errors[`${this.props.keyPath[0]} doi`] ||
+        !!this.props.errors[`${this.props.keyPath[0]} doiInvalid`] ||
+        !!this.props.errors[`${this.props.keyPath[0]} doiNotExist`]
+    }
+
     return(
       <FormInput
         label={this.props.label}
@@ -44,7 +55,12 @@ export default class ReduxTextInput extends Component {
         value={this.props.reduxValue|| this.props.keyPath[2]!=='href'?this.props.reduxValue:'http://'}
         changeHandler={this.handler}
         required={this.props.required}
-        error={this.props.error}
+        error={error}
+        allErrors={this.props.errors}
+        trackErrors={this.props.trackErrors}
+        setErrorMessages={this.props.setErrorMessages}
+        errorUtility={this.props.errorUtility}
+        subItemIndex={String(this.props.keyPath[1])}
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
         deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
