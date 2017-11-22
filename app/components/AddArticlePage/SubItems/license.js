@@ -31,6 +31,7 @@ export default class License extends Component {
     this.setState({
       showSubItem: !this.state.showSubItem
     })
+    this.props.handler({})
   }
 
 

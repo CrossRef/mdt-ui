@@ -15,7 +15,7 @@ export default class StickyError extends React.Component {
 
   static propTypes = {
     errorUtility: is.object.isRequired,
-    deferredTooltipBubbleRefresh: is.object.isRequired
+    deferredStickyErrorRefresh: is.object.isRequired
   }
 
 
@@ -28,19 +28,19 @@ export default class StickyError extends React.Component {
 
 
   componentDidMount() {
-    this.deferredTooltipBubbleRefresh()
+    this.deferredStickyErrorRefresh()
     document.addEventListener('scroll', this.refreshStickyError, false)
   }
 
 
-  deferredTooltipBubbleRefresh = () => {
-    this.props.deferredTooltipBubbleRefresh.reset()
-    this.props.deferredTooltipBubbleRefresh.promise
+  deferredStickyErrorRefresh = () => {
+    this.props.deferredStickyErrorRefresh.reset()
+    this.props.deferredStickyErrorRefresh.promise
       .then(()=>{
         if(this._calledComponentWillUnmount) {
           return
         }
-        this.deferredTooltipBubbleRefresh()
+        this.deferredStickyErrorRefresh()
         this.refreshStickyError()
       })
   }
@@ -109,16 +109,82 @@ export default class StickyError extends React.Component {
   }
 
 
-  scrollToError = () => {
-    $('html, body').animate({
-      scrollTop: this.state.errorBubblePosition
-    }, 1000);
+  scrollToErrorAbove = async () => {
+    const errorUtility = this.props.errorUtility
+    let errorAbove
+    let errorAboveDimensions
+    for(let indicator of errorUtility.errorIndicators) {
+      const indicatorDimensions = ReactDOM.findDOMNode(indicator.node).getBoundingClientRect()
+      if(indicatorDimensions.top < 0) {
+        errorAbove = indicator
+        errorAboveDimensions = indicatorDimensions
+      }
+    }
+
+    if(errorAbove.subItemIndex) {
+      errorUtility.subItemIndex = errorAbove.subItemIndex
+    }
+
+    if(errorAbove.openSubItem) {
+      errorAbove.openSubItem()
+      await errorUtility.setErrorMessages(errorAbove.activeErrors)
+      const errorBubble = errorUtility.errorIndicators[errorUtility.activeIndicator]
+      const errorBubbleDimensions = ReactDOM.findDOMNode(errorBubble.node).getBoundingClientRect()
+
+      $('html, body').animate({
+        scrollTop: `-=${(errorBubbleDimensions.top - 200) * -1}`
+      }, 1000);
+
+    } else {
+      errorUtility.setErrorMessages(errorAbove.activeErrors)
+
+      $('html, body').animate({
+        scrollTop: `-=${(errorAboveDimensions.top - 200) * -1}`
+      }, 1000);
+    }
+  }
+
+
+  scrollToErrorBelow = async () => {
+    const errorUtility = this.props.errorUtility
+    let errorBelow
+    let errorBelowDimensions
+    for(let indicator of errorUtility.errorIndicators) {
+      const indicatorDimensions = ReactDOM.findDOMNode(indicator.node).getBoundingClientRect()
+      if(indicatorDimensions.top > window.innerHeight) {
+        errorBelow = indicator
+        errorBelowDimensions = indicatorDimensions
+        break
+      }
+    }
+
+    if(errorBelow.subItemIndex) {
+      errorUtility.subItemIndex = errorBelow.subItemIndex
+    }
+
+    if(errorBelow.openSubItem) {
+      errorBelow.openSubItem()
+      await errorUtility.setErrorMessages(errorBelow.activeErrors)
+      const errorBubble = errorUtility.errorIndicators[errorUtility.activeIndicator]
+      const errorBubbleDimensions = ReactDOM.findDOMNode(errorBubble.node).getBoundingClientRect()
+
+      $('html, body').animate({
+        scrollTop: `+=${errorBubbleDimensions.top - window.innerHeight + 400}`
+      }, 1000);
+
+    } else {
+      errorUtility.setErrorMessages(errorBelow.activeErrors)
+
+      $('html, body').animate({
+        scrollTop: `+=${errorBelowDimensions.top - window.innerHeight + 400}`
+      }, 1000);
+    }
   }
 
 
   componentWillUnmount () {
-    document.addRemoveListener('scroll', this.refreshStickyError, false)
-    this.props.deferredTooltipBubbleRefresh.reject()
+    document.removeEventListener('scroll', this.refreshStickyError, false)
+    this.props.deferredStickyErrorRefresh.reject()
   }
 
 
@@ -127,14 +193,14 @@ export default class StickyError extends React.Component {
       <div className="errorHolder">
         {this.state.errorsAbove &&
           <div className={`stickyError errorAbove ${this.state.hideTop ? 'hideSticky' : ''}`} ref="top"
-               onClick={this.scrollToError}>
+               onClick={this.scrollToErrorAbove}>
             <p>More Errors</p>
             <img src={`${routes.images}/AddArticle/Triangle.svg`}/>
           </div>
         }
         {this.state.errorsBelow &&
           <div className={`stickyError errorBelow ${this.state.hideBottom ? 'hideSticky' : ''}`} ref="bottom"
-               onClick={this.scrollToError}>
+               onClick={this.scrollToErrorBelow}>
             <p>More Errors</p>
             <img className='rotate' src={`${routes.images}/AddArticle/Triangle.svg`}/>
           </div>

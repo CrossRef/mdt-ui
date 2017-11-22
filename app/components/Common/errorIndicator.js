@@ -87,7 +87,7 @@ export default class ErrorIndicator extends React.Component {
     }
     if(this.props.openSubItem) {
       this.props.openSubItem()
-      this.props.errorUtility.setErrorMessages(this.props.trackErrors)
+      this.props.errorUtility.setErrorMessages(this.props.activeErrors)
     } else {
 
       this.props.errorUtility.setErrorMessages(this.state.activeErrors)
@@ -97,7 +97,7 @@ export default class ErrorIndicator extends React.Component {
 
   saveRef = (node) => {
     this.node = node
-    this.props.errorUtility.saveRef(this.state.activeErrors, this.props.trackErrors, node, this.props.subItem, this.props.subItemIndex)
+    this.props.errorUtility.saveRef(this.state.activeErrors, this.props.trackErrors, node, this.props.subItem, this.props.subItemIndex, this.props.openSubItem)
   }
 
 

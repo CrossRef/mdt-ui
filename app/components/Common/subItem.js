@@ -8,6 +8,7 @@ export default class SubItem extends Component {
 
   static propTypes = {
     title: is.string.isRequired,
+    boundSetState: is.func.isRequired,
     freetolicense: is.string,
     showSection: is.bool.isRequired,
     optionalIssueInfoHandlers: is.func,
@@ -40,6 +41,7 @@ export default class SubItem extends Component {
     this.setState({
       showSection: !this.state.showSection
     })
+    this.props.boundSetState({})
   }
 
 

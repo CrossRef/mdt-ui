@@ -19,7 +19,7 @@ export default class ErrorBubble extends React.Component{
   constructor(props) {
     super()
 
-    //Clicking a subItem indicator sets errorMessages to all errors tracked by that subItem, so this
+    //Clicking a subItem indicator sets errorMessages to all errors active in that subItem, so this
     //code runs on the first errorBubble created and resets the errorMessages to just the errors in first row
     if(props.errorMessages.length > props.activeErrors.length && !props.errorUtility.openingSubItem) {
       props.errorUtility.setErrorMessages(props.activeErrors)
@@ -43,11 +43,6 @@ export default class ErrorBubble extends React.Component{
   }
 
 
-  componentDidMount() {
-    console.log('when does error bubble mount?')
-  }
-
-
   render() {
     return (
       <div id="errorBubble" className="fullErrorHolder" ref={(node)=>this.props.saveRef(node)}>
@@ -65,36 +60,3 @@ export default class ErrorBubble extends React.Component{
     )
   }
 }
-
-
-
-
-
-
-
-// refreshStickyError = () => {
-//   const bounds = ReactDom.findDOMNode(this.refs.ErrorBubble).getBoundingClientRect()
-//   const ErrorIsVisible = bounds.top < window.innerHeight && bounds.bottom > 0
-//   const errorIsAbove = bounds.top < 0
-//   let errorBubbleOffscreen
-//   if (ErrorIsVisible) {
-//     errorBubbleOffscreen = false
-//   } else {
-//     errorBubbleOffscreen =  errorIsAbove ? 'above' : 'below'
-//   }
-//   if(!errorBubbleOffscreen && this.state.errorBubbleOffscreen) {
-//     this.setState({errorBubbleOffscreen})
-//   } else if (errorBubbleOffscreen && !this.state.errorBubbleOffscreen) {
-//     this.setState({errorBubbleOffscreen})
-//   }
-// }
-
-//document.removeEventListener('scroll', this.refreshStickyError, false)
-
-// scrollToError = () => {
-//   $('html, body').animate({
-//     scrollTop: this.state.errorBubblePosition
-//   }, 1000);
-// }
-
-

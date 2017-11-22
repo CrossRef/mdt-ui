@@ -32,6 +32,7 @@ export default class RelatedItems extends Component {
     this.setState({
       showSubItem: !this.state.showSubItem
     })
+    this.props.handler({})
   }
 
 

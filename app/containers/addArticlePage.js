@@ -92,7 +92,8 @@ export default class AddArticlePage extends Component {
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
       version: '1',
       deferredTooltipBubbleRefresh: new DeferredTask(),
-      errorMessages: []
+      errorMessages: [],
+      deferredStickyErrorRefresh: new DeferredTask()
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -174,14 +175,15 @@ export default class AddArticlePage extends Component {
     openingSubItem: false,
     subItemIndex: "0",
 
-    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex) => {
+    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex, openSubItem) => {
       if(node){
         this.errorUtility.errorIndicators.push({
           activeErrors,
           trackErrors,
           node,
           subItem,
-          subItemIndex
+          subItemIndex,
+          openSubItem
         })
 
         if(node.id === 'errorBubble') {
@@ -256,6 +258,8 @@ export default class AddArticlePage extends Component {
 
 
   componentDidUpdate() {
+    this.state.deferredStickyErrorRefresh.resolve()
+
     if(this.state.validating) {
       this.state.deferredTooltipBubbleRefresh.resolve()
     }

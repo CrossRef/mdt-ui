@@ -39,6 +39,7 @@ export default class Contributor extends Component {
     this.setState({
       showSubItem: !this.state.showSubItem
     })
+    this.props.handler({})
   }
 
 
@@ -173,6 +174,7 @@ export default class Contributor extends Component {
                   options={Roles}
                   disabled={this.state.personDisabled}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   trackErrors={['contributorRole']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}

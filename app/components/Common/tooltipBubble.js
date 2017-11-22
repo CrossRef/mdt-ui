@@ -48,7 +48,6 @@ export default class TooltipBubble extends React.Component{
     let newBubblePosition = getTooltipPosition()
 
     if(this.state.bubblePosition !== newBubblePosition || (tooltip && tooltip !== this.state.tooltip)) {
-      console.log('when does tooltip REFRESH!?')
       this.setState({
         bubblePosition: newBubblePosition,
         tooltip: tooltip || this.state.tooltip,
@@ -59,7 +58,6 @@ export default class TooltipBubble extends React.Component{
 
 
   componentDidUpdate () {
-    console.log('when does tooltip update?', this.props.errorUtility.errorIndicators.length)
     try {
       if(!this.state.displaced) {
         const myDimensions = ReactDOM.findDOMNode(this.node).getBoundingClientRect()

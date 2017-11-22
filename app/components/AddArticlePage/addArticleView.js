@@ -136,10 +136,13 @@ export default class AddArticleView extends Component {
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}/>
                   }
 
-                  <StickyError
-                    errorUtility={this.props.errorUtility}
-                    deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                  />
+                  {this.props.error &&
+                    <StickyError
+                      errorUtility={this.props.errorUtility}
+                      deferredStickyErrorRefresh={this.props.deferredStickyErrorRefresh}
+                    />
+                  }
+
 
                 </div>
 
@@ -260,6 +263,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Contributor'}
+                boundSetState={this.props.boundSetState}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Contributors}
                 addHandler={this.props.addSection.bind(null, 'contributors')}>
@@ -290,6 +294,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Funding'}
+                boundSetState={this.props.boundSetState}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Funding}
                 addHandler={this.props.addSection.bind(null, 'funding')}>
@@ -311,6 +316,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'License'}
+                boundSetState={this.props.boundSetState}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.Licenses}
                 addHandler={this.props.addSection.bind(null, 'license')}>
@@ -358,6 +364,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Related Items'}
+                boundSetState={this.props.boundSetState}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.relatedItems}
                 addHandler={this.props.addSection.bind(null, 'relatedItems')}>
@@ -388,6 +395,7 @@ export default class AddArticleView extends Component {
 
               <SubItem
                 title={'Additional Information'}
+                boundSetState={this.props.boundSetState}
                 openSubItems={this.props.openSubItems}
                 showSection={this.props.openItems.addInfo}>
                   <ErrorIndicator
@@ -412,6 +420,7 @@ export default class AddArticleView extends Component {
               {this.props.crossmark &&
                 <SubItem
                   title={'Crossmark'}
+                  boundSetState={this.props.boundSetState}
                   showSection={!!Object.keys(this.props.showCards).length || !!this.props.reduxForm.size}
                   openSubItems={this.props.openSubItems}
                   CrossmarkAddButton={CrossmarkAddButton}>

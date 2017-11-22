@@ -96,9 +96,10 @@ export default class Funding extends Component {
 
 
   toggle = () => {
-      this.setState({
-        showSubItem: !this.state.showSubItem
-      })
+    this.setState({
+      showSubItem: !this.state.showSubItem
+    })
+    this.props.handler({})
   }
 
 
