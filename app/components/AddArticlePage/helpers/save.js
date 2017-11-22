@@ -2,13 +2,10 @@ import React, { Component } from 'react'
 import {browserHistory} from 'react-router'
 import { XMLSerializer, DOMParser } from 'xmldom'
 
-import {jsEscape, compareDois} from '../../../utilities/helpers'
+import {compareDois} from '../../../utilities/helpers'
 import {routes} from '../../../routing'
 import * as api from '../../../actions/api'
 import journalArticleXml from '../../AddArticlePage/articleXmlGenerator'
-
-
-
 
 
 
@@ -28,10 +25,10 @@ export default async function (addToCart) {
     const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
     const journalElm = journalDoc.getElementsByTagName("journal")[0]
     journalElm.appendChild(journalArticle)
-    const title = jsEscape(this.state.article.title)
+    const title = this.state.article.title
 
     const newRecord = {
-      'title': {'title': title},
+      'title':JSON.parse(JSON.stringify({'title': title})),
       'date': new Date(),
       'doi': this.state.article.doi,
       'owner-prefix': this.state.ownerPrefix,
