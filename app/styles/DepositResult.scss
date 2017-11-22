@@ -108,6 +108,11 @@
 
         .articleTitle {
           padding-left: 80px;
+          max-width: 572px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          padding-right: 10px ;
           width: 572px;
         }
 
@@ -125,6 +130,7 @@
         }
 
         .urlBox {
+          white-space: nowrap;
           max-width: 260px;
           overflow: hidden;
           text-overflow: ellipsis;

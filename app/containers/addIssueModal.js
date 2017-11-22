@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { controlModal, getPublications } from '../actions/application'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
-import {jsEscape, DeferredTask} from '../utilities/helpers'
+import {DeferredTask} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
@@ -143,12 +143,11 @@ export default class AddIssueModal extends Component {
         version = String(Number(this.state.version) + 1)
       }
 
-      const title = jsEscape(this.state.issue.issueTitle)
-      const issue = jsEscape(this.state.issue.issue)
-      const volume = jsEscape(this.state.issue.volume)
-
+      const title = this.state.issue.issueTitle
+      const issue = this.state.issue.issue
+      const volume =this.state.issue.volume
       const newRecord = {
-        'title': {issue, volume, title},
+        'title': JSON.parse(JSON.stringify({issue, volume, title})),
         'date': new Date(),
         'doi': issueDoi,
         'owner-prefix': this.props.ownerPrefix,
@@ -157,7 +156,6 @@ export default class AddIssueModal extends Component {
         'status': 'draft',
         'content': new XMLSerializer().serializeToString(issueXML)
       }
-
       const submissionPayload = {
         ...publication,
         message: {

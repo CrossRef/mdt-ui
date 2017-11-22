@@ -91,9 +91,12 @@
                 width: 85px
             }
             td {
-
+                max-width: 290px;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                overflow: hidden;
                 padding-top: 32px;
-            }
+            }            
             .first {
                 border-left: 1px solid #DEE1E5;
                 padding: 8px 0 8px 32px;

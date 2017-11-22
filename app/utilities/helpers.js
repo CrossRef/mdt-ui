@@ -94,17 +94,6 @@ export function compareDois (doi1, doi2) {
 
 
 
-
-
-export function jsEscape (str) {
-  return str
-}
-
-
-
-
-
-
 export function pascaleCase (name) {
   if (name) {
     var arr, i, l;
