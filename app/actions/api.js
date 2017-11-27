@@ -19,7 +19,7 @@ export function getCRState () {
 
 export function syncState (postingState) {
   authorizedFetch(`${apiBaseUrl}/state`, {
-    method: 'POST',
+    method: 'post',
     headers: {Authorization: localStorage.getItem('auth')},
     body: JSON.stringify(postingState)
   })
@@ -67,7 +67,10 @@ export function getItem (id, forced) {
 
   const queryParams = doi ? `doi=${doi}` : `pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
 
-  return authorizedFetch(`${apiBaseUrl}/work?${queryParams}${forced ? `&forced=true` : ''}`, { headers: {Authorization: localStorage.getItem('auth')} })
+  return authorizedFetch(`${apiBaseUrl}/work?${queryParams}${forced ? `&forced=true` : ''}`, {
+    method: 'get',
+    headers: {Authorization: localStorage.getItem('auth')}
+  })
     .then(response => {
       if(response.status !== 200) {
         throw `${response.status}: ${response.statusText}`
@@ -133,6 +136,7 @@ export function deposit (cartArray) {
 
 export function getDepositHistory (params) {
   return authorizedFetch(withQuery(`${apiBaseUrl}/history`, params), {
+    method: 'get',
     headers: {Authorization: localStorage.getItem('auth')}
   })
     .then(depositHistory => depositHistory.json())

@@ -76,7 +76,7 @@ export default async function () {
     let reduxForm
     if(parsedArticle.crossmark) {
       reduxForm = parsedArticle.crossmark.reduxForm
-      setStatePayload.showCards = parsedArticle.crossmark.showCards
+      setStatePayload.crossmarkCards = parsedArticle.crossmark.showCards
     }
 
     const isDuplicate = this.props.location.state ? !!this.props.location.state.duplicateFrom : false

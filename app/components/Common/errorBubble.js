@@ -21,6 +21,7 @@ export default class ErrorBubble extends React.Component{
 
     //Clicking a subItem indicator sets errorMessages to all errors active in that subItem, so this
     //code runs on the first errorBubble created and resets the errorMessages to just the errors in first row
+    //The openingSubItem flag tells any following indicators not to convert to an errorBubble
     if(props.errorMessages.length > props.activeErrors.length && !props.errorUtility.openingSubItem) {
       props.errorUtility.setErrorMessages(props.activeErrors)
       props.errorUtility.openingSubItem = true

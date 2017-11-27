@@ -41,7 +41,7 @@ export default class SubItem extends Component {
     this.setState({
       showSection: !this.state.showSection
     })
-    this.props.boundSetState({})
+    this.props.boundSetState({}) //This just forces a re-render of the whole page so that tooltips update position
   }
 
 
@@ -61,10 +61,6 @@ export default class SubItem extends Component {
             }
           }}>Add New</a>
         </div>
-      )
-    } else if (this.props.CrossmarkAddButton) {
-      return (
-        <this.props.CrossmarkAddButton toggleSubItem={this.toggle} showSection={this.state.showSection}/>
       )
     }
   }

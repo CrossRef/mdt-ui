@@ -46,7 +46,7 @@ export const crossmarkErrors = [
 
 export function parseCrossmark (data) {
   const reduxForm = {};
-  const showCards = { firstLoad: true };
+  const showCards = {};
 
   if(data.updates) {
     reduxForm[update] = {};

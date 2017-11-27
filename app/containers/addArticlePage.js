@@ -90,6 +90,7 @@ export default class AddArticlePage extends Component {
       isDuplicate,
       ownerPrefix,
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
+      crossmarkCards: {},
       version: '1',
       deferredTooltipBubbleRefresh: new DeferredTask(),
       errorMessages: [],
@@ -349,6 +350,28 @@ export default class AddArticlePage extends Component {
   }
 
 
+  crossmarkUtility = {
+
+    addCrossmarkCard: (selection) => {
+      this.setState({
+        crossmarkCards: {
+          ...this.state.crossmarkCards,
+          [selection]: this.state.crossmarkCards[selection] ? this.state.crossmarkCards[selection] + 1 : 1
+        }
+      })
+    },
+
+    removeCrossmarkCard: (selection) => {
+      const newState = {...this.state.crossmarkCards}
+      delete newState[selection]
+      this.props.reduxDeleteCard([selection])
+      this.setState({
+        crossmarkCards: newState
+      })
+    }
+  }
+
+
   componentWillUnmount () {
     this.props.reduxClearForm();
   }
@@ -374,6 +397,7 @@ export default class AddArticlePage extends Component {
           reduxDeleteCard={this.props.reduxDeleteCard}
           reduxForm={this.props.reduxForm}
           errorUtility={this.errorUtility}
+          crossmarkUtility={this.crossmarkUtility}
           {...this.state}
         />
       </div>

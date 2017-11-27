@@ -72,7 +72,7 @@ export default class FormDate extends React.Component {
     }
 
     this.setState({focus: true}, ()=>{
-      if(this.props.tooltip) {
+      if(this.props.tooltip && this.props.setErrorMessages) {
         this.props.setErrorMessages([])
         setErrorMessages()
         this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
