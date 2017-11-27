@@ -43,7 +43,8 @@ export default class AddArticleView extends Component {
     removeSection: is.func.isRequired,
     addSection: is.func.isRequired,
     deferredTooltipBubbleRefresh: is.object.isRequired,
-    errorUtility: is.object.isRequired
+    errorUtility: is.object.isRequired,
+    crossmarkUtility: is.object.isRequired
   }
 
   render () {
@@ -421,9 +422,8 @@ export default class AddArticleView extends Component {
                 <SubItem
                   title={'Crossmark'}
                   boundSetState={this.props.boundSetState}
-                  showSection={!!Object.keys(this.props.showCards).length || !!this.props.reduxForm.size}
-                  openSubItems={this.props.openSubItems}
-                  CrossmarkAddButton={CrossmarkAddButton}>
+                  showSection={!!Object.keys(this.props.crossmarkCards).length || !!this.props.reduxForm.size}
+                  openSubItems={this.props.openSubItems}>
                     <ErrorIndicator
                       trackErrors={crossmarkErrors}
                       errorMessages={[]}
@@ -431,7 +431,8 @@ export default class AddArticleView extends Component {
                       allErrors={this.props.errors}/>
 
                     <Crossmark
-                      showCards={this.props.showCards}
+                      crossmarkUtility={this.props.crossmarkUtility}
+                      crossmarkCards={this.props.crossmarkCards}
                       validate={this.props.validate}
                       tooltip={this.props.showHelper}
                       deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}

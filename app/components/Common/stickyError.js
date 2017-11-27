@@ -60,6 +60,7 @@ export default class StickyError extends React.Component {
     let errorsBelow = false
     let hideTop = false
     let hideBottom = false
+
     for(let indicator of this.props.errorUtility.errorIndicators) {
       const indicatorDimensions = ReactDOM.findDOMNode(indicator.node).getBoundingClientRect()
       const indicatorOffscreen = this.checkPosition(indicatorDimensions)
@@ -113,6 +114,7 @@ export default class StickyError extends React.Component {
     const errorUtility = this.props.errorUtility
     let errorAbove
     let errorAboveDimensions
+
     for(let indicator of errorUtility.errorIndicators) {
       const indicatorDimensions = ReactDOM.findDOMNode(indicator.node).getBoundingClientRect()
       if(indicatorDimensions.top < 0) {
@@ -149,6 +151,7 @@ export default class StickyError extends React.Component {
     const errorUtility = this.props.errorUtility
     let errorBelow
     let errorBelowDimensions
+
     for(let indicator of errorUtility.errorIndicators) {
       const indicatorDimensions = ReactDOM.findDOMNode(indicator.node).getBoundingClientRect()
       if(indicatorDimensions.top > window.innerHeight) {

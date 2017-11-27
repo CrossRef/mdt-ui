@@ -27,6 +27,33 @@ input.height64, textarea.height64, select.height64 {
 }
 
 
+.errorIndicator {
+  position: absolute;
+  top: 26px;
+  left: 2px;
+  background-color: #ffc8ca;
+  width: 196px;
+  height: 33.5px;
+  border-radius: 5px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding-left: 8px;
+
+  img {
+    width: 28px;
+  }
+}
+.hideIndicator {
+  background-color: transparent !important;
+  pointer-events: none;
+
+  img {
+    display: none
+  }
+}
+
 .fullErrorHolder {
   position: absolute;
   width: 200px;
@@ -35,7 +62,7 @@ input.height64, textarea.height64, select.height64 {
   text-align: center;
   padding: 4px 5px 10px 8px;
   border-radius: 5px;
-  top: 24px;
+  top: 21px;
   z-index: 1;
   .errormsgholder{
     display: inline-table;
@@ -46,7 +73,26 @@ input.height64, textarea.height64, select.height64 {
       vertical-align: middle;
       width: 100%;
       height: 100%;
-      padding-top: 55px;
+      padding-top: 50px;
+
+      .errorIndicator2 {
+        position: absolute;
+        top: 5px;
+        left: 2px;
+        width: 196px !important;
+        height: 33.5px;
+        border-radius: 5px;
+        display: flex !important;
+        flex-direction: column;
+        justify-content: center;
+        align-items: flex-start;
+        padding: 0 0 0 8px !important;
+
+        img {
+          width: 28px !important;
+        }
+      }
+
       .msgContainer {
         display: block;
         padding: 0 0 15px;
@@ -56,9 +102,6 @@ input.height64, textarea.height64, select.height64 {
         span {
           font-size: .9em;
         }
-      }
-      img {
-        width: 25px;
       }
     }
   }
@@ -958,33 +1001,6 @@ input.height64, textarea.height64, select.height64 {
 }
 
 
-.errorIndicator {
-  position: absolute;
-  top: 26px;
-  left: 2px;
-  background-color: #ffc8ca;
-  width: 196px;
-  height: 33.5px;
-  border-radius: 5px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding-left: 8px;
-
-  img {
-    width: 25px;
-  }
-}
-.hideIndicator {
-  background-color: transparent !important;
-  pointer-events: none;
-
-  img {
-    display: none
-  }
-}
-
 .hideSticky {
   background-color: transparent !important;
   pointer-events: none;
@@ -999,32 +1015,11 @@ input.height64, textarea.height64, select.height64 {
 }
 
 
-.errorIndicator2 {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  background-color: #ffc8ca;
-  width: 196px !important;
-  height: 33.5px;
-  border-radius: 5px;
-  display: flex !important;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 0 0 0 8px !important;
-
-  img {
-    width: 25px;
-  }
-}
-
-
 .innerCardHolder {
   .row {
     .errorHolder {
       float: right;
       width: auto !important;
-      top: 18px;
       right: 1px;
       position: relative;
 
