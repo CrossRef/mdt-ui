@@ -41,7 +41,7 @@ export default class SubItem extends Component {
     this.setState({
       showSection: !this.state.showSection
     })
-    //this.props.boundSetState({}) //This just forces a re-render of the whole page so that errorIndicators update
+    this.props.boundSetState({}) //This just forces a re-render of the whole page so that errorIndicators update
   }
 
 
