@@ -1,7 +1,7 @@
 import React from 'react'
 import is from 'prop-types'
 
-import {ArticleMessages} from '../../utilities/lists/validationMessages'
+import {ArticleMessages, IssueMessages} from '../../utilities/lists/validationMessages'
 import {routes} from '../../routing'
 
 
@@ -30,7 +30,8 @@ export default class ErrorBubble extends React.Component{
 
 
   errorMessage = (error) => {
-    return <div className="msgContainer" key={error}><b>{ArticleMessages[error].bold}</b><br/><span>{ArticleMessages[error].message}</span></div>
+    const messages = this.props.issue ? IssueMessages : ArticleMessages
+    return <div className="msgContainer" key={error}><b>{messages[error].bold}</b><br/><span>{messages[error].message}</span></div>
   }
 
 

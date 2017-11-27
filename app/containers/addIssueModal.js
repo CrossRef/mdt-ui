@@ -44,6 +44,8 @@ export default class AddIssueModal extends Component {
     this.state.issue.volumeDoi = props.ownerPrefix + '/'
 
     this.state.deferredErrorBubbleRefresh = new DeferredTask()
+    this.state.deferredTooltipBubbleRefresh = new DeferredTask()
+    this.state.errorMessages = []
   }
 
 
@@ -122,7 +124,97 @@ export default class AddIssueModal extends Component {
       }
     }
 
+    validatedPayload.errorMessages = this.errorUtility.onValidate(validatedPayload.errors, validatedPayload.optionalIssueInfo)
+
+
     return {valid, validatedPayload, criticalErrors}
+  }
+
+
+
+
+
+  errorUtility = {
+    errorIndicators: [],
+
+    activeIndicator: -1,
+
+    openingSubItem: false,
+    subItemIndex: "0",
+
+    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex, openSubItem) => {
+      if(node){
+        this.errorUtility.errorIndicators.push({
+          activeErrors,
+          trackErrors,
+          node,
+          subItem,
+          subItemIndex,
+          openSubItem
+        })
+
+        if(node.id === 'errorBubble') {
+          this.errorUtility.activeIndicator = this.errorUtility.errorIndicators.length - 1
+        }
+      }
+    },
+
+    setErrorMessages: (setErrors, allErrors = this.state.errors) => {
+      const filteredErrorMessage = setErrors.filter((error)=>{
+        return allErrors[error]
+      })
+      this.setState({errorMessages: filteredErrorMessage})
+    },
+
+    onValidate: (newValidationErrors, optionalIssueInfo) => {
+      const {errorIndicators, activeIndicator} = this.errorUtility
+      const activeIndicatorObj = errorIndicators[activeIndicator]
+      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+      let newErrorMessages
+      const {subItem, subItemIndex} = activeIndicatorObj || {}
+
+      if(subItem) {
+        const subItemErrors = {
+          contributor: contributors,
+          license: license,
+          relatedItems: relatedItems,
+        }
+
+        let allErrors
+        if(cardNamesArray.indexOf(subItem) > -1) {
+          //Is crossmark subItem
+          allErrors = newReduxForm.getIn([subItem, subItemIndex, 'errors'])
+
+        } else {
+          allErrors = subItemErrors[subItem][subItemIndex].errors
+        }
+
+        newErrorMessages = trackedIndicatorErrors.filter((error) => {
+          return allErrors[error]
+        })
+
+      } else {
+        newErrorMessages = trackedIndicatorErrors.filter((error)=>{
+          return newValidationErrors[error]
+        })
+        this.errorUtility.subItemIndex = "0"
+      }
+
+      if(!newErrorMessages.length) {
+        const indicatorBelow = errorIndicators[activeIndicator + 1]
+        const indicatorAbove = errorIndicators[activeIndicator - 1]
+
+        if(indicatorBelow) {
+          newErrorMessages = indicatorBelow.activeErrors
+          this.errorUtility.subItemIndex = indicatorBelow.subItemIndex || "0"
+        } else if(indicatorAbove) {
+          newErrorMessages = indicatorAbove.activeErrors
+          this.errorUtility.subItemIndex = indicatorAbove.subItemIndex || "0"
+        }
+      }
+
+      return newErrorMessages
+    }
   }
 
 
@@ -287,43 +379,41 @@ export default class AddIssueModal extends Component {
   }
 
 
-  optionalIssueInfoHandlers = () => {
-    return {
-      handler: (index, OptIssueInfo) => {
-        var optIssueInfo = {}
-        for(var i in OptIssueInfo.refs){
-          if(OptIssueInfo.refs[i]){
-            optIssueInfo[i] = OptIssueInfo.refs[i].value
-          }
+  optionalIssueInfoHandlers = {
+    handler: (index, OptIssueInfo) => {
+      var optIssueInfo = {}
+      for(var i in OptIssueInfo.refs){
+        if(OptIssueInfo.refs[i]){
+          optIssueInfo[i] = OptIssueInfo.refs[i].value
         }
-
-        this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
-          optionalIssueInfo: update(this.state.optionalIssueInfo, {[index]: {$set: optIssueInfo }})
-        })
-      },
-
-      addOptionalIssueInfo: () => {
-        this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
-          optionalIssueInfo: update(this.state.optionalIssueInfo, {$push:
-            [{
-              firstName: '',
-              lastName: '',
-              suffix: '',
-              affiliation: '',
-              orcid: '',
-              alternativeName: '',
-              role: '',
-              errors: {}
-            }]
-          })
-        })
-      },
-
-      remove: (index) => {
-        this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
-          optionalIssueInfo: update(this.state.optionalIssueInfo, {$splice: [[index, 1]] })
-        })
       }
+
+      this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
+        optionalIssueInfo: update(this.state.optionalIssueInfo, {[index]: {$set: optIssueInfo }})
+      })
+    },
+
+    addOptionalIssueInfo: () => {
+      this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
+        optionalIssueInfo: update(this.state.optionalIssueInfo, {$push:
+          [{
+            firstName: '',
+            lastName: '',
+            suffix: '',
+            affiliation: '',
+            orcid: '',
+            alternativeName: '',
+            role: '',
+            errors: {}
+          }]
+        })
+      })
+    },
+
+    remove: (index) => {
+      this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
+        optionalIssueInfo: update(this.state.optionalIssueInfo, {$splice: [[index, 1]] })
+      })
     }
   }
 
@@ -347,6 +437,7 @@ export default class AddIssueModal extends Component {
         optionalIssueInfoHandlers={this.optionalIssueInfoHandlers}
         closeModal={this.closeModal}
         helperSwitch={this.helperSwitch}
+        errorUtility={this.errorUtility}
 
         {...this.state}
       />

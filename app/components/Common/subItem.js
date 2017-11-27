@@ -11,7 +11,7 @@ export default class SubItem extends Component {
     boundSetState: is.func.isRequired,
     freetolicense: is.string,
     showSection: is.bool.isRequired,
-    optionalIssueInfoHandlers: is.func,
+    optionalIssueInfoHandlers: is.object,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
     arrowType: is.string,
@@ -55,7 +55,7 @@ export default class SubItem extends Component {
               this.setState({showSection: true})
             }
             if(this.props.optionalIssueInfoHandlers) {
-              this.props.optionalIssueInfoHandlers().addOptionalIssueInfo()
+              this.props.optionalIssueInfoHandlers.addOptionalIssueInfo()
             } else {
               this.props.addHandler()
             }

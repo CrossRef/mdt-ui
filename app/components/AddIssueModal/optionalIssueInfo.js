@@ -7,11 +7,10 @@ export default class OptionalIssueInformation extends Component {
   constructor (props) {
     super(props)
     const {index, optionalIssueInfo} = this.props
-    const handlers = this.props.optionalIssueInfoHandlers()
     this.state = {
       index: index,
-      handler: handlers.handler,
-      remove: handlers.remove,
+      handler: this.props.optionalIssueInfoHandlers.handler,
+      remove: this.props.optionalIssueInfoHandlers.remove,
       optionalIssueInfo: optionalIssueInfo
     }
   }

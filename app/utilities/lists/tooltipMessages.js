@@ -29,3 +29,19 @@ export const articleTooltips = {
   clinicalTrialRegistry: 'The place where the clinical trial has been registered',
   clinicalRelationship: 'The stage of the trial that article reports on'
 }
+
+
+
+export const issueTooltips = {
+  title: 'Title of issue (if any) that accompanies issue number',
+  issueNumber: 'Issue number',
+  printDate: 'Date the issue was published (print)',
+  onlineDate: 'Date the issue was published online',
+  specialNumber: 'For supplements or special issues. Text defining the type of special issue (e.g. "suppl") may be included in this element along with the number.',
+  archiveLocation: 'Designated archiving organization',
+  issueDoi: 'Identifer assigned to a specific issue, constructed of organizational prefix and unique suffix (10.xxxx/xx...)',
+  issueUrl: 'URL for issue',
+  volumeNumber: 'Volume number',
+  volumeDoi: 'Identifer assigned to a specific volume, constructed of organizational prefix and unique suffix (10.xxxx/xx...)',
+  volumeUrl: 'URL for volume'
+}

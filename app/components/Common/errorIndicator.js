@@ -131,6 +131,7 @@ export default class ErrorIndicator extends React.Component {
           </div>
         :
           <ErrorBubble
+            issue={this.props.issue}
             errorMessages={this.props.errorMessages}
             activeErrors={this.state.activeErrors}
             errorUtility={this.props.errorUtility}
