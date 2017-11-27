@@ -49,10 +49,7 @@ export default class ErrorBubble extends React.Component{
       <div id="errorBubble" className="fullErrorHolder" ref={(node)=>this.props.saveRef(node)}>
         <div className="errormsgholder">
           <div className="errormsginnerholder">
-            <div className="errorIndicator2"
-              onClick={()=>this.props.errorUtility.setErrorMessages([])}>
-                <img src={`${routes.images}/Deposit/Asset_Icons_Red_Caution.png`}/>
-            </div>
+            <div className="errorIndicator2"><img src={`${routes.images}/AddArticle/Asset_Icons_White_Caution.svg`}/></div>
 
             {this.filterErrors(this.props.errorMessages).map((error) => this.errorMessage(error))}
           </div>
