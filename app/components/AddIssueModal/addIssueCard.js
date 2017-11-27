@@ -9,6 +9,13 @@ import OptionalIssueInfo from './optionalIssueInfo'
 import {makeDateDropDown} from  '../../utilities/date'
 import {urlEntered, doiEntered} from  '../../utilities/helpers'
 import ErrorBubble from './errorBubble'
+import TooltipBubble from '../Common/tooltipBubble'
+import FormInput from '../Common/formInput'
+import FormTextArea from '../Common/formTextArea'
+import FormSelect from '../Common/formSelect'
+import FormDate from '../Common/formDate'
+import ErrorIndicator from '../Common/errorIndicator'
+import {issueTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
 
 
 
@@ -49,32 +56,24 @@ export default class AddIssueCard extends React.Component {
                     </div>
                   </div>
                 </div>
+
+
                 <div className='row'>
                   <div className='fieldHolder'>
-                    <div className='fieldinnerholder halflength'>
-                      <div className='labelholder'>
-                        <div></div>
-                        <div className='labelinnerholder'>
-                          <div className='label'>Issue</div>
-                        </div>
-                      </div>
-                      <div className='requrefieldholder'>
-                        <div className={`requiredholder ${this.props.issue.volume && 'norequire'}`}>
-                          <div className='required height32'>
-                            {!this.props.issue.volume && <span>*</span>}
-                          </div>
-                        </div>
-                        <div className='field'>
-                          <input
-                            className={`height32 ${errors.issueVolume && 'fieldError'}`}
-                            type='text'
-                            name='issue.issue'
-                            onChange={this.props.handler}
-                            value={this.props.issue.issue}
-                          />
-                        </div>
-                      </div>
-                    </div>
+
+                    <FormInput
+                      label="Issue"
+                      name="issue.issue"
+                      value={this.props.issue.issue}
+                      changeHandler={this.props.handler}
+                      error={errors.issueVolume}
+                      setErrorMessages={this.props.errorUtility.setErrorMessages}
+                      tooltip={this.props.showHelper && tooltips.issueNumber}
+                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                      required={!this.props.issue.volume}/>
+
+
+
                     <div className='fieldinnerholder halflength'>
                       <div className='labelholder'>
                         <div></div>
@@ -98,7 +97,14 @@ export default class AddIssueCard extends React.Component {
                         </div>
                       </div>
                     </div>
+
+
+                    <FormInput label="Issue Title" name="issue.issueTitle" value={this.props.issue.issueTitle} changeHandler={this.props.handler} label="" name="" value="" changeHandler=""/>
+
+
                   </div>
+
+
                   {(!this.props.error && this.props.showHelper) &&
                   <div className='errorHolder talltooltip helpers'>
                     <div className='toolTipHolder'>
@@ -372,6 +378,7 @@ export default class AddIssueCard extends React.Component {
                   </div>
                 </div>
               </div>
+
               <SubItem
                 title={'Optional Issue Information (Contributorship)'}
                 arrowType={'dark'}
