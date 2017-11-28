@@ -28,7 +28,7 @@ export class OptionalTitleData extends Component {
         <div className={'hiddenFields' + (this.props.show ? 'showOptionalTitle':'')}>
           <div className='fieldHolder first'>
             <FormTextArea
-              label="Subtitle (Optional)"
+              label="Article subtitle"
               name="subtitle"
               value={this.props.subtitle}
               changeHandler={this.props.handleChange}
@@ -40,7 +40,7 @@ export class OptionalTitleData extends Component {
 
           <div className='fieldHolder'>
             <FormTextArea
-              label="Original Language Title (Optional)"
+              label="Alternate title (translated works)"
               name="originallanguagetitle"
               value={this.props.originallanguagetitle}
               changeHandler={this.props.handleChange}
@@ -52,7 +52,7 @@ export class OptionalTitleData extends Component {
 
           <div className='fieldHolder'>
             <FormTextArea
-              label="Original Language Title Subtitle"
+              label="Alternate subtitle (translated works)"
               name="originallanguagetitlesubtitle"
               value={this.props.originallanguagetitlesubtitle}
               changeHandler={this.props.handleChange}
