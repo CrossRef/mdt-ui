@@ -119,6 +119,7 @@ export default class DepositHistoryView extends Component {
           />
         </div>
         <table className='historyData'>
+        <tbody>
           <tr>
             <th className='first'>Deposit ID</th>
             <th className="titleCell">
@@ -175,6 +176,7 @@ export default class DepositHistoryView extends Component {
           {
             this.props.listDepositHistory()
           }
+          </tbody>
         </table>
         <Pagination className="pagination"
           total={this.props.total}
