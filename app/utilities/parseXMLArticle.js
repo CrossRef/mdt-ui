@@ -359,7 +359,7 @@ export function getContributors (parsedArticle, getOrganization) {
             lastName: person_name.surname ? person_name.surname : '',
             suffix: person_name.suffix ? person_name.suffix : '',
             affiliation: person_name.affiliation ? person_name.affiliation : '',
-            orcid: person_name.ORCID ? person_name.ORCID : '',
+            orcid:person_name.ORCID  ? (typeof person_name.ORCID  === 'string'?person_name.ORCID :person_name.ORCID ['#text']):'',
             role: person_name['-contributor_role'] ? person_name['-contributor_role'] : '',
             groupAuthorName: '',
             groupAuthorRole: ''
