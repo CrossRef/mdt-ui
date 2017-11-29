@@ -36,11 +36,13 @@ export default class DepositCartItemsReview extends Component {
   }
 
   gotoPage () {
-    const { item, publication, issue } = this.props
+    const { item, publication, issue,parentIssue } = this.props
     if (item.type.toLowerCase() === 'article') {
       this.props.reduxControlModal({showModal: false})
-      if (issue) {
-        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/${encodeURIComponent(issue)}/addarticle/${encodeURIComponent(item.doi)}`)
+      if (parentIssue) {
+        const issueDoi = parentIssue.doi
+        const issueTitle = JSON.stringify(parentIssue.title)
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/${encodeURIComponent(issueDoi?issueDoi:issueTitle)}/addarticle/${encodeURIComponent(item.doi)}`)
       } else {
         browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/addarticle/${encodeURIComponent(item.doi)}`)
       }
@@ -49,7 +51,9 @@ export default class DepositCartItemsReview extends Component {
         showModal: false
       })
       //Change this to open modal with correct issue DOI
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}?modal=${encodeURIComponent(item.doi)}`)
+      const issueDoi = item.doi
+      const issueTitle = JSON.stringify(item.title)
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}?modal=${encodeURIComponent(issueDoi?issueDoi:issueTitle)}`)
     }
   }
 

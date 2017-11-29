@@ -74,10 +74,11 @@ MakeDateDropDown.propTypes = {
   type: is.oneOf(['y', 'year', 'm', 'month', 'd', 'day']).isRequired,
   value: is.oneOfType([is.string, is.number]).isRequired,
   validation: is.bool,
-  style: is.string
+  style: is.string,
+  nodeRef: is.object
 }
 
-export function MakeDateDropDown ({handler, name, type, value, validation, style}) {
+export function MakeDateDropDown ({handler, name, type, value, validation, style, nodeRef}) {
   var s = [<option key='-1'></option>], start = 0, end = 0
   if (type === 'y' || type === 'year') {
     start = 2017
@@ -106,6 +107,7 @@ export function MakeDateDropDown ({handler, name, type, value, validation, style
       name={name}
       onChange={handler}
       value={parseInt(value)}
+      ref={nodeRef ? (node)=>nodeRef[name] = node : null}
     >
       {s}
     </select>

@@ -7,6 +7,9 @@ import FormSelect from '../../Common/formSelect'
 const RelationTypes = require('../../../utilities/lists/relationTypes.json')
 const IdentifierTypes = require('../../../utilities/lists/identifierTypes.json')
 import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
+import ErrorIndicator from '../../Common/errorIndicator'
+
+
 
 
 export default class RelatedItems extends Component {
@@ -25,15 +28,11 @@ export default class RelatedItems extends Component {
   }
 
 
-  componentDidUpdate () {
-    this.props.deferredErrorBubbleRefresh.resolve()
-  }
-
-
   toggle = () => {
     this.setState({
       showSubItem: !this.state.showSubItem
     })
+    this.props.handler({})
   }
 
 
@@ -52,7 +51,18 @@ export default class RelatedItems extends Component {
   render () {
     const { relatedItemIdentifier, description, relationType, identifierType } = this.props.relateditem;
     const activeElement = !!(relatedItemIdentifier || description || relationType || identifierType)
-    const { relatedItemDoiInvalid } = this.props.relateditem.errors || {};
+    const errors = this.props.relateditem.errors || {}
+    const { relatedItemDoiInvalid } = errors;
+
+    const subItemErrorIndicator = React.cloneElement(
+      this.props.ErrorIndicator,
+      {
+        openSubItem: this.toggle,
+        allErrors: errors,
+        subItemIndex: String(this.props.index),
+        subItem: 'license'
+      }
+    )
     return (
       <div>
         <div className='row subItemRow' onClick={this.toggle}>
@@ -67,6 +77,7 @@ export default class RelatedItems extends Component {
               <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
             </div>
           }
+          {!this.state.showSubItem && subItemErrorIndicator}
         </div>
         {this.state.showSubItem &&
           <div>
@@ -78,6 +89,11 @@ export default class RelatedItems extends Component {
                   error={relatedItemDoiInvalid}
                   value={relatedItemIdentifier}
                   changeHandler={this.handleRelatedItems}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['relatedItemDoiInvalid']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
@@ -88,8 +104,21 @@ export default class RelatedItems extends Component {
                   value={identifierType}
                   options={IdentifierTypes}
                   changeHandler={this.handleRelatedItems}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['relatedItemIdType']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   onSelect={this.props.validate}/>
               </div>
+
+              <ErrorIndicator
+                trackErrors={['relatedItemIdType', 'relatedItemDoiInvalid']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                allErrors={errors}
+                subItem='relatedItems'
+                subItemIndex={String(this.props.index)}/>
             </div>
 
             <div className='row'>
@@ -99,6 +128,7 @@ export default class RelatedItems extends Component {
                   name="description"
                   value={description}
                   changeHandler={this.handleRelatedItems}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
@@ -110,9 +140,22 @@ export default class RelatedItems extends Component {
                   options={RelationTypes}
                   changeHandler={this.handleRelatedItems}
                   onSelect={this.props.validate}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['relatedItemRelType']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   tooltip={this.props.tooltip && tooltips.relationType}/>
               </div>
+
+              <ErrorIndicator
+                trackErrors={['relatedItemRelType']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                allErrors={errors}
+                subItem='relatedItems'
+                subItemIndex={String(this.props.index)}/>
             </div>
           </div>
         }

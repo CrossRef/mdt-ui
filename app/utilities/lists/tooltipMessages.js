@@ -17,9 +17,15 @@ export const articleTooltips = {
   archiveLocation : "Designated archiving organization for your content",
   similarityCheckURL : "Crawler-friendly link to index content for Similarity Check",
   language : "Primary language for your article",
-  publicationHistory: 'Complete if you want this DOIs publication history to show in the "More information" section of the Crossmark box.',
-  peerReview: "Complete if you want this information to display in the Crossmark box",
-  copyrightLicensing: "License URLs should be deposited in the main licenses section. This space is for any additional information or context.",
-  other: "Complete if you want this information to display in the Crossmark box",
-  update: "Only complete this section if the DOI you are depositing is an update (e.g. correction or retraction notice) to another DOI"
+  publicationHistoryLabel: 'Dates when article was received, accepted and published.',
+  peerReviewLabel: "Whether the article has been peer-reviewed and the type of peer review used (single-blind, open, etc)",
+  copyrightLicensingUrl: "This URL is for additional information or context. (License URLs should be deposited in the main licenses section.)",
+  otherLabel: "Any additional information you want to display in the Crossmark box",
+  updateType: "Only complete this section if the DOI you are depositing is an update (e.g. correction or retraction notice) to another DOI",
+  updateDate: 'The date of publication for the correction or retraction notice',
+  updateDoi: 'DOI of the piece of content that has been corrected or retracted',
+  suppDescription: 'Links to any related materials.',
+  clinicalTrialNumber: 'Registered number of the clinical trial that this article reports on',
+  clinicalTrialRegistry: 'The place where the clinical trial has been registered',
+  clinicalRelationship: 'The stage of the trial that article reports on'
 }

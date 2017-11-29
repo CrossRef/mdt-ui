@@ -28,7 +28,6 @@ export default class AddPublicationModal extends Component {
 
     reduxCartUpdate: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
-    reduxAddDOIs: is.func,
     reduxStorePublications: is.func,
 
     asyncSubmitPublication: is.func.isRequired
@@ -102,7 +101,7 @@ export default class AddPublicationModal extends Component {
         'mdt-version': '1',
         title: result.title,
         abbreviation: '',
-        DOI: result.doi || result['owner-prefix'] || result.prefix,
+        DOI: result['owner-prefix'] || result.prefix || '',
         url: '',
         printISSN: pissn,
         electISSN: eissn,

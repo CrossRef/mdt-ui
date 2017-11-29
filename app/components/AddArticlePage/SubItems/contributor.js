@@ -6,6 +6,7 @@ import {routes} from '../../../routing'
 import FormInput from '../../Common/formInput'
 import FormSelect from '../../Common/formSelect'
 import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
+import ErrorIndicator from '../../Common/errorIndicator'
 
 
 
@@ -37,7 +38,8 @@ export default class Contributor extends Component {
   toggle = () => {
     this.setState({
       showSubItem: !this.state.showSubItem
-    }, ()=>this.props.deferredErrorBubbleRefresh.resolve())
+    })
+    this.props.handler({})
   }
 
 
@@ -57,6 +59,17 @@ export default class Contributor extends Component {
     const errors = this.props.contributor.errors || {};
     const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = this.props.contributor;
     const roleRequired = !!(firstName || lastName || suffix || affiliation || orcid)
+
+    const subItemErrorIndicator = React.cloneElement(
+      this.props.ErrorIndicator,
+      {
+        openSubItem: this.toggle,
+        allErrors: errors,
+        subItemIndex: String(this.props.index),
+        subItem: 'contributor'
+      }
+    )
+
     return (
       <div>
         <div className='row subItemRow' onClick={this.toggle}>
@@ -71,6 +84,7 @@ export default class Contributor extends Component {
               <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
             </div>
           }
+          {!this.state.showSubItem && subItemErrorIndicator}
         </div>
         {this.state.showSubItem &&
           <div>
@@ -83,6 +97,7 @@ export default class Contributor extends Component {
                   value={firstName}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
@@ -93,9 +108,22 @@ export default class Contributor extends Component {
                   value={lastName}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
+                  trackErrors={['contributorLastName']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
 
               </div>
+
+              <ErrorIndicator
+                trackErrors={['contributorLastName']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                allErrors={errors}
+                subItem='contributor'
+                subItemIndex={String(this.props.index)}/>
             </div>
 
             <div className='row'>
@@ -107,6 +135,7 @@ export default class Contributor extends Component {
                   value={suffix}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
@@ -115,6 +144,7 @@ export default class Contributor extends Component {
                   value={affiliation}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
 
               </div>
@@ -131,6 +161,7 @@ export default class Contributor extends Component {
                   onBlur={this.props.validate}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   tooltip={this.props.tooltip && tooltips.orcid}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
 
                 <FormSelect
@@ -142,9 +173,22 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   options={Roles}
                   disabled={this.state.personDisabled}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
+                  trackErrors={['contributorRole']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
                   onSelect={this.props.validate}/>
 
-                </div>
+              </div>
+
+              <ErrorIndicator
+                trackErrors={['contributorRole']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                allErrors={errors}
+                subItem='contributor'
+                subItemIndex={String(this.props.index)}/>
             </div>
 
             <div className='row'>
@@ -162,6 +206,11 @@ export default class Contributor extends Component {
                   value={groupAuthorName}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['contributorGroupName']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   tooltip={this.props.tooltip && tooltips.groupAuthorName}
                   disabled={this.state.groupDisabled}/>
@@ -175,11 +224,24 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   options={Roles}
                   onSelect={this.props.validate}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['contributorGroupRole']}
+                  allErrors={errors}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   tooltip={this.props.tooltip && tooltips.groupAuthorRole}
                   disabled={this.state.groupDisabled}/>
 
               </div>
+
+              <ErrorIndicator
+                trackErrors={['contributorGroupName', 'contributorGroupRole']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                allErrors={errors}
+                subItem='contributor'
+                subItemIndex={String(this.props.index)}/>
             </div>
           </div>
         }

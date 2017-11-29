@@ -1,36 +1,11 @@
 import React, { Component } from 'react'
-import Switch from 'react-toggle-switch'
 
-import { ClassWrapper } from '../../utilities/helpers'
 import {articleTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
 import {routes} from '../../routing'
 import FormDate from '../Common/formDate'
 import FormTextArea from '../Common/formTextArea'
+import ErrorIndicator from '../Common/errorIndicator'
 
-
-
-
-export class InfoHelperRow extends Component {
-  render() {
-    return (
-      <div className='row infohelper'>
-
-        <ClassWrapper classNames={['fieldHolder', 'fieldinnerholder fulllength', 'labelholder', 'labelinnerholder']}>
-          <div className='label'>* Indicates Required fields</div>
-        </ClassWrapper>
-
-        <ClassWrapper classNames={['errorHolder','switchOuterHolder','switchInnerHolder','switchLicense']}>
-          <div className='switchLabel'><span>Show Help</span></div>
-          <Switch
-            ref='showHelper'
-            onClick={() => this.props.setState({showHelper: !this.props.showHelper})}
-            on={this.props.showHelper}
-          />
-        </ClassWrapper>
-      </div>
-    )
-  }
-}
 
 
 
@@ -53,33 +28,36 @@ export class OptionalTitleData extends Component {
         <div className={'hiddenFields' + (this.props.show ? 'showOptionalTitle':'')}>
           <div className='fieldHolder first'>
             <FormTextArea
-              label="Subtitle (Optional)"
+              label="Article subtitle"
               name="subtitle"
               value={this.props.subtitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
+              setErrorMessages={this.props.setErrorMessages}
               deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
               tooltip={this.props.tooltip && tooltips.articleSubtitle}/>
           </div>
 
           <div className='fieldHolder'>
             <FormTextArea
-              label="Original Language Title (Optional)"
+              label="Alternate title (translated works)"
               name="originallanguagetitle"
               value={this.props.originallanguagetitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
+              setErrorMessages={this.props.setErrorMessages}
               deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
               tooltip={this.props.tooltip && tooltips.alternateTitle}/>
           </div>
 
           <div className='fieldHolder'>
             <FormTextArea
-              label="Original Language Title Subtitle"
+              label="Alternate subtitle (translated works)"
               name="originallanguagetitlesubtitle"
               value={this.props.originallanguagetitlesubtitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
+              setErrorMessages={this.props.setErrorMessages}
               deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
               tooltip={this.props.tooltip && tooltips.alternateSubtitle}/>
           </div>
@@ -105,6 +83,8 @@ export class DatesRow extends Component {
             onSelect={this.props.validate}
             tooltip={this.props.tooltip && tooltips.printDate}
             error={printDateInvalid}
+            trackErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
+            setErrorMessages={this.props.errorUtility.setErrorMessages}
             required={!onlineDateYear}
             deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
             fields={{
@@ -129,6 +109,8 @@ export class DatesRow extends Component {
             onSelect={this.props.validate}
             tooltip={this.props.tooltip && tooltips.onlineDate}
             error={onlineDateInvalid}
+            trackErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
+            setErrorMessages={this.props.errorUtility.setErrorMessages}
             required={!printDateYear}
             deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
             fields={{
@@ -146,6 +128,13 @@ export class DatesRow extends Component {
               }
             }}/>
         </div>
+
+        <ErrorIndicator
+          date
+          trackErrors={['printDateYear', 'printDateIncomplete', 'printDateInvalid', 'onlineDateYear', 'onlineDateIncomplete', 'onlineDateInvalid']}
+          errorMessages={this.props.errorMessages}
+          allErrors={this.props.errors}
+          errorUtility={this.props.errorUtility}/>
       </div>
     )
   }

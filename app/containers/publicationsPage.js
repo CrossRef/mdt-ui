@@ -3,7 +3,7 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { controlModal, getPublications, addDOIs, submitPublication, cartUpdate, search } from '../actions/application'
+import { controlModal, getPublications, submitPublication, cartUpdate, search } from '../actions/application'
 import PublicationCard from '../components/PublicationsPage/publicationCard'
 import Search from '../components/PublicationsPage/search'
 import AddPublicationModal from './addPublicationModal'
@@ -20,7 +20,6 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
-  reduxAddDOIs: addDOIs,
   asyncGetPublications: getPublications,
   asyncSubmitPublication: submitPublication,
   asyncSearch: search,
@@ -35,7 +34,6 @@ export default class PublicationsPage extends Component {
     DOIs: is.array.isRequired,
     searchResults: is.array,
     reduxControlModal: is.func.isRequired,
-    reduxAddDOIs: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
     asyncSearch: is.func.isRequired,
@@ -50,7 +48,6 @@ export default class PublicationsPage extends Component {
     Component: AddPublicationModal,
     props:{
       mode: 'add',
-      reduxAddDOIs: this.props.reduxAddDOIs,
       reduxCartUpdate: this.props.reduxCartUpdate,
       asyncSubmitPublication: this.props.asyncSubmitPublication,
       crossmarkPrefixes: this.props.crossmarkPrefixes,
@@ -59,7 +56,7 @@ export default class PublicationsPage extends Component {
   })
 
   render () {
-    const { searchResults, asyncSearch, loading, DOIs, reduxAddDOIs, reduxControlModal , asyncSubmitPublication, reduxCartUpdate} = this.props;
+    const { searchResults, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication, reduxCartUpdate} = this.props;
     return (
       <div className='publications'>
         <div className='management-bar'>
@@ -67,7 +64,6 @@ export default class PublicationsPage extends Component {
             asyncSearch={asyncSearch}
             results={searchResults}
             loading={loading}
-            reduxAddDOIs={reduxAddDOIs}
             reduxControlModal={reduxControlModal}
             reduxCartUpdate={reduxCartUpdate}
             asyncSubmitPublication={asyncSubmitPublication}

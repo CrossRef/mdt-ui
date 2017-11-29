@@ -13,9 +13,7 @@ const mapStateToProps = (state, props) => {
     yearValue: state.reduxForm.getIn([...props.keyPath, 'year']) || '',
     monthValue: state.reduxForm.getIn([...props.keyPath, 'month']) || '',
     dayValue: state.reduxForm.getIn([...props.keyPath, 'day']) || '',
-    yearError: !!(state.reduxForm.getIn([...props.keyPath, 'errors']) || {}).year,
-    monthError: !!(state.reduxForm.getIn([...props.keyPath, 'errors']) || {}).month,
-    dayError: !!(state.reduxForm.getIn([...props.keyPath, 'errors']) || {}).day
+    errors: state.reduxForm.getIn([...props.keyPath, 'errors']) || {}
   })
 }
 
@@ -25,21 +23,26 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 
 
 @connect(mapStateToProps, mapDispatchToProps)
-export default class ReduxSelectInput extends Component {
+export default class ReduxDate extends Component {
 
   static propTypes = {
     className: is.string,
     options: is.array.isRequired,
     reduxValue: is.string,
-    error: is.bool,
+    errors: is.object.isRequired,
     keyPath: is.array,
-    handler:is.func
+    handler:is.func,
+    trackErrors: is.array,
+    setErrorMessages: is.func,
+    errorUtility: is.object
   }
 
   componentWillReceiveProps (nextProps) {
-    const change = nextProps.yearValue !== this.props.yearValue ||
-        nextProps.monthValue !== this.props.monthValue ||
-        nextProps.dayValue !== this.props.dayValue
+    const change =
+      nextProps.yearValue !== this.props.yearValue ||
+      nextProps.monthValue !== this.props.monthValue ||
+      nextProps.dayValue !== this.props.dayValue
+
     if(change) {
       this.props.onSelect()
     }
@@ -57,7 +60,11 @@ export default class ReduxSelectInput extends Component {
         name={this.props.name || ''}
         value={this.props.reduxValue}
         required={this.props.required}
-        error={this.props.error}
+        allErrors={this.props.errors}
+        trackErrors={this.props.trackErrors}
+        setErrorMessages={this.props.setErrorMessages}
+        subItemIndex={String(this.props.keyPath[1])}
+        errorUtility={this.props.errorUtility}
         options={this.props.options}
         changeHandler={this.handler}
         tooltip={this.props.tooltip}
@@ -65,15 +72,15 @@ export default class ReduxSelectInput extends Component {
         fields={{
           year: {
             value: this.props.yearValue,
-            error: this.props.yearError
+            error: this.props.errors.year
           },
           month: {
             value: this.props.monthValue,
-            error: this.props.monthError
+            error: this.props.errors.month
           },
           day: {
             value: this.props.dayValue,
-            error: this.props.dayError
+            error: this.props.errors.day
           }
         }}
       />

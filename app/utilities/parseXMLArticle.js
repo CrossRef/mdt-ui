@@ -131,7 +131,7 @@ const parseXMLArticle = function (articleXML) {
     const addInfo = {
         archiveLocation: archive,
         language: language ? language : '',
-        similarityCheckURL: similarityCheckURL ? similarityCheckURL : '',
+        similarityCheckURL: similarityCheckURL ? (typeof licences === 'string'?similarityCheckURL:similarityCheckURL['#text']) : '',
     }
 
     retObj = _.extend(retObj, {

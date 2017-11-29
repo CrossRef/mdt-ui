@@ -8,12 +8,45 @@ export const cardNames = {
   other: 'Other'
 }
 
+export const cardNamesArray = do {
+  let cardNamesArray = []
+  for(let name in cardNames) {
+    cardNamesArray.push(cardNames[name])
+  }
+  cardNamesArray
+}
+
 const {pubHist, peer, clinical, update, copyright, supp, other} = cardNames
+
+
+export const crossmarkErrors = [
+  `${pubHist} label`,
+
+  `${peer} label`,
+  `${peer} href`,
+
+  `${copyright} label`,
+  `${copyright} href`,
+
+  `${other} label`,
+  `${other} href`,
+
+  `${supp} href`,
+
+  `${update} type`,
+  `${update} doi`,
+  `${update} doiInvalid`,
+  `${update} doiNotExist`,
+  `${update} date`,
+
+  `${clinical} registry`,
+  `${clinical} trialNumber`
+]
 
 
 export function parseCrossmark (data) {
   const reduxForm = {};
-  const showCards = { firstLoad: true };
+  const showCards = {};
 
   if(data.updates) {
     reduxForm[update] = {};
@@ -22,14 +55,14 @@ export function parseCrossmark (data) {
     showCards[update] = parseInt(data.updates.update.length);
 
     data.updates.update.forEach((thisUpdate, i)=>{
-      let DOI = '', year = '', month = '', day = '';
-      if(typeof thisUpdate === 'string') DOI = thisUpdate;
+      let doi = '', year = '', month = '', day = '';
+      if(typeof thisUpdate === 'string') doi = thisUpdate;
       if (thisUpdate['-date']) {
         [year, month, day] = thisUpdate['-date'].split('-')
       }
       reduxForm[update][i] = {
         type: upperCaseFirst(thisUpdate['-type']),
-        DOI: thisUpdate['#text'] || DOI || '',
+        doi: thisUpdate['#text'] || doi || '',
         year, month, day
       }
     });

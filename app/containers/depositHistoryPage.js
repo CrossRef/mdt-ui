@@ -49,7 +49,7 @@ export default class DepositHistoryPage extends Component {
         depositHistory: results.message
       })
     })
-      .catch(e => this.setState({serverError: error}))
+      .catch(e => this.setState({serverError: e}))
   }
 
   componentWillUpdate (nextProps, nextState) {
@@ -60,7 +60,7 @@ export default class DepositHistoryPage extends Component {
           depositHistory: results.message
         })
       })
-        .catch(e => this.setState({serverError: error}))
+        .catch(e => this.setState({serverError: e}))
     }
   }
 
@@ -159,6 +159,7 @@ export default class DepositHistoryPage extends Component {
       const mdtVersion = historyItem.MDTVersion
       const status = historyItem.evenStatus
       const doi = historyItem.doi
+      const pubDoi = historyItem.pubDoi
       var titleObj = JSON.parse(historyItem.title)
       const title = titleObj.title
       depositHistory.push({
@@ -167,6 +168,7 @@ export default class DepositHistoryPage extends Component {
         date: depositDate,
         doi: doi,
         title: title,
+        pubDoi: pubDoi,
         status: status === 'OK' ? 'Accepted' : 'Failed'
       })
     })

@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial, Blank } from './crossmarkCards'
+import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial } from './crossmarkCards'
 import {cardNames} from '../../../../utilities/crossmarkHelpers'
 const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
 
@@ -17,105 +17,87 @@ const crossmarkCardSelector = {
 
 
 
-let addCrossmarkCard
-let openCards = {}
-
-export class CrossmarkAddButton extends Component {
-
-  static propTypes = {
-    showSection: is.bool.isRequired,
-    toggleSubItem: is.func.isRequired
-  }
-
-  constructor () {
-    super()
-    openCards = {}
-    this.state = {showList: false}
-  }
-
-  toggle = () => {
-    if(!this.props.showSection) {
-      this.props.toggleSubItem()
-    }
-    this.setState({showList: !this.state.showList})
-  }
-
-  addCrossmarkCard = (selection) => {
-    addCrossmarkCard(selection)
-    openCards[selection] = true
-  }
-
-  render () {
-    return (
-      <div className='addholder'>
-        <a className='tooltips' onClick={this.toggle}>
-          Add New
-          {this.state.showList &&
-            <div className='crossmarkAddList'>
-              {Object.keys(crossmarkCardSelector).map((value, index) =>
-                <a className='crossmark' onClick={()=>this.addCrossmarkCard(value)} key={index}>{value}</a>
-              )}
-            </div>
-          }
-        </a>
-      </div>
-    )
-  }
-}
-
-
-
 export class Crossmark extends Component {
 
   static propTypes = {
-    showCards: is.object.isRequired,
-    reduxDeleteCard: is.func.isRequired
+    crossmarkUtility: is.object.isRequired,
+    crossmarkCards: is.object.isRequired,
+    validate: is.func.isRequired,
+    tooltip: is.bool.isRequired,
+    errorMessages: is.array.isRequired,
+    errorUtility: is.object.isRequired
   }
 
   constructor (props) {
     super ()
-    addCrossmarkCard = (selection) => this.setState({ crossmarkCards: {...this.state.crossmarkCards, [selection]: true } })
-    const loadedCrossmark = props.showCards.firstLoad
-    delete props.showCards.firstLoad
     this.state = {
-      crossmarkCards: loadedCrossmark ? props.showCards : openCards
-    }
-    if(loadedCrossmark) {
-      openCards = props.showCards
+      crossmarkCards: props.crossmarkCards,
+      showList: false
     }
   }
 
 
+  componentWillReceiveProps (nextProps) {
+    this.setState({
+      crossmarkCards: nextProps.crossmarkCards
+    })
+  }
+
+
   removeCrossmarkCard = (selection) => {
-    const newState = {...this.state.crossmarkCards}
-    delete newState[selection]
-    this.props.reduxDeleteCard([selection]);
-    openCards = newState
-    this.setState({ crossmarkCards: newState }, ()=>{
-      this.props.deferredErrorBubbleRefresh.resolve()
-      this.props.deferredTooltipBubbleRefresh.resolve()
+    this.props.crossmarkUtility.removeCrossmarkCard(selection)
+  }
+
+
+  addCrossmarkCard = (selection) => {
+    this.props.crossmarkUtility.addCrossmarkCard(selection)
+  }
+
+
+  toggle = () => {
+    this.setState({
+      showList: !this.state.showList
     })
   }
 
 
   render() {
-    const crossmarkCardKeys = Object.keys(this.state.crossmarkCards)
+    const crossmarkCardArray = Object.keys(this.state.crossmarkCards)
+    const addList = Object.keys(crossmarkCardSelector).filter((card)=>{
+      return !this.state.crossmarkCards[card]
+    })
     return (
       <div>
-        {!crossmarkCardKeys.length && <Blank/>}
-        {crossmarkCardKeys.map((cardName, index) => {
+        {crossmarkCardArray.map((cardName, index) => {
           const Card = crossmarkCardSelector[cardName]
           return this.state.crossmarkCards[cardName] ?
             <Card key={`${cardName}-${index}`}
+              crossmarkUtility={this.props.crossmarkUtility}
               validate={this.props.validate}
               number={this.state.crossmarkCards[cardName] - 1}
-              deferredErrorBubbleRefresh={this.props.deferredErrorBubbleRefresh}
               deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
               tooltip={this.props.tooltip}
               cardName={cardName}
+              errorMessages={this.props.errorMessages}
+              errorUtility={this.props.errorUtility}
               remove={this.removeCrossmarkCard}/>
           : null
         })}
+
+        {!!addList.length &&
+          <div className='addholder'>
+            <a className='tooltips' onClick={this.toggle}>
+              Add New
+              {this.state.showList &&
+              <div className='crossmarkAddList'>
+                {addList.map((value, index) =>
+                  <a className='crossmark' onClick={()=>this.addCrossmarkCard(value)} key={index}>{value}</a>
+                )}
+              </div>
+              }
+            </a>
+          </div>
+        }
       </div>
     )
   }
