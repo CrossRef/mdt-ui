@@ -230,7 +230,6 @@ export default function AddIssueCard (props) {
                     name="issue.volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}
-                    disabled={props.issueDoiDisabled}
                     error={errors.issueVolume}
                     trackErrors={['issueVolume']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
@@ -251,56 +250,36 @@ export default function AddIssueCard (props) {
 
               <div className='row'>
                 <div className='fieldHolder'>
-                  <div className='fieldinnerholder halflength'>
-                    <div className='labelholder'>
-                      <div></div>
-                      <div className='labelinnerholder'>
-                        <div className='label'>Volume DOI</div>
-                      </div>
-                    </div>
-                    <div className='requrefieldholder'>
-                      <div className={`requiredholder ${!volumeSectionRequired && 'norequire'}`}>
-                        <div className='required height32'>{volumeSectionRequired && <span>*</span>}</div>
-                      </div>
-                      <div className='field'>
-                        <input
-                          className={`height32 ${(errors.volumedoi || errors.dupevolumedoi || errors.invalidvolumedoi || errors.dupeDois || errors.invalidVolumeDoiPrefix) && 'fieldError'} ${props.volumeDoiDisabled && 'disabledDoi'}`}
-                          type='text'
-                          name='issue.volumeDoi'
-                          onChange={props.handler}
-                          value={props.issue.volumeDoi}
-                          disabled={props.volumeDoiDisabled}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                  <div className='fieldinnerholder halflength'>
-                    <div className='labelholder'>
-                      <div></div>
-                      <div className='labelinnerholder'>
-                        <div className='label'>Volume URL</div>
-                      </div>
-                    </div>
-                    <div className='requrefieldholder'>
-                      <div className={`requiredholder ${!volumeSectionRequired && 'norequire'}`}>
-                        <div className='required height32'>
-                          {volumeSectionRequired && <span>*</span>}
-                        </div>
-                      </div>
-                      <div className='field'>
-                        <input
-                          className={'height32' + ((errors.volumeUrl || errors.invalidvolumeurl) ? ' fieldError': '')}
-                          type='text'
-                          name='issue.volumeUrl'
-                          onChange={props.handler}
-                          value={props.issue.volumeUrl}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <FormInput
+                    label="Volume DOI"
+                    name="issue.volumeDoi"
+                    value={props.issue.volumeDoi}
+                    changeHandler={props.handler}
+                    disabled={props.volumeDoiDisabled}
+                    error={errors.volumedoi || errors.dupevolumedoi || errors.invalidvolumedoi || errors.dupeDois || errors.invalidVolumeDoiPrefix}
+                    trackErrors={['volumedoi', 'dupevolumedoi', 'invalidvolumedoi', 'dupeDois', 'invalidVolumeDoiPrefix']}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    tooltip={props.showHelper && tooltips.volumeDoi}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    onBlur={props.validate}
+                    required={volumeSectionRequired}/>
+
+                  <FormInput
+                    label="Volume URL"
+                    name="issue.volumeUrl"
+                    value={props.issue.volumeUrl}
+                    changeHandler={props.handler}
+                    error={errors.volumeUrl || errors.invalidvolumeurl}
+                    trackErrors={['volumeUrl', 'invalidvolumeurl']}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    tooltip={props.showHelper && tooltips.volumeUrl}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    onBlur={props.validate}
+                    required={volumeSectionRequired}/>
                 </div>
               </div>
             </div>
+
 
             <SubItem
               title={'Optional Issue Information (Contributorship)'}

@@ -167,6 +167,8 @@ export default function AddArticleView (props) {
                     error={props.errors.doi || props.errors.dupedoi || props.errors.invaliddoi || props.errors.invalidDoiPrefix}
                     trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
+                    tooltip={props.showHelper && tooltip.doi}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
                     disabled={props.doiDisabled}
                     changeHandler={props.handleChange}
                     onBlur={props.validate}/>
@@ -179,6 +181,8 @@ export default function AddArticleView (props) {
                     error={props.errors.url || props.errors.invalidurl}
                     trackErrors={['url', 'invalidurl']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
+                    tooltip={props.showHelper && tooltip.url}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
                     changeHandler={props.handleChange}
                     onBlur={props.validate}/>
                 </div>
@@ -251,6 +255,8 @@ export default function AddArticleView (props) {
                     name="abstract"
                     value={props.article.abstract}
                     setErrorMessages={props.errorUtility.setErrorMessages}
+                    tooltip={props.showHelper && tooltip.abstract}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
                     changeHandler={props.handleChange}/>
                 </div>
               </div>
@@ -336,6 +342,8 @@ export default function AddArticleView (props) {
                         ]}
                         setErrorMessages={props.errorUtility.setErrorMessages}
                         changeHandler={props.handleChange}
+                        deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                        tooltip={props.showHelper && tooltip.freeToLicense}
                         onSelect={props.validate}/>
                     </div>
                   </div>
@@ -354,6 +362,8 @@ export default function AddArticleView (props) {
                     errorMessages={props.errorMessages}
                     errorUtility={props.errorUtility}
                     allErrors={props.errors}
+                    tooltip={props.showHelper}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
                     freetolicense={i===0 ? props.article.freetolicense : ''}/>
                 )}
             </SubItem>
