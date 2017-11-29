@@ -4,12 +4,12 @@ import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 
 import AddPublicationModal from '../../containers/addPublicationModal'
+import * as api from '../../actions/api'
 
 
 export default class Search extends Component {
 
   static propTypes = {
-    reduxAddDOIs: is.func.isRequired,
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
@@ -36,10 +36,30 @@ export default class Search extends Component {
   }
 
 
-  onSelect = (value, item) => {
+  onSelect = async (value, item) => {
     this.setState({ searchingFor: '', forceClose:true });
     if(item.doi) {
-      this.props.reduxAddDOIs(item.doi)
+      let savedPublication
+      try {
+        savedPublication = await api.getItem(item.doi)
+        savedPublication = savedPublication.message
+      } catch (e) {
+        console.error('Unable to retrieve saved data of publication found in Search', e)
+      }
+
+      const newPublication = {
+        'title': savedPublication.title || typeof item.title === 'string' ? {title: item.title} : item.title,
+        'doi': item.doi,
+        'date': new Date(),
+        'owner-prefix': savedPublication['owner-prefix'] || item.doi.split('/')[0],
+        'type': 'Publication',
+        'mdt-version': '1',
+        'status': 'draft',
+        'content': savedPublication.content || '',
+        'contains': []
+      }
+
+      this.props.asyncSubmitPublication(newPublication)
     } else {
       this.props.reduxControlModal({
         showModal: true,
@@ -49,7 +69,6 @@ export default class Search extends Component {
           mode: 'search',
           searchResult: item,
           asyncSubmitPublication: this.props.asyncSubmitPublication,
-          reduxAddDOIs: this.props.reduxAddDOIs,
           reduxCartUpdate: this.props.reduxCartUpdate,
           crossmarkPrefixes: this.props.crossmarkPrefixes,
           prefixes: this.props.prefixes
