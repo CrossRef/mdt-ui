@@ -58,37 +58,50 @@ export default class Search extends Component {
     this.setState({ searchingFor: '', forceClose:true })
 
     api.getItem(item.doi).then((result) => {
+      //clean up returned publication metadata and attach issue to submit
+      result.message.doi = publication.message.doi
+      result.message['owner-prefix'] = ownerPrefix
+      delete result.message.content
       //Is lone article:
-      if(result.message.contains[0].type === 'article') {
+      if (result.message.contains[0].type === 'article') {
+        const article = issue.contains[0]
+        article['mdt-version'] = '1'
+        article['owner-prefix'] = ownerPrefix
+        article.date = new Date()
+        api.submitItem(result).then(()=>{
         browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/addarticle/${encodeURIComponent(item.doi)}`)
+      })
 
       //Is article with issue
       } else if (result.message.contains[0].contains[0]) {
         const issue = result.message.contains[0]
         const issueDoi = issue.doi
         const issueTitle = JSON.stringify(issue.title)
-
+        const article = issue.contains[0]
+        article['mdt-version'] = '1'
+        article['owner-prefix'] = ownerPrefix
+        article.date = new Date()
         //Check if issue already exists
         for (let record of publicationContains) {
-          if(record.type === 'issue' && (issueDoi ? record.doi === issueDoi : JSON.stringify(record.title) === issueTitle)) {
+          if(record.type === 'issue' && (issueDoi ? record.doi === issueDoi : JSON.stringify(record.title) === issueTitle)) { 
+            api.submitItem(result).then(()=>{
             browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/${encodeURIComponent(issueDoi || issueTitle)}/addarticle/${encodeURIComponent(item.doi)}`)
+          })
             return
           }
         }
 
-        //clean up returned publication metadata and attach issue to submit
-        result.message.doi = publication.message.doi
-        result.message['owner-prefix'] = ownerPrefix
-        delete result.message.content
+
         issue['mdt-version'] = '1'
         issue['owner-prefix'] = ownerPrefix
         issue.date = new Date()
         issue.contains = []
-
+        api.submitItem(result).then(()=>{
+        issue.contains=[article]
         api.submitItem(result).then(()=>{
           browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/${encodeURIComponent(issueDoi || issueTitle)}/addarticle/${encodeURIComponent(item.doi)}`)
-        })
-      }
+        })}
+      )}
     })
     .catch((error) => errorHandler(error))
 
