@@ -64,7 +64,7 @@ export default class Search extends Component {
       delete result.message.content
       //Is lone article:
       if (result.message.contains[0].type === 'article') {
-        const article = issue.contains[0]
+        const article = result.message.contains[0]
         article['mdt-version'] = '1'
         article['owner-prefix'] = ownerPrefix
         article.date = new Date()
