@@ -258,30 +258,6 @@ export default class AddArticlePage extends Component {
   }
 
 
-  componentDidUpdate() {
-    this.state.deferredStickyErrorRefresh.resolve()
-
-    if(this.state.validating) {
-      this.state.deferredTooltipBubbleRefresh.resolve()
-    }
-
-    //Select first error if first validation
-    if(
-      this.state.validating &&
-      this.state.error &&
-      (this.errorUtility.activeIndicator === -1 || this.errorUtility.errorIndicators.length === 1)
-    ) {
-      try {
-        this.errorUtility.setErrorMessages(this.errorUtility.errorIndicators[0].activeErrors)
-      } catch (e) {}
-    }
-
-    this.state.validating = false
-    this.state.saving = false
-    this.state.openSubItems = false
-  }
-
-
   openReviewArticleModal = () => {
     this.props.reduxControlModal({
       showModal: true,
@@ -369,6 +345,30 @@ export default class AddArticlePage extends Component {
         crossmarkCards: newState
       })
     }
+  }
+
+
+  componentDidUpdate() {
+    this.state.deferredStickyErrorRefresh.resolve()
+
+    if(this.state.validating) {
+      this.state.deferredTooltipBubbleRefresh.resolve()
+    }
+
+    //Select first error if first validation
+    if(
+      this.state.validating &&
+      this.state.error &&
+      (this.errorUtility.activeIndicator === -1 || this.errorUtility.errorIndicators.length === 1)
+    ) {
+      try {
+        this.errorUtility.setErrorMessages(this.errorUtility.errorIndicators[0].activeErrors)
+      } catch (e) {}
+    }
+
+    this.state.validating = false
+    this.state.saving = false
+    this.state.openSubItems = false
   }
 
 

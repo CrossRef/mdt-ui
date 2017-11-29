@@ -11,11 +11,9 @@ export default class SubItem extends Component {
     boundSetState: is.func.isRequired,
     freetolicense: is.string,
     showSection: is.bool.isRequired,
-    optionalIssueInfoHandlers: is.object,
     addHandler: is.func,
     CrossmarkAddButton: is.func,
     arrowType: is.string,
-    deferredTooltipBubbleRefresh: is.object,
     openSubItems: is.bool
   }
 
@@ -46,7 +44,7 @@ export default class SubItem extends Component {
 
 
   addButton = () => {
-    if(this.props.addHandler || this.props.optionalIssueInfoHandlers) {
+    if(this.props.addHandler) {
       return (
         <div className='addholder'>
           <hr/>
@@ -54,11 +52,7 @@ export default class SubItem extends Component {
             if (!this.state.showSection) {
               this.setState({showSection: true})
             }
-            if(this.props.optionalIssueInfoHandlers) {
-              this.props.optionalIssueInfoHandlers.addOptionalIssueInfo()
-            } else {
-              this.props.addHandler()
-            }
+            this.props.addHandler()
           }}>Add New</a>
         </div>
       )
@@ -71,6 +65,8 @@ export default class SubItem extends Component {
     let subItemErrorIndicator = null
     let children = Array.isArray(this.props.children) ? [...this.props.children] : this.props.children
 
+
+    //Pass the subItem indicator down to each child in array of subItems
     if(this.props.children[0] && this.props.children[0].type.name === 'ErrorIndicator') {
       const ErrorIndicator = this.props.children[0]
       subItemErrorIndicator = React.cloneElement(ErrorIndicator, {openSubItem: this.toggle, subItemIndex: "0"})

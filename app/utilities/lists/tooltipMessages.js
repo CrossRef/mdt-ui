@@ -33,7 +33,7 @@ export const articleTooltips = {
 
 
 export const issueTooltips = {
-  title: 'Title of issue (if any) that accompanies issue number',
+  issueTitle: 'Title of issue (if any) that accompanies issue number',
   issueNumber: 'Issue number',
   printDate: 'Date the issue was published (print)',
   onlineDate: 'Date the issue was published online',
@@ -43,5 +43,14 @@ export const issueTooltips = {
   issueUrl: 'URL for issue',
   volumeNumber: 'Volume number',
   volumeDoi: 'Identifer assigned to a specific volume, constructed of organizational prefix and unique suffix (10.xxxx/xx...)',
-  volumeUrl: 'URL for volume'
+  volumeUrl: 'URL for volume',
+  contributorFirstName: 'First name for issue-level contributors only',
+  contributorLastName: 'Last name for issue-level contributors only',
+  contributorSuffix: 'Suffix (Jr., Sr.) for issue-level contributors only',
+  contritbutorAffiliation: 'Institution of the issue-level contributor',
+  contributorOrcid: '[ORCID] author identifier (https://orcid.org/) for issue-level contributors',
+  contributerAlternativeName: 'For issue-level contributors only',
+  contributorRole: 'Role of issue-level contributor',
+  contributorGroupName: 'Organization name contributing to issue',
+  contributorGroupRole: 'For issue-level contributors only'
 }

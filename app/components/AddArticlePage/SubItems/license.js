@@ -110,7 +110,7 @@ export default class License extends Component {
               </div>
 
               <ErrorIndicator
-                date
+                style="dateErrorHolder"
                 trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}

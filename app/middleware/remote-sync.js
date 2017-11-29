@@ -58,8 +58,14 @@ export default store => next => action => {
               property !== 'reduxForm' &&
               property !== 'search' &&
               property !== 'toast'
-            )
+            ) {
+              //Prevent empty Dois list from saving to remote state to prevent accidental erasure
+              if(property === 'dois' && !reduxState['dois'].length) {
+                continue
+              }
               postingState[property] = reduxState[property]
+            }
+
           }
         }
         //Scrub dois array

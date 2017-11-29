@@ -14,9 +14,10 @@ export default class ErrorIndicator extends React.Component {
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired,
     allErrors: is.object.isRequired,
-    date: is.bool,
     openSubItem: is.func,
-    subItemIndex: is.string
+    subItemIndex: is.string,
+    issue: is.bool,
+    style: is.string
   }
 
 
@@ -121,7 +122,7 @@ export default class ErrorIndicator extends React.Component {
 
   render() {
     return (
-      <div className={`errorHolder ${this.props.date ? 'dateErrorHolder' : ''}`}>
+      <div className={`errorHolder ${this.props.style ? this.props.style : ''}`}>
         {this.state.render && (this.state.render === 'errorIndicator' ?
           <div
             className={`errorIndicator ${this.state.hide ? 'hideIndicator' : ''}`}

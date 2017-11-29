@@ -130,7 +130,7 @@ export class DatesRow extends Component {
         </div>
 
         <ErrorIndicator
-          date
+          style="dateErrorHolder"
           trackErrors={['printDateYear', 'printDateIncomplete', 'printDateInvalid', 'onlineDateYear', 'onlineDateIncomplete', 'onlineDateInvalid']}
           errorMessages={this.props.errorMessages}
           allErrors={this.props.errors}

@@ -25,427 +25,422 @@ import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
 
 
 
+AddArticleView.propTypes = {
+  back: is.func.isRequired,
+  addToCart: is.func.isRequired,
+  save: is.func.isRequired,
+  validate: is.func.isRequired,
+  openReviewArticleModal: is.func.isRequired,
+  handleChange: is.func.isRequired,
+  toggleFields: is.func.isRequired,
+  boundSetState: is.func.isRequired,
+  removeSection: is.func.isRequired,
+  addSection: is.func.isRequired,
+  deferredTooltipBubbleRefresh: is.object.isRequired,
+  errorUtility: is.object.isRequired,
+  crossmarkUtility: is.object.isRequired
+}
 
 
+export default function AddArticleView (props) {
+
+  const errors = props.errors
+
+  return (
+    <div>
+
+      <div className='addarticlecard'>
+
+        <form className='addArticleForm'>
+
+          <ActionBar
+            back={props.back}
+            addToCart={props.addToCart}
+            save={props.save}
+            openReviewArticleModal={props.openReviewArticleModal}
+            saving={props.saving}
+            inCart={props.inCart}
+            criticalErrors={props.criticalErrors}/>
+
+          <div className='articleInnerForm'>
+
+            <div className="topbar">
+              <div className="titleholder">
+                <div className="titleinnerholder">
+                  <div className='titleIconHolder'>
+                    <img src={`${routes.images}/AddArticle/Asset_Icons_White_Write.svg`} />
+                  </div>
+                  <div className='articletitle'>
+                    {props.article.title}
+                  </div>
+                </div>
+              </div>
+            </div>
 
 
-export default class AddArticleView extends Component {
+            <div className='body'>
 
-  static propTypes = {
-    back: is.func.isRequired,
-    addToCart: is.func.isRequired,
-    save: is.func.isRequired,
-    validate: is.func.isRequired,
-    openReviewArticleModal: is.func.isRequired,
-    handleChange: is.func.isRequired,
-    toggleFields: is.func.isRequired,
-    boundSetState: is.func.isRequired,
-    removeSection: is.func.isRequired,
-    addSection: is.func.isRequired,
-    deferredTooltipBubbleRefresh: is.object.isRequired,
-    errorUtility: is.object.isRequired,
-    crossmarkUtility: is.object.isRequired
-  }
-
-  render () {
-    const errors = this.props.errors
-
-    return (
-      <div>
-
-        <div className='addarticlecard'>
-
-          <form className='addArticleForm'>
-
-            <ActionBar
-              back={this.props.back}
-              addToCart={this.props.addToCart}
-              save={this.props.save}
-              openReviewArticleModal={this.props.openReviewArticleModal}
-              saving={this.props.saving}
-              inCart={this.props.inCart}
-              criticalErrors={this.props.criticalErrors}/>
-
-            <div className='articleInnerForm'>
-
-              <div className="topbar">
-                <div className="titleholder">
-                  <div className="titleinnerholder">
-                    <div className='titleIconHolder'>
-                      <img src={`${routes.images}/AddArticle/Asset_Icons_White_Write.svg`} />
+              <div className='row infohelper'>
+                <div className="fieldHolder">
+                  <div className="fieldinnerholder fulllength">
+                    <div className="labelholder">
+                      <div className="labelinnerholder">
+                        <div className='label'>* Indicates Required fields</div>
+                      </div>
                     </div>
-                    <div className='articletitle'>
-                      {this.props.article.title}
+                  </div>
+                </div>
+
+                <div className="errorHolder">
+                  <div className="switchOuterHolder">
+                    <div className="switchInnerHolder">
+                      <div className="switchLicense">
+                        <div className='switchLabel'><span>Show Help</span></div>
+                        <Switch
+                          onClick={() => props.boundSetState({showHelper: !props.showHelper})}
+                          on={props.showHelper}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
               </div>
 
-
-              <div className='body'>
-
-                <div className='row infohelper'>
-                  <div className="fieldHolder">
-                    <div className="fieldinnerholder fulllength">
-                      <div className="labelholder">
-                        <div className="labelinnerholder">
-                          <div className='label'>* Indicates Required fields</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="errorHolder">
-                    <div className="switchOuterHolder">
-                      <div className="switchInnerHolder">
-                        <div className="switchLicense">
-                          <div className='switchLabel'><span>Show Help</span></div>
-                          <Switch
-                            onClick={() => this.props.boundSetState({showHelper: !this.props.showHelper})}
-                            on={this.props.showHelper}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='row'>
-                  <div className='fieldHolder'>
-                    <FormTextArea
-                      label="Article Title (Required)"
-                      name="title"
-                      value={this.props.article.title}
-                      required={true}
-                      error={this.props.errors.title}
-                      trackErrors={['title']}
-                      setErrorMessages={this.props.errorUtility.setErrorMessages}
-                      changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}/>
-                  </div>
-
-                  <ErrorIndicator
+              <div className='row'>
+                <div className='fieldHolder'>
+                  <FormTextArea
+                    label="Article Title (Required)"
+                    name="title"
+                    value={props.article.title}
+                    required={true}
+                    error={props.errors.title}
                     trackErrors={['title']}
-                    allErrors={this.props.errors}
-                    errorMessages={this.props.errorMessages}
-                    errorUtility={this.props.errorUtility}/>
-
-
-                  {this.props.showHelper &&
-                    <TooltipBubble
-                      errorUtility={this.props.errorUtility}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}/>
-                  }
-
-                  {this.props.error &&
-                    <StickyError
-                      errorUtility={this.props.errorUtility}
-                      deferredStickyErrorRefresh={this.props.deferredStickyErrorRefresh}
-                    />
-                  }
-
-
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    changeHandler={props.handleChange}
+                    onBlur={props.validate}/>
                 </div>
 
-                <div className='row'>
-                  <OptionalTitleData
-                    show={this.props.showOptionalTitleData}
-                    toggleFields={this.props.toggleFields}
-                    subtitle={this.props.article.subtitle}
-                    originallanguagetitle={this.props.article.originallanguagetitle}
-                    originallanguagetitlesubtitle={this.props.article.originallanguagetitlesubtitle}
-                    validate={this.props.validate}
-                    deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                    tooltip={this.props.showHelper}
-                    setErrorMessages={this.props.errorUtility.setErrorMessages}
-                    handleChange={this.props.handleChange}/>
-                </div>
+                <ErrorIndicator
+                  trackErrors={['title']}
+                  allErrors={props.errors}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}/>
 
-                <div className='row'>
-                  <div className="fieldHolder">
-                    <FormInput
-                      label="Article DOI (Required)"
-                      name="doi"
-                      value={this.props.article.doi}
-                      required={true}
-                      error={this.props.errors.doi || this.props.errors.dupedoi || this.props.errors.invaliddoi || this.props.errors.invalidDoiPrefix}
-                      trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix']}
-                      setErrorMessages={this.props.errorUtility.setErrorMessages}
-                      disabled={this.props.doiDisabled}
-                      changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}/>
 
-                    <FormInput
-                      label="Article URL (Required)"
-                      name="url"
-                      value={ urlEntered(this.props.article.url) ? this.props.article.url : 'http://' }
-                      required={true}
-                      error={this.props.errors.url || this.props.errors.invalidurl}
-                      trackErrors={['url', 'invalidurl']}
-                      setErrorMessages={this.props.errorUtility.setErrorMessages}
-                      changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}/>
-                  </div>
+                {props.showHelper &&
+                  <TooltipBubble
+                    errorUtility={props.errorUtility}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}/>
+                }
 
-                  <ErrorIndicator
-                    trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}
-                    allErrors={this.props.errors}
-                    errorMessages={this.props.errorMessages}
-                    errorUtility={this.props.errorUtility}/>
-                </div>
+                {props.error &&
+                  <StickyError
+                    errorUtility={props.errorUtility}
+                    deferredStickyErrorRefresh={props.deferredStickyErrorRefresh}
+                  />
+                }
 
-                <DatesRow
-                  article={this.props.article}
-                  errors={this.props.errors}
-                  handleChange={this.props.handleChange}
-                  validate={this.props.validate}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                  tooltip={this.props.showHelper}
-                  errorUtility={this.props.errorUtility}
-                  errorMessages={this.props.errorMessages}
-                />
-
-                <div className='row'>
-                  <div className='fieldHolder'>
-                    <FormInput
-                      label="First Page"
-                      name="firstPage"
-                      value={this.props.article.firstPage}
-                      required={!!this.props.article.lastPage}
-                      error={this.props.errors.firstPage}
-                      trackErrors={['firstPage']}
-                      setErrorMessages={this.props.errorUtility.setErrorMessages}
-                      changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}/>
-
-                    <FormInput
-                      label="Last Page"
-                      name="lastPage"
-                      value={this.props.article.lastPage}
-                      changeHandler={this.props.handleChange}
-                      setErrorMessages={this.props.errorUtility.setErrorMessages}
-                      onBlur={this.props.validate}/>
-                  </div>
-
-                  <ErrorIndicator
-                    trackErrors={['firstPage']}
-                    allErrors={this.props.errors}
-                    errorMessages={this.props.errorMessages}
-                    errorUtility={this.props.errorUtility}/>
-                </div>
-
-                <div className='row'>
-                  <div className='fieldHolder'>
-                    <FormInput
-                      label="Article / Electronic Location ID"
-                      name="locationId"
-                      value={this.props.article.locationId}
-                      changeHandler={this.props.handleChange}
-                      onBlur={this.props.validate}
-                      setErrorMessages={this.props.errorUtility.setErrorMessages}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                      tooltip={this.props.showHelper && tooltip.locationId}/>
-                  </div>
-                </div>
-
-                <div className='row'>
-                  <div className='fieldHolder'>
-                    <FormTextArea
-                      label="Abstract"
-                      name="abstract"
-                      value={this.props.article.abstract}
-                      setErrorMessages={this.props.errorUtility.setErrorMessages}
-                      changeHandler={this.props.handleChange}/>
-                  </div>
-                </div>
 
               </div>
 
+              <div className='row'>
+                <OptionalTitleData
+                  show={props.showOptionalTitleData}
+                  toggleFields={props.toggleFields}
+                  subtitle={props.article.subtitle}
+                  originallanguagetitle={props.article.originallanguagetitle}
+                  originallanguagetitlesubtitle={props.article.originallanguagetitlesubtitle}
+                  validate={props.validate}
+                  deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                  tooltip={props.showHelper}
+                  setErrorMessages={props.errorUtility.setErrorMessages}
+                  handleChange={props.handleChange}/>
+              </div>
 
-              <SubItem
-                title={'Contributor'}
-                boundSetState={this.props.boundSetState}
-                openSubItems={this.props.openSubItems}
-                showSection={this.props.openItems.Contributors}
-                addHandler={this.props.addSection.bind(null, 'contributors')}>
-                  <ErrorIndicator
-                    trackErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole']}
-                    errorMessages={[]}
-                    errorUtility={this.props.errorUtility}
-                    allErrors={this.props.errors}/>
+              <div className='row'>
+                <div className="fieldHolder">
+                  <FormInput
+                    label="Article DOI (Required)"
+                    name="doi"
+                    value={props.article.doi}
+                    required={true}
+                    error={props.errors.doi || props.errors.dupedoi || props.errors.invaliddoi || props.errors.invalidDoiPrefix}
+                    trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix']}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    disabled={props.doiDisabled}
+                    changeHandler={props.handleChange}
+                    onBlur={props.validate}/>
 
-                  {this.props.contributors.map((data, i)=>
-                    <Contributor
-                      openSubItems={this.props.openSubItems}
-                      validate={this.props.validate}
-                      key={i}
-                      contributor={data}
-                      remove={this.props.removeSection.bind(null, 'contributors', i)}
-                      handler={this.props.boundSetState}
-                      data={this.props.contributors}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                      tooltip={this.props.showHelper}
-                      errorMessages={this.props.errorMessages}
-                      errorUtility={this.props.errorUtility}
-                      allErrors={this.props.errors}
-                      index={i}/>
-                  )}
-              </SubItem>
+                  <FormInput
+                    label="Article URL (Required)"
+                    name="url"
+                    value={ urlEntered(props.article.url) ? props.article.url : 'http://' }
+                    required={true}
+                    error={props.errors.url || props.errors.invalidurl}
+                    trackErrors={['url', 'invalidurl']}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    changeHandler={props.handleChange}
+                    onBlur={props.validate}/>
+                </div>
 
+                <ErrorIndicator
+                  trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}
+                  allErrors={props.errors}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}/>
+              </div>
 
-              <SubItem
-                title={'Funding'}
-                boundSetState={this.props.boundSetState}
-                openSubItems={this.props.openSubItems}
-                showSection={this.props.openItems.Funding}
-                addHandler={this.props.addSection.bind(null, 'funding')}>
-                  {this.props.funding.map((data, i)=>
-                    <Funding
-                      openSubItems={this.props.openSubItems}
-                      validate={this.props.validate}
-                      key={i}
-                      funding={data}
-                      remove={this.props.removeSection.bind(null, 'funding', i)}
-                      handler={this.props.boundSetState}
-                      data={this.props.funding}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                      tooltip={this.props.showHelper}
-                      index={i}/>
-                  )}
-              </SubItem>
+              <DatesRow
+                article={props.article}
+                errors={props.errors}
+                handleChange={props.handleChange}
+                validate={props.validate}
+                deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                tooltip={props.showHelper}
+                errorUtility={props.errorUtility}
+                errorMessages={props.errorMessages}
+              />
 
+              <div className='row'>
+                <div className='fieldHolder'>
+                  <FormInput
+                    label="First Page"
+                    name="firstPage"
+                    value={props.article.firstPage}
+                    required={!!props.article.lastPage}
+                    error={props.errors.firstPage}
+                    trackErrors={['firstPage']}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    changeHandler={props.handleChange}
+                    onBlur={props.validate}/>
 
-              <SubItem
-                title={'License'}
-                boundSetState={this.props.boundSetState}
-                openSubItems={this.props.openSubItems}
-                showSection={this.props.openItems.Licenses}
-                addHandler={this.props.addSection.bind(null, 'license')}>
-                  <ErrorIndicator
-                    trackErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete']}
-                    errorMessages={[]}
-                    errorUtility={this.props.errorUtility}
-                    allErrors={this.props.errors}/>
+                  <FormInput
+                    label="Last Page"
+                    name="lastPage"
+                    value={props.article.lastPage}
+                    changeHandler={props.handleChange}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    onBlur={props.validate}/>
+                </div>
 
-                  <div className="freeToLicense">
-                    <div className='row'>
-                      <div className='fieldHolder'>
-                        <FormSelect
-                          label="Free to License"
-                          name="freetolicense"
-                          value={this.props.article.freetolicense}
-                          options={[
-                              {value: 'yes', name: 'Yes'},
-                              {value: 'no', name: 'No'}
-                          ]}
-                          setErrorMessages={this.props.errorUtility.setErrorMessages}
-                          changeHandler={this.props.handleChange}
-                          onSelect={this.props.validate}/>
-                      </div>
-                    </div>
-                  </div>
+                <ErrorIndicator
+                  trackErrors={['firstPage']}
+                  allErrors={props.errors}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}/>
+              </div>
 
-                  {this.props.license.map((data, i)=>
-                    <License
-                      openSubItems={this.props.openSubItems}
-                      validate={this.props.validate}
-                      key={i}
-                      license={data}
-                      remove={this.props.removeSection.bind(null, 'license', i)}
-                      handler={this.props.boundSetState}
-                      data={this.props.license}
-                      index={i}
-                      errorMessages={this.props.errorMessages}
-                      errorUtility={this.props.errorUtility}
-                      allErrors={this.props.errors}
-                      freetolicense={i===0 ? this.props.article.freetolicense : ''}/>
-                  )}
-              </SubItem>
+              <div className='row'>
+                <div className='fieldHolder'>
+                  <FormInput
+                    label="Article / Electronic Location ID"
+                    name="locationId"
+                    value={props.article.locationId}
+                    changeHandler={props.handleChange}
+                    onBlur={props.validate}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltip={props.showHelper && tooltip.locationId}/>
+                </div>
+              </div>
 
-
-              <SubItem
-                title={'Related Items'}
-                boundSetState={this.props.boundSetState}
-                openSubItems={this.props.openSubItems}
-                showSection={this.props.openItems.relatedItems}
-                addHandler={this.props.addSection.bind(null, 'relatedItems')}>
-                  <ErrorIndicator
-                    trackErrors={['relatedItemIdType', 'relatedItemRelType', 'relatedItemDoiInvalid']}
-                    errorMessages={[]}
-                    errorUtility={this.props.errorUtility}
-                    allErrors={this.props.errors}/>
-
-                  {this.props.relatedItems.map((data, i)=>
-                    <RelatedItems
-                      openSubItems={this.props.openSubItems}
-                      validate={this.props.validate}
-                      key={i}
-                      relateditem={data}
-                      remove={this.props.removeSection.bind(null, 'relatedItems', i)}
-                      handler={this.props.boundSetState}
-                      data={this.props.relatedItems}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                      tooltip={this.props.showHelper}
-                      errorMessages={this.props.errorMessages}
-                      errorUtility={this.props.errorUtility}
-                      allErrors={this.props.errors}
-                      index={i}/>
-                  )}
-              </SubItem>
-
-
-              <SubItem
-                title={'Additional Information'}
-                boundSetState={this.props.boundSetState}
-                openSubItems={this.props.openSubItems}
-                showSection={this.props.openItems.addInfo}>
-                  <ErrorIndicator
-                    trackErrors={['simCheckUrlInvalid']}
-                    errorMessages={[]}
-                    errorUtility={this.props.errorUtility}
-                    allErrors={this.props.errors}/>
-
-                  <AdditionalInformation
-                    addInfo={this.props.addInfo}
-                    handler={this.props.boundSetState}
-                    validate={this.props.validate}
-                    tooltip={this.props.showHelper}
-                    deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                    errorMessages={this.props.errorMessages}
-                    errorUtility={this.props.errorUtility}
-                    allErrors={this.props.errors}
-                    simCheckError={this.props.errors.simCheckUrlInvalid}/>
-              </SubItem>
-
-
-              {this.props.crossmark &&
-                <SubItem
-                  title={'Crossmark'}
-                  boundSetState={this.props.boundSetState}
-                  showSection={!!Object.keys(this.props.crossmarkCards).length || !!this.props.reduxForm.size}
-                  openSubItems={this.props.openSubItems}>
-                    <ErrorIndicator
-                      trackErrors={crossmarkErrors}
-                      errorMessages={[]}
-                      errorUtility={this.props.errorUtility}
-                      allErrors={this.props.errors}/>
-
-                    <Crossmark
-                      crossmarkUtility={this.props.crossmarkUtility}
-                      crossmarkCards={this.props.crossmarkCards}
-                      validate={this.props.validate}
-                      tooltip={this.props.showHelper}
-                      deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                      errorMessages={this.props.errorMessages}
-                      errorUtility={this.props.errorUtility}
-                      reduxDeleteCard={this.props.reduxDeleteCard}/>
-                </SubItem>
-              }
+              <div className='row'>
+                <div className='fieldHolder'>
+                  <FormTextArea
+                    label="Abstract"
+                    name="abstract"
+                    value={props.article.abstract}
+                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    changeHandler={props.handleChange}/>
+                </div>
+              </div>
 
             </div>
-          </form>
-        </div>
+
+
+            <SubItem
+              title={'Contributor'}
+              boundSetState={props.boundSetState}
+              openSubItems={props.openSubItems}
+              showSection={props.openItems.Contributors}
+              addHandler={props.addSection.bind(null, 'contributors')}>
+                <ErrorIndicator
+                  trackErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole']}
+                  errorMessages={[]}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}/>
+
+                {props.contributors.map((data, i)=>
+                  <Contributor
+                    openSubItems={props.openSubItems}
+                    validate={props.validate}
+                    key={i}
+                    contributor={data}
+                    remove={props.removeSection.bind(null, 'contributors', i)}
+                    handler={props.boundSetState}
+                    data={props.contributors}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltip={props.showHelper}
+                    errorMessages={props.errorMessages}
+                    errorUtility={props.errorUtility}
+                    allErrors={props.errors}
+                    index={i}/>
+                )}
+            </SubItem>
+
+
+            <SubItem
+              title={'Funding'}
+              boundSetState={props.boundSetState}
+              openSubItems={props.openSubItems}
+              showSection={props.openItems.Funding}
+              addHandler={props.addSection.bind(null, 'funding')}>
+                {props.funding.map((data, i)=>
+                  <Funding
+                    openSubItems={props.openSubItems}
+                    validate={props.validate}
+                    key={i}
+                    funding={data}
+                    remove={props.removeSection.bind(null, 'funding', i)}
+                    handler={props.boundSetState}
+                    data={props.funding}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltip={props.showHelper}
+                    index={i}/>
+                )}
+            </SubItem>
+
+
+            <SubItem
+              title={'License'}
+              boundSetState={props.boundSetState}
+              openSubItems={props.openSubItems}
+              showSection={props.openItems.Licenses}
+              addHandler={props.addSection.bind(null, 'license')}>
+                <ErrorIndicator
+                  trackErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete']}
+                  errorMessages={[]}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}/>
+
+                <div className="freeToLicense">
+                  <div className='row'>
+                    <div className='fieldHolder'>
+                      <FormSelect
+                        label="Free to License"
+                        name="freetolicense"
+                        value={props.article.freetolicense}
+                        options={[
+                            {value: 'yes', name: 'Yes'},
+                            {value: 'no', name: 'No'}
+                        ]}
+                        setErrorMessages={props.errorUtility.setErrorMessages}
+                        changeHandler={props.handleChange}
+                        onSelect={props.validate}/>
+                    </div>
+                  </div>
+                </div>
+
+                {props.license.map((data, i)=>
+                  <License
+                    openSubItems={props.openSubItems}
+                    validate={props.validate}
+                    key={i}
+                    license={data}
+                    remove={props.removeSection.bind(null, 'license', i)}
+                    handler={props.boundSetState}
+                    data={props.license}
+                    index={i}
+                    errorMessages={props.errorMessages}
+                    errorUtility={props.errorUtility}
+                    allErrors={props.errors}
+                    freetolicense={i===0 ? props.article.freetolicense : ''}/>
+                )}
+            </SubItem>
+
+
+            <SubItem
+              title={'Related Items'}
+              boundSetState={props.boundSetState}
+              openSubItems={props.openSubItems}
+              showSection={props.openItems.relatedItems}
+              addHandler={props.addSection.bind(null, 'relatedItems')}>
+                <ErrorIndicator
+                  trackErrors={['relatedItemIdType', 'relatedItemRelType', 'relatedItemDoiInvalid']}
+                  errorMessages={[]}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}/>
+
+                {props.relatedItems.map((data, i)=>
+                  <RelatedItems
+                    openSubItems={props.openSubItems}
+                    validate={props.validate}
+                    key={i}
+                    relateditem={data}
+                    remove={props.removeSection.bind(null, 'relatedItems', i)}
+                    handler={props.boundSetState}
+                    data={props.relatedItems}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltip={props.showHelper}
+                    errorMessages={props.errorMessages}
+                    errorUtility={props.errorUtility}
+                    allErrors={props.errors}
+                    index={i}/>
+                )}
+            </SubItem>
+
+
+            <SubItem
+              title={'Additional Information'}
+              boundSetState={props.boundSetState}
+              openSubItems={props.openSubItems}
+              showSection={props.openItems.addInfo}>
+                <ErrorIndicator
+                  trackErrors={['simCheckUrlInvalid']}
+                  errorMessages={[]}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}/>
+
+                <AdditionalInformation
+                  addInfo={props.addInfo}
+                  handler={props.boundSetState}
+                  validate={props.validate}
+                  tooltip={props.showHelper}
+                  deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}
+                  simCheckError={props.errors.simCheckUrlInvalid}/>
+            </SubItem>
+
+
+            {props.crossmark &&
+              <SubItem
+                title={'Crossmark'}
+                boundSetState={props.boundSetState}
+                showSection={!!Object.keys(props.crossmarkCards).length || !!props.reduxForm.size}
+                openSubItems={props.openSubItems}>
+                  <ErrorIndicator
+                    trackErrors={crossmarkErrors}
+                    errorMessages={[]}
+                    errorUtility={props.errorUtility}
+                    allErrors={props.errors}/>
+
+                  <Crossmark
+                    crossmarkUtility={props.crossmarkUtility}
+                    crossmarkCards={props.crossmarkCards}
+                    validate={props.validate}
+                    tooltip={props.showHelper}
+                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    errorMessages={props.errorMessages}
+                    errorUtility={props.errorUtility}
+                    reduxDeleteCard={props.reduxDeleteCard}/>
+              </SubItem>
+            }
+
+          </div>
+        </form>
       </div>
-    )
-  }
+    </div>
+  )
 }
