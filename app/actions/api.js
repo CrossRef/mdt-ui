@@ -81,6 +81,18 @@ export function getItem (id, forced) {
 
 
 
+export function getDraftWorks () {
+  return authorizedFetch(`${apiBaseUrl}/work?publication=true`, {
+    method: 'get',
+    headers: {Authorization: localStorage.getItem('auth')}
+  })
+    .then(response => {
+      return response.json()
+    })
+}
+
+
+
 export function submitItem (publication) {
   return authorizedFetch(`${apiBaseUrl}/work`, {
     method:'post',

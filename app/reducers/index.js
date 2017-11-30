@@ -17,6 +17,7 @@ const combinedReducers = combineReducers({
   modal: modalReducer,
   publications: publicationsReducer,
   dois: doiReducer,
+  stateRetrieved: stateRetrievedReducer,
   reduxForm: reduxFormReducer,
   cart: cartReducer,
   toast: toastReducer
@@ -66,19 +67,36 @@ function searchReducer (state = {loading:false, searchValue: '', result:[]}, act
 }
 
 
+function stateRetrievedReducer (state = false, action) {
+  switch (action.type) {
+    case 'DOI_SYNC':
+      return true
+    default:
+      return state
+  }
+}
+
 
 function doiReducer (state = [], action) {
   switch (action.type) {
     case 'DOI_ADD':
       if(!action.doi) return state
       if(Array.isArray(action.doi)) {
-        filteredDois = action.doi.filter( element => {
+        const filteredDois = action.doi.filter( element => {
           return !!element
         })
         return [ ...new Set([...state, ...filteredDois])]
       }
 
         else return [ ...new Set(state).add(action.doi)]
+
+    case 'DOI_SYNC':
+      if(!action.doi) return state
+      const filteredDois = action.doiArray.filter( element => {
+        return !!element
+      })
+      return [ ...new Set(filteredDois)]
+
     default:
       return state
   }

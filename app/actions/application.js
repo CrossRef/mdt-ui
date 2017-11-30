@@ -45,6 +45,10 @@ export function addDOIs(doi) {
 	return { type: 'DOI_ADD', doi }
 }
 
+export function syncDOIs (doiArray) {
+  return { type: 'DOI_SYNC', doiArray}
+}
+
 export function editForm(keyPath, value) {
   return { type: 'REDUXFORM_ADD', keyPath, value}
 }
