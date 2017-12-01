@@ -7,7 +7,7 @@ import {browserHistory} from 'react-router'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {DeferredTask} from '../utilities/helpers'
+import {DeferredTask, finishUpdate} from '../utilities/helpers'
 import {cardNamesArray} from '../utilities/crossmarkHelpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
@@ -94,7 +94,8 @@ export default class AddArticlePage extends Component {
       version: '1',
       deferredTooltipBubbleRefresh: new DeferredTask(),
       errorMessages: [],
-      deferredStickyErrorRefresh: new DeferredTask()
+      deferredStickyErrorRefresh: new DeferredTask(),
+      focusedInput: ''
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -252,12 +253,6 @@ export default class AddArticlePage extends Component {
   }
 
 
-  addToCart = () => {
-    const addToCart = true
-    this.save(addToCart)
-  }
-
-
   componentDidUpdate() {
     this.state.deferredStickyErrorRefresh.resolve()
 
@@ -345,6 +340,12 @@ export default class AddArticlePage extends Component {
   }
 
 
+  addToCart = () => {
+    const addToCart = true
+    this.save(addToCart)
+  }
+
+
   back = () => {
     browserHistory.push(`${routes.publications}/${encodeURIComponent(this.state.publication.message.doi)}`)
   }
@@ -368,6 +369,32 @@ export default class AddArticlePage extends Component {
       this.setState({
         crossmarkCards: newState
       })
+    }
+  }
+
+
+  tooltipUtility = {
+
+    tooltipMounted: false,
+
+    assignRefreshTask: (func) => {
+      this.tooltipUtility.tooltipMounted = true
+      this.tooltipUtility.refreshTask = func
+    },
+
+    refresh: (param) => {
+      if(
+        this.tooltipUtility.tooltipMounted &&
+        this.tooltipUtility.refreshTask &&
+        typeof this.tooltipUtility.refreshTask === 'function'
+      ) {
+        return finishUpdate().then(()=>this.tooltipUtility.refreshTask(param))
+      }
+    },
+
+    assignFocus: (inputId) => {
+      this.setState({focusedInput: inputId})
+      return finishUpdate()
     }
   }
 
