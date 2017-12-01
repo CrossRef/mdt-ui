@@ -127,7 +127,7 @@ export default class FormDate extends React.Component {
 
             {this.state.focus && this.props.tooltip && <img className='infoFlagDate' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
 
-            <div className='datepickerholder'>
+            <div className={this.props.issue ? 'issuedatepickerholder' : 'datepickerholder'}>
               <div className='dateselectholder'>
                 <div>Year {this.props.fields.year.required ? '(*)' : ''}</div>
                 <div>

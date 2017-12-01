@@ -316,21 +316,6 @@ export const errorHandler = (error, action = ()=>{}) => {
 
 
 
-export function getErrorPosition () {
-  const firstError = $('.errorIndicator').first()
-  const switchLicense = $('.switchLicense').first()
-  let errorBubblePosition
-  try {
-    errorBubblePosition =
-      ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9))
-      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15))) + 25
-
-  } catch (e) {
-    errorBubblePosition = false
-  }
-  return errorBubblePosition
-}
-
 
 export function getTooltipPosition () {
   const infoFlag = $('.infoFlag')
