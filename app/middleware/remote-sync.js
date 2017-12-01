@@ -64,7 +64,6 @@ export default store => next => action => {
           }
         }
 
-        //Prevent syncing to remote store until dois have been retrieved and checked in draft works
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
         api.syncState(postingState)
 
