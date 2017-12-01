@@ -52,21 +52,17 @@ export default store => next => action => {
 
         for (var property in reduxState) {
           if (reduxState.hasOwnProperty(property) && !reduxState[property].hasOwnProperty('sync')) {
-            if( //scrub data being synced to server
-              property !== 'modal' &&
-              property !== 'publications' &&
-              property !== 'reduxForm' &&
-              property !== 'search' &&
-              property !== 'toast'
-            )
+
+            const syncedState =
+              property === 'login' ||
+              property === 'routing' ||
+              property === 'cart'
+
+            if(syncedState) {
               postingState[property] = reduxState[property]
+            }
           }
         }
-        //Scrub dois array
-        postingState.dois = postingState.dois.filter( element => {
-          return !!element
-        })
-        postingState.dois = removeDuplicates(postingState.dois)
 
         console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
         api.syncState(postingState)

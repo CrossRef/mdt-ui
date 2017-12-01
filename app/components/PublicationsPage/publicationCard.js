@@ -72,16 +72,14 @@ export default class PublicationCardContainer extends Component {
     })
   }
 
-  renderLoadingCard = () => ({
-    message: {
-      type: '',
-      doi: this.props.doi,
-      title: {title:`loading...`}
-    }
-  })
 
   render () {
-    const publication = this.props.publication || this.renderLoadingCard()
+    const publication = this.props.publication
+
+    if(!publication) {
+      return null
+    }
+
     const publicationContents = publication.message
     const type = publicationContents.type
     const title = publicationContents.title.title
