@@ -30,9 +30,18 @@ export default class Search extends Component {
 
 
   onChange = (e, value) => {
-    value ? this.setState({ forceClose:false }) : this.setState({ forceClose:true })
-    this.setState({searchingFor: value});
-    this.props.asyncSearch(value);
+    clearTimeout(this.state.timeOut)
+    let timeOut
+    if(value.trim() !== '') {
+      timeOut = setTimeout(()=>{
+        this.props.asyncSearch(value)
+      }, 500)
+    }
+    this.setState({
+      searchingFor: value,
+      forceClose: !value,
+      timeOut
+    })
   }
 
 

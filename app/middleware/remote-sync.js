@@ -55,7 +55,6 @@ export default store => next => action => {
 
             const syncedState =
               property === 'login' ||
-              property === 'dois' ||
               property === 'routing' ||
               property === 'cart'
 
@@ -65,22 +64,12 @@ export default store => next => action => {
           }
         }
 
-        if(postingState.dois) {
-          //Scrub dois array
-          postingState.dois = postingState.dois.filter( element => {
-            return !!element
-          })
-          postingState.dois = removeDuplicates(postingState.dois)
-        }
-
         //Prevent syncing to remote store until dois have been retrieved and checked in draft works
-        if(reduxState.stateRetrieved) {
-          console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
-          api.syncState(postingState)
+        console.warn('Syncing to remote store:', pendingAction || actionType, postingState)
+        api.syncState(postingState)
 
-          // Reset pending state
-          pendingAction = false
-        }
+        // Reset pending state
+        pendingAction = false
       }
     }
   }
