@@ -12,7 +12,7 @@ export default class FormDate extends React.Component {
 
   static propTypes = {
     label: is.string.isRequired,
-    name: is.string.isRequired,
+    name: is.oneOfType([is.string, is.array]).isRequired,
     required: is.bool,
     error: is.bool,
     trackErrors: is.array,
@@ -25,7 +25,7 @@ export default class FormDate extends React.Component {
     onBlur: is.func,
     onFocus: is.func,
     tooltip: is.oneOfType([is.string, is.bool]),
-    tooltipUtility: is.object,
+    tooltipUtility: is.object.isRequired,
     fields: is.shape({
       year: is.shape({
         value: is.string.isRequired,
@@ -47,6 +47,10 @@ export default class FormDate extends React.Component {
 
 
   generateId = () => {
+    if(Array.isArray(this.props.name)) {
+      return `${this.props.name.join('-')}`
+    }
+
     return `${this.props.name}-${this.props.subItemIndex}`
   }
 
@@ -119,7 +123,7 @@ export default class FormDate extends React.Component {
                 <div>
                   <MakeDateDropDown
                     handler={this.onSelect}
-                    name={`${this.props.name}Year`}
+                    name={`${typeof this.props.name === 'string' ? this.props.name : ''}Year`}
                     type="y"
                     value={this.props.fields.year.value}
                     validation={this.props.error || this.props.fields.year.error}
@@ -132,7 +136,7 @@ export default class FormDate extends React.Component {
                 <div>
                   <MakeDateDropDown
                     handler={this.onSelect}
-                    name={`${this.props.name}Month`}
+                    name={`${typeof this.props.name === 'string' ? this.props.name : ''}Month`}
                     type="m"
                     value={this.props.fields.month.value}
                     validation={this.props.error || this.props.fields.month.error}
@@ -145,7 +149,7 @@ export default class FormDate extends React.Component {
                 <div>
                   <MakeDateDropDown
                     handler={this.onSelect}
-                    name={`${this.props.name}Day`}
+                    name={`${typeof this.props.name === 'string' ? this.props.name : ''}Day`}
                     type="d"
                     value={this.props.fields.day.value}
                     validation={this.props.error || this.props.fields.day.error}

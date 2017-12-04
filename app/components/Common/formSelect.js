@@ -10,7 +10,7 @@ export default class FormSelect extends React.Component {
 
   static propTypes = {
     label: is.string.isRequired,
-    name: is.string.isRequired,
+    name: is.oneOfType([is.string, is.array]).isRequired,
     value: is.string.isRequired,
     options: is.array.isRequired,
     required: is.bool,
@@ -26,11 +26,15 @@ export default class FormSelect extends React.Component {
     onFocus: is.func,
     disabled: is.bool,
     tooltip: is.oneOfType([is.string, is.bool]),
-    tooltipUtility: is.object
+    tooltipUtility: is.object.isRequired
   }
 
 
   generateId = () => {
+    if(Array.isArray(this.props.name)) {
+      return `${this.props.name.join('-')}`
+    }
+
     return `${this.props.name}-${this.props.subItemIndex}`
   }
 

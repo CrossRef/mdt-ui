@@ -24,6 +24,7 @@ export class Crossmark extends Component {
     crossmarkCards: is.object.isRequired,
     validate: is.func.isRequired,
     tooltip: is.bool.isRequired,
+    tooltipUtility: is.object.isRequired,
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired
   }

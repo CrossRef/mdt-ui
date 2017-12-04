@@ -103,6 +103,7 @@ function PublicationHistoryCard (props) {
         <ReduxDate
           label="Date"
           onSelect={props.validate}
+          tooltipUtility={props.tooltipUtility}
           keyPath={[pubHist, props.i]}/>
       </div>
 
@@ -139,6 +140,7 @@ function PeerReviewCard (props) {
           <ReduxTextInput
             label='Description'
             onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
             keyPath={[peer, props.i, 'explanation']}/>
         </div>
 
@@ -159,6 +161,7 @@ function PeerReviewCard (props) {
             trackErrors={[`${peer} href`]}
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight"/>
         </div>
 
@@ -195,6 +198,7 @@ function CopyrightCard (props) {
           <ReduxTextInput
             label='Description'
             onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
             keyPath={[copyright, props.i, 'explanation']}/>
         </div>
 
@@ -223,6 +227,7 @@ function CopyrightCard (props) {
           errorsKeyPath={[copyright, props.i, 'errors']}
           trackErrors={[`${copyright} href`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
     </div>
@@ -249,6 +254,7 @@ function SupplementaryMaterialCard (props) {
           onBlur={props.validate}
           trackErrors={[`${supp} href`]}
           errorUtility={props.errorUtility}
+          tooltipUtility={props.tooltipUtility}
           setErrorMessages={props.errorUtility.setErrorMessages}/>
       </div>
 
@@ -282,6 +288,7 @@ function OtherCard (props) {
           <ReduxTextInput
             label='Description'
             onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
             keyPath={[other, props.i, 'explanation']}/>
         </div>
 
@@ -302,6 +309,7 @@ function OtherCard (props) {
             trackErrors={[`${other} href`]}
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight" />
         </div>
 

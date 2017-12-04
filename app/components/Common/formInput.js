@@ -10,7 +10,7 @@ export default class FormInput extends React.Component {
 
   static propTypes = {
     label: is.string.isRequired,
-    name: is.string.isRequired,
+    name: is.oneOfType([is.string, is.array]).isRequired,
     value: is.string.isRequired,
     placeholder: is.string,
     required: is.bool,
@@ -31,6 +31,10 @@ export default class FormInput extends React.Component {
 
 
   generateId = () => {
+    if(Array.isArray(this.props.name)) {
+      return `${this.props.name.join('-')}`
+    }
+
     return `${this.props.name}-${this.props.subItemIndex}`
   }
 

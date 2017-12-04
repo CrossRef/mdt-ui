@@ -10,7 +10,7 @@ export default class FormTextArea extends React.Component {
 
   static propTypes = {
     label: is.string.isRequired,
-    name: is.string.isRequired,
+    name: is.oneOfType([is.string, is.array]).isRequired,
     value: is.string.isRequired,
     required: is.bool,
     error: is.bool,
@@ -23,11 +23,15 @@ export default class FormTextArea extends React.Component {
     onBlur: is.func,
     onFocus: is.func,
     tooltip: is.oneOfType([is.string, is.bool]),
-    tooltipUtility: is.object
+    tooltipUtility: is.object.isRequired
   }
 
 
   generateId = () => {
+    if(Array.isArray(this.props.name)) {
+      return `${this.props.name.join('-')}`
+    }
+
     return `${this.props.name}-${this.props.subItemIndex}`
   }
 

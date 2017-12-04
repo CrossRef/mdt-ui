@@ -150,6 +150,7 @@ export default class License extends Component {
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   tooltip={this.props.tooltip && tooltips.licenseAppliesTo}
                   tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   onSelect={this.props.validate}/>
               </div>
 

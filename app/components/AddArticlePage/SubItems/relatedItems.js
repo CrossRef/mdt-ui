@@ -135,6 +135,7 @@ export default class RelatedItems extends Component {
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   tooltipUtility={this.props.tooltipUtility}
                   tooltip={this.props.tooltip && tooltips.relatedItemDescription}
+                  subItemIndex={String(this.props.index)}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
