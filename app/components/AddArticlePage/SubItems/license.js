@@ -137,6 +137,8 @@ export default class License extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
+                  tooltip={this.props.tooltip && tooltips.licenseUrl}
+                  tooltipUtility={this.props.tooltipUtility}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
