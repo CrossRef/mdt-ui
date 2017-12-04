@@ -26,12 +26,12 @@ export default class FormSelect extends React.Component {
     onFocus: is.func,
     disabled: is.bool,
     tooltip: is.oneOfType([is.string, is.bool]),
-    deferredTooltipBubbleRefresh: is.object
+    tooltipUtility: is.object
   }
 
 
-  state = {
-    focus: false
+  generateId = () => {
+    return `${this.props.name}-${this.props.subItemIndex}`
   }
 
 
@@ -40,24 +40,17 @@ export default class FormSelect extends React.Component {
       this.props.onFocus()
     }
 
-    const setErrorMessages = () => {
-      if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
-        if(this.props.subItemIndex) {
-          this.props.errorUtility.subItemIndex = this.props.subItemIndex
-        }
-        this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+    if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
+      if(this.props.subItemIndex) {
+        this.props.errorUtility.subItemIndex = this.props.subItemIndex
       }
+      this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+
+    } else if (this.props.tooltip) {
+      this.props.setErrorMessages([])
     }
 
-    this.setState({focus: true}, ()=>{
-      if(this.props.tooltip) {
-        this.props.setErrorMessages([])
-        setErrorMessages()
-        this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
-      } else {
-        setErrorMessages()
-      }
-    })
+    this.props.tooltipUtility.assignFocus(this.generateId(), this.props.tooltip)
   }
 
 
@@ -65,11 +58,6 @@ export default class FormSelect extends React.Component {
     if(this.props.onBlur) {
       this.props.onBlur()
     }
-    this.setState({focus: false}, ()=>{
-      if(this.props.tooltip) {
-       this.props.deferredTooltipBubbleRefresh.resolve()
-      }
-    })
   }
 
 
@@ -83,6 +71,8 @@ export default class FormSelect extends React.Component {
 
 
   options = () => {
+    const isFocus = this.props.tooltipUtility.getFocusedInput() === this.generateId()
+
     var options = [
       <option key='-1'></option>,
       ...this.props.options.map((option, i) => (<option key={i} value={option.value || option}>{option.name || option}</option>))
@@ -95,7 +85,7 @@ export default class FormSelect extends React.Component {
         className={
           `height32 ${
           this.props.error ? 'fieldError' : ''} ${
-          this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''} ${
+          isFocus && this.props.tooltip ? 'infoFlagBorder' : ''} ${
           this.props.disabled ? 'disabledDoi' : ''}`
         }
         value={this.props.value}
@@ -111,6 +101,8 @@ export default class FormSelect extends React.Component {
 
 
   render() {
+    const isFocus = this.props.tooltipUtility.getFocusedInput() === this.generateId()
+
     return (
       <div className={`fieldinnerholder halflength ${this.props.style || ''}`}>
         <div className='labelholder'>
@@ -124,7 +116,7 @@ export default class FormSelect extends React.Component {
           </div>
           <div className='field'>
 
-            {this.state.focus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+            {isFocus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
 
             {this.options()}
           </div>

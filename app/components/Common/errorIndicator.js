@@ -14,6 +14,7 @@ export default class ErrorIndicator extends React.Component {
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired,
     allErrors: is.object.isRequired,
+    tooltipUtility: is.object.isRequired,
     openSubItem: is.func,
     subItemIndex: is.string,
     issue: is.bool,
@@ -83,6 +84,7 @@ export default class ErrorIndicator extends React.Component {
 
 
   onClick = () => {
+    this.props.tooltipUtility.assignFocus('')
     if(this.props.subItemIndex) {
       this.props.errorUtility.subItemIndex = this.props.subItemIndex
     }

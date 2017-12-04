@@ -36,7 +36,7 @@ export default function _getCRState (type, currentLocation, error = (reason) => 
             return publication.doi
           })
 
-          dispatch(addDOIs(doiArray))
+          dispatch(addDOIs(doiArray.reverse()))
           for (let doi of doiArray) {
             dispatch(getPublications(doi))
           }

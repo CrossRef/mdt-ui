@@ -49,7 +49,8 @@ export default class OptionalIssueInformation extends Component {
                   name="firstName"
                   value={this.props.optionalIssueInfo.firstName}
                   tooltip={this.props.tooltip && tooltips.contributorFirstName}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
@@ -63,7 +64,8 @@ export default class OptionalIssueInformation extends Component {
                   trackErrors={['contributorLastName']}
                   required={firstName}
                   tooltip={this.props.tooltip && tooltips.contributorLastName}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
               </div>
@@ -73,6 +75,7 @@ export default class OptionalIssueInformation extends Component {
                 trackErrors={['contributorLastName']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}/>
             </div>
 
@@ -84,7 +87,8 @@ export default class OptionalIssueInformation extends Component {
                   name="suffix"
                   value={this.props.optionalIssueInfo.suffix}
                   tooltip={this.props.tooltip && tooltips.contributorSuffix}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
@@ -94,7 +98,8 @@ export default class OptionalIssueInformation extends Component {
                   name="affiliation"
                   value={this.props.optionalIssueInfo.affiliation}
                   tooltip={this.props.tooltip && tooltips.contritbutorAffiliation}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
@@ -109,7 +114,8 @@ export default class OptionalIssueInformation extends Component {
                   name="orcid"
                   value={this.props.optionalIssueInfo.orcid}
                   tooltip={this.props.tooltip && tooltips.contributorOrcid}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
@@ -119,7 +125,8 @@ export default class OptionalIssueInformation extends Component {
                   name="alternativeName"
                   value={this.props.optionalIssueInfo.alternativeName}
                   tooltip={this.props.tooltip && tooltips.contributerAlternativeName}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
@@ -139,7 +146,8 @@ export default class OptionalIssueInformation extends Component {
                   trackErrors={['contributorRole']}
                   required={hasData}
                   tooltip={this.props.tooltip && tooltips.contributorRole}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   onSelect={this.props.validate}
                   changeHandler={this.handler}/>
               </div>
@@ -149,6 +157,7 @@ export default class OptionalIssueInformation extends Component {
                 trackErrors={['contributorRole']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}/>
             </div>
           </div>

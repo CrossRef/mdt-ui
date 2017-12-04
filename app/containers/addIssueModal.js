@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { controlModal, getPublications } from '../actions/application'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
-import {DeferredTask} from '../utilities/helpers'
+import {finishUpdate} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
@@ -45,8 +45,8 @@ export default class AddIssueModal extends Component {
     this.state.issue.issueDoi = props.ownerPrefix + '/'
     this.state.issue.volumeDoi = props.ownerPrefix + '/'
 
-    this.state.deferredTooltipBubbleRefresh = new DeferredTask()
     this.state.errorMessages = []
+    this.state.focusedInput = ''
   }
 
 
@@ -174,6 +174,10 @@ export default class AddIssueModal extends Component {
     },
 
     onValidate: (newValidationErrors, optionalIssueInfo) => {
+      if(!this.state.errorMessages.length) {
+        return []
+      }
+
       const {errorIndicators, activeIndicator} = this.errorUtility
       const activeIndicatorObj = errorIndicators[activeIndicator]
       const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
@@ -184,14 +188,27 @@ export default class AddIssueModal extends Component {
 
         let allErrors = optionalIssueInfo[subItemIndex].errors
 
-        newErrorMessages = trackedIndicatorErrors.filter((error) => {
+        newErrorMessages = this.state.errorMessages.filter((error) => {
           return allErrors[error]
         })
 
+        if(!newErrorMessages.length) {
+          newErrorMessages = trackedIndicatorErrors.filter((error) => {
+            return allErrors[error]
+          })
+        }
+
       } else {
-        newErrorMessages = trackedIndicatorErrors.filter((error)=>{
+        newErrorMessages = this.state.errorMessages.filter((error) => {
           return newValidationErrors[error]
         })
+
+        if(!newErrorMessages.length) {
+          newErrorMessages = trackedIndicatorErrors.filter((error)=>{
+            return newValidationErrors[error]
+          })
+        }
+
         this.errorUtility.subItemIndex = "0"
       }
 
@@ -208,7 +225,36 @@ export default class AddIssueModal extends Component {
         }
       }
 
+      console.log(newErrorMessages)
+
       return newErrorMessages
+    }
+  }
+
+
+  tooltipUtility = {
+
+    getFocusedInput: () => this.state.focusedInput,
+
+    tooltipMounted: false,
+
+    assignRefreshTask: (func) => {
+      this.tooltipUtility.tooltipMounted = true
+      this.tooltipUtility.refreshTask = func
+    },
+
+    refresh: (param) => {
+      if(
+        this.tooltipUtility.tooltipMounted &&
+        typeof this.tooltipUtility.refreshTask === 'function'
+      ) {
+        return finishUpdate().then(()=>this.tooltipUtility.refreshTask(param))
+      }
+    },
+
+    assignFocus: (inputId, tooltip) => {
+      this.setState({focusedInput: inputId})
+      return this.tooltipUtility.refresh(tooltip)
     }
   }
 
@@ -217,6 +263,8 @@ export default class AddIssueModal extends Component {
 
     const {valid, validatedPayload, criticalErrors, issueDoiEntered} =
       await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
+
+    validatedPayload.focusedInput = ''
 
     if (valid) {
       const issueDoi = issueDoiEntered ? this.state.issue.issueDoi : ''
@@ -375,18 +423,7 @@ export default class AddIssueModal extends Component {
 
   addSubItem = () => {
     this.setState({
-      optionalIssueInfo: update(this.state.optionalIssueInfo, {$push:
-        [{
-          firstName: '',
-          lastName: '',
-          suffix: '',
-          affiliation: '',
-          orcid: '',
-          alternativeName: '',
-          role: '',
-          errors: {}
-        }]
-      })
+      optionalIssueInfo: update(this.state.optionalIssueInfo, {$push: defaultState.optionalIssueInfo})
     })
   }
 
@@ -398,22 +435,18 @@ export default class AddIssueModal extends Component {
   }
 
 
-
-  componentDidUpdate () {
-    if(this.state.validating) {
-      this.state.deferredTooltipBubbleRefresh.resolve()
-    }
-
+  componentDidUpdate (prevProps, prevState) {
     //Select first error if first validation
     if(
       this.state.validating &&
-      this.state.error &&
-      (this.errorUtility.activeIndicator === -1 || this.errorUtility.errorIndicators.length === 1)
+      this.state.error && !prevState.error
     ) {
       try {
         this.errorUtility.setErrorMessages(this.errorUtility.errorIndicators[0].activeErrors)
       } catch (e) {}
     }
+
+    this.tooltipUtility.refresh()
 
     this.state.validating = false
   }
@@ -439,6 +472,7 @@ export default class AddIssueModal extends Component {
         errorUtility={this.errorUtility}
         validate={this.validate}
         boundSetState={this.boundSetState}
+        tooltipUtility={this.tooltipUtility}
         {...this.state}
       />
     )

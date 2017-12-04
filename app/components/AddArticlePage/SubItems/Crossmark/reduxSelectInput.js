@@ -62,7 +62,7 @@ export default class ReduxSelectInput extends Component {
         options={this.props.options}
         changeHandler={this.handler}
         style={this.props.style}
-        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+        tooltipUtility={this.props.tooltipUtility}
         tooltip={this.props.tooltip}/>
     )
   }

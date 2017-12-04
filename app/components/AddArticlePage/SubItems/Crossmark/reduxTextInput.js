@@ -63,7 +63,7 @@ export default class ReduxTextInput extends Component {
         subItemIndex={String(this.props.keyPath[1])}
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
-        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+        tooltipUtility={this.props.tooltipUtility}
         tooltip={this.props.tooltip}/>
     )
   }

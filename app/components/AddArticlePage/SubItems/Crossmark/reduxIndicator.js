@@ -22,6 +22,7 @@ export default class ReduxIndicator extends Component {
     trackErrors: is.array.isRequired,
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired,
+    tooltipUtility: is.object.isRequired,
     style: is.string
   }
 
@@ -34,6 +35,7 @@ export default class ReduxIndicator extends Component {
         allErrors={this.props.allErrors}
         errorMessages={this.props.errorMessages}
         errorUtility={this.props.errorUtility}
+        tooltipUtility={this.props.tooltipUtility}
         subItem={this.props.errorsKeyPath[0]}
         subItemIndex={String(this.props.errorsKeyPath[1])}
       />

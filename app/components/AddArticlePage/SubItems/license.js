@@ -94,7 +94,7 @@ export default class License extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   tooltip={this.props.tooltip && tooltips.licenseDate}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
                   errorUtility={this.props.errorUtility}
                   fields={{
                     year: {
@@ -117,6 +117,7 @@ export default class License extends Component {
                 trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}
                 subItem='license'
                 subItemIndex={String(this.props.index)}/>
@@ -146,7 +147,7 @@ export default class License extends Component {
                   changeHandler={this.handleLicense}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   tooltip={this.props.tooltip && tooltips.licenseAppliesTo}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
                   onSelect={this.props.validate}/>
               </div>
 
@@ -154,6 +155,7 @@ export default class License extends Component {
                 trackErrors={['licenseUrl', 'licenseUrlInvalid']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}
                 subItem='license'
                 subItemIndex={String(this.props.index)}/>

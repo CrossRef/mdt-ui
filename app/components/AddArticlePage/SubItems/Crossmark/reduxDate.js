@@ -68,7 +68,7 @@ export default class ReduxDate extends Component {
         options={this.props.options}
         changeHandler={this.handler}
         tooltip={this.props.tooltip}
-        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+        tooltipUtility={this.props.tooltipUtility}
         fields={{
           year: {
             value: this.props.yearValue,

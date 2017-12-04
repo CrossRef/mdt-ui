@@ -6,7 +6,7 @@ import {routes} from '../../routing'
 
 
 
-export default class FormInput extends React.Component {
+export default class FormTextArea extends React.Component {
 
   static propTypes = {
     label: is.string.isRequired,
@@ -23,12 +23,12 @@ export default class FormInput extends React.Component {
     onBlur: is.func,
     onFocus: is.func,
     tooltip: is.oneOfType([is.string, is.bool]),
-    deferredTooltipBubbleRefresh: is.object
+    tooltipUtility: is.object
   }
 
 
-  state = {
-    focus: false
+  generateId = () => {
+    return `${this.props.name}-${this.props.subItemIndex}`
   }
 
 
@@ -37,24 +37,17 @@ export default class FormInput extends React.Component {
       this.props.onFocus()
     }
 
-    const setErrorMessages = () => {
-      if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
-        if(this.props.subItemIndex) {
-          this.props.errorUtility.subItemIndex = this.props.subItemIndex
-        }
-        this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+    if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
+      if(this.props.subItemIndex) {
+        this.props.errorUtility.subItemIndex = this.props.subItemIndex
       }
+      this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+
+    } else if (this.props.tooltip) {
+      this.props.setErrorMessages([])
     }
 
-    this.setState({focus: true}, ()=>{
-      if(this.props.tooltip) {
-        this.props.setErrorMessages([])
-        setErrorMessages()
-        this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
-      } else {
-        setErrorMessages()
-      }
-    })
+    this.props.tooltipUtility.assignFocus(this.generateId(), this.props.tooltip)
   }
 
 
@@ -62,15 +55,12 @@ export default class FormInput extends React.Component {
     if(this.props.onBlur) {
       this.props.onBlur()
     }
-    this.setState({focus: false}, ()=>{
-      if(this.props.tooltip) {
-        this.props.deferredTooltipBubbleRefresh.resolve()
-      }
-    })
   }
 
 
   render() {
+    const isFocus = this.props.tooltipUtility.getFocusedInput() === this.generateId()
+
     return (
       <div className='fieldinnerholder fulllength'>
         <div className='labelholder'>
@@ -83,9 +73,9 @@ export default class FormInput extends React.Component {
             <div className='required height64'>{this.props.required && <span>*</span>}</div>
           </div>
           <div className='field'>
-            {this.state.focus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+            {isFocus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
             <textarea
-              className={`height64 ${this.props.error ? 'fieldError' : ''} ${this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
+              className={`height64 ${this.props.error ? 'fieldError' : ''} ${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
               type='text'
               name={this.props.name}
               onChange={this.props.changeHandler}

@@ -36,7 +36,7 @@ AddArticleView.propTypes = {
   boundSetState: is.func.isRequired,
   removeSection: is.func.isRequired,
   addSection: is.func.isRequired,
-  deferredTooltipBubbleRefresh: is.object.isRequired,
+  tooltipUtility: is.object.isRequired,
   errorUtility: is.object.isRequired,
   crossmarkUtility: is.object.isRequired
 }
@@ -97,7 +97,10 @@ export default function AddArticleView (props) {
                       <div className="switchLicense">
                         <div className='switchLabel'><span>Show Help</span></div>
                         <Switch
-                          onClick={() => props.boundSetState({showHelper: !props.showHelper})}
+                          onClick={() => props.boundSetState({
+                            showHelper: !props.showHelper,
+                            focusedInput: ''
+                          })}
                           on={props.showHelper}
                         />
                       </div>
@@ -117,6 +120,7 @@ export default function AddArticleView (props) {
                     trackErrors={['title']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     changeHandler={props.handleChange}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}/>
                 </div>
 
@@ -124,13 +128,14 @@ export default function AddArticleView (props) {
                   trackErrors={['title']}
                   allErrors={props.errors}
                   errorMessages={props.errorMessages}
+                  tooltipUtility={props.tooltipUtility}
                   errorUtility={props.errorUtility}/>
 
 
                 {props.showHelper &&
                   <TooltipBubble
                     errorUtility={props.errorUtility}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}/>
+                    tooltipUtility={props.tooltipUtility}/>
                 }
 
                 {props.error &&
@@ -151,7 +156,7 @@ export default function AddArticleView (props) {
                   originallanguagetitle={props.article.originallanguagetitle}
                   originallanguagetitlesubtitle={props.article.originallanguagetitlesubtitle}
                   validate={props.validate}
-                  deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={props.tooltipUtility}
                   tooltip={props.showHelper}
                   setErrorMessages={props.errorUtility.setErrorMessages}
                   handleChange={props.handleChange}/>
@@ -168,7 +173,7 @@ export default function AddArticleView (props) {
                     trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltip.doi}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     disabled={props.doiDisabled}
                     changeHandler={props.handleChange}
                     onBlur={props.validate}/>
@@ -182,7 +187,7 @@ export default function AddArticleView (props) {
                     trackErrors={['url', 'invalidurl']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltip.url}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     changeHandler={props.handleChange}
                     onBlur={props.validate}/>
                 </div>
@@ -191,6 +196,7 @@ export default function AddArticleView (props) {
                   trackErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}
                   allErrors={props.errors}
                   errorMessages={props.errorMessages}
+                  tooltipUtility={props.tooltipUtility}
                   errorUtility={props.errorUtility}/>
               </div>
 
@@ -199,7 +205,7 @@ export default function AddArticleView (props) {
                 errors={props.errors}
                 handleChange={props.handleChange}
                 validate={props.validate}
-                deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                tooltipUtility={props.tooltipUtility}
                 tooltip={props.showHelper}
                 errorUtility={props.errorUtility}
                 errorMessages={props.errorMessages}
@@ -216,6 +222,7 @@ export default function AddArticleView (props) {
                     trackErrors={['firstPage']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     changeHandler={props.handleChange}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}/>
 
                   <FormInput
@@ -224,6 +231,7 @@ export default function AddArticleView (props) {
                     value={props.article.lastPage}
                     changeHandler={props.handleChange}
                     setErrorMessages={props.errorUtility.setErrorMessages}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}/>
                 </div>
 
@@ -231,6 +239,7 @@ export default function AddArticleView (props) {
                   trackErrors={['firstPage']}
                   allErrors={props.errors}
                   errorMessages={props.errorMessages}
+                  tooltipUtility={props.tooltipUtility}
                   errorUtility={props.errorUtility}/>
               </div>
 
@@ -243,7 +252,7 @@ export default function AddArticleView (props) {
                     changeHandler={props.handleChange}
                     onBlur={props.validate}
                     setErrorMessages={props.errorUtility.setErrorMessages}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     tooltip={props.showHelper && tooltip.locationId}/>
                 </div>
               </div>
@@ -256,7 +265,7 @@ export default function AddArticleView (props) {
                     value={props.article.abstract}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltip.abstract}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     changeHandler={props.handleChange}/>
                 </div>
               </div>
@@ -274,6 +283,7 @@ export default function AddArticleView (props) {
                   trackErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
 
                 {props.contributors.map((data, i)=>
@@ -285,7 +295,7 @@ export default function AddArticleView (props) {
                     remove={props.removeSection.bind(null, 'contributors', i)}
                     handler={props.boundSetState}
                     data={props.contributors}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     tooltip={props.showHelper}
                     errorMessages={props.errorMessages}
                     errorUtility={props.errorUtility}
@@ -310,7 +320,7 @@ export default function AddArticleView (props) {
                     remove={props.removeSection.bind(null, 'funding', i)}
                     handler={props.boundSetState}
                     data={props.funding}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     tooltip={props.showHelper}
                     index={i}/>
                 )}
@@ -327,6 +337,7 @@ export default function AddArticleView (props) {
                   trackErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
 
                 <div className="freeToLicense">
@@ -342,7 +353,7 @@ export default function AddArticleView (props) {
                         ]}
                         setErrorMessages={props.errorUtility.setErrorMessages}
                         changeHandler={props.handleChange}
-                        deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                        tooltipUtility={props.tooltipUtility}
                         tooltip={props.showHelper && tooltip.freeToLicense}
                         onSelect={props.validate}/>
                     </div>
@@ -363,7 +374,7 @@ export default function AddArticleView (props) {
                     errorUtility={props.errorUtility}
                     allErrors={props.errors}
                     tooltip={props.showHelper}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     freetolicense={i===0 ? props.article.freetolicense : ''}/>
                 )}
             </SubItem>
@@ -379,6 +390,7 @@ export default function AddArticleView (props) {
                   trackErrors={['relatedItemIdType', 'relatedItemRelType', 'relatedItemDoiInvalid']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
 
                 {props.relatedItems.map((data, i)=>
@@ -390,7 +402,7 @@ export default function AddArticleView (props) {
                     remove={props.removeSection.bind(null, 'relatedItems', i)}
                     handler={props.boundSetState}
                     data={props.relatedItems}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     tooltip={props.showHelper}
                     errorMessages={props.errorMessages}
                     errorUtility={props.errorUtility}
@@ -409,6 +421,7 @@ export default function AddArticleView (props) {
                   trackErrors={['simCheckUrlInvalid']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
 
                 <AdditionalInformation
@@ -416,7 +429,7 @@ export default function AddArticleView (props) {
                   handler={props.boundSetState}
                   validate={props.validate}
                   tooltip={props.showHelper}
-                  deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={props.tooltipUtility}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   allErrors={props.errors}
@@ -434,6 +447,7 @@ export default function AddArticleView (props) {
                     trackErrors={crossmarkErrors}
                     errorMessages={[]}
                     errorUtility={props.errorUtility}
+                    tooltipUtility={props.tooltipUtility}
                     allErrors={props.errors}/>
 
                   <Crossmark
@@ -441,7 +455,7 @@ export default function AddArticleView (props) {
                     crossmarkCards={props.crossmarkCards}
                     validate={props.validate}
                     tooltip={props.showHelper}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     errorMessages={props.errorMessages}
                     errorUtility={props.errorUtility}
                     reduxDeleteCard={props.reduxDeleteCard}/>

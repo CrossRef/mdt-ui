@@ -98,6 +98,8 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  subItemIndex={String(this.props.index)}
+                  tooltipUtility={this.props.tooltipUtility}
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
@@ -111,6 +113,7 @@ export default class Contributor extends Component {
                   trackErrors={['contributorLastName']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
+                  tooltipUtility={this.props.tooltipUtility}
                   errorUtility={this.props.errorUtility}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
@@ -121,6 +124,7 @@ export default class Contributor extends Component {
                 trackErrors={['contributorLastName']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}
                 subItem='contributor'
                 subItemIndex={String(this.props.index)}/>
@@ -137,7 +141,8 @@ export default class Contributor extends Component {
                   onBlur={this.props.validate}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   tooltip={this.props.tooltip && tooltips.suffix}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  subItemIndex={String(this.props.index)}
+                  tooltipUtility={this.props.tooltipUtility}
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
@@ -148,7 +153,8 @@ export default class Contributor extends Component {
                   onBlur={this.props.validate}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   tooltip={this.props.tooltip && tooltips.affiliation}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  subItemIndex={String(this.props.index)}
+                  tooltipUtility={this.props.tooltipUtility}
                   disabled={this.state.personDisabled}/>
 
               </div>
@@ -163,7 +169,8 @@ export default class Contributor extends Component {
                   value={orcid}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  subItemIndex={String(this.props.index)}
+                  tooltipUtility={this.props.tooltipUtility}
                   tooltip={this.props.tooltip && tooltips.orcid}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
@@ -183,7 +190,7 @@ export default class Contributor extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   tooltip={this.props.tooltip && tooltips.role}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
                   onSelect={this.props.validate}/>
 
               </div>
@@ -192,6 +199,7 @@ export default class Contributor extends Component {
                 trackErrors={['contributorRole']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}
                 subItem='contributor'
                 subItemIndex={String(this.props.index)}/>
@@ -217,7 +225,7 @@ export default class Contributor extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
                   tooltip={this.props.tooltip && tooltips.groupAuthorName}
                   disabled={this.state.groupDisabled}/>
 
@@ -235,7 +243,7 @@ export default class Contributor extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                  tooltipUtility={this.props.tooltipUtility}
                   tooltip={this.props.tooltip && tooltips.groupAuthorRole}
                   disabled={this.state.groupDisabled}/>
 
@@ -245,6 +253,7 @@ export default class Contributor extends Component {
                 trackErrors={['contributorGroupName', 'contributorGroupRole']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}
                 subItem='contributor'
                 subItemIndex={String(this.props.index)}/>

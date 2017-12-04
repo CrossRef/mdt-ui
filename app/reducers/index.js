@@ -71,15 +71,15 @@ function doiReducer (state = [], action) {
         const filteredDois = action.doi.filter( element => {
           return !!element
         })
-        return [ ...new Set([...state, ...filteredDois])]
-      }
+        return [ ...new Set([...filteredDois, ...state])]
+      } else {
 
-        else return [ ...new Set(state).add(action.doi)]
+        return [ ...new Set([action.doi, ...state])]
+      }
     default:
       return state
   }
 }
-
 
 
 function modalReducer ( state = {

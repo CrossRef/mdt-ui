@@ -27,7 +27,8 @@ AddIssueCard.propTypes = {
   closeModal: is.func.isRequired,
   helperSwitch: is.func.isRequired,
   errorUtility: is.object.isRequired,
-  boundSetState: is.func.isRequired
+  boundSetState: is.func.isRequired,
+  tooltipUtility: is.object.isRequired,
 }
 
 
@@ -73,7 +74,7 @@ export default function AddIssueCard (props) {
                     trackErrors={['issueVolume']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.issueNumber}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
                     required={!props.issue.volume}/>
 
@@ -84,12 +85,18 @@ export default function AddIssueCard (props) {
                     changeHandler={props.handler}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.issueTitle}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}/>
+                    tooltipUtility={props.tooltipUtility}/>
                 </div>
 
-                <ErrorIndicator issue trackErrors={['issueVolume']} errorMessages={props.errorMessages} errorUtility={props.errorUtility} allErrors={props.errors}/>
+                <ErrorIndicator
+                  issue
+                  trackErrors={['issueVolume']}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
+                  allErrors={props.errors}/>
 
-                {props.showHelper && <TooltipBubble issue deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh} errorUtility={props.errorUtility}/>}
+                {props.showHelper && <TooltipBubble issue tooltipUtility={props.tooltipUtility} errorUtility={props.errorUtility}/>}
 
               </div>
 
@@ -106,7 +113,7 @@ export default function AddIssueCard (props) {
                     trackErrors={['issuedoi', 'dupeissuedoi', 'invalidissuedoi', 'invalidIssueDoiPrefix']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.issueDoi}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
                     required={issueDoiDataRequired}/>
 
@@ -119,7 +126,7 @@ export default function AddIssueCard (props) {
                     trackErrors={['issueUrl', 'invalidissueurl']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.issueUrl}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
                     required={issueDoiDataRequired}/>
                 </div>
@@ -129,6 +136,7 @@ export default function AddIssueCard (props) {
                   trackErrors={['issuedoi', 'dupeissuedoi', 'invalidissuedoi', 'invalidIssueDoiPrefix', 'issueUrl', 'invalidissueurl']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
               </div>
 
@@ -142,7 +150,7 @@ export default function AddIssueCard (props) {
                     changeHandler={props.handler}
                     onSelect={props.validate}
                     tooltip={props.showHelper && tooltips.printDate}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     error={errors.printDateInvalid}
                     trackErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
@@ -167,7 +175,7 @@ export default function AddIssueCard (props) {
                     changeHandler={props.handler}
                     onSelect={props.validate}
                     tooltip={props.showHelper && tooltips.onlineDate}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     error={errors.onlineDateInvalid}
                     trackErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
@@ -192,6 +200,7 @@ export default function AddIssueCard (props) {
                   trackErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete', 'onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
               </div>
 
@@ -205,7 +214,7 @@ export default function AddIssueCard (props) {
                     options={ArchiveLocations}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.archiveLocation}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     changeHandler={props.handler}
                     onSelect={props.validate}/>
 
@@ -216,7 +225,7 @@ export default function AddIssueCard (props) {
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     changeHandler={props.handler}
                     tooltip={props.showHelper && tooltips.specialNumber}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}/>
+                    tooltipUtility={props.tooltipUtility}/>
                 </div>
               </div>
 
@@ -230,20 +239,21 @@ export default function AddIssueCard (props) {
                     name="issue.volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}
-                    error={errors.issueVolume}
-                    trackErrors={['issueVolume']}
+                    error={errors.volumeIssue}
+                    trackErrors={['volumeIssue']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.volumeNumber}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
                     required={!props.issue.issue || volumeSectionRequired}/>
                 </div>
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['issueVolume']}
+                  trackErrors={['volumeIssue']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
               </div>
 
@@ -260,7 +270,7 @@ export default function AddIssueCard (props) {
                     trackErrors={['volumedoi', 'dupevolumedoi', 'invalidvolumedoi', 'dupeDois', 'invalidVolumeDoiPrefix']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.volumeDoi}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
                     required={volumeSectionRequired}/>
 
@@ -273,7 +283,7 @@ export default function AddIssueCard (props) {
                     trackErrors={['volumeUrl', 'invalidvolumeurl']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.volumeUrl}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
                     required={volumeSectionRequired}/>
                 </div>
@@ -291,6 +301,7 @@ export default function AddIssueCard (props) {
                   trackErrors={['contributorLastName', 'contributorRole']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
                   allErrors={props.errors}/>
 
                 {props.optionalIssueInfo.map((data, i)=>
@@ -302,11 +313,10 @@ export default function AddIssueCard (props) {
                     handler={props.boundSetState}
                     remove={props.removeSubItem}
                     data={props.optionalIssueInfo}
-                    deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+                    tooltipUtility={props.tooltipUtility}
                     tooltip={props.showHelper}
                     errorMessages={props.errorMessages}
                     errorUtility={props.errorUtility}
-                    allErrors={props.errors}
                     index={i}/>
                 )}
             </SubItem>
