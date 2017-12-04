@@ -71,7 +71,7 @@ export default class ActionBar extends Component {
       return false
     }
     const types = selections.map((selection) => {
-      return selection.article.type
+      return selection.type
     })
     return !(types.indexOf('article') !== -1)
   }
@@ -79,7 +79,7 @@ export default class ActionBar extends Component {
 
   render () {
     const onlyIssue = this.onlyIssueSelected()
-    const { doi, publication, handleAddCart, deleteSelections, duplicateSelection } = this.props
+    const { doi, handleAddCart, deleteSelections, duplicateSelection } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add Record

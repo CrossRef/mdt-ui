@@ -199,3 +199,14 @@ export function deleteRecord (record, error = (reason) => console.error('ERROR i
 }
 
 
+
+
+
+
+export function moveArticle (originalArticle, destinationIssue) {
+  return function(dispatch) {
+
+  }
+}
+
+

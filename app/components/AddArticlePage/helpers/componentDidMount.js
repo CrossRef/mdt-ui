@@ -9,38 +9,55 @@ import parseXMLArticle from '../../../utilities/parseXMLArticle'
 
 
 export default async function () {
+
   const { pubDoi } = this.props.routeParams;
   const getItems = []
 
-  if(this.state.editArticleDoi) {
+  //If this is an edit or a duplicate, get Article's content
+  if(this.state.mode === 'edit') {
     getItems.push(api.getItem(this.state.editArticleDoi))
   }
+
+  //Get publication content
   const checkForAcceptedPub = this.state.mode === 'edit'
   getItems.push(api.getItem(pubDoi, checkForAcceptedPub).catch(e => api.getItem(pubDoi)))
 
+  //Data returns as 1 or 2 publications (2 publications in case of edit / duplicate)
   const publications = await Promise.all(getItems)
 
+  //If returned 2 publications, publication content is in the 2nd item, otherwise it is in the first
   const publicationData = publications[1] || publications[0]
-  const articleFullHierarchy = publications[0]
 
+  //If this is an edit, Article content and hierarchy found in 1st publication
+  const fullHierarchy = publications[0]
+
+
+  //Build publication metadata and xml
   let publMeta = publicationData.message.content
   const publicationMetaData = publMeta ? xmldoc(publMeta) : {}
+
   const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
 
 
-  if(this.state.editArticleDoi) {
-    delete articleFullHierarchy.message.content
-    articleFullHierarchy.message.date = publicationData.message.date
-    articleFullHierarchy.message.doi = articleFullHierarchy.message.doi || pubDoi
-    articleFullHierarchy.message['owner-prefix'] = articleFullHierarchy.message['owner-prefix'] || this.state.ownerPrefix
-    articleFullHierarchy.message['mdt-version'] = articleFullHierarchy.message['mdt-version'] || '0'
+  //Update publication data in publication object to be saved to state
+  if(this.state.mode === 'edit') {
+    delete fullHierarchy.message.content
+    fullHierarchy.message.date = publicationData.message.date
+    fullHierarchy.message.doi = fullHierarchy.message.doi || pubDoi
+    fullHierarchy.message['owner-prefix'] = fullHierarchy.message['owner-prefix'] || this.state.ownerPrefix
+    fullHierarchy.message['mdt-version'] = fullHierarchy.message['mdt-version'] || '0'
   }
 
-  let publication = articleFullHierarchy
+  //Designate publication object with Article as child
+  //If article has issueParent, need to build two publications, one where Article is under the publication, and one with the full hierarchy including the issue
+  let articleUnderPub
+  let issuePublication
 
   if (this.state.issueDoi || this.state.issueTitle) {
-    if(!this.state.editArticleDoi) { //New article means publicationData includes all records and need to locate the correct issue
-      articleFullHierarchy.message.contains[0] = articleFullHierarchy.message.contains.find((item)=>{
+
+    if(this.state.mode === 'add') {
+      //New article means publicationData includes all records and need to locate the correct issue
+      fullHierarchy.message.contains[0] = fullHierarchy.message.contains.find((item)=>{
         if(item.type !== 'issue') {
           return false
         }
@@ -48,31 +65,38 @@ export default async function () {
       })
     }
 
-    let articleUnderPub = {
-      ...articleFullHierarchy,
+    articleUnderPub = {
+      ...fullHierarchy,
       message: {
-        ...articleFullHierarchy.message,
-        contains: [articleFullHierarchy.message.contains[0].contains[0]]
+        ...fullHierarchy.message,
+        contains: [fullHierarchy.message.contains[0].contains[0]]
       }
     }
-    const issue = articleFullHierarchy.message.contains[0]
+
+    issuePublication = fullHierarchy
+    const issue = issuePublication.message.contains[0]
     delete issue.content
     issue['mdt-version'] = issue['mdt-version'] || '1'
     issue['owner-prefix'] = issue['owner-prefix'] || this.state.ownerPrefix
     issue.date = issue.date || new Date()
-
-    publication = articleUnderPub
   }
 
+  else {
+    //No issue parent, publication object can be full hierarchy
+    articleUnderPub = fullHierarchy
+  }
+
+  //Parse article xml and prepare setState data
   if(this.state.mode === 'edit') {
 
     let setStatePayload = {}
 
     if(this.state.issueDoi || this.state.issueTitle) {
-      setStatePayload.issueTitle = articleFullHierarchy.message.contains[0].title
+      setStatePayload.issueTitle = fullHierarchy.message.contains[0].title
     }
 
-    const parsedArticle = parseXMLArticle(publication.message.contains[0].content)
+    const parsedArticle = parseXMLArticle(articleUnderPub.message.contains[0].content)
+
     let reduxForm
     if(parsedArticle.crossmark) {
       reduxForm = parsedArticle.crossmark.reduxForm
@@ -91,12 +115,12 @@ export default async function () {
 
     setStatePayload = {
       ...setStatePayload,
-      publication,
-      issuePublication: this.state.issueDoi || this.state.issueTitle ? articleFullHierarchy : undefined,
+      publication: articleUnderPub,
+      issuePublication,
       publicationMetaData,
       publicationXml,
       doiDisabled,
-      version: String( Number(publication.message.contains[0]['mdt-version'] || 0) + 1),
+      version: String( Number(articleUnderPub.message.contains[0]['mdt-version'] || 0) + 1),
       addInfo: parsedArticle.addInfo,
       article: parsedArticle.article,
       contributors: parsedArticle.contributors,
@@ -108,10 +132,11 @@ export default async function () {
     }
 
     this.setState(setStatePayload)
-  } else /*if add mode*/ {
+
+  } else /*if new article*/ {
     this.setState({
-      publication,
-      issuePublication: publications[0],
+      publication: articleUnderPub,
+      issuePublication,
       publicationMetaData,
       publicationXml
     })

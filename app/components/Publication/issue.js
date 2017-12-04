@@ -25,20 +25,23 @@ export default class Issue extends Component {
     reduxCartUpdate: is.func.isRequired,
   }
 
+
   toggleCheckBox = (e) => {
     const { record } = this.props
     if(e.currentTarget.checked) {
-      this.props.handleAddToList({ article: record })
+      this.props.handleAddToList(record)
     } else {
-      this.props.handleRemoveFromList({ article: record })
+      this.props.handleRemoveFromList(record)
     }
   }
+
 
   componentDidMount() {
     if (this.props.triggerModal === this.props.record.doi || this.props.triggerModal === JSON.stringify(this.props.record.title)) {
       this.modalOpen();
     }
   }
+
 
   modalOpen = (e) => {
     if(e && e.preventDefault) e.preventDefault();
@@ -60,6 +63,7 @@ export default class Issue extends Component {
       }
     })
   }
+
 
   render () {
     const publicationDoi = this.props.publication.message.doi;

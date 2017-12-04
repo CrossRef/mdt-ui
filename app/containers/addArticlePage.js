@@ -71,10 +71,11 @@ export default class AddArticlePage extends Component {
 
   constructor (props) {
     super(props)
+    const {duplicateFrom, dupIssueDoi, dupIssueTitle} = props.location.state || {}
     const ownerPrefix = props.routeParams.pubDoi.split('/')[0];
     const editArticleDoi = props.routeParams.articleDoi || (props.location.state && props.location.state.duplicateFrom)
-    const isDuplicate = this.props.location.state ? !!this.props.location.state.duplicateFrom : false
-    const issueId = props.routeParams.issueId
+    const isDuplicate = !!duplicateFrom
+    const issueId = props.routeParams.issueId || dupIssueDoi || dupIssueTitle
     const issueDoi = issueId && (issueId.split('/')[0] === ownerPrefix) ? issueId : undefined
     const issueTitle = issueId && !issueDoi ? JSON.parse(issueId) : undefined
     this.state = {
