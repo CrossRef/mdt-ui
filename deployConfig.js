@@ -7,7 +7,7 @@ var presets = {
 
   staging: {
     baseUrl: '/mmstaging/',
-    apiBaseUrl: 'https://apps.crossref.org/mdt-staging'
+    apiBaseUrl: 'http://localhost:8080/mdt-staging'
   }
 }
 
