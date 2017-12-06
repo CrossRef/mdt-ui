@@ -199,3 +199,42 @@ export function deleteRecord (record, error = (reason) => console.error('ERROR i
 }
 
 
+
+
+
+
+export function moveArticles (selections, issue, pubDoi) {
+  return async function(dispatch) {
+    const promises = []
+
+    for(let selection of selections){
+      if(selection.type === 'article') {
+
+        let publicationWithArticle = await api.getItem(selection.doi)
+
+        const article = publicationWithArticle.message.contains[0].type === 'article' ?
+          publicationWithArticle.message.contains[0]
+          :
+          publicationWithArticle.message.contains[0].contains[0]
+
+        article['mdt-version'] = String(Number(article['mdt-version']) + 1)
+
+        const issueTarget = {...issue}
+        delete issueTarget.content
+
+        publicationWithArticle.message.contains[0] = {
+          ...issueTarget,
+          contains: [article]
+        }
+
+        promises.push(api.submitItem(publicationWithArticle))
+      }
+    }
+
+    await Promise.all(promises)
+
+    dispatch(getPublications(pubDoi))
+  }
+}
+
+

@@ -39,21 +39,19 @@ export default async function (addToCart) {
       'content': new XMLSerializer().serializeToString(journalDoc)
     }
 
-    // check if its part of a issue, the issue props will tell us
-    let savePub
+
+    let savePub = publication
 
     if (this.state.issueDoi || this.state.issueTitle) {
-      const issuePublication = this.state.issuePublication
-      const theIssue = issuePublication.message.contains[0]
+      const issue = this.state.issue
+      issue.contains = [newRecord]
+      savePub.message.contains = [issue]
 
-      theIssue.contains = [newRecord]
-      issuePublication.message.contains = [theIssue]
-
-      savePub = issuePublication
     } else { // not issue, so just put directly under the publication
-      publication.message.contains = [newRecord]
-      savePub = publication
+      savePub.message.contains = [newRecord]
     }
+
+    delete savePub.message.content
 
     try {
       await api.submitItem(savePub)

@@ -1,6 +1,5 @@
 import { createHistory } from 'history'
 import { createStore, applyMiddleware } from 'redux'
-import { browserHistory, useRouterHistory  } from 'react-router'
 import thunk from 'redux-thunk'
 import { routerMiddleware } from 'react-router-redux'
 
@@ -14,13 +13,10 @@ export default function configure () {
     ? window.devToolsExtension({maxAge: 100})(createStore)
     : createStore
 
-  const browserHistoryNew = useRouterHistory(createHistory)({
-    basename: 'metadatamanager'
-  })
 
   const createStoreWithMiddleware = applyMiddleware(
     thunk,
-    routerMiddleware(browserHistoryNew),
+    routerMiddleware(),
     remoteSync
   )(create)
 

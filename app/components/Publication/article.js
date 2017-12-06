@@ -15,20 +15,26 @@ export default class Article extends Component {
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired
   }
-constructor(){
-  super()
-  this.state = {showUrl:false}
 
-}
+
+  constructor(){
+    super()
+    this.state = {showUrl:false}
+
+  }
+
+
   toggleCheckBox (e) {
     const { record } = this.props
     if(e.currentTarget.checked) {
       const selection = this.props.issueDoi || this.props.issueTitle ? {...record, issueDoi: this.props.issueDoi, issueTitle: this.props.issueTitle} : record
-      this.props.handleAddToList({ article: selection })
+      this.props.handleAddToList(selection)
     } else {
-      this.props.handleRemoveFromList({ article: record })
+      this.props.handleRemoveFromList(record)
     }
   }
+
+
   componentDidMount = async()=>{
     let {  status,doi } = this.props.record
     var showUrl = !(status==='Failed')
@@ -37,6 +43,8 @@ constructor(){
     }
     this.setState({showUrl: showUrl})
   }
+
+
   render() {
     let { title, status, type, date, doi } = this.props.record
     const publicationDoi = this.props.publication.message.doi

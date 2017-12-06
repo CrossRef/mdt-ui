@@ -126,7 +126,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
     }
 
 
-        const publicationAbbrevTitle = objectSearch(publicationMetaData, 'abrev_title')
+        const publicationAbbrevTitle = objectSearch(publicationMetaData, 'abbrev_title')
         var pubAbbrTitle = ''
         if (publicationAbbrevTitle) {
         if (publicationAbbrevTitle.trim().length > 0) {

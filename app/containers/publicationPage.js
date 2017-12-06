@@ -4,14 +4,15 @@ import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, firstLogin } from '../actions/application'
+import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, firstLogin, moveArticles } from '../actions/application'
+import * as api from '../actions/api'
 import Listing from '../components/Publication/listing'
 import Filter from '../components/Publication/filter'
 import ActionBar from '../components/Publication/actionBar'
 import TitleBar from '../components/Publication/titleBar'
 import TourModal from '../components/Publication/tourModal'
 import {routes} from  '../routing'
-import {compareDois} from '../utilities/helpers'
+import {compareDois, recordTitle} from '../utilities/helpers'
 
 
 
@@ -32,6 +33,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
   asyncDeleteRecord: deleteRecord,
   asyncSearchRecords: searchRecords,
+  asyncMoveArticles: moveArticles
+
 }, dispatch)
 
 
@@ -106,11 +109,11 @@ export default class PublicationPage extends Component {
     const selections = this.state.selections;
     const newSelections = [...selections]
     for (let i in selections) {
-      if (compareDois(item.article.doi, selections[i].article.doi) && JSON.stringify(item.article.title) === JSON.stringify(selections[i].article.title)) {
+      if (compareDois(item.doi, selections[i].doi) && JSON.stringify(item.title) === JSON.stringify(selections[i].title)) {
         return
       }
     }
-    item.article.pubDoi = this.props.publication.message.doi;
+    item.pubDoi = this.props.publication.message.doi
     newSelections.push(item);
     this.setState({selections: newSelections})
   }
@@ -119,7 +122,7 @@ export default class PublicationPage extends Component {
   handleRemoveFromList = (item) => {
     var selections = this.state.selections
     const filteredSelections = selections.filter((selection)=>{
-      return !compareDois(item.article.doi, selection.article.doi) || JSON.stringify(item.article.title) !== JSON.stringify(selection.article.title)
+      return !compareDois(item.doi, selection.doi) || JSON.stringify(item.title) !== JSON.stringify(selection.title)
     })
     this.setState({
       selections: filteredSelections
@@ -129,22 +132,29 @@ export default class PublicationPage extends Component {
 
   handleAddCart = () => {
     const selections = this.state.selections
+
     //Using an async loop because if there are multiple additions to cart, React batches them and doesn't show the toast for each one.
     const asyncLoop = (i) => {
       if (selections.length > i) {
         const cycle = new Promise ( resolve => {
-          const inCart = this.props.cart.find( cartItem => compareDois(cartItem.doi, selections[i].article.doi))
-          const isArticle = selections[i].article.type === 'article'
-          if(isArticle && !inCart) {
-            this.props.reduxCartUpdate(selections[i].article)
+
+          const isArticle = selections[i].type === 'article'
+          if(isArticle) {
+            const inCart = this.props.cart.find( cartItem => compareDois(cartItem.doi, selections[i].doi))
+
+            if(!inCart) {
+              this.props.reduxCartUpdate(selections[i])
+            }
           }
+
           resolve(i+1)
         })
+
         cycle.then((nextIndex)=>{
           asyncLoop(nextIndex)
         })
       } else {
-        this.setState({selections:[]});
+        this.setState({selections:[]})
       }
     }
     asyncLoop(0)
@@ -160,21 +170,21 @@ export default class PublicationPage extends Component {
       props: {
         confirm: () => {
           for(let i in this.state.selections){
-            this.props.asyncDeleteRecord(this.state.selections[i].article)
+            this.props.asyncDeleteRecord(this.state.selections[i])
           }
-          this.props.reduxControlModal({showModal:false}) //Can also put this as a callback for asyncDeleteRecord, will affect whether the modal closes first then record dissapears or vice versa
+          this.props.reduxControlModal({showModal:false})
           this.setState({selections:[]})
         },
         selections: this.state.selections
       }
-    });
+    })
   }
 
 
   DeleteConfirmModal = ({confirm, selections, close}) => {
 
-    const selectionNames = selections.reduce((accumulator, currentValue, index) => {
-      const title = (currentValue && currentValue.article && currentValue.article.status === 'draft') ? currentValue.article.title.title : '';
+    const selectionNames = selections.reduce((accumulator, selection) => {
+      const title = (selection.status === 'draft') ? selection.title.title : '';
       if(!accumulator && title) return title;
       if(accumulator && title) return accumulator + ', ' + title;
       else return accumulator
@@ -203,15 +213,85 @@ export default class PublicationPage extends Component {
 
 
   duplicateSelection = () => {
-    if(this.state.selections[0].article.type === 'article') {
-      const parentIssue = this.state.selections[0].article.issueDoi ? { issueDoi: this.state.selections[0].article.issueDoi } : {}
+    const selection = this.state.selections[0]
+    if(selection.type === 'article') {
+
+      const parentIssue = selection.issueDoi || selection.issueTitle ? {
+        dupIssueDoi: selection.issueDoi,
+        dupIssueTitle: JSON.stringify(selection.issueTitle)
+      } : {}
+
       browserHistory.push({
         pathname: `${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}/addarticle`,
         state: {
-          duplicateFrom: this.state.selections[0].article.doi,
+          duplicateFrom: this.state.selections[0].doi,
           ...parentIssue
         }
       })
+    }
+  }
+
+
+  moveSelection = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: 'Move to Issue',
+      style: 'defaultModal',
+      Component: this.MoveSelectionModal,
+      props: {
+        confirm: async (issueTargetId) => {
+          const issue = this.props.publication.normalizedRecords[issueTargetId]
+
+          await this.props.asyncMoveArticles(this.state.selections, issue, this.props.routeParams.pubDoi)
+
+          this.props.reduxControlModal({showModal:false})
+          this.setState({selections:[]})
+        },
+
+        issues: this.props.publication.normalizedRecords.findAll( record => record.type === 'issue' )
+      }
+    });
+
+  }
+
+
+  MoveSelectionModal = class extends React.Component {
+    static propTypes = {
+      confirm: is.func.isRequired,
+      issues: is.array.isRequired,
+      close: is.func.isRequired
+    }
+
+    state = {targetIssue: null}
+
+    render() {
+      return (
+        <div className="moveModal">
+          <div className="issuesContainer">
+
+            {this.props.issues.map((issue)=>{
+              const name = recordTitle('issue', issue.title)
+              const issueId = issue.doi || JSON.stringify(issue.title)
+              return (
+                <div
+                  key={issueId}
+                  className={`issueBox ${this.state.targetIssue === issueId ? 'selectedIssue' : ''}`}
+                  onClick={()=>{this.setState({targetIssue: issueId})}}>
+                    {name}
+                </div>
+              )
+            })}
+
+          </div>
+          <div className="buttonContainer">
+            <button className="leftButton" onClick={this.props.close}>Cancel</button>
+            {this.state.targetIssue ?
+              <button className="rightButton" onClick={() => this.props.confirm(this.state.targetIssue)}>Move</button>
+              : <button className="rightButton inactive">Move</button>
+            }
+          </div>
+        </div>
+      )
     }
   }
 
@@ -224,6 +304,7 @@ export default class PublicationPage extends Component {
 
 
   render () {
+
     const { publication, reduxControlModal } = this.props
     const contains = (publication && publication.message && publication.message.contains) || []
     const {doi, ownerPrefix} = this.state
@@ -256,6 +337,7 @@ export default class PublicationPage extends Component {
               handleAddCart={this.handleAddCart}
               deleteSelections={this.deleteSelections}
               duplicateSelection={this.duplicateSelection}
+              moveSelection={this.moveSelection}
 
               reduxControlModal={reduxControlModal}
               reduxCartUpdate={this.props.reduxCartUpdate}/>

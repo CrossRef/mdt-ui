@@ -222,30 +222,43 @@ export function objectSearch (object, search, returnVal) {
 }
 
 
-export function objectDelete (object, search) {
-  return Object.keys(object).some(function (k) {
-    if (object[k]) {
-      if (k === search) {
-        delete object[k]
-        return true
-      } else if (typeof object[k] === 'object') {
-        return objectDelete(object[k], search)
-      } else return false
-    }
-  });
-}
-
 
 
 export function objectFind (object, finder) {
   let result = undefined
   for (let key in object) {
-    if(finder(object[key])) {
-      return object[key]
+    try {
+      if(finder(object[key])) {
+        return object[key]
+      }
+      if(typeof object[key] === 'object') {
+        result = objectFind(object[key], finder)
+        if(result !== undefined) return result
+      }
+    } catch (e) {
+      console.error('Error in objectFind', e)
     }
-    if(typeof object[key] === 'object') {
-      result = objectFind(object[key], finder)
-      if(result !== undefined) return result
+  }
+
+  return result
+}
+
+
+
+export function objectFindAll (object, finder) {
+  let result = []
+  for (let key in object) {
+    try {
+
+      if(finder(object[key])) {
+        result.push(object[key])
+      }
+      if(typeof object[key] === 'object') {
+        result = [...result, ...objectFindAll(object[key], finder)]
+      }
+
+    } catch(e) {
+      console.error('Error in objectFindAll', e)
     }
   }
 
@@ -261,13 +274,28 @@ export class SearchableRecords {
   constructor (records) {
     Object.assign(this, records)
 
-    this.find = (finder) => {
-      return objectFind(this, finder)
-    }
+    Object.defineProperties(this, {
+      'find': {
+        enumberable: false,
+        value: (finder) => {
+          return objectFind(this, finder)
+        }
+      },
 
-    this.searchKey = (key) => {
-      return objectSearch(this, key)
-    }
+      'findAll': {
+        enumberable: false,
+        value: (finder) => {
+          return objectFindAll(this, finder)
+        }
+      },
+
+      'searchByKey': {
+        enumberable: false,
+        value: (key) => {
+          return objectSearch(this, key)
+        }
+      }
+    })
   }
 }
 

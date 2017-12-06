@@ -58,10 +58,12 @@ export default class Search extends Component {
     this.setState({ searchingFor: '', forceClose:true })
 
     api.getItem(item.doi).then((result) => {
+
       //clean up returned publication metadata and attach issue to submit
       result.message.doi = publication.message.doi
       result.message['owner-prefix'] = ownerPrefix
       delete result.message.content
+
       //Is lone article:
       if (result.message.contains[0].type === 'article') {
         const article = result.message.contains[0]
@@ -81,6 +83,7 @@ export default class Search extends Component {
         article['mdt-version'] = '1'
         article['owner-prefix'] = ownerPrefix
         article.date = new Date()
+
         //Check if issue already exists
         for (let record of publicationContains) {
           if(record.type === 'issue' && (issueDoi ? record.doi === issueDoi : JSON.stringify(record.title) === issueTitle)) { 
@@ -90,7 +93,6 @@ export default class Search extends Component {
             return
           }
         }
-
 
         issue['mdt-version'] = '1'
         issue['owner-prefix'] = ownerPrefix
