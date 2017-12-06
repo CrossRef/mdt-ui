@@ -247,7 +247,7 @@ export default class PublicationPage extends Component {
           this.props.reduxControlModal({showModal:false})
           this.setState({selections:[]})
         },
-        selections: this.state.selections.filter( record => record.type === 'article'),
+
         issues: this.props.publication.normalizedRecords.findAll( record => record.type === 'issue' )
       }
     });
@@ -258,7 +258,6 @@ export default class PublicationPage extends Component {
   MoveSelectionModal = class extends React.Component {
     static propTypes = {
       confirm: is.func.isRequired,
-      selections: is.array.isRequired,
       issues: is.array.isRequired,
       close: is.func.isRequired
     }
@@ -274,8 +273,11 @@ export default class PublicationPage extends Component {
               const name = recordTitle('issue', issue.title)
               const issueId = issue.doi || JSON.stringify(issue.title)
               return (
-                <div className={`issueBox ${this.state.targetIssue === issueId ? 'selectedIssue' : ''}`} onClick={()=>{this.setState({targetIssue: issueId})}}>
-                  {name}
+                <div
+                  key={issueId}
+                  className={`issueBox ${this.state.targetIssue === issueId ? 'selectedIssue' : ''}`}
+                  onClick={()=>{this.setState({targetIssue: issueId})}}>
+                    {name}
                 </div>
               )
             })}

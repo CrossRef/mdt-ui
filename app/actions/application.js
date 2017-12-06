@@ -204,7 +204,7 @@ export function deleteRecord (record, error = (reason) => console.error('ERROR i
 
 
 export function moveArticles (selections, issue, pubDoi) {
-  return async function(dispatch, store) {
+  return async function(dispatch) {
     const promises = []
 
     for(let selection of selections){
