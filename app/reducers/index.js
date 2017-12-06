@@ -1,8 +1,5 @@
 import { routerReducer } from 'react-router-redux'
 import { combineReducers } from 'redux'
-import _ from 'lodash'
-import {Map, fromJS} from 'immutable'
-import {recordTitle} from '../utilities/helpers'
 
 import publicationsReducer from './publicationsReducer'
 import reduxFormReducer from './reduxFormReducer'
@@ -66,13 +63,12 @@ function searchReducer (state = {loading:false, searchValue: '', result:[]}, act
 }
 
 
-
 function doiReducer (state = [], action) {
   switch (action.type) {
     case 'DOI_ADD':
       if(!action.doi) return state
       if(Array.isArray(action.doi)) {
-        filteredDois = action.doi.filter( element => {
+        const filteredDois = action.doi.filter( element => {
           return !!element
         })
         return [ ...new Set([...state, ...filteredDois])]

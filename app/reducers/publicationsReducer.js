@@ -25,7 +25,7 @@ export default function publicationsReducer (state = new SearchableRecords(), ac
           normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
         })
 
-      } else if(publications.message.contains.length) {
+      } else if((publications.message.contains || []).length) {
         const normalizedRecords = new SearchableRecords()
 
         publications.message.contains.forEach(thisRecord => {
