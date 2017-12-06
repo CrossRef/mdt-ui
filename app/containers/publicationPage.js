@@ -4,7 +4,7 @@ import { browserHistory } from 'react-router'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
-import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, firstLogin, moveArticle } from '../actions/application'
+import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, firstLogin, moveArticles } from '../actions/application'
 import * as api from '../actions/api'
 import Listing from '../components/Publication/listing'
 import Filter from '../components/Publication/filter'
@@ -33,7 +33,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
   asyncDeleteRecord: deleteRecord,
   asyncSearchRecords: searchRecords,
-  asyncMoveArticle: moveArticle
+  asyncMoveArticles: moveArticles
 
 }, dispatch)
 
@@ -235,42 +235,15 @@ export default class PublicationPage extends Component {
   moveSelection = () => {
     this.props.reduxControlModal({
       showModal: true,
-      title: 'Move Record',
+      title: 'Move to Issue',
       style: 'defaultModal',
       Component: this.MoveSelectionModal,
       props: {
         confirm: async (issueTargetId) => {
-          const promises = []
+          const issue = this.props.publication.normalizedRecords[issueTargetId]
 
-          for(let selection of this.state.selections){
-            if(selection.type === 'article') {
+          await this.props.asyncMoveArticles(this.state.selections, issue, this.props.routeParams.pubDoi)
 
-              let publicationWithArticle = await api.getItem(selection.doi)
-
-              const article = publicationWithArticle.message.contains[0].type === 'article' ?
-                publicationWithArticle.message.contains[0]
-              :
-                publicationWithArticle.message.contains[0].contains[0]
-
-              article['mdt-version'] = String(Number(article['mdt-version']) + 1)
-
-              const issueTarget = {
-                ...this.props.publication.normalizedRecords[issueTargetId]
-              }
-              delete issueTarget.content
-
-              publicationWithArticle.message.contains[0] = {
-                ...issueTarget,
-                contains: [article]
-              }
-
-              promises.push(api.submitItem(publicationWithArticle))
-            }
-          }
-
-          await Promise.all(promises)
-
-          this.props.asyncGetPublications(this.props.routeParams.pubDoi)
           this.props.reduxControlModal({showModal:false})
           this.setState({selections:[]})
         },
@@ -290,39 +263,30 @@ export default class PublicationPage extends Component {
       close: is.func.isRequired
     }
 
-
     state = {targetIssue: null}
 
-
     render() {
-
       return (
-        <div className="actionModal">
-          <div className="messageHolder">
-            <h3>Please select an issue to move article to:</h3>
-            <br/><br/>
+        <div className="moveModal">
+          <div className="issuesContainer">
 
             {this.props.issues.map((issue)=>{
               const name = recordTitle('issue', issue.title)
               const issueId = issue.doi || JSON.stringify(issue.title)
               return (
-                <div onClick={()=>{this.setState({targetIssue: issueId})}}>
-                  {this.state.targetIssue === issueId && <span>***</span>}
+                <div className={`issueBox ${this.state.targetIssue === issueId ? 'selectedIssue' : ''}`} onClick={()=>{this.setState({targetIssue: issueId})}}>
                   {name}
                 </div>
               )
             })}
 
           </div>
-          <div className="buttonTable">
-            <div className="tableRow">
-              <div className="leftCell"></div>
-              <div className="rightCell">
-                <button className="leftButton" onClick={this.props.close}>Cancel</button>
-                <button className="rightButton" onClick={() => this.props.confirm(this.state.targetIssue)}>Move</button>
-              </div>
-            </div>
-
+          <div className="buttonContainer">
+            <button className="leftButton" onClick={this.props.close}>Cancel</button>
+            {this.state.targetIssue ?
+              <button className="rightButton" onClick={() => this.props.confirm(this.state.targetIssue)}>Move</button>
+              : <button className="rightButton inactive">Move</button>
+            }
           </div>
         </div>
       )

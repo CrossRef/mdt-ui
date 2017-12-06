@@ -95,7 +95,7 @@ export default class ActionBar extends Component {
           Action
           {this.state.actionMenuOpen && <div className='actionBarDropDown'>
             {!onlyIssue ? <p onClick={handleAddCart}>Add to Cart</p> : <p className="grayedOut">Add to Cart</p>}
-            <p onClick={moveSelection}>Move to</p>
+            {!onlyIssue ? <p onClick={moveSelection}>Move to</p> : <p className="grayedOut">Move to</p>}
             {this.props.selections.length === 1 && !onlyIssue ? <p onClick={duplicateSelection}>Duplicate</p> : <p className="grayedOut">Duplicate</p>}
             <p onClick={deleteSelections}>Remove</p>
           </div>}

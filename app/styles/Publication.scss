@@ -152,9 +152,6 @@
       text: {
         decoration: none;
       }
-      div {
-        height: 100px !important;
-      }
     }
 
     .actions {
@@ -179,7 +176,7 @@
         line-height: 30px;
         text-align: left;
         border-radius: 0px;
-        padding: 5px 0 0 15px;
+        padding: 10px 0 5px 0;
         visibility: visible;
         opacity: 1;
         top: 57px;
@@ -187,8 +184,10 @@
         z-index: 999;
         p {
           font-size:.83em;
-          margin-top:10px;
-          margin-bottom:10px;
+          margin: 0;
+          padding-top:5px;
+          padding-bottom:5px;
+          padding-left: 15px;
         }
         p:hover {
           background: #3eb1c8;
@@ -434,4 +433,66 @@
 
 .sorted {
   color: #3eb1c8;
+}
+
+.moveModal {
+  padding:0 0px 20px 0px;
+  .issuesContainer {
+    height: 500px;
+    padding: 20px 0 0 30px;
+    overflow: scroll;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-content: flex-start;
+    flex-wrap: wrap;
+    .issueBox {
+      margin-bottom: 30px;
+      margin-right: 30px;
+      width: 177.5px;
+      height: 120px;
+      background: #e7e7e7;
+      padding: 15px;
+      color: #6e6e6e;
+      cursor: pointer;
+    }
+    .selectedIssue {
+      background: #3eb1c8;
+      color: white;
+    }
+  }
+  .buttonContainer {
+    display: flex;
+    height: 100px;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    border-top: 2px #e7e7e7 solid;
+    padding: 0 30px 0 30px;
+    .leftButton {
+      cursor: pointer;
+      background: white;
+      border: 1px solid #434343;
+      color: #434343;
+      width: 140px;
+      height: 40px;
+      font-size: 1.1em;
+    }
+    .rightButton {
+      margin-left: 30px;
+      cursor: pointer;
+      background: #3eb1c8;
+      border: none;
+      color: white;
+      width: 140px;
+      height: 40px;
+      font-size: 1.1em;
+    }
+    .inactive {
+      background: white;
+      cursor: not-allowed;
+      color: #434343;
+      border: 1px solid #434343;
+    }
+  }
 }
