@@ -66,6 +66,7 @@ export default class OptionalIssueInformation extends Component {
                   tooltip={this.props.tooltip && tooltips.contributorLastName}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
               </div>
@@ -76,6 +77,7 @@ export default class OptionalIssueInformation extends Component {
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
+                subItemIndex={String(this.props.index)}
                 allErrors={errors}/>
             </div>
 
@@ -149,6 +151,7 @@ export default class OptionalIssueInformation extends Component {
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
                   onSelect={this.props.validate}
+                  errorUtility={this.props.errorUtility}
                   changeHandler={this.handler}/>
               </div>
 
@@ -158,6 +161,7 @@ export default class OptionalIssueInformation extends Component {
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
+                subItemIndex={String(this.props.index)}
                 allErrors={errors}/>
             </div>
           </div>

@@ -225,8 +225,6 @@ export default class AddIssueModal extends Component {
         }
       }
 
-      console.log(newErrorMessages)
-
       return newErrorMessages
     }
   }
