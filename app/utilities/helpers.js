@@ -137,6 +137,11 @@ export function xmldoc (content) {
 
 
 
+export function finishUpdate () {
+  return Promise.resolve()
+}
+
+
 
 
 
@@ -337,20 +342,23 @@ export function getTooltipPosition () {
 
 if(Array.prototype.equals)
   console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
-Array.prototype.equals = function (array) {
-  if (!array)
-    return false;
 
-  // compare lengths - can save a lot of time
-  if (this.length !== array.length)
-    return false;
-
-  for (let i in this) {
-    if (this[i] !== array[i]) {
+Object.defineProperty(Array.prototype, "equals", {
+  enumerable: false,
+  value: function (array) {
+    if (!array)
       return false;
+
+    // compare lengths - can save a lot of time
+    if (this.length !== array.length)
+      return false;
+
+    for (let i in this) {
+      if (this[i] !== array[i]) {
+        return false;
+      }
     }
+    return true;
   }
-  return true;
-}
-Object.defineProperty(Array.prototype, "equals", {enumerable: false});
+});
 

@@ -11,7 +11,7 @@ export let exposedStore = {}
 
 export default function configure () {
   const create = window.devToolsExtension
-    ? window.devToolsExtension()(createStore)
+    ? window.devToolsExtension({maxAge: 100})(createStore)
     : createStore
 
   const browserHistoryNew = useRouterHistory(createHistory)({

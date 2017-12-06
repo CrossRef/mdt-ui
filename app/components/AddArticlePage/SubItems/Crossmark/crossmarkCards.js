@@ -24,7 +24,7 @@ function generateCard (name, WrappedComponent) {
       remove: is.func.isRequired,
       cardName: is.string.isRequired,
       tooltip: is.oneOfType([is.string, is.bool]),
-      deferredTooltipBubbleRefresh: is.object.isRequired,
+      tooltipUtility: is.object.isRequired,
       errorMessages: is.array.isRequired,
       errorUtility: is.object.isRequired
     }
@@ -97,12 +97,13 @@ function PublicationHistoryCard (props) {
           errorUtility={props.errorUtility}
           style="dateAlignSelect"
           tooltip={props.tooltip && tooltips.publicationHistoryLabel}
-          deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+          tooltipUtility={props.tooltipUtility}
           options={['Received', 'Accepted', 'Published Online', 'Published Print']}/>
 
         <ReduxDate
           label="Date"
           onSelect={props.validate}
+          tooltipUtility={props.tooltipUtility}
           keyPath={[pubHist, props.i]}/>
       </div>
 
@@ -111,6 +112,7 @@ function PublicationHistoryCard (props) {
         errorsKeyPath={[pubHist, props.i, 'errors']}
         trackErrors={[`${pubHist} label`]}
         errorMessages={props.errorMessages}
+        tooltipUtility={props.tooltipUtility}
         errorUtility={props.errorUtility}/>
     </div>
   )
@@ -132,12 +134,13 @@ function PeerReviewCard (props) {
             errorUtility={props.errorUtility}
             style="textAlignSelect"
             tooltip={props.tooltip && tooltips.peerReviewLabel}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             options={['Peer reviewed', 'Review Process']}/>
 
           <ReduxTextInput
             label='Description'
             onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
             keyPath={[peer, props.i, 'explanation']}/>
         </div>
 
@@ -145,6 +148,7 @@ function PeerReviewCard (props) {
           errorsKeyPath={[peer, props.i, 'errors']}
           trackErrors={[`${peer} label`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
 
@@ -157,6 +161,7 @@ function PeerReviewCard (props) {
             trackErrors={[`${peer} href`]}
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight"/>
         </div>
 
@@ -164,6 +169,7 @@ function PeerReviewCard (props) {
           errorsKeyPath={[peer, props.i, 'errors']}
           trackErrors={[`${peer} href`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
     </div>
@@ -186,12 +192,13 @@ function CopyrightCard (props) {
             errorUtility={props.errorUtility}
             style="textAlignSelect"
             tooltip={props.tooltip && tooltips.copyrightLicensingUrl}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             options={['Copyright Statement', 'Licensing Information']}/>
 
           <ReduxTextInput
             label='Description'
             onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
             keyPath={[copyright, props.i, 'explanation']}/>
         </div>
 
@@ -199,6 +206,7 @@ function CopyrightCard (props) {
           errorsKeyPath={[copyright, props.i, 'errors']}
           trackErrors={[`${copyright} label`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
 
@@ -211,6 +219,7 @@ function CopyrightCard (props) {
             trackErrors={[`${copyright} href`]}
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight" />
         </div>
 
@@ -218,6 +227,7 @@ function CopyrightCard (props) {
           errorsKeyPath={[copyright, props.i, 'errors']}
           trackErrors={[`${copyright} href`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
     </div>
@@ -235,7 +245,7 @@ function SupplementaryMaterialCard (props) {
           onBlur={props.validate}
           setErrorMessages={props.errorUtility.setErrorMessages}
           tooltip={props.tooltip && tooltips.suppDescription}
-          deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+          tooltipUtility={props.tooltipUtility}
           keyPath={[supp, props.i, 'explanation']}/>
 
         <ReduxTextInput
@@ -244,6 +254,7 @@ function SupplementaryMaterialCard (props) {
           onBlur={props.validate}
           trackErrors={[`${supp} href`]}
           errorUtility={props.errorUtility}
+          tooltipUtility={props.tooltipUtility}
           setErrorMessages={props.errorUtility.setErrorMessages}/>
       </div>
 
@@ -251,6 +262,7 @@ function SupplementaryMaterialCard (props) {
         errorsKeyPath={[supp, props.i, 'errors']}
         trackErrors={[`${supp} href`]}
         errorMessages={props.errorMessages}
+        tooltipUtility={props.tooltipUtility}
         errorUtility={props.errorUtility}/>
     </div>
   )
@@ -271,11 +283,12 @@ function OtherCard (props) {
             errorUtility={props.errorUtility}
             onBlur={props.validate}
             tooltip={props.tooltip && tooltips.otherLabel}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}/>
+            tooltipUtility={props.tooltipUtility}/>
 
           <ReduxTextInput
             label='Description'
             onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
             keyPath={[other, props.i, 'explanation']}/>
         </div>
 
@@ -283,6 +296,7 @@ function OtherCard (props) {
           errorsKeyPath={[other, props.i, 'errors']}
           trackErrors={[`${other} label`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
 
@@ -295,6 +309,7 @@ function OtherCard (props) {
             trackErrors={[`${other} href`]}
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight" />
         </div>
 
@@ -302,6 +317,7 @@ function OtherCard (props) {
           errorsKeyPath={[other, props.i, 'errors']}
           trackErrors={[`${other} href`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
     </div>
@@ -324,7 +340,7 @@ function StatusUpdateCard (props) {
             errorUtility={props.errorUtility}
             style="textAlignSelect"
             tooltip={props.tooltip && tooltips.updateType}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             required={true}
             options={updateTypes}/>
 
@@ -336,7 +352,7 @@ function StatusUpdateCard (props) {
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.updateDate}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             required={true} />
         </div>
 
@@ -345,6 +361,7 @@ function StatusUpdateCard (props) {
           errorsKeyPath={[update, props.i, 'errors']}
           trackErrors={[`${update} type`, `${update} date`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
 
@@ -358,7 +375,7 @@ function StatusUpdateCard (props) {
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.updateDoi}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             required={true}/>
         </div>
 
@@ -366,6 +383,7 @@ function StatusUpdateCard (props) {
           errorsKeyPath={[update, props.i, 'errors']}
           trackErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
     </div>
@@ -387,7 +405,7 @@ function ClinicalTrialsCards (props) {
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.clinicalTrialRegistry}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             required={true}
             options={Object.keys(registryDois)}/>
 
@@ -399,7 +417,7 @@ function ClinicalTrialsCards (props) {
             setErrorMessages={props.errorUtility.setErrorMessages}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.clinicalTrialNumber}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             required={true}/>
         </div>
 
@@ -407,6 +425,7 @@ function ClinicalTrialsCards (props) {
           errorsKeyPath={[clinical, props.i, 'errors']}
           trackErrors={[`${clinical} registry`, `${clinical} trialNumber`]}
           errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
       </div>
 
@@ -417,7 +436,7 @@ function ClinicalTrialsCards (props) {
             onSelect={props.validate}
             keyPath={[clinical, props.i, 'type']}
             tooltip={props.tooltip && tooltips.clinicalRelationship}
-            deferredTooltipBubbleRefresh={props.deferredTooltipBubbleRefresh}
+            tooltipUtility={props.tooltipUtility}
             setErrorMessages={props.errorUtility.setErrorMessages}
             options={['Pre-Results', 'Results', 'Post-Results']}/>
         </div>

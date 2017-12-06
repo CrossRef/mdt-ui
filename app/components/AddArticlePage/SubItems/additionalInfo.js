@@ -46,7 +46,7 @@ export default class AdditionalInformation extends Component {
                 onBlur={this.props.validate}
                 setErrorMessages={this.props.errorUtility.setErrorMessages}
                 trackErrors={['simCheckUrlInvalid']}
-                deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                tooltipUtility={this.props.tooltipUtility}
                 tooltip={this.props.tooltip && tooltips.similarityCheckURL}/>
 
               <FormSelect
@@ -57,7 +57,7 @@ export default class AdditionalInformation extends Component {
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
                 setErrorMessages={this.props.errorUtility.setErrorMessages}
-                deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                tooltipUtility={this.props.tooltipUtility}
                 tooltip={this.props.tooltip && tooltips.archiveLocation}/>
             </div>
 
@@ -65,6 +65,7 @@ export default class AdditionalInformation extends Component {
               trackErrors={['simCheckUrlInvalid']}
               errorMessages={this.props.errorMessages}
               errorUtility={this.props.errorUtility}
+              tooltipUtility={this.props.tooltipUtility}
               allErrors={this.props.allErrors}/>
           </div>
           <div className='row'>
@@ -77,7 +78,7 @@ export default class AdditionalInformation extends Component {
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
                 setErrorMessages={this.props.errorUtility.setErrorMessages}
-                deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+                tooltipUtility={this.props.tooltipUtility}
                 tooltip={this.props.tooltip && tooltips.language}/>
             </div>
           </div>

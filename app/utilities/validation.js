@@ -323,6 +323,7 @@ export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPre
 
   let criticalErrors = {
     issueVolume: !volume && !issue,
+    volumeIssue: !volume && !issue,
 
     invalidissuedoi: false,
     invalidIssueDoiPrefix: false,

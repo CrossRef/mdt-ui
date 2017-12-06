@@ -17,6 +17,7 @@ export default async function (addToCart) {
 
   validatedPayload.openSubItems = true
   validatedPayload.saving = true
+  validatedPayload.focusedInput = ''
 
   if (valid) {
     const publication = this.state.publication

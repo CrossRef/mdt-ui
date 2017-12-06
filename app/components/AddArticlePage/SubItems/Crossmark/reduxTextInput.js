@@ -24,14 +24,16 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class ReduxTextInput extends Component {
 
   static propTypes = {
+    label: is.string.isRequired,
     className: is.string,
     reduxValue: is.string,
     errors: is.object.isRequired,
     trackErrors: is.array,
     setErrorMessages: is.func,
     errorUtility: is.object,
-    keyPath: is.array,
-    handler:is.func
+    keyPath: is.array.isRequired,
+    handler:is.func,
+    tooltipUtility: is.object.isRequired
   }
 
   handler = (e) => {
@@ -51,7 +53,7 @@ export default class ReduxTextInput extends Component {
     return(
       <FormInput
         label={this.props.label}
-        name={this.props.name || ''}
+        name={this.props.keyPath}
         value={this.props.reduxValue|| this.props.keyPath[2]!=='href'?this.props.reduxValue:'http://'}
         changeHandler={this.handler}
         required={this.props.required}
@@ -63,7 +65,7 @@ export default class ReduxTextInput extends Component {
         subItemIndex={String(this.props.keyPath[1])}
         onFocus={this.props.onFocus}
         onBlur={this.props.onBlur}
-        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+        tooltipUtility={this.props.tooltipUtility}
         tooltip={this.props.tooltip}/>
     )
   }

@@ -7,7 +7,7 @@ import {browserHistory} from 'react-router'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {DeferredTask} from '../utilities/helpers'
+import {DeferredTask, finishUpdate} from '../utilities/helpers'
 import {cardNamesArray} from '../utilities/crossmarkHelpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
@@ -92,9 +92,9 @@ export default class AddArticlePage extends Component {
       crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
       crossmarkCards: {},
       version: '1',
-      deferredTooltipBubbleRefresh: new DeferredTask(),
       errorMessages: [],
-      deferredStickyErrorRefresh: new DeferredTask()
+      deferredStickyErrorRefresh: new DeferredTask(),
+      focusedInput: ''
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -197,13 +197,19 @@ export default class AddArticlePage extends Component {
       const filteredErrorMessage = setErrors.filter((error)=>{
         return allErrors[error]
       })
+
       this.setState({errorMessages: filteredErrorMessage})
     },
 
     onValidate: (newValidationErrors, contributors, license, relatedItems, newReduxForm) => {
+      if(!this.state.errorMessages.length) {
+        return []
+      }
+
       const {errorIndicators, activeIndicator} = this.errorUtility
       const activeIndicatorObj = errorIndicators[activeIndicator]
       const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+
       let newErrorMessages
       const {subItem, subItemIndex} = activeIndicatorObj || {}
 
@@ -223,14 +229,28 @@ export default class AddArticlePage extends Component {
           allErrors = subItemErrors[subItem][subItemIndex].errors
         }
 
-        newErrorMessages = trackedIndicatorErrors.filter((error) => {
+        newErrorMessages = this.state.errorMessages.filter((error) => {
           return allErrors[error]
         })
 
+        if(!newErrorMessages.length) {
+          newErrorMessages = trackedIndicatorErrors.filter((error) => {
+            return allErrors[error]
+          })
+        }
+
+
       } else {
-        newErrorMessages = trackedIndicatorErrors.filter((error)=>{
+        newErrorMessages = this.state.errorMessages.filter((error) => {
           return newValidationErrors[error]
         })
+
+        if(!newErrorMessages.length) {
+          newErrorMessages = trackedIndicatorErrors.filter((error)=>{
+            return newValidationErrors[error]
+          })
+        }
+
         this.errorUtility.subItemIndex = "0"
       }
 
@@ -252,9 +272,51 @@ export default class AddArticlePage extends Component {
   }
 
 
-  addToCart = () => {
-    const addToCart = true
-    this.save(addToCart)
+  tooltipUtility = {
+
+    getFocusedInput: () => this.state.focusedInput,
+
+    tooltipMounted: false,
+
+    assignRefreshTask: (func) => {
+      this.tooltipUtility.tooltipMounted = true
+      this.tooltipUtility.refreshTask = func
+    },
+
+    refresh: (param) => {
+      if(
+        this.tooltipUtility.tooltipMounted &&
+        typeof this.tooltipUtility.refreshTask === 'function'
+      ) {
+        return finishUpdate().then(()=>this.tooltipUtility.refreshTask(param))
+      }
+    },
+
+    assignFocus: (inputId, tooltip) => {
+      this.setState({focusedInput: inputId})
+      return this.tooltipUtility.refresh(tooltip)
+    }
+  }
+
+
+  componentDidUpdate(prevProps, prevState) {
+    //Select first error if first validation
+    if(
+      this.state.validating &&
+      this.state.error && !prevState.error
+    ) {
+      try {
+        this.errorUtility.setErrorMessages(this.errorUtility.errorIndicators[0].activeErrors)
+      } catch (e) {}
+    }
+
+    this.state.deferredStickyErrorRefresh.resolve()
+
+    this.tooltipUtility.refresh()
+
+    this.state.validating = false
+    this.state.saving = false
+    this.state.openSubItems = false
   }
 
 
@@ -321,6 +383,12 @@ export default class AddArticlePage extends Component {
   }
 
 
+  addToCart = () => {
+    const addToCart = true
+    this.save(addToCart)
+  }
+
+
   back = () => {
     browserHistory.push(`${routes.publications}/${encodeURIComponent(this.state.publication.message.doi)}`)
   }
@@ -345,30 +413,6 @@ export default class AddArticlePage extends Component {
         crossmarkCards: newState
       })
     }
-  }
-
-
-  componentDidUpdate() {
-    this.state.deferredStickyErrorRefresh.resolve()
-
-    if(this.state.validating) {
-      this.state.deferredTooltipBubbleRefresh.resolve()
-    }
-
-    //Select first error if first validation
-    if(
-      this.state.validating &&
-      this.state.error &&
-      (this.errorUtility.activeIndicator === -1 || this.errorUtility.errorIndicators.length === 1)
-    ) {
-      try {
-        this.errorUtility.setErrorMessages(this.errorUtility.errorIndicators[0].activeErrors)
-      } catch (e) {}
-    }
-
-    this.state.validating = false
-    this.state.saving = false
-    this.state.openSubItems = false
   }
 
 
@@ -398,6 +442,7 @@ export default class AddArticlePage extends Component {
           reduxForm={this.props.reduxForm}
           errorUtility={this.errorUtility}
           crossmarkUtility={this.crossmarkUtility}
+          tooltipUtility={this.tooltipUtility}
           {...this.state}
         />
       </div>

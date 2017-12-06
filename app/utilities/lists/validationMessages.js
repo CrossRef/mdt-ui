@@ -9,6 +9,12 @@ export const IssueMessages = {
     message: 'Please provide either an issue or volume number.'
   },
 
+  volumeIssue: {
+    type: 'eitherOr',
+    bold: 'Required',
+    message: 'Please provide either an issue or volume number.'
+  },
+
   issue: {
     type: 'required',
     bold: 'Required',
