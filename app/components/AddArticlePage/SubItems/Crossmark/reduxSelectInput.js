@@ -24,6 +24,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class ReduxSelectInput extends Component {
 
   static propTypes = {
+    label: is.string.isRequired,
     className: is.string,
     options: is.array.isRequired,
     reduxValue: is.string,
@@ -31,8 +32,9 @@ export default class ReduxSelectInput extends Component {
     trackErrors: is.array,
     setErrorMessages: is.func,
     errorUtility: is.object,
-    keyPath: is.array,
-    handler:is.func
+    keyPath: is.array.isRequired,
+    handler:is.func,
+    tooltipUtility: is.object.isRequired
   }
 
   componentWillReceiveProps (nextProps) {
@@ -50,7 +52,7 @@ export default class ReduxSelectInput extends Component {
     return(
       <FormSelect
         label={this.props.label}
-        name={this.props.name || ''}
+        name={this.props.keyPath}
         value={this.props.reduxValue}
         required={this.props.required}
         error={!!this.props.errors[`${this.props.keyPath[0]} ${this.props.keyPath[2]}`]}
@@ -62,7 +64,7 @@ export default class ReduxSelectInput extends Component {
         options={this.props.options}
         changeHandler={this.handler}
         style={this.props.style}
-        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+        tooltipUtility={this.props.tooltipUtility}
         tooltip={this.props.tooltip}/>
     )
   }

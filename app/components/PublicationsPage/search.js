@@ -47,10 +47,10 @@ export default class Search extends Component {
 
   onSelect = async (value, item) => {
     this.setState({ searchingFor: '', forceClose:true });
-    if(item.doi) {
+    if(item.doi.length===1) {
       let savedPublication
       try {
-        savedPublication = await api.getItem(item.doi)
+        savedPublication = await api.getItem(item.doi[0])
         savedPublication = savedPublication.message
       } catch (e) {
         console.error('Unable to retrieve saved data of publication found in Search', e)
@@ -58,9 +58,9 @@ export default class Search extends Component {
 
       const newPublication = {
         'title': savedPublication.title || typeof item.title === 'string' ? {title: item.title} : item.title,
-        'doi': item.doi,
+        'doi': item.doi[0],
         'date': new Date(),
-        'owner-prefix': savedPublication['owner-prefix'] || item.doi.split('/')[0],
+        'owner-prefix': savedPublication['owner-prefix'] || item.doi[0].split('/')[0],
         'type': 'Publication',
         'mdt-version': '1',
         'status': 'draft',

@@ -11,7 +11,7 @@ import {routes} from '../../routing'
 export default class TooltipBubble extends React.Component{
 
   static propTypes = {
-    deferredTooltipBubbleRefresh: is.object.isRequired,
+    tooltipUtility: is.object.isRequired,
     errorUtility: is.object.isRequired
   }
 
@@ -27,33 +27,18 @@ export default class TooltipBubble extends React.Component{
 
   componentDidMount() {
     this.refreshBubble()
-    this.deferredTooltipBubbleRefresh()
-  }
-
-
-  deferredTooltipBubbleRefresh = () => {
-    this.props.deferredTooltipBubbleRefresh.reset()
-    this.props.deferredTooltipBubbleRefresh.promise
-      .then((tooltip)=>{
-        if(this._calledComponentWillUnmount) {
-          return
-        }
-        this.deferredTooltipBubbleRefresh()
-        this.refreshBubble(tooltip)
-      })
+    this.props.tooltipUtility.assignRefreshTask(this.refreshBubble)
   }
 
 
   refreshBubble = (tooltip) => {
     let newBubblePosition = getTooltipPosition()
 
-    if(this.state.bubblePosition !== newBubblePosition || (tooltip && tooltip !== this.state.tooltip)) {
-      this.setState({
-        bubblePosition: newBubblePosition,
-        tooltip: tooltip || this.state.tooltip,
-        displaced: false
-      })
-    }
+    this.setState({
+      bubblePosition: newBubblePosition,
+      tooltip: tooltip || this.state.tooltip,
+      displaced: false
+    })
   }
 
 
@@ -66,7 +51,7 @@ export default class TooltipBubble extends React.Component{
           return
         }
         const errorBubbleDimensions = ReactDOM.findDOMNode(errorBubble).getBoundingClientRect()
-        if(errorBubbleDimensions.bottom > myDimensions.top) {
+        if(errorBubbleDimensions.bottom > myDimensions.top && errorBubbleDimensions.top < myDimensions.bottom) {
           const displacement = errorBubbleDimensions.bottom - myDimensions.top + 2
           this.setState({
             displaced: true,
@@ -78,23 +63,19 @@ export default class TooltipBubble extends React.Component{
   }
 
 
-  tooltipMessage = () => {
-    return <div>{this.state.tooltip}</div>
-  }
-
-
   componentWillUnmount () {
-    this.props.deferredTooltipBubbleRefresh.reject()
+    this.props.tooltipUtility.tooltipMounted = false
   }
 
 
   render() {
+    const positionAdjust = this.props.issue ? 3 : 0
     return this.state.bubblePosition ?
-      <div className="toolmsgholder" ref={(node)=>this.node=node} style={{top: this.state.bubblePosition}}>
+      <div className="toolmsgholder" ref={(node)=>this.node=node} style={{top: this.state.bubblePosition + positionAdjust}}>
         <div className="errormsgholder">
           <div className="errormsginnerholder">
             <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} /></div>
-            {this.tooltipMessage()}
+            <div>{this.state.tooltip}</div>
           </div>
         </div>
       </div>

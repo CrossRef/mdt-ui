@@ -10,7 +10,7 @@ export default {
   },
   showSection: false,
   showIssueDoiReq: false,
-  showHelper: false,
+  showHelper: true,
   error: false,
   version: '1',
   errors: {

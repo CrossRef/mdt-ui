@@ -34,7 +34,7 @@ export class OptionalTitleData extends Component {
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
               setErrorMessages={this.props.setErrorMessages}
-              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltipUtility={this.props.tooltipUtility}
               tooltip={this.props.tooltip && tooltips.articleSubtitle}/>
           </div>
 
@@ -46,7 +46,7 @@ export class OptionalTitleData extends Component {
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
               setErrorMessages={this.props.setErrorMessages}
-              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltipUtility={this.props.tooltipUtility}
               tooltip={this.props.tooltip && tooltips.alternateTitle}/>
           </div>
 
@@ -58,7 +58,7 @@ export class OptionalTitleData extends Component {
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
               setErrorMessages={this.props.setErrorMessages}
-              deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+              tooltipUtility={this.props.tooltipUtility}
               tooltip={this.props.tooltip && tooltips.alternateSubtitle}/>
           </div>
         </div>
@@ -86,7 +86,7 @@ export class DatesRow extends Component {
             trackErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
             setErrorMessages={this.props.errorUtility.setErrorMessages}
             required={!onlineDateYear}
-            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+            tooltipUtility={this.props.tooltipUtility}
             fields={{
               year: {
                 value: printDateYear,
@@ -112,7 +112,7 @@ export class DatesRow extends Component {
             trackErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
             setErrorMessages={this.props.errorUtility.setErrorMessages}
             required={!printDateYear}
-            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+            tooltipUtility={this.props.tooltipUtility}
             fields={{
               year: {
                 value: onlineDateYear,
@@ -130,10 +130,11 @@ export class DatesRow extends Component {
         </div>
 
         <ErrorIndicator
-          date
+          style="dateErrorHolder"
           trackErrors={['printDateYear', 'printDateIncomplete', 'printDateInvalid', 'onlineDateYear', 'onlineDateIncomplete', 'onlineDateInvalid']}
           errorMessages={this.props.errorMessages}
           allErrors={this.props.errors}
+          tooltipUtility={this.props.tooltipUtility}
           errorUtility={this.props.errorUtility}/>
       </div>
     )

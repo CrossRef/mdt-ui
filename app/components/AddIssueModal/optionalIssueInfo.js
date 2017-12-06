@@ -1,253 +1,172 @@
 import React, { Component } from 'react'
+import update from 'immutability-helper'
 
 import { Roles } from '../../utilities/lists/roles.js'
+import FormInput from '../Common/formInput'
+import FormSelect from '../Common/formSelect'
+import ErrorIndicator from '../Common/errorIndicator'
+import {issueTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
+
 
 
 export default class OptionalIssueInformation extends Component {
-  constructor (props) {
-    super(props)
-    const {index, optionalIssueInfo} = this.props
-    const handlers = this.props.optionalIssueInfoHandlers()
-    this.state = {
-      index: index,
-      handler: handlers.handler,
-      remove: handlers.remove,
-      optionalIssueInfo: optionalIssueInfo
-    }
-  }
 
-  componentWillReceiveProps(nextProps) {
-    this.setState({
-      index: nextProps.index,
-      relateditem: nextProps.optionalIssueInfo
+  handler = (e) => {
+    var contributor = {
+      ...this.props.optionalIssueInfo,
+      [e.target.name]: e.target.value
+    }
+
+    this.props.handler({
+      optionalIssueInfo: update(this.props.data, {[this.props.index]: {$set: contributor }})
     })
   }
 
-  toggle () {
-      this.setState({
-        showSubItem: !this.state.showSubItem
-      })
-  }
-
-  displayRoles (ref) {
-    var roles = [
-      <option key='-1'></option>,
-      ...Roles.map((role, i) => (<option key={i} value={role.value}>{role.name}</option>))
-    ]
-
-    return (
-      <select
-        ref={ref}
-        className={`height32 ${this.state.optionalIssueInfo.errors.contributorRole && 'fieldError'}`}
-        onChange={() => {this.state.handler(this.state.index, this)}}
-        defaultValue={this.state.optionalIssueInfo.role}
-        >
-          {roles}
-      </select>
-    )
-  }
-
-  componentDidUpdate() {
-    this.props.deferredErrorBubbleRefresh.resolve()
-  }
 
   render () {
-    const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role, errors} = this.state.optionalIssueInfo
+    const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role, errors} = this.props.optionalIssueInfo
     const hasData = !!(firstName || lastName || suffix || affiliation || orcid || alternativeName || role)
+
     return (
-        <div className='optionalissueiinfo'>
-            <div className='innerCardHolder'>
-                <div className='row subItemRow' onClick={this.toggle.bind(this)}>
-                    <div className='subItemHeader subItemTitle'>
-                        <span>Author {this.state.index + 1}</span>
-                    </div>
-                    {this.state.index > 0 &&
-                        <div className='subItemHeader subItemButton'>
-                            <a onClick={() => {this.state.remove(this.state.index)}}>Remove</a>
-                        </div>
-                    }
-                </div>
-                <div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>First Name</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='firstName'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            defaultValue={this.state.optionalIssueInfo.firstName}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Last Name</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!firstName && 'norequire'}`}>
-                                        <div className='required height32'>{firstName && <span>*</span>}</div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className={`height32 ${errors.contributorLastName && 'fieldError'}`}
-                                            type='text'
-                                            ref='lastName'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            defaultValue={this.state.optionalIssueInfo.lastName}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Suffix</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='suffix'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            defaultValue={this.state.optionalIssueInfo.suffix}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Affiliation</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='affiliation'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            defaultValue={this.state.optionalIssueInfo.affiliation}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>ORCID</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='orcid'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            defaultValue={this.state.optionalIssueInfo.orcid}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Alternative Name</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
-                                    </div>
-                                    <div className='field'>
-                                        <input
-                                            className='height32'
-                                            type='text'
-                                            ref='alternativeName'
-                                            onChange={() => {this.state.handler(this.state.index, this)}}
-                                            defaultValue={this.state.optionalIssueInfo.alternativeName}
-                                        />
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                    <div className='row'>
-                        <div className='fieldHolder'>
-                            <div className='fieldinnerholder halflength'>
-                                <div className='labelholder'>
-                                    <div></div>
-                                    <div className='labelinnerholder'>
-                                        <div className='label'>Role</div>
-                                    </div>
-                                </div>
-                                <div className='requrefieldholder'>
-                                    <div className={`requiredholder ${!hasData && 'norequire'}`}>
-                                        <div className='required height32'>{hasData && <span>*</span>}</div>
-                                    </div>
-                                    <div className='field'>
-                                        {this.displayRoles('role')}
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div className='errorHolder'>
-                        </div>
-                    </div>
-                </div>
+      <div className='optionalissueiinfo'>
+        <div className='innerCardHolder'>
+          <div className='row subItemRow'>
+            <div className='subItemHeader subItemTitle'>
+              <span>Author {this.props.index + 1}</span>
             </div>
+            {this.props.index > 0 &&
+                <div className='subItemHeader subItemButton'>
+                    <a onClick={()=>this.props.remove(this.props.index)}>Remove</a>
+                </div>
+            }
+
+          </div>
+          <div>
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormInput
+                  label="First Name"
+                  name="firstName"
+                  value={this.props.optionalIssueInfo.firstName}
+                  tooltip={this.props.tooltip && tooltips.contributorFirstName}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  onBlur={this.props.validate}
+                  changeHandler={this.handler}/>
+
+                <FormInput
+                  label="Last Name"
+                  name="lastName"
+                  value={this.props.optionalIssueInfo.lastName}
+                  error={errors.contributorLastName}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['contributorLastName']}
+                  required={firstName}
+                  tooltip={this.props.tooltip && tooltips.contributorLastName}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
+                  errorUtility={this.props.errorUtility}
+                  onBlur={this.props.validate}
+                  changeHandler={this.handler}/>
+              </div>
+
+              <ErrorIndicator
+                style="shiftLeft"
+                trackErrors={['contributorLastName']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
+                subItemIndex={String(this.props.index)}
+                allErrors={errors}/>
+            </div>
+
+
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormInput
+                  label="Suffix"
+                  name="suffix"
+                  value={this.props.optionalIssueInfo.suffix}
+                  tooltip={this.props.tooltip && tooltips.contributorSuffix}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  onBlur={this.props.validate}
+                  changeHandler={this.handler}/>
+
+                <FormInput
+                  label="Affiliation"
+                  name="affiliation"
+                  value={this.props.optionalIssueInfo.affiliation}
+                  tooltip={this.props.tooltip && tooltips.contritbutorAffiliation}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  onBlur={this.props.validate}
+                  changeHandler={this.handler}/>
+              </div>
+            </div>
+
+
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormInput
+                  label="ORCID"
+                  name="orcid"
+                  value={this.props.optionalIssueInfo.orcid}
+                  tooltip={this.props.tooltip && tooltips.contributorOrcid}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  onBlur={this.props.validate}
+                  changeHandler={this.handler}/>
+
+                <FormInput
+                  label="Alternative Name"
+                  name="alternativeName"
+                  value={this.props.optionalIssueInfo.alternativeName}
+                  tooltip={this.props.tooltip && tooltips.contributerAlternativeName}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  onBlur={this.props.validate}
+                  changeHandler={this.handler}/>
+              </div>
+            </div>
+
+
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormSelect
+                  label="Role"
+                  name="role"
+                  options={Roles}
+                  value={this.props.optionalIssueInfo.role}
+                  error={errors.contributorRole}
+                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  trackErrors={['contributorRole']}
+                  required={hasData}
+                  tooltip={this.props.tooltip && tooltips.contributorRole}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
+                  onSelect={this.props.validate}
+                  errorUtility={this.props.errorUtility}
+                  changeHandler={this.handler}/>
+              </div>
+
+              <ErrorIndicator
+                style="shiftLeft"
+                trackErrors={['contributorRole']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
+                subItemIndex={String(this.props.index)}
+                allErrors={errors}/>
+            </div>
+          </div>
         </div>
+      </div>
     )
   }
 }

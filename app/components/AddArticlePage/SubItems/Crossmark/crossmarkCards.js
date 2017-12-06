@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 
-import TextInput from './reduxTextInput'
-import Selector from './reduxSelectInput'
-import Date from './reduxDate'
-import ErrorIndicator from './reduxIndicator'
+import ReduxTextInput from './reduxTextInput'
+import ReduxSelector from './reduxSelectInput'
+import ReduxDate from './reduxDate'
+import ReduxErrorIndicator from './reduxIndicator'
 import { registryDois, updateTypes, cardNames } from '../../../../utilities/crossmarkHelpers'
 const { pubHist, peer, update, copyright, clinical, supp, other } = cardNames;
 import {articleTooltips as tooltips} from '../../../../utilities/lists/tooltipMessages'
@@ -12,15 +12,19 @@ import {articleTooltips as tooltips} from '../../../../utilities/lists/tooltipMe
 
 
 
-function generateCard (name, fields) {
-  return class CrossmarkCard extends Component {
+function generateCard (name, WrappedComponent) {
+
+  return class CrossmarkCardHOC extends Component {
+
+    static displayName = WrappedComponent.name
+
     static propTypes = {
       crossmarkUtility: is.object.isRequired,
       number: is.number.isRequired,
       remove: is.func.isRequired,
       cardName: is.string.isRequired,
       tooltip: is.oneOfType([is.string, is.bool]),
-      deferredTooltipBubbleRefresh: is.object.isRequired,
+      tooltipUtility: is.object.isRequired,
       errorMessages: is.array.isRequired,
       errorUtility: is.object.isRequired
     }
@@ -40,7 +44,9 @@ function generateCard (name, fields) {
       let fieldArray = [];
       let i = 0;
       while (i <= this.state.number) {
-        fieldArray.push(fields(i.toString(), this)); i++
+        fieldArray.push(
+          <WrappedComponent key={`${name}-${i}`} i={i.toString()} {...this.props}/>
+        ); i++
       }
       return fieldArray
     }
@@ -77,336 +83,364 @@ function generateCard (name, fields) {
 }
 
 
-export const PublicationHistory = generateCard(pubHist, function fields (i, card) {
+export const PublicationHistory = generateCard(pubHist, PublicationHistoryCard)
+function PublicationHistoryCard (props) {
   return (
-    <div key={i} className='row'>
+    <div className='row'>
       <div className='fieldHolder'>
-        <Selector
+        <ReduxSelector
           label=''
-          onSelect={card.props.validate}
-          keyPath={[pubHist, i, 'label']}
+          onSelect={props.validate}
+          keyPath={[pubHist, props.i, 'label']}
           trackErrors={[`${pubHist} label`]}
-          setErrorMessages={card.props.errorUtility.setErrorMessages}
-          errorUtility={card.props.errorUtility}
+          setErrorMessages={props.errorUtility.setErrorMessages}
+          errorUtility={props.errorUtility}
           style="dateAlignSelect"
-          tooltip={card.props.tooltip && tooltips.publicationHistoryLabel}
-          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+          tooltip={props.tooltip && tooltips.publicationHistoryLabel}
+          tooltipUtility={props.tooltipUtility}
           options={['Received', 'Accepted', 'Published Online', 'Published Print']}/>
 
-        <Date
+        <ReduxDate
           label="Date"
-          onSelect={card.props.validate}
-          keyPath={[pubHist, i]}/>
+          onSelect={props.validate}
+          tooltipUtility={props.tooltipUtility}
+          keyPath={[pubHist, props.i]}/>
       </div>
 
-      <ErrorIndicator
-        errorsKeyPath={[pubHist, i, 'errors']}
+      <ReduxErrorIndicator
+        style="dateErrorHolder"
+        errorsKeyPath={[pubHist, props.i, 'errors']}
         trackErrors={[`${pubHist} label`]}
-        errorMessages={card.props.errorMessages}
-        errorUtility={card.props.errorUtility}/>
+        errorMessages={props.errorMessages}
+        tooltipUtility={props.tooltipUtility}
+        errorUtility={props.errorUtility}/>
     </div>
   )
-})
+}
 
 
-export const PeerReview = generateCard(peer, function fields (i, card) {
+export const PeerReview = generateCard(peer, PeerReviewCard)
+function PeerReviewCard (props) {
   return (
-    <div key={i}>
+    <div>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector
+          <ReduxSelector
             label=''
-            onSelect={card.props.validate}
-            keyPath={[peer, i, 'label']}
+            onSelect={props.validate}
+            keyPath={[peer, props.i, 'label']}
             trackErrors={[`${peer} label`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
             style="textAlignSelect"
-            tooltip={card.props.tooltip && tooltips.peerReviewLabel}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            tooltip={props.tooltip && tooltips.peerReviewLabel}
+            tooltipUtility={props.tooltipUtility}
             options={['Peer reviewed', 'Review Process']}/>
 
-          <TextInput
+          <ReduxTextInput
             label='Description'
-            onBlur={card.props.validate}
-            keyPath={[peer, i, 'explanation']}/>
+            onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
+            keyPath={[peer, props.i, 'explanation']}/>
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[peer, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[peer, props.i, 'errors']}
           trackErrors={[`${peer} label`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput
+          <ReduxTextInput
             label='URL'
-            onBlur={card.props.validate}
-            keyPath={[peer, i, 'href']}
+            onBlur={props.validate}
+            keyPath={[peer, props.i, 'href']}
             trackErrors={[`${peer} href`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight"/>
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[peer, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[peer, props.i, 'errors']}
           trackErrors={[`${peer} href`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
     </div>
   )
-})
+}
 
 
-export const Copyright = generateCard(copyright, function fields (i, card) {
+export const Copyright = generateCard(copyright, CopyrightCard)
+function CopyrightCard (props) {
   return (
-    <div key={i}>
+    <div>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector
+          <ReduxSelector
             label=''
-            onSelect={card.props.validate}
-            keyPath={[copyright, i, 'label']}
+            onSelect={props.validate}
+            keyPath={[copyright, props.i, 'label']}
             trackErrors={[`${copyright} label`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
             style="textAlignSelect"
-            tooltip={card.props.tooltip && tooltips.copyrightLicensingUrl}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            tooltip={props.tooltip && tooltips.copyrightLicensingUrl}
+            tooltipUtility={props.tooltipUtility}
             options={['Copyright Statement', 'Licensing Information']}/>
 
-          <TextInput
+          <ReduxTextInput
             label='Description'
-            onBlur={card.props.validate}
-            keyPath={[copyright, i, 'explanation']}/>
+            onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
+            keyPath={[copyright, props.i, 'explanation']}/>
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[copyright, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[copyright, props.i, 'errors']}
           trackErrors={[`${copyright} label`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput
+          <ReduxTextInput
             label='URL'
-            onBlur={card.props.validate}
-            keyPath={[copyright, i, 'href']}
+            onBlur={props.validate}
+            keyPath={[copyright, props.i, 'href']}
             trackErrors={[`${copyright} href`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight" />
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[copyright, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[copyright, props.i, 'errors']}
           trackErrors={[`${copyright} href`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
-    </div>  
-  )
-})
-
-
-export const SupplementaryMaterial = generateCard(supp, function fields (i, card) {
-  return (
-    <div key={i} className='row'>
-      <div className='fieldHolder'>
-        <TextInput
-          label='Description'
-          onBlur={card.props.validate}
-          setErrorMessages={card.props.errorUtility.setErrorMessages}
-          tooltip={card.props.tooltip && tooltips.suppDescription}
-          deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
-          keyPath={[supp, i, 'explanation']}/>
-
-        <TextInput
-          label='URL'
-          keyPath={[supp, i, 'href']}
-          onBlur={card.props.validate}
-          trackErrors={[`${supp} href`]}
-          errorUtility={card.props.errorUtility}
-          setErrorMessages={card.props.errorUtility.setErrorMessages}/>
-      </div>
-
-      <ErrorIndicator
-        errorsKeyPath={[supp, i, 'errors']}
-        trackErrors={[`${supp} href`]}
-        errorMessages={card.props.errorMessages}
-        errorUtility={card.props.errorUtility}/>
     </div>
   )
-})
+}
 
 
-export const Other = generateCard(other, function fields (i, card) {
+export const SupplementaryMaterial = generateCard(supp, SupplementaryMaterialCard)
+function SupplementaryMaterialCard (props) {
   return (
-    <div key={i}>
+    <div className='row'>
+      <div className='fieldHolder'>
+        <ReduxTextInput
+          label='Description'
+          onBlur={props.validate}
+          setErrorMessages={props.errorUtility.setErrorMessages}
+          tooltip={props.tooltip && tooltips.suppDescription}
+          tooltipUtility={props.tooltipUtility}
+          keyPath={[supp, props.i, 'explanation']}/>
+
+        <ReduxTextInput
+          label='URL'
+          keyPath={[supp, props.i, 'href']}
+          onBlur={props.validate}
+          trackErrors={[`${supp} href`]}
+          errorUtility={props.errorUtility}
+          tooltipUtility={props.tooltipUtility}
+          setErrorMessages={props.errorUtility.setErrorMessages}/>
+      </div>
+
+      <ReduxErrorIndicator
+        errorsKeyPath={[supp, props.i, 'errors']}
+        trackErrors={[`${supp} href`]}
+        errorMessages={props.errorMessages}
+        tooltipUtility={props.tooltipUtility}
+        errorUtility={props.errorUtility}/>
+    </div>
+  )
+}
+
+
+export const Other = generateCard(other, OtherCard)
+function OtherCard (props) {
+  return (
+    <div>
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput
-            label={`Label ${i+1}`}
-            keyPath={[other, i, 'label']}
+          <ReduxTextInput
+            label={`Label ${Number(props.i)+1}`}
+            keyPath={[other, props.i, 'label']}
             trackErrors={[`${other} label`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
-            onBlur={card.props.validate}
-            tooltip={card.props.tooltip && tooltips.otherLabel}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}/>
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            onBlur={props.validate}
+            tooltip={props.tooltip && tooltips.otherLabel}
+            tooltipUtility={props.tooltipUtility}/>
 
-          <TextInput
+          <ReduxTextInput
             label='Description'
-            onBlur={card.props.validate}
-            keyPath={[other, i, 'explanation']}/>
+            onBlur={props.validate}
+            tooltipUtility={props.tooltipUtility}
+            keyPath={[other, props.i, 'explanation']}/>
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[other, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[other, props.i, 'errors']}
           trackErrors={[`${other} label`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput
+          <ReduxTextInput
             label='URL'
-            onBlur={card.props.validate}
-            keyPath={[other, i, 'href']}
+            onBlur={props.validate}
+            keyPath={[other, props.i, 'href']}
             trackErrors={[`${other} href`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            tooltipUtility={props.tooltipUtility}
             style="floatRight" />
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[other, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[other, props.i, 'errors']}
           trackErrors={[`${other} href`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
     </div>
   )
-})
+}
 
 
-export const StatusUpdate = generateCard(update, function fields (i, card) {
+export const StatusUpdate = generateCard(update, StatusUpdateCard)
+function StatusUpdateCard (props) {
   return (
-    <div key={i}>
+    <div>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector
+          <ReduxSelector
             label='Update Type (Required)'
-            onSelect={card.props.validate}
-            keyPath={[update, i, 'type']}
+            onSelect={props.validate}
+            keyPath={[update, props.i, 'type']}
             trackErrors={[`${update} type`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
             style="textAlignSelect"
-            tooltip={card.props.tooltip && tooltips.updateType}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            tooltip={props.tooltip && tooltips.updateType}
+            tooltipUtility={props.tooltipUtility}
             required={true}
             options={updateTypes}/>
 
-          <Date
+          <ReduxDate
             label="Update Date"
-            onSelect={card.props.validate}
-            keyPath={[update, i]}
+            onSelect={props.validate}
+            keyPath={[update, props.i]}
             trackErrors={[`${update} date`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
-            tooltip={card.props.tooltip && tooltips.updateDate}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            tooltip={props.tooltip && tooltips.updateDate}
+            tooltipUtility={props.tooltipUtility}
             required={true} />
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[update, i, 'errors']}
+        <ReduxErrorIndicator
+          style="dateErrorHolder"
+          errorsKeyPath={[update, props.i, 'errors']}
           trackErrors={[`${update} type`, `${update} date`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <TextInput
+          <ReduxTextInput
             label='DOI for Update'
-            onBlur={card.props.validate}
-            keyPath={[update, i, 'doi']}
+            onBlur={props.validate}
+            keyPath={[update, props.i, 'doi']}
             trackErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
-            tooltip={card.props.tooltip && tooltips.updateDoi}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            tooltip={props.tooltip && tooltips.updateDoi}
+            tooltipUtility={props.tooltipUtility}
             required={true}/>
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[update, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[update, props.i, 'errors']}
           trackErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
     </div>
   )
-})
+}
 
 
-export const ClinicalTrials = generateCard(clinical, function fields (i, card) {
+export const ClinicalTrials = generateCard(clinical, ClinicalTrialsCards)
+function ClinicalTrialsCards (props) {
   return (
-    <div key={i}>
+    <div>
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector
+          <ReduxSelector
             label='Clinical trial registry (Required)'
-            onSelect={card.props.validate}
-            keyPath={[clinical, i, 'registry']}
+            onSelect={props.validate}
+            keyPath={[clinical, props.i, 'registry']}
             trackErrors={[`${clinical} registry`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
-            tooltip={card.props.tooltip && tooltips.clinicalTrialRegistry}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            tooltip={props.tooltip && tooltips.clinicalTrialRegistry}
+            tooltipUtility={props.tooltipUtility}
             required={true}
             options={Object.keys(registryDois)}/>
 
-          <TextInput
+          <ReduxTextInput
             label="Registered trial number (Required)"
-            onBlur={card.props.validate}
-            keyPath={[clinical, i, 'trialNumber']}
+            onBlur={props.validate}
+            keyPath={[clinical, props.i, 'trialNumber']}
             trackErrors={[`${clinical} trialNumber`]}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
-            errorUtility={card.props.errorUtility}
-            tooltip={card.props.tooltip && tooltips.clinicalTrialNumber}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
+            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
+            tooltip={props.tooltip && tooltips.clinicalTrialNumber}
+            tooltipUtility={props.tooltipUtility}
             required={true}/>
         </div>
 
-        <ErrorIndicator
-          errorsKeyPath={[clinical, i, 'errors']}
+        <ReduxErrorIndicator
+          errorsKeyPath={[clinical, props.i, 'errors']}
           trackErrors={[`${clinical} registry`, `${clinical} trialNumber`]}
-          errorMessages={card.props.errorMessages}
-          errorUtility={card.props.errorUtility}/>
+          errorMessages={props.errorMessages}
+          tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}/>
       </div>
 
       <div className='row'>
         <div className='fieldHolder'>
-          <Selector
+          <ReduxSelector
             label='Relationship of publication to trial'
-            onSelect={card.props.validate}
-            keyPath={[clinical, i, 'type']}
-            tooltip={card.props.tooltip && tooltips.clinicalRelationship}
-            deferredTooltipBubbleRefresh={card.props.deferredTooltipBubbleRefresh}
-            setErrorMessages={card.props.errorUtility.setErrorMessages}
+            onSelect={props.validate}
+            keyPath={[clinical, props.i, 'type']}
+            tooltip={props.tooltip && tooltips.clinicalRelationship}
+            tooltipUtility={props.tooltipUtility}
+            setErrorMessages={props.errorUtility.setErrorMessages}
             options={['Pre-Results', 'Results', 'Post-Results']}/>
         </div>
       </div>
     </div>
   )
-})
+}

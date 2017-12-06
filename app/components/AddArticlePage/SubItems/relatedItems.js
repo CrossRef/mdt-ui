@@ -94,6 +94,8 @@ export default class RelatedItems extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
+                  tooltipUtility={this.props.tooltipUtility}
+                  tooltip={this.props.tooltip && tooltips.relatedItemId}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
@@ -109,6 +111,8 @@ export default class RelatedItems extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
+                  tooltipUtility={this.props.tooltipUtility}
+                  tooltip={this.props.tooltip && tooltips.relatedItemIdType}
                   onSelect={this.props.validate}/>
               </div>
 
@@ -129,6 +133,9 @@ export default class RelatedItems extends Component {
                   value={description}
                   changeHandler={this.handleRelatedItems}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  tooltipUtility={this.props.tooltipUtility}
+                  tooltip={this.props.tooltip && tooltips.relatedItemDescription}
+                  subItemIndex={String(this.props.index)}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
@@ -145,8 +152,8 @@ export default class RelatedItems extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
-                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
-                  tooltip={this.props.tooltip && tooltips.relationType}/>
+                  tooltipUtility={this.props.tooltipUtility}
+                  tooltip={this.props.tooltip && tooltips.relatedItemRelationType}/>
               </div>
 
               <ErrorIndicator
