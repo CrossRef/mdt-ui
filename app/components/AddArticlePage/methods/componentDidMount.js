@@ -13,49 +13,69 @@ export default async function () {
   const { pubDoi } = this.props.routeParams;
   const getItems = []
 
+  const isEditOrDuplicate = this.state.mode === 'edit'
+  const isNewArticle = this.state.mode === 'add'
+  const isDuplicate = this.state.isDuplicate
+
   //If this is an edit or a duplicate, get Article's content
-  if(this.state.mode === 'edit') {
+  if(isEditOrDuplicate) {
     getItems.push(api.getItem(this.state.editArticleDoi))
   }
 
-  //Get publication content
-  const checkForAcceptedPub = this.state.mode === 'edit'
-  getItems.push(api.getItem(pubDoi, checkForAcceptedPub).catch(e => api.getItem(pubDoi)))
+  //If this is a new article or a duplicate, get most updated publication data from draft works
+  if(isNewArticle || isDuplicate) {
+    getItems.push(api.getItem(pubDoi))
+  }
 
-  //Data returns as 1 or 2 publications (2 publications in case of edit / duplicate)
+  //Data returns as 1 or 2 publications (2 publications in case of duplicate)
   const publications = await Promise.all(getItems)
 
-  //If returned 2 publications, publication content is in the 2nd item, otherwise it is in the first
+  //If returned 2 publications, publication content is in the 2nd item
   const publicationData = publications[1] || publications[0]
 
-  //If this is an edit, Article content and hierarchy found in 1st publication
+  //If this is an edit or duplicate, Article content and hierarchy found in 1st publication
   const fullHierarchy = publications[0]
 
 
   //Build publication metadata and xml
-  let publMeta = publicationData.message.content
-  const publicationMetaData = publMeta ? xmldoc(publMeta) : {}
+  let publicationXml = isNewArticle || isDuplicate ?
+    publicationData.message.content.substring(
+      publicationData.message.content.indexOf('<journal_metadata>'),
+      publicationData.message.content.indexOf('</journal_metadata>') + 19
+    )
+  : ''
 
-  const publicationXml = publMeta.substring(publMeta.indexOf('<journal_metadata>'), publMeta.indexOf('</Journal>'))
+  if(!publicationXml) {
+    let article = fullHierarchy.message.contains[0].type === 'article' ?
+      fullHierarchy.message.contains[0]
+    : fullHierarchy.message.contains[0].contains[0]
 
-
-  //Update publication data in publication object to be saved to state
-  if(this.state.mode === 'edit') {
-    delete fullHierarchy.message.content
-    fullHierarchy.message.date = publicationData.message.date
-    fullHierarchy.message.doi = fullHierarchy.message.doi || pubDoi
-    fullHierarchy.message['owner-prefix'] = fullHierarchy.message['owner-prefix'] || this.state.ownerPrefix
-    fullHierarchy.message['mdt-version'] = fullHierarchy.message['mdt-version'] || '0'
+    publicationXml = article.content.substring(
+      article.content.indexOf('<journal_metadata>'),
+      article.content.indexOf('</journal_metadata>') + 19
+    )
   }
 
-  //Designate publication object with Article as child
-  //If article has issueParent, need to build two publications, one where Article is under the publication, and one with the full hierarchy including the issue
-  let articleUnderPub
-  let issuePublication
+  const publicationMetaData = xmldoc(publicationXml)
+
+
+  //In case of duplicate, copy publicationData info into the fullHierarchy object which will be used to submit
+  if(isDuplicate) {
+    delete fullHierarchy.message.content
+    fullHierarchy.message.date = publicationData.message.date
+    fullHierarchy.message.doi = publicationData.message.doi || pubDoi
+    fullHierarchy.message['owner-prefix'] = publicationData.message['owner-prefix'] || this.state.ownerPrefix
+    fullHierarchy.message['mdt-version'] = publicationData.message['mdt-version'] || '0'
+  }
+
+
+  //Assign Publication object with Article as child. If article has issue parent, need to re-structure it (remove issue and place article under publication, saving issue separately)
+  let articleUnderPub = fullHierarchy
+  let issue
 
   if (this.state.issueDoi || this.state.issueTitle) {
 
-    if(this.state.mode === 'add') {
+    if(isNewArticle) {
       //New article means publicationData includes all records and need to locate the correct issue
       fullHierarchy.message.contains[0] = fullHierarchy.message.contains.find((item)=>{
         if(item.type !== 'issue') {
@@ -73,21 +93,17 @@ export default async function () {
       }
     }
 
-    issuePublication = fullHierarchy
-    const issue = issuePublication.message.contains[0]
+    //Assign and adjust issue metadata
+    issue = fullHierarchy.message.contains[0]
     delete issue.content
     issue['mdt-version'] = issue['mdt-version'] || '1'
     issue['owner-prefix'] = issue['owner-prefix'] || this.state.ownerPrefix
     issue.date = issue.date || new Date()
   }
 
-  else {
-    //No issue parent, publication object can be full hierarchy
-    articleUnderPub = fullHierarchy
-  }
 
   //Parse article xml and prepare setState data
-  if(this.state.mode === 'edit') {
+  if(isEditOrDuplicate) {
 
     let setStatePayload = {}
 
@@ -116,7 +132,7 @@ export default async function () {
     setStatePayload = {
       ...setStatePayload,
       publication: articleUnderPub,
-      issuePublication,
+      issue,
       publicationMetaData,
       publicationXml,
       doiDisabled,
@@ -136,7 +152,7 @@ export default async function () {
   } else /*if new article*/ {
     this.setState({
       publication: articleUnderPub,
-      issuePublication,
+      issue,
       publicationMetaData,
       publicationXml
     })

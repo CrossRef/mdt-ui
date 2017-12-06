@@ -166,9 +166,9 @@ export default class Listing extends Component {
           </tr>
         </thead>
         <tbody>
-          {
-              itemlist
-          }
+
+          {itemlist}
+
         </tbody>
       </table>
     )

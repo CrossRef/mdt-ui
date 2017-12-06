@@ -176,7 +176,6 @@
         width: 160px;
         color: #FFFFFF;
         background: #616B6B;
-        height: 140px;
         line-height: 30px;
         text-align: left;
         border-radius: 0px;
@@ -190,6 +189,9 @@
           font-size:.83em;
           margin-top:10px;
           margin-bottom:10px;
+        }
+        p:hover {
+          background: #3eb1c8;
         }
       }
       div:after {

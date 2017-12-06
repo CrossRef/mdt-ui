@@ -44,6 +44,7 @@ export default class ArticleReview extends Component {
 
   render () {
     const { reviewData, publicationMetaData} = this.props
+    console.log(publicationMetaData)
     if (this.state.loaded) {
       return articleReviewGenerator(publicationMetaData, reviewData, this.state.issue, true, this.addToCart)
     } else {

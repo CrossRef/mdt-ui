@@ -57,6 +57,8 @@ export default class AddIssueModal extends Component {
         pubDoi: this.props.publication.message.doi
       }
       Publication = await api.getItem(id)
+
+      console.log(id, Publication)
       Issue = Publication.message.contains[0]
 
       const version = Issue['mdt-version']
@@ -95,7 +97,7 @@ export default class AddIssueModal extends Component {
 
   async validation (issueData, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled) {
 
-    const { criticalErrors, warnings, contributors, enableVolumeDoi } =
+    const { criticalErrors, warnings, contributors, enableVolumeDoi, issueDoiEntered } =
       await asyncValidateIssue(issueData, optionalIssueInfo, this.props.ownerPrefix, issueDoiDisabled, volumeDoiDisabled)
 
     const validatedPayload = {
@@ -111,18 +113,18 @@ export default class AddIssueModal extends Component {
 
     for(const key in warnings) {
       if (warnings[key]) {
-        validatedPayload.error = true;
+        validatedPayload.error = true
       }
     }
 
     for(const key in criticalErrors) {
       if(criticalErrors[key]) {
         validatedPayload.error = true
-        valid = false;
+        valid = false
       }
     }
 
-    return {valid, validatedPayload, criticalErrors}
+    return {valid, validatedPayload, criticalErrors, issueDoiEntered}
   }
 
 
@@ -156,6 +158,7 @@ export default class AddIssueModal extends Component {
         'status': 'draft',
         'content': new XMLSerializer().serializeToString(issueXML)
       }
+
       const submissionPayload = {
         ...publication,
         message: {

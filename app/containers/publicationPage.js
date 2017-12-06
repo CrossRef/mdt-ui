@@ -5,13 +5,14 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, firstLogin, moveArticle } from '../actions/application'
+import * as api from '../actions/api'
 import Listing from '../components/Publication/listing'
 import Filter from '../components/Publication/filter'
 import ActionBar from '../components/Publication/actionBar'
 import TitleBar from '../components/Publication/titleBar'
 import TourModal from '../components/Publication/tourModal'
 import {routes} from  '../routing'
-import {compareDois} from '../utilities/helpers'
+import {compareDois, recordTitle} from '../utilities/helpers'
 
 
 
@@ -112,7 +113,7 @@ export default class PublicationPage extends Component {
         return
       }
     }
-    item.pubDoi = this.props.publication.message.doi;
+    item.pubDoi = this.props.publication.message.doi
     newSelections.push(item);
     this.setState({selections: newSelections})
   }
@@ -131,6 +132,7 @@ export default class PublicationPage extends Component {
 
   handleAddCart = () => {
     const selections = this.state.selections
+
     //Using an async loop because if there are multiple additions to cart, React batches them and doesn't show the toast for each one.
     const asyncLoop = (i) => {
       if (selections.length > i) {
@@ -152,7 +154,7 @@ export default class PublicationPage extends Component {
           asyncLoop(nextIndex)
         })
       } else {
-        this.setState({selections:[]});
+        this.setState({selections:[]})
       }
     }
     asyncLoop(0)
@@ -175,7 +177,7 @@ export default class PublicationPage extends Component {
         },
         selections: this.state.selections
       }
-    });
+    })
   }
 
 
@@ -230,6 +232,104 @@ export default class PublicationPage extends Component {
   }
 
 
+  moveSelection = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: 'Move Record',
+      style: 'defaultModal',
+      Component: this.MoveSelectionModal,
+      props: {
+        confirm: async (issueTargetId) => {
+          const promises = []
+
+          for(let selection of this.state.selections){
+            if(selection.type === 'article') {
+
+              let publicationWithArticle = await api.getItem(selection.doi)
+
+              const article = publicationWithArticle.message.contains[0].type === 'article' ?
+                publicationWithArticle.message.contains[0]
+              :
+                publicationWithArticle.message.contains[0].contains[0]
+
+              article['mdt-version'] = String(Number(article['mdt-version']) + 1)
+
+              const issueTarget = {
+                ...this.props.publication.normalizedRecords[issueTargetId]
+              }
+              delete issueTarget.content
+
+              publicationWithArticle.message.contains[0] = {
+                ...issueTarget,
+                contains: [article]
+              }
+
+              promises.push(api.submitItem(publicationWithArticle))
+            }
+          }
+
+          await Promise.all(promises)
+
+          this.props.asyncGetPublications(this.props.routeParams.pubDoi)
+          this.props.reduxControlModal({showModal:false})
+          this.setState({selections:[]})
+        },
+        selections: this.state.selections.filter( record => record.type === 'article'),
+        issues: this.props.publication.normalizedRecords.findAll( record => record.type === 'issue' )
+      }
+    });
+
+  }
+
+
+  MoveSelectionModal = class extends React.Component {
+    static propTypes = {
+      confirm: is.func.isRequired,
+      selections: is.array.isRequired,
+      issues: is.array.isRequired,
+      close: is.func.isRequired
+    }
+
+
+    state = {targetIssue: null}
+
+
+    render() {
+
+      return (
+        <div className="actionModal">
+          <div className="messageHolder">
+            <h3>Please select an issue to move article to:</h3>
+            <br/><br/>
+
+            {this.props.issues.map((issue)=>{
+              const name = recordTitle('issue', issue.title)
+              const issueId = issue.doi || JSON.stringify(issue.title)
+              return (
+                <div onClick={()=>{this.setState({targetIssue: issueId})}}>
+                  {this.state.targetIssue === issueId && <span>***</span>}
+                  {name}
+                </div>
+              )
+            })}
+
+          </div>
+          <div className="buttonTable">
+            <div className="tableRow">
+              <div className="leftCell"></div>
+              <div className="rightCell">
+                <button className="leftButton" onClick={this.props.close}>Cancel</button>
+                <button className="rightButton" onClick={() => this.props.confirm(this.state.targetIssue)}>Move</button>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      )
+    }
+  }
+
+
   handleFilter = (type) => {
     this.setState({
       filterBy: type
@@ -238,6 +338,7 @@ export default class PublicationPage extends Component {
 
 
   render () {
+
     const { publication, reduxControlModal } = this.props
     const contains = (publication && publication.message && publication.message.contains) || []
     const {doi, ownerPrefix} = this.state
@@ -270,6 +371,7 @@ export default class PublicationPage extends Component {
               handleAddCart={this.handleAddCart}
               deleteSelections={this.deleteSelections}
               duplicateSelection={this.duplicateSelection}
+              moveSelection={this.moveSelection}
 
               reduxControlModal={reduxControlModal}
               reduxCartUpdate={this.props.reduxCartUpdate}/>

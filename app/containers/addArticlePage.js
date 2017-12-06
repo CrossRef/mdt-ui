@@ -15,8 +15,8 @@ import {asyncValidateArticle} from '../utilities/validation'
 import {getSubItems} from '../utilities/getSubItems'
 import ReviewArticle from '../components/AddArticlePage/reviewArticleModal'
 import { XMLSerializer, DOMParser } from 'xmldom'
-import componentDidMount from '../components/AddArticlePage/helpers/componentDidMount'
-import save from '../components/AddArticlePage/helpers/save'
+import componentDidMount from '../components/AddArticlePage/methods/componentDidMount'
+import save from '../components/AddArticlePage/methods/save'
 
 
 
@@ -83,7 +83,7 @@ export default class AddArticlePage extends Component {
       publication: props.publication,
       publicationMetaData: {},
       publicationXml: '',
-      issuePublication: undefined,
+      issue: undefined,
       editArticleDoi,
       issueDoi,
       issueTitle,
@@ -302,7 +302,7 @@ export default class AddArticlePage extends Component {
         reviewData: this.state,
         publication: this.state.publication,
         publicationMetaData: this.state.publicationMetaData,
-        issue: this.state.issuePublication ? this.state.issuePublication.message.contains[0] : undefined,
+        issue: this.state.issue
       }
     })
   }
