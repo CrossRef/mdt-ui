@@ -7,6 +7,7 @@ import FormInput from '../../Common/formInput'
 import FormSelect from '../../Common/formSelect'
 import FormDate from '../../Common/formDate'
 import ErrorIndicator from '../../Common/errorIndicator'
+import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
 const AppliesTo = require('../../../utilities/lists/appliesTo.json')
 
 
@@ -92,6 +93,8 @@ export default class License extends Component {
                   trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
+                  tooltip={this.props.tooltip && tooltips.licenseDate}
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   errorUtility={this.props.errorUtility}
                   fields={{
                     year: {
@@ -110,7 +113,7 @@ export default class License extends Component {
               </div>
 
               <ErrorIndicator
-                date
+                style="dateErrorHolder"
                 trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
@@ -142,6 +145,8 @@ export default class License extends Component {
                   options={AppliesTo}
                   changeHandler={this.handleLicense}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  tooltip={this.props.tooltip && tooltips.licenseAppliesTo}
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   onSelect={this.props.validate}/>
               </div>
 

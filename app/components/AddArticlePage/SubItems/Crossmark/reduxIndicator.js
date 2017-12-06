@@ -22,12 +22,14 @@ export default class ReduxIndicator extends Component {
     trackErrors: is.array.isRequired,
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired,
+    style: is.string
   }
 
 
   render() {
     return(
       <ErrorIndicator
+        style={this.props.style}
         trackErrors={this.props.trackErrors}
         allErrors={this.props.allErrors}
         errorMessages={this.props.errorMessages}

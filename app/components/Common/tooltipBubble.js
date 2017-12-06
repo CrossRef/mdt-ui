@@ -89,8 +89,9 @@ export default class TooltipBubble extends React.Component{
 
 
   render() {
+    const positionAdjust = this.props.issue ? 3 : 0
     return this.state.bubblePosition ?
-      <div className="toolmsgholder" ref={(node)=>this.node=node} style={{top: this.state.bubblePosition}}>
+      <div className="toolmsgholder" ref={(node)=>this.node=node} style={{top: this.state.bubblePosition + positionAdjust}}>
         <div className="errormsgholder">
           <div className="errormsginnerholder">
             <div><img src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`} /></div>

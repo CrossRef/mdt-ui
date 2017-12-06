@@ -136,6 +136,8 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  tooltip={this.props.tooltip && tooltips.suffix}
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
@@ -145,6 +147,8 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  tooltip={this.props.tooltip && tooltips.affiliation}
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   disabled={this.state.personDisabled}/>
 
               </div>
@@ -178,6 +182,8 @@ export default class Contributor extends Component {
                   trackErrors={['contributorRole']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
+                  tooltip={this.props.tooltip && tooltips.role}
+                  deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
                   onSelect={this.props.validate}/>
 
               </div>
