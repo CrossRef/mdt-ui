@@ -12,13 +12,15 @@ export default function publicationsReducer (state = new SearchableRecords(), ac
       if(Array.isArray(publications)) {
         publications.forEach( thisPublication => {
           if(!thisPublication || !thisPublication.message || !thisPublication.message.doi) {
-            return console.warn(`Had trouble retrieving data for a Publication`, thisPublication || 'Empty Array Value')
+            return console.warn(`Had trouble retrieving data for a Publication`, thisPublication || publications)
           }
           const normalizedRecords = new SearchableRecords()
 
           if((thisPublication.message.contains || []).length) {
             thisPublication.message.contains.forEach( thisRecord => {
-              if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) return console.warn(`Had trouble retrieving data for a Record`, thisRecord || 'Empty Array Value')
+              if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
+                return console.warn(`Had trouble retrieving data for a Record`, thisRecord || thisPublication.message.contains)
+              }
               normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
             })
           }
@@ -29,7 +31,9 @@ export default function publicationsReducer (state = new SearchableRecords(), ac
         const normalizedRecords = new SearchableRecords()
 
         publications.message.contains.forEach(thisRecord => {
-          if(!thisRecord || (!thisRecord.doi && !thisRecord.title)) return console.warn(`Had trouble retrieving data for a Record`, thisRecord || 'Empty Array Value')
+          if(!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
+            return console.warn(`Had trouble retrieving data for a Record`, thisRecord || publications.message.contains)
+          }
           normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
         })
         normalizedData[publications.message.doi] = {...publications, normalizedRecords}
