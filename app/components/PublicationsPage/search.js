@@ -87,6 +87,20 @@ export default class Search extends Component {
   }
 
 
+  RenderItem = class extends Component {
+    render () {
+      const {item} = this.props
+
+      return (
+        <div className='search-result-holder'>
+          <div className='search-result'>{item.title}</div>
+          <div className="add">Add</div>
+        </div>
+      )
+    }
+  }
+
+
   render () {
     const { results } = this.props
     const { searchingFor, forceClose } = this.state
@@ -101,14 +115,8 @@ export default class Search extends Component {
           getItemValue={(item) => item.title}
           onSelect={this.onSelect}
           onChange={this.onChange}
-          renderItem={(item, isHighlighted) => (
-            <div key={item.title + '-' + item.doi} className='search-result-holder'>
-              <div className='search-result'>{item.title}</div>
-              <div className="add">Add</div>
-            </div>
-
-          )}
-          renderMenu={(items, value, style) => (
+          renderItem={ item => <this.RenderItem key={`${item.title}-${item.doi}`} item={item}/>}
+          renderMenu={(items, value, style) =>
             <div className='publication-search-results'>
               {this.props.loading ? (
                 <div>Loading...</div>
@@ -118,7 +126,7 @@ export default class Search extends Component {
                 <div>No matches for {value}</div>
               ) : items}
             </div>
-          )}
+          }
           className='publication-search'
           />
       </div>
