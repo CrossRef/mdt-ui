@@ -25,11 +25,6 @@ export default class Issue extends Component {
   }
 
 
-  state = {
-    value: ''
-  }
-
-
   toggleCheckBox = (e) => {
     const { record } = this.props
     if(e.currentTarget.checked) {
