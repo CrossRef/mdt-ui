@@ -185,7 +185,7 @@ export default class AddIssueModal extends Component {
       }
 
       const newRecord = {
-        'title': JSON.parse(JSON.stringify({issue, volume, title})),
+        'title': JSON.parse(newTitleId),
         'date': new Date(),
         'doi': issueDoi,
         'owner-prefix': this.state.ownerPrefix,
