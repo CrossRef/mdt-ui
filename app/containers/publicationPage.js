@@ -329,10 +329,8 @@ export default class PublicationPage extends Component {
               asyncSearchRecords={this.props.asyncSearchRecords}/>
 
             <ActionBar
-              ownerPrefix={ownerPrefix}
-              doi={doi}
+              pubDoi={doi}
               selections={this.state.selections}
-              publication={publication}
 
               handleAddCart={this.handleAddCart}
               deleteSelections={this.deleteSelections}
@@ -346,7 +344,6 @@ export default class PublicationPage extends Component {
               {contains.length ?
                 <Listing
                   filterBy={this.state.filterBy}
-                  ownerPrefix={ownerPrefix}
                   publication={publication}
                   triggerModal={this.props.location.query && this.props.location.query.modal}
                   selections={this.state.selections}

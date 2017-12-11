@@ -33,6 +33,7 @@ export default class ReduxTextInput extends Component {
     errorUtility: is.object,
     keyPath: is.array.isRequired,
     handler:is.func,
+    tooltip: is.object,
     tooltipUtility: is.object.isRequired
   }
 

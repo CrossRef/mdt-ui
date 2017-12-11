@@ -5,7 +5,7 @@ import { Router, browserHistory } from 'react-router'
 import { syncHistoryWithStore } from 'react-router-redux'
 import { Provider } from 'react-redux'
 
-import configure from './store'
+import configureStore from './store'
 import Routing, { routes } from './routing'
 import { getCRState, controlModal } from './actions/application'
 
@@ -13,7 +13,7 @@ import { getCRState, controlModal } from './actions/application'
 window.version = version()
 
 
-const store = configure()
+const store = configureStore()
 const history = syncHistoryWithStore(browserHistory, store)
 
 const currentLocation = browserHistory.getCurrentLocation().pathname;

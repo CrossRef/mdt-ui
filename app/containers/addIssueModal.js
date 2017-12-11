@@ -16,7 +16,9 @@ import { XMLSerializer, DOMParser } from 'xmldom'
 
 
 
-const mapStateToProps = (state, props) => ({})
+const mapStateToProps = (state, props) => ({
+  publication: state.publications[props.pubDoi]
+})
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
@@ -28,9 +30,10 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class AddIssueModal extends Component {
 
   static propTypes = {
-    ownerPrefix: is.string.isRequired,
+    pubDoi: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
-    asyncGetPublications: is.func.isRequired
+    asyncGetPublications: is.func.isRequired,
+    publication: is.object.isRequired
   }
 
   constructor (props) {
@@ -38,12 +41,12 @@ export default class AddIssueModal extends Component {
 
     this.state = {...defaultState};
     this.state.mode = props.mode || 'add'
-    this.state.ownerPrefix = props.ownerPrefix
+    this.state.ownerPrefix = props.pubDoi.split('/')[0]
     if(props.preFilledData) {
       this.state.issue = {...this.state.issue, ...props.preFilledData}
     }
-    this.state.issue.issueDoi = props.ownerPrefix + '/'
-    this.state.issue.volumeDoi = props.ownerPrefix + '/'
+    this.state.issue.issueDoi = this.state.ownerPrefix + '/'
+    this.state.issue.volumeDoi = this.state.ownerPrefix + '/'
 
     this.state.errorMessages = []
     this.state.focusedInput = ''
@@ -64,21 +67,21 @@ export default class AddIssueModal extends Component {
 
       const version = Issue['mdt-version']
 
-      const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
+      const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.state.ownerPrefix)
 
       if(issue.issueDoi === '') {
-        issue.issueDoi = this.props.ownerPrefix + '/'
+        issue.issueDoi = this.state.ownerPrefix + '/'
       } else {
         issueDoiDisabled = true
       }
 
       if(issue.volumeDoi === '') {
-        issue.volumeDoi = this.props.ownerPrefix + '/'
+        issue.volumeDoi = this.state.ownerPrefix + '/'
       } else {
         volumeDoiDisabled = true
       }
 
-      const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled)
+      const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled)
 
       const setStatePayload = {
         version: version,
@@ -96,10 +99,16 @@ export default class AddIssueModal extends Component {
   }
 
 
-  async validation (issueData = this.state.issue, optionalIssueInfo = this.state.optionalIssueInfo, issueDoiDisabled = false, volumeDoiDisabled = false) {
+  async validation (issueData = this.state.issue, optionalIssueInfo = this.state.optionalIssueInfo, issueDoiDisabled = false) {
 
     const { criticalErrors, warnings, contributors, enableVolumeDoi, issueDoiEntered } =
-      await asyncValidateIssue(issueData, optionalIssueInfo, this.props.ownerPrefix, issueDoiDisabled, volumeDoiDisabled)
+      await asyncValidateIssue({
+        issueData,
+        optionalIssueInfo,
+        ownerPrefix: this.state.ownerPrefix,
+        publicationIssues: this.props.publication,
+        issueDoiDisabled
+      })
 
     const validatedPayload = {
       validating: true,
@@ -283,7 +292,7 @@ export default class AddIssueModal extends Component {
         'title': JSON.parse(JSON.stringify({issue, volume, title})),
         'date': new Date(),
         'doi': issueDoi,
-        'owner-prefix': this.props.ownerPrefix,
+        'owner-prefix': this.state.ownerPrefix,
         'type': 'issue',
         'mdt-version': version,
         'status': 'draft',
@@ -462,7 +471,6 @@ export default class AddIssueModal extends Component {
     return (
       <AddIssueCard
         save={this.save}
-        duplicate={this.props.duplicate}
         handler={this.handler}
         addSubItem={this.addSubItem}
         removeSubItem={this.removeSubItem}

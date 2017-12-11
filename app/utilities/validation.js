@@ -313,7 +313,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
 
-export async function asyncValidateIssue (issueData, optionalIssueInfo, ownerPrefix, issueDoiDisabled = false) {
+export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPrefix, publicationIssues, issueDoiDisabled}) {
   const { issueDoi, issue, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl } = issueData
 
   const issueDoiEntered = doiEntered(issueDoi, ownerPrefix)

@@ -10,11 +10,10 @@ import {recordTitle} from '../../utilities/helpers'
 
 export default class Issue extends Component {
   static propTypes = {
-    ownerPrefix: is.string.isRequired,
     triggerModal: is.string,
     cart: is.array,
 
-    publication: is.object.isRequired,
+    pubDoi: is.string.isRequired,
     record: is.object.isRequired,
     selections: is.array.isRequired,
 
@@ -23,6 +22,11 @@ export default class Issue extends Component {
 
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
+  }
+
+
+  state = {
+    value: ''
   }
 
 
@@ -52,10 +56,9 @@ export default class Issue extends Component {
       Component: AddIssueModal,
       props: {
         mode: 'edit',
+        pubDoi: this.props.pubDoi,
         issue: this.props.record,
         triggerModal: this.props.triggerModal,
-        ownerPrefix: this.props.ownerPrefix,
-        publication: this.props.publication,
         cart: this.props.cart,
 
         handleAddCart: this.props.handleAddCart,
@@ -66,7 +69,6 @@ export default class Issue extends Component {
 
 
   render () {
-    const publicationDoi = this.props.publication.message.doi;
     let { status, type, date, doi, title } = this.props.record;
     date = moment(date || undefined).format('MMM Do YYYY')
     const displayTitle = recordTitle(type, title)
@@ -93,7 +95,7 @@ export default class Issue extends Component {
         &nbsp;
         <Link
           className='issueDoiAddNew'
-          to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`}>
+          to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`}>
           <span>Add Article</span>
         </Link>
       </td>

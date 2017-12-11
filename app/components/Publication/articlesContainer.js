@@ -7,6 +7,7 @@ import Article from './article'
 export default class ArticleContainer extends Component {
   static propTypes = {
     filterBy: is.string.isRequired,
+    pubDoi: is.string.isRequired,
 
     record: is.object.isRequired,
     selections: is.array.isRequired,
@@ -36,10 +37,10 @@ export default class ArticleContainer extends Component {
               articles.map((article, i) => <Article
                 key={article.doi}
                 record={article}
+                pubDoi={this.props.pubDoi}
                 issueDoi = { issueDoi }
                 issueTitle = { issueTitle }
                 selections={this.props.selections}
-                publication={this.props.publication}
 
                 handleAddCart={this.props.handleAddCart}
                 handleRemoveFromList={this.props.handleRemoveFromList}

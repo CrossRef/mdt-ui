@@ -24,7 +24,7 @@ export default class FormInput extends React.Component {
     onBlur: is.func,
     onFocus: is.func,
     disabled: is.bool,
-    tooltip: is.string,
+    tooltip: is.object,
     tooltipUtility: is.object.isRequired,
     inputProps: is.object
   }
@@ -94,7 +94,7 @@ export default class FormInput extends React.Component {
               type='text'
               name={this.props.name}
               onChange={this.props.changeHandler}
-              value={this.props.value || this.props.defaultValue}
+              value={this.props.value || this.props.defaultValue || ''}
               onFocus={this.onFocus}
               onBlur={this.onBlur}
               disabled={this.props.disabled}

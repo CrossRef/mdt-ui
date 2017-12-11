@@ -2,15 +2,12 @@ import React from 'react'
 import is from 'prop-types'
 import Switch from 'react-toggle-switch'
 
-import {routes} from '../../routing'
 import { ArchiveLocations } from '../../utilities/lists/archiveLocations'
 import SubItem from '../Common/subItem'
 import OptionalIssueInfo from './optionalIssueInfo'
 import {urlEntered, doiEntered} from  '../../utilities/helpers'
-import ErrorBubble from './errorBubble'
 import TooltipBubble from '../Common/tooltipBubble'
 import FormInput from '../Common/formInput'
-import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
 import FormDate from '../Common/formDate'
 import ErrorIndicator from '../Common/errorIndicator'
@@ -21,9 +18,7 @@ import {issueTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
 
 AddIssueCard.propTypes = {
   save: is.func.isRequired,
-  duplicate: is.bool,
   handler: is.func.isRequired,
-  optionalIssueInfoHandlers: is.func.isRequired,
   closeModal: is.func.isRequired,
   helperSwitch: is.func.isRequired,
   errorUtility: is.object.isRequired,

@@ -10,6 +10,7 @@ export default class Article extends Component {
   static propTypes = {
     record: is.object.isRequired,
     selections: is.array.isRequired,
+    pubDoi: is.string.isRequired,
     issue: is.string,
 
     handleRemoveFromList: is.func.isRequired,
@@ -47,7 +48,6 @@ export default class Article extends Component {
 
   render() {
     let { title, status, type, date, doi } = this.props.record
-    const publicationDoi = this.props.publication.message.doi
     const issueDoi = this.props.issueDoi
     const issueTitle = this.props.issueTitle
     date = moment(date || undefined).format('MMM Do YYYY')
@@ -65,9 +65,9 @@ export default class Article extends Component {
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox.bind(this)} {...checked} /><span>&nbsp;</span></label></td>
       <td className='title'>
         {issueDoi || issueTitle ?
-          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(issueDoi || JSON.stringify(issueTitle))}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(issueDoi || JSON.stringify(issueTitle))}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
           :
-          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
         }
       </td>
       <td className='date'>{date}</td>

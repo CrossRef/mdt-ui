@@ -43,8 +43,13 @@ export default class DepositCartRecord extends Component {
 
     function getIssueErrors () {
       const parsedIssue = parseXMLIssue(record.content)
-      return asyncValidateIssue(parsedIssue.issue, parsedIssue.optionalIssueInfo, record['owner-prefix'])
+      return asyncValidateIssue({
+        issueData: parsedIssue.issue,
+        optionalIssueInfo: parsedIssue.optionalIssueInfo,
+        ownerPrefix: record['owner-prefix']
+      })
     }
+
 
     function getArticleErrors () {
       const parsedArticle = parseXMLArticle(record.content)
