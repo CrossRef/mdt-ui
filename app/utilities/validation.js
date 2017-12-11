@@ -313,8 +313,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
 
-export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPrefix, publicationIssues, issueDoiDisabled}) {
-  const { issueDoi, issue, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl } = issueData
+export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPrefix, publicationRecords, issueDoiDisabled, checkDuplicateId}) {
+  const { issueDoi, issue, issueTitle, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl } = issueData
 
   const issueDoiEntered = doiEntered(issueDoi, ownerPrefix)
   const issueUrlEntered = urlEntered(issueUrl)
@@ -324,12 +324,19 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
   let criticalErrors = {
     issueVolume: !volume && !issue,
     volumeIssue: !volume && !issue,
+    dupTitleIdIssue: false,
+    dupTitleIdVolume: false,
 
     invalidissuedoi: false,
     invalidIssueDoiPrefix: false,
     dupeissuedoi: false,
 
     volume: false
+  }
+
+  if(checkDuplicateId) {
+    criticalErrors.dupTitleIdIssue = !!publicationRecords[JSON.stringify({issue, volume, title: issueTitle})]
+    criticalErrors.dupTitleIdVolume = criticalErrors.dupTitleIdIssue
   }
 
   if(!issueDoiDisabled && issueDoiEntered) {

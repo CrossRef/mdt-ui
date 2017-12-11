@@ -15,6 +15,18 @@ export const IssueMessages = {
     message: 'Please provide either an issue or volume number.'
   },
 
+  dupTitleIdIssue: {
+    type: 'dupe',
+    bold: 'Duplicate Issue/Volume',
+    message: 'An issue with this Issue and/or Volume number already exists.'
+  },
+
+  dupTitleIdVolume: {
+    type: 'dupe',
+    bold: 'Duplicate Issue/Volume',
+    message: 'An issue with this Issue and/or Volume number already exists.'
+  },
+
   issue: {
     type: 'required',
     bold: 'Required',
