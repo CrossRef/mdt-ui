@@ -8,7 +8,7 @@ import remoteSync from '../middleware/remote-sync'
 
 export let exposedStore = {}
 
-export default function configure () {
+export default function configureStore () {
   const create = window.devToolsExtension
     ? window.devToolsExtension({maxAge: 100})(createStore)
     : createStore

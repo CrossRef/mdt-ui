@@ -25,7 +25,7 @@ export default class FormSelect extends React.Component {
     onBlur: is.func,
     onFocus: is.func,
     disabled: is.bool,
-    tooltip: is.oneOfType([is.string, is.bool]),
+    tooltip: is.object,
     tooltipUtility: is.object.isRequired
   }
 

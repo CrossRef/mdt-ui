@@ -23,6 +23,7 @@ export default class ReduxIndicator extends Component {
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired,
     tooltipUtility: is.object.isRequired,
+    tooltip: is.object,
     style: is.string
   }
 

@@ -2,15 +2,12 @@ import React from 'react'
 import is from 'prop-types'
 import Switch from 'react-toggle-switch'
 
-import {routes} from '../../routing'
 import { ArchiveLocations } from '../../utilities/lists/archiveLocations'
 import SubItem from '../Common/subItem'
 import OptionalIssueInfo from './optionalIssueInfo'
 import {urlEntered, doiEntered} from  '../../utilities/helpers'
-import ErrorBubble from './errorBubble'
 import TooltipBubble from '../Common/tooltipBubble'
 import FormInput from '../Common/formInput'
-import FormTextArea from '../Common/formTextArea'
 import FormSelect from '../Common/formSelect'
 import FormDate from '../Common/formDate'
 import ErrorIndicator from '../Common/errorIndicator'
@@ -21,9 +18,7 @@ import {issueTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
 
 AddIssueCard.propTypes = {
   save: is.func.isRequired,
-  duplicate: is.bool,
   handler: is.func.isRequired,
-  optionalIssueInfoHandlers: is.func.isRequired,
   closeModal: is.func.isRequired,
   helperSwitch: is.func.isRequired,
   errorUtility: is.object.isRequired,
@@ -70,8 +65,8 @@ export default function AddIssueCard (props) {
                     name="issue.issue"
                     value={props.issue.issue}
                     changeHandler={props.handler}
-                    error={errors.issueVolume}
-                    trackErrors={['issueVolume']}
+                    error={errors.issueVolume || (!!props.issue.issue && errors.dupTitleIdIssue)}
+                    trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.issueNumber}
                     tooltipUtility={props.tooltipUtility}
@@ -90,7 +85,7 @@ export default function AddIssueCard (props) {
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['issueVolume']}
+                  trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
@@ -239,8 +234,8 @@ export default function AddIssueCard (props) {
                     name="issue.volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}
-                    error={errors.volumeIssue}
-                    trackErrors={['volumeIssue']}
+                    error={errors.volumeIssue || (!!props.issue.volume && errors.dupTitleIdVolume)}
+                    trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.volumeNumber}
                     tooltipUtility={props.tooltipUtility}
@@ -250,7 +245,7 @@ export default function AddIssueCard (props) {
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['volumeIssue']}
+                  trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}

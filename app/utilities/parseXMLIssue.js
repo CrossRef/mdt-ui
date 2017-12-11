@@ -4,7 +4,7 @@ import _ from 'lodash'
 import {objectSearch, xmldoc} from './helpers'
 
 
-const parseXMLIssue = function (xml, duplicate = false, ownerPrefix = '') {
+const parseXMLIssue = function (xml, ownerPrefix = '') {
   let retObj = {showSection: false}
 
 
@@ -71,8 +71,8 @@ const parseXMLIssue = function (xml, duplicate = false, ownerPrefix = '') {
   const setIssue = {
     issue: issue,
     issueTitle: issueTitle,
-    issueDoi: duplicate ? ownerPrefix + '/' : issueDoi,
-    issueUrl: duplicate ?  'http://' : issueUrl,
+    issueDoi: issueDoi || `${ownerPrefix}/`,
+    issueUrl: issueUrl || 'http://',
     printDateYear: printDateYear,
     printDateMonth: printDateMonth,
     printDateDay: printDateDay,
@@ -82,7 +82,7 @@ const parseXMLIssue = function (xml, duplicate = false, ownerPrefix = '') {
     archiveLocation: archive,
     specialIssueNumber: special_numbering,
     volume: theVolume || '',
-    volumeDoi: duplicate ? ownerPrefix + '/' : (volumeDoi || ''),
+    volumeDoi: volumeDoi || `${ownerPrefix}/`,
     volumeUrl: volumeUrl || 'http://'
   }
 

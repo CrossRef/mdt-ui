@@ -36,6 +36,7 @@ export default class ReduxDate extends Component {
     trackErrors: is.array,
     setErrorMessages: is.func,
     errorUtility: is.object,
+    tooltip: is.object,
     tooltipUtility: is.object.isRequired
   }
 

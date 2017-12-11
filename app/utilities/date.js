@@ -79,7 +79,7 @@ MakeDateDropDown.propTypes = {
 }
 
 export function MakeDateDropDown ({handler, name, type, value, validation, style, nodeRef}) {
-  var s = [<option key='-1'></option>], start = 0, end = 0
+  var s = [<option key='-1' />], start = 0, end = 0
   if (type === 'y' || type === 'year') {
     start = 2017
     end = 1980
@@ -106,7 +106,7 @@ export function MakeDateDropDown ({handler, name, type, value, validation, style
       className={'height32 datepickselects' + ((validation) ? ' fieldError': '' + style ? ` ${style}` : '')}
       name={name}
       onChange={handler}
-      value={parseInt(value)}
+      value={Number(value)}
       ref={nodeRef ? (node)=>nodeRef[name] = node : null}
     >
       {s}

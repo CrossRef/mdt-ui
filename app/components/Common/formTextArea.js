@@ -22,7 +22,7 @@ export default class FormTextArea extends React.Component {
     changeHandler: is.func.isRequired,
     onBlur: is.func,
     onFocus: is.func,
-    tooltip: is.oneOfType([is.string, is.bool]),
+    tooltip: is.object,
     tooltipUtility: is.object.isRequired
   }
 

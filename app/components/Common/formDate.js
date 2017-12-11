@@ -24,7 +24,7 @@ export default class FormDate extends React.Component {
     onSelect: is.func,
     onBlur: is.func,
     onFocus: is.func,
-    tooltip: is.oneOfType([is.string, is.bool]),
+    tooltip: is.object,
     tooltipUtility: is.object.isRequired,
     fields: is.shape({
       year: is.shape({

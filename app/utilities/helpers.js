@@ -136,7 +136,8 @@ export function xmldoc (content) {
 
 
 
-
+//This helper returns a thenable object that will run its then callback at the end of the current event loop.
+//This guarantees that the callback will come after any UI updates that have already been scheduled by React
 export function finishUpdate () {
   return Promise.resolve()
 }

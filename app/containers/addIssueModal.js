@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { controlModal, getPublications } from '../actions/application'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
-import {finishUpdate} from '../utilities/helpers'
+import {finishUpdate, doiEntered} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
@@ -16,7 +16,9 @@ import { XMLSerializer, DOMParser } from 'xmldom'
 
 
 
-const mapStateToProps = (state, props) => ({})
+const mapStateToProps = (state, props) => ({
+  publication: state.publications[props.pubDoi]
+})
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
@@ -28,9 +30,10 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class AddIssueModal extends Component {
 
   static propTypes = {
-    ownerPrefix: is.string.isRequired,
+    pubDoi: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
-    asyncGetPublications: is.func.isRequired
+    asyncGetPublications: is.func.isRequired,
+    publication: is.object.isRequired
   }
 
   constructor (props) {
@@ -38,12 +41,12 @@ export default class AddIssueModal extends Component {
 
     this.state = {...defaultState};
     this.state.mode = props.mode || 'add'
-    this.state.ownerPrefix = props.ownerPrefix
+    this.state.ownerPrefix = props.pubDoi.split('/')[0]
     if(props.preFilledData) {
       this.state.issue = {...this.state.issue, ...props.preFilledData}
     }
-    this.state.issue.issueDoi = props.ownerPrefix + '/'
-    this.state.issue.volumeDoi = props.ownerPrefix + '/'
+    this.state.issue.issueDoi = this.state.ownerPrefix + '/'
+    this.state.issue.volumeDoi = this.state.ownerPrefix + '/'
 
     this.state.errorMessages = []
     this.state.focusedInput = ''
@@ -64,21 +67,22 @@ export default class AddIssueModal extends Component {
 
       const version = Issue['mdt-version']
 
-      const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
+      const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.state.ownerPrefix)
 
-      if(issue.issueDoi === '') {
-        issue.issueDoi = this.props.ownerPrefix + '/'
+      if(!doiEntered(issue.issueDoi, this.state.ownerPrefix)) {
+        issue.issueDoi = this.state.ownerPrefix + '/'
       } else {
         issueDoiDisabled = true
       }
 
-      if(issue.volumeDoi === '') {
-        issue.volumeDoi = this.props.ownerPrefix + '/'
+      if(!doiEntered(issue.volumeDoi, this.state.ownerPrefix)) {
+        issue.volumeDoi = this.state.ownerPrefix + '/'
       } else {
         volumeDoiDisabled = true
       }
 
-      const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled)
+      const checkDuplicateId = false
+      const {validatedPayload} = await this.validation(checkDuplicateId, issue, optionalIssueInfo, issueDoiDisabled)
 
       const setStatePayload = {
         version: version,
@@ -96,10 +100,22 @@ export default class AddIssueModal extends Component {
   }
 
 
-  async validation (issueData = this.state.issue, optionalIssueInfo = this.state.optionalIssueInfo, issueDoiDisabled = false, volumeDoiDisabled = false) {
+  async validation (
+    checkDuplicateId = false,
+    issueData = this.state.issue,
+    optionalIssueInfo = this.state.optionalIssueInfo,
+    issueDoiDisabled = this.state.issueDoiDisabled
+  ) {
 
     const { criticalErrors, warnings, contributors, enableVolumeDoi, issueDoiEntered } =
-      await asyncValidateIssue(issueData, optionalIssueInfo, this.props.ownerPrefix, issueDoiDisabled, volumeDoiDisabled)
+      await asyncValidateIssue({
+        issueData,
+        optionalIssueInfo,
+        ownerPrefix: this.state.ownerPrefix,
+        publicationRecords: this.props.publication.normalizedRecords,
+        issueDoiDisabled,
+        checkDuplicateId
+      })
 
     const validatedPayload = {
       validating: true,
@@ -133,10 +149,152 @@ export default class AddIssueModal extends Component {
 
 
   validate = async () => {
+    const title = this.state.issue.issueTitle, issue = this.state.issue.issue, volume = this.state.issue.volume
+    const newTitleId = JSON.stringify({issue, volume, title})
+    const oldTitleId = this.state.titleId
+    const titleIdChanged = oldTitleId !== newTitleId
+
     if(this.state.mode === 'edit') {
-      const {validatedPayload} = await this.validation()
+      const {validatedPayload} = await this.validation(titleIdChanged)
       this.setState(validatedPayload)
     }
+  }
+
+
+  save = async () => {
+    const title = this.state.issue.issueTitle, issue = this.state.issue.issue, volume = this.state.issue.volume
+    const newTitleId = JSON.stringify({issue, volume, title})
+    const oldTitleId = this.state.titleId
+    const titleIdChanged = oldTitleId !== newTitleId
+
+    const {valid, validatedPayload, criticalErrors, issueDoiEntered} =
+      await this.validation(titleIdChanged)
+
+    validatedPayload.focusedInput = ''
+
+    if (valid) {
+      const issueDoi = issueDoiEntered ? this.state.issue.issueDoi : ''
+      const { publication, mode } = this.props
+
+      const issueXML = getIssueXml(this.state)
+
+      let version = this.state.version
+
+      if (mode === 'edit') {
+        version = String(Number(this.state.version) + 1)
+      }
+
+      const newRecord = {
+        'title': JSON.parse(newTitleId),
+        'date': new Date(),
+        'doi': issueDoi,
+        'owner-prefix': this.state.ownerPrefix,
+        'type': 'issue',
+        'mdt-version': version,
+        'status': 'draft',
+        'content': new XMLSerializer().serializeToString(issueXML)
+      }
+
+      const submissionPayload = {
+        ...publication,
+        message: {
+          ...publication.message,
+          contains: [newRecord]
+        }
+      }
+
+      validatedPayload.titleId = newTitleId
+
+      //check if new titleId, if so, do rename
+      if(!issueDoiEntered && oldTitleId && titleIdChanged) {
+        const issueInfo = mode === 'edit' ?
+          publication.normalizedRecords.find( record =>
+            JSON.stringify(record.title) === oldTitleId
+          )
+          : undefined
+
+        //get article content
+        let articles = []
+        if(issueInfo && issueInfo.contains && issueInfo.contains.length) {
+          for (let article of issueInfo.contains) {
+            const getArticleContent = await api.getItem(article.doi)
+            const articleContent = getArticleContent.message.contains[0].contains[0]
+            articleContent['mdt-version'] = String(Number(articleContent['mdt-version']) + 1)
+            articles.push(articleContent)
+          }
+        }
+
+        //delete old issue
+        await api.deleteItem({doi: issueDoi, title: oldTitleId, pubDoi: publication.message.doi})
+
+        //save new issue
+        await api.submitItem(submissionPayload)
+
+        //save articles to new issue
+        for (let articleContent of articles) {
+          newRecord.contains = [articleContent]
+          await api.submitItem(submissionPayload)
+        }
+
+      } else {
+        await api.submitItem(submissionPayload)
+      }
+
+      this.props.asyncGetPublications(this.props.publication.message.doi)
+
+      if(issueDoiEntered) {
+        validatedPayload.issueDoiDisabled = true
+      }
+      validatedPayload.version = String(Number(this.state.version) + 1)
+      const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+      validatedPayload.confirmationPayload = confirmationPayload
+      validatedPayload.timeOut = timeOut
+
+      this.setState(validatedPayload)
+
+    } else /*if not valid*/ {
+      const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+      validatedPayload.confirmationPayload = confirmationPayload
+      validatedPayload.timeOut = timeOut
+      this.setState(validatedPayload)
+    }
+  }
+
+
+  confirmSave = (criticalErrors) => {
+    clearTimeout(this.state.timeOut)
+    const confirmationPayload = {
+      status: 'saveSuccess',
+      message: 'Save Complete'
+    }
+
+    const errorMessageArray = ['Required to save:']
+
+    const criticalErrorMsg = {
+      issueVolume: 'Issue or Volume Number.',
+      dupTitleIdIssue: 'Issue/Volume already exists.',
+      invalidissuedoi: 'DOI must be valid.',
+      invalidIssueDoiPrefix: 'DOI must be valid.',
+      dupeissuedoi: 'DOI must be valid.',
+      volume: 'Volume Number.'
+    }
+
+    for (let error in criticalErrors) {
+      if(criticalErrors[error] === true) {
+        confirmationPayload.status = 'saveFailed'
+        errorMessageArray.push(criticalErrorMsg[error])
+      }
+    }
+
+    if(confirmationPayload.status === 'saveFailed') {
+      confirmationPayload.message = errorMessageArray.join(' ')
+    }
+
+    const timeOut = setTimeout(()=>{
+      this.setState({confirmationPayload: {status: '', message: ''}})
+    }, 7000)
+
+    return {confirmationPayload, timeOut}
   }
 
 
@@ -257,143 +415,6 @@ export default class AddIssueModal extends Component {
   }
 
 
-  save = async () => {
-
-    const {valid, validatedPayload, criticalErrors, issueDoiEntered} =
-      await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
-
-    validatedPayload.focusedInput = ''
-
-    if (valid) {
-      const issueDoi = issueDoiEntered ? this.state.issue.issueDoi : ''
-      const { publication, mode } = this.props
-
-      const issueXML = getIssueXml(this.state)
-
-      let version = this.state.version
-
-      if (mode === 'edit') {
-        version = String(Number(this.state.version) + 1)
-      }
-
-      const title = this.state.issue.issueTitle
-      const issue = this.state.issue.issue
-      const volume =this.state.issue.volume
-      const newRecord = {
-        'title': JSON.parse(JSON.stringify({issue, volume, title})),
-        'date': new Date(),
-        'doi': issueDoi,
-        'owner-prefix': this.props.ownerPrefix,
-        'type': 'issue',
-        'mdt-version': version,
-        'status': 'draft',
-        'content': new XMLSerializer().serializeToString(issueXML)
-      }
-
-      const submissionPayload = {
-        ...publication,
-        message: {
-          ...publication.message,
-          contains: [newRecord]
-        }
-      }
-
-      const newTitleId = JSON.stringify(newRecord.title)
-      const oldTitleId = this.state.titleId
-      validatedPayload.titleId = newTitleId
-
-      //check if new titleId, if so, do rename
-      if(!issueDoiEntered && oldTitleId && oldTitleId !== newTitleId) {
-        const issueInfo = mode === 'edit' ?
-          publication.normalizedRecords.find( record =>
-            JSON.stringify(record.title) === oldTitleId
-          )
-        : undefined
-
-        //get article content
-        let articles = []
-        if(issueInfo && issueInfo.contains && issueInfo.contains.length) {
-          for (let article of issueInfo.contains) {
-            const getArticleContent = await api.getItem(article.doi)
-            const articleContent = getArticleContent.message.contains[0].contains[0]
-            articleContent['mdt-version'] = String(Number(articleContent['mdt-version']) + 1)
-            articles.push(articleContent)
-          }
-        }
-
-        //delete old issue
-        await api.deleteItem({doi: issueDoi, title: oldTitleId, pubDoi: publication.message.doi})
-
-        //save new issue
-        await api.submitItem(submissionPayload)
-
-        //save articles to new issue
-        for (let articleContent of articles) {
-          newRecord.contains = [articleContent]
-          await api.submitItem(submissionPayload)
-        }
-
-      } else {
-        await api.submitItem(submissionPayload)
-      }
-
-      this.props.asyncGetPublications(this.props.publication.message.doi)
-
-      if(issueDoiEntered) {
-        validatedPayload.issueDoiDisabled = true
-      }
-      validatedPayload.version = String(Number(this.state.version) + 1)
-      const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
-      validatedPayload.confirmationPayload = confirmationPayload
-      validatedPayload.timeOut = timeOut
-
-      this.setState(validatedPayload)
-
-    } else /*if not valid*/ {
-      const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
-      validatedPayload.confirmationPayload = confirmationPayload
-      validatedPayload.timeOut = timeOut
-      this.setState(validatedPayload)
-    }
-  }
-
-
-  confirmSave = (criticalErrors) => {
-    clearTimeout(this.state.timeOut)
-    const confirmationPayload = {
-      status: 'saveSuccess',
-      message: 'Save Complete'
-    }
-
-    const errorMessageArray = ['Required to save:']
-
-    const criticalErrorMsg = {
-      issueVolume: 'Issue or Volume Number.',
-      invalidissuedoi: 'DOI must be valid.',
-      invalidIssueDoiPrefix: 'DOI must be valid.',
-      dupeissuedoi: 'DOI must be valid.',
-      volume: 'Volume Number.'
-    }
-
-    for (let error in criticalErrors) {
-      if(criticalErrors[error] === true) {
-        confirmationPayload.status = 'saveFailed'
-        errorMessageArray.push(criticalErrorMsg[error])
-      }
-    }
-
-    if(confirmationPayload.status === 'saveFailed') {
-      confirmationPayload.message = errorMessageArray.join(' ')
-    }
-
-    const timeOut = setTimeout(()=>{
-      this.setState({confirmationPayload: {status: '', message: ''}})
-    }, 7000)
-
-    return {confirmationPayload, timeOut}
-  }
-
-
   handler = (e) => {
     const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
 
@@ -462,7 +483,6 @@ export default class AddIssueModal extends Component {
     return (
       <AddIssueCard
         save={this.save}
-        duplicate={this.props.duplicate}
         handler={this.handler}
         addSubItem={this.addSubItem}
         removeSubItem={this.removeSubItem}
