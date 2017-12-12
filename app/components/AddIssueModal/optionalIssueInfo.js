@@ -27,7 +27,6 @@ export default class OptionalIssueInformation extends Component {
     const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role, errors} = this.props.optionalIssueInfo
     const hasData = !!(firstName || lastName || suffix || affiliation || orcid || alternativeName || role)
 
-    console.log(errors)
     return (
       <div className='optionalissueiinfo'>
         <div className='innerCardHolder'>
