@@ -137,6 +137,10 @@ export default class Contributor extends Component {
                   label="Suffix"
                   name="suffix"
                   value={suffix}
+                  error={errors.contributorSuffixLimit}
+                  trackErrors={['contributorSuffixLimit']}
+                  allErrors={errors}
+                  errorUtility={this.props.errorUtility}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
@@ -158,6 +162,15 @@ export default class Contributor extends Component {
                   disabled={this.state.personDisabled}/>
 
               </div>
+
+              <ErrorIndicator
+                trackErrors={['contributorSuffixLimit']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
+                allErrors={errors}
+                subItem='contributor'
+                subItemIndex={String(this.props.index)}/>
             </div>
 
             <div className='row'>

@@ -218,8 +218,8 @@ export default function AddArticleView (props) {
                     name="firstPage"
                     value={props.article.firstPage}
                     required={!!props.article.lastPage}
-                    error={props.errors.firstPage}
-                    trackErrors={['firstPage']}
+                    error={props.errors.firstPage || props.errors.firstPageLimit}
+                    trackErrors={['firstPage', 'firstPageLimit']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     changeHandler={props.handleChange}
                     tooltipUtility={props.tooltipUtility}
@@ -229,6 +229,8 @@ export default function AddArticleView (props) {
                     label="Last Page"
                     name="lastPage"
                     value={props.article.lastPage}
+                    error={props.errors.lastPageLimit || props.errors.lastPageLessFirst}
+                    trackErrors={['lastPageLimit', 'lastPageLessFirst']}
                     changeHandler={props.handleChange}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltipUtility={props.tooltipUtility}
@@ -236,7 +238,7 @@ export default function AddArticleView (props) {
                 </div>
 
                 <ErrorIndicator
-                  trackErrors={['firstPage']}
+                  trackErrors={['firstPage', 'firstPageLimit', 'lastPageLimit', 'lastPageLessFirst']}
                   allErrors={props.errors}
                   errorMessages={props.errorMessages}
                   tooltipUtility={props.tooltipUtility}
@@ -249,12 +251,21 @@ export default function AddArticleView (props) {
                     label="Article / Electronic Location ID"
                     name="locationId"
                     value={props.article.locationId}
+                    error={props.errors.locationIdLimit}
+                    trackErrors={['locationIdLimit']}
                     changeHandler={props.handleChange}
                     onBlur={props.validate}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltipUtility={props.tooltipUtility}
                     tooltip={props.showHelper && tooltip.locationId}/>
                 </div>
+
+                <ErrorIndicator
+                  trackErrors={['locationIdLimit']}
+                  allErrors={props.errors}
+                  errorMessages={props.errorMessages}
+                  tooltipUtility={props.tooltipUtility}
+                  errorUtility={props.errorUtility}/>
               </div>
 
               <div className='row'>
@@ -280,7 +291,7 @@ export default function AddArticleView (props) {
               showSection={props.openItems.Contributors}
               addHandler={props.addSection.bind(null, 'contributors')}>
                 <ErrorIndicator
-                  trackErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole']}
+                  trackErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole', 'contributorSuffixLimit']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}

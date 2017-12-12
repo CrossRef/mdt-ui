@@ -27,6 +27,7 @@ export default class OptionalIssueInformation extends Component {
     const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role, errors} = this.props.optionalIssueInfo
     const hasData = !!(firstName || lastName || suffix || affiliation || orcid || alternativeName || role)
 
+    console.log(errors)
     return (
       <div className='optionalissueiinfo'>
         <div className='innerCardHolder'>
@@ -62,7 +63,7 @@ export default class OptionalIssueInformation extends Component {
                   error={errors.contributorLastName}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
                   trackErrors={['contributorLastName']}
-                  required={firstName}
+                  required={!!firstName}
                   tooltip={this.props.tooltip && tooltips.contributorLastName}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
@@ -88,6 +89,9 @@ export default class OptionalIssueInformation extends Component {
                   label="Suffix"
                   name="suffix"
                   value={this.props.optionalIssueInfo.suffix}
+                  error={errors.contributorSuffixLimit}
+                  trackErrors={['contributorSuffixLimit']}
+                  errorUtility={this.props.errorUtility}
                   tooltip={this.props.tooltip && tooltips.contributorSuffix}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
@@ -106,6 +110,15 @@ export default class OptionalIssueInformation extends Component {
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
               </div>
+
+              <ErrorIndicator
+                style="shiftLeft"
+                trackErrors={['contributorSuffixLimit']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
+                subItemIndex={String(this.props.index)}
+                allErrors={errors}/>
             </div>
 
 

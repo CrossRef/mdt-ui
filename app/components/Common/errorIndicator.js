@@ -92,7 +92,6 @@ export default class ErrorIndicator extends React.Component {
       this.props.openSubItem()
       this.props.errorUtility.setErrorMessages(this.state.activeErrors)
     } else {
-
       this.props.errorUtility.setErrorMessages(this.state.activeErrors)
     }
   }

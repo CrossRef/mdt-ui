@@ -65,8 +65,8 @@ export default function AddIssueCard (props) {
                     name="issue.issue"
                     value={props.issue.issue}
                     changeHandler={props.handler}
-                    error={errors.issueVolume || (!!props.issue.issue && errors.dupTitleIdIssue)}
-                    trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '']}
+                    error={errors.issueVolume || (!!props.issue.issue && errors.dupTitleIdIssue) || errors.issueNumberLimit}
+                    trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '', 'issueNumberLimit']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.issueNumber}
                     tooltipUtility={props.tooltipUtility}
@@ -85,7 +85,7 @@ export default function AddIssueCard (props) {
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '']}
+                  trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '', 'issueNumberLimit']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
@@ -217,11 +217,22 @@ export default function AddIssueCard (props) {
                     label="Special Issue Number"
                     name="issue.specialIssueNumber"
                     value={props.issue.specialIssueNumber}
+                    error={errors.specialNumberLimit}
+                    trackErrors={['specialNumberLimit']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
+                    onBlur={props.validate}
                     changeHandler={props.handler}
                     tooltip={props.showHelper && tooltips.specialNumber}
                     tooltipUtility={props.tooltipUtility}/>
                 </div>
+
+                <ErrorIndicator
+                  issue
+                  trackErrors={['specialNumberLimit']}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
+                  allErrors={props.errors}/>
               </div>
 
 
@@ -234,8 +245,8 @@ export default function AddIssueCard (props) {
                     name="issue.volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}
-                    error={errors.volumeIssue || (!!props.issue.volume && errors.dupTitleIdVolume)}
-                    trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '']}
+                    error={errors.volumeIssue || (!!props.issue.volume && errors.dupTitleIdVolume) || errors.volumeNumberLimit}
+                    trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '', 'volumeNumberLimit']}
                     setErrorMessages={props.errorUtility.setErrorMessages}
                     tooltip={props.showHelper && tooltips.volumeNumber}
                     tooltipUtility={props.tooltipUtility}
@@ -245,7 +256,7 @@ export default function AddIssueCard (props) {
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '']}
+                  trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '', 'volumeNumberLimit']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
@@ -293,7 +304,7 @@ export default function AddIssueCard (props) {
               boundSetState={props.boundSetState}
               showSection={props.showSection}>
                 <ErrorIndicator
-                  trackErrors={['contributorLastName', 'contributorRole']}
+                  trackErrors={['contributorLastName', 'contributorRole', 'contributorSuffixLimit']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
