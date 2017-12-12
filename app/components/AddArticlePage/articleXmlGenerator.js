@@ -175,15 +175,16 @@ export default function (state, reduxForm) {
         dayHolder.push(year)
       }
       if (month) {
-        dayHolder.push(month)
+
+        dayHolder.push(month.length < 2 ? `0${month}` : month)
       }
       if (day) {
-        dayHolder.push(day)
+        dayHolder.push(day.length < 2 ? `0${day}` : day)
       }
       var el
       const isDate = dayHolder.length > 0
       if (isDate || license.licenseurl || license.appliesto) {
-        const date = isDate ? moment(dayHolder.join('-')).format(`${year && 'YYYY'}-${month && 'MM'}-${day && 'DD'}`) : ''
+        const date = isDate ? dayHolder.join('-') : ''
         if (i == 0 && article.freetolicense === 'yes') {
           el = root.ownerDocument.createElement("ai:free_to_read")
           appendAttribute("start_date", date, el)
