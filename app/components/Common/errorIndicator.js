@@ -10,7 +10,7 @@ import {routes} from '../../routing'
 
 export default class ErrorIndicator extends React.Component {
   static propTypes = {
-    trackErrors: is.array.isRequired,
+    indicatorErrors: is.array.isRequired,
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired,
     allErrors: is.object.isRequired,
@@ -19,6 +19,10 @@ export default class ErrorIndicator extends React.Component {
     subItemIndex: is.string,
     issue: is.bool,
     style: is.string
+  }
+
+  static defaultProps = {
+    errorMessages: []
   }
 
 
@@ -37,7 +41,7 @@ export default class ErrorIndicator extends React.Component {
 
   checkErrors = (props) => {
     let newRender
-    const newActiveErrors = props.trackErrors.filter((error)=>{
+    const newActiveErrors = props.indicatorErrors.filter((error)=>{
       return props.allErrors[error]
     })
 
@@ -49,7 +53,7 @@ export default class ErrorIndicator extends React.Component {
 
     if(newRender) {
       for(let error of props.errorMessages) {
-        if(props.trackErrors.indexOf(error) > -1) {
+        if(props.indicatorErrors.indexOf(error) > -1) {
           newRender = 'errorBubble'
           break
         }
@@ -99,7 +103,7 @@ export default class ErrorIndicator extends React.Component {
 
   saveRef = (node) => {
     this.node = node
-    this.props.errorUtility.saveRef(this.state.activeErrors, this.props.trackErrors, node, this.props.subItem, this.props.subItemIndex, this.props.openSubItem)
+    this.props.errorUtility.saveRef(this.state.activeErrors, this.props.indicatorErrors, node, this.props.subItem, this.props.subItemIndex, this.props.openSubItem)
   }
 
 

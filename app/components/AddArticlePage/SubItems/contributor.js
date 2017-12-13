@@ -97,7 +97,7 @@ export default class Contributor extends Component {
                   value={firstName}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   subItemIndex={String(this.props.index)}
                   tooltipUtility={this.props.tooltipUtility}
                   disabled={this.state.personDisabled}/>
@@ -110,18 +110,17 @@ export default class Contributor extends Component {
                   value={lastName}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  trackErrors={['contributorLastName']}
+                  indicatorErrors={['contributorLastName']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   tooltipUtility={this.props.tooltipUtility}
                   errorUtility={this.props.errorUtility}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   disabled={this.state.personDisabled}/>
 
               </div>
 
               <ErrorIndicator
-                trackErrors={['contributorLastName']}
+                indicatorErrors={['contributorLastName']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
@@ -138,12 +137,11 @@ export default class Contributor extends Component {
                   name="suffix"
                   value={suffix}
                   error={errors.contributorSuffixLimit}
-                  trackErrors={['contributorSuffixLimit']}
+                  indicatorErrors={['contributorSuffixLimit']}
                   allErrors={errors}
-                  errorUtility={this.props.errorUtility}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   tooltip={this.props.tooltip && tooltips.suffix}
                   subItemIndex={String(this.props.index)}
                   tooltipUtility={this.props.tooltipUtility}
@@ -155,7 +153,7 @@ export default class Contributor extends Component {
                   value={affiliation}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   tooltip={this.props.tooltip && tooltips.affiliation}
                   subItemIndex={String(this.props.index)}
                   tooltipUtility={this.props.tooltipUtility}
@@ -164,7 +162,7 @@ export default class Contributor extends Component {
               </div>
 
               <ErrorIndicator
-                trackErrors={['contributorSuffixLimit']}
+                indicatorErrors={['contributorSuffixLimit']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
@@ -185,7 +183,7 @@ export default class Contributor extends Component {
                   subItemIndex={String(this.props.index)}
                   tooltipUtility={this.props.tooltipUtility}
                   tooltip={this.props.tooltip && tooltips.orcid}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   disabled={this.state.personDisabled}/>
 
                 <FormSelect
@@ -197,9 +195,8 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   options={Roles}
                   disabled={this.state.personDisabled}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
                   errorUtility={this.props.errorUtility}
-                  trackErrors={['contributorRole']}
+                  indicatorErrors={['contributorRole']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   tooltip={this.props.tooltip && tooltips.role}
@@ -209,7 +206,7 @@ export default class Contributor extends Component {
               </div>
 
               <ErrorIndicator
-                trackErrors={['contributorRole']}
+                indicatorErrors={['contributorRole']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
@@ -233,11 +230,10 @@ export default class Contributor extends Component {
                   value={groupAuthorName}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['contributorGroupName']}
+                  errorUtility={this.props.errorUtility}
+                  indicatorErrors={['contributorGroupName']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
-                  errorUtility={this.props.errorUtility}
                   tooltipUtility={this.props.tooltipUtility}
                   tooltip={this.props.tooltip && tooltips.groupAuthorName}
                   disabled={this.state.groupDisabled}/>
@@ -251,8 +247,7 @@ export default class Contributor extends Component {
                   changeHandler={this.handleContributor}
                   options={Roles}
                   onSelect={this.props.validate}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['contributorGroupRole']}
+                  indicatorErrors={['contributorGroupRole']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
@@ -263,7 +258,7 @@ export default class Contributor extends Component {
               </div>
 
               <ErrorIndicator
-                trackErrors={['contributorGroupName', 'contributorGroupRole']}
+                indicatorErrors={['contributorGroupName', 'contributorGroupRole']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}

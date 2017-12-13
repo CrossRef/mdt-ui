@@ -51,7 +51,7 @@ export default class OptionalIssueInformation extends Component {
                   tooltip={this.props.tooltip && tooltips.contributorFirstName}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
 
@@ -60,9 +60,8 @@ export default class OptionalIssueInformation extends Component {
                   name="lastName"
                   value={this.props.optionalIssueInfo.lastName}
                   error={errors.contributorLastName}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['contributorLastName']}
                   required={!!firstName}
+                  indicatorErrors={['contributorLastName']}
                   tooltip={this.props.tooltip && tooltips.contributorLastName}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
@@ -73,7 +72,7 @@ export default class OptionalIssueInformation extends Component {
 
               <ErrorIndicator
                 style="shiftLeft"
-                trackErrors={['contributorLastName']}
+                indicatorErrors={['contributorLastName']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
@@ -89,12 +88,11 @@ export default class OptionalIssueInformation extends Component {
                   name="suffix"
                   value={this.props.optionalIssueInfo.suffix}
                   error={errors.contributorSuffixLimit}
-                  trackErrors={['contributorSuffixLimit']}
-                  errorUtility={this.props.errorUtility}
+                  indicatorErrors={['contributorSuffixLimit']}
                   tooltip={this.props.tooltip && tooltips.contributorSuffix}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
 
@@ -105,14 +103,14 @@ export default class OptionalIssueInformation extends Component {
                   tooltip={this.props.tooltip && tooltips.contritbutorAffiliation}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
               </div>
 
               <ErrorIndicator
                 style="shiftLeft"
-                trackErrors={['contributorSuffixLimit']}
+                indicatorErrors={['contributorSuffixLimit']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
@@ -130,7 +128,7 @@ export default class OptionalIssueInformation extends Component {
                   tooltip={this.props.tooltip && tooltips.contributorOrcid}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
 
@@ -141,7 +139,7 @@ export default class OptionalIssueInformation extends Component {
                   tooltip={this.props.tooltip && tooltips.contributerAlternativeName}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
               </div>
@@ -156,20 +154,19 @@ export default class OptionalIssueInformation extends Component {
                   options={Roles}
                   value={this.props.optionalIssueInfo.role}
                   error={errors.contributorRole}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['contributorRole']}
-                  required={hasData}
+                  errorUtility={this.props.errorUtility}
+                  indicatorErrors={['contributorRole']}
+                  required={!!hasData}
                   tooltip={this.props.tooltip && tooltips.contributorRole}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
                   onSelect={this.props.validate}
-                  errorUtility={this.props.errorUtility}
                   changeHandler={this.handler}/>
               </div>
 
               <ErrorIndicator
                 style="shiftLeft"
-                trackErrors={['contributorRole']}
+                indicatorErrors={['contributorRole']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}

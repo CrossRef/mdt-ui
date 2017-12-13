@@ -307,11 +307,11 @@ export default class AddIssueModal extends Component {
     openingSubItem: false,
     subItemIndex: "0",
 
-    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex, openSubItem) => {
+    saveRef: (activeErrors, indicatorErrors, node, subItem, subItemIndex, openSubItem) => {
       if(node){
         this.errorUtility.errorIndicators.push({
           activeErrors,
-          trackErrors,
+          indicatorErrors,
           node,
           subItem,
           subItemIndex,
@@ -338,7 +338,7 @@ export default class AddIssueModal extends Component {
 
       const {errorIndicators, activeIndicator} = this.errorUtility
       const activeIndicatorObj = errorIndicators[activeIndicator]
-      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.indicatorErrors : []
       let newErrorMessages
       const {subItem, subItemIndex} = activeIndicatorObj || {}
 

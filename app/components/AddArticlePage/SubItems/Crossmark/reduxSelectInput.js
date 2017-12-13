@@ -29,9 +29,8 @@ export default class ReduxSelectInput extends Component {
     options: is.array.isRequired,
     reduxValue: is.string,
     errors: is.object.isRequired,
-    trackErrors: is.array,
-    setErrorMessages: is.func,
-    errorUtility: is.object,
+    indicatorErrors: is.array,
+    errorUtility: is.object.isRequired,
     keyPath: is.array.isRequired,
     handler:is.func,
     tooltip: is.object,
@@ -58,8 +57,7 @@ export default class ReduxSelectInput extends Component {
         required={this.props.required}
         error={!!this.props.errors[`${this.props.keyPath[0]} ${this.props.keyPath[2]}`]}
         allErrors={this.props.errors}
-        trackErrors={this.props.trackErrors}
-        setErrorMessages={this.props.setErrorMessages}
+        indicatorErrors={this.props.indicatorErrors}
         subItemIndex={String(this.props.keyPath[1])}
         errorUtility={this.props.errorUtility}
         options={this.props.options}
