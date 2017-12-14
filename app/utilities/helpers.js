@@ -369,6 +369,7 @@ export function getTooltipPosition () {
 
 
 
+
 if(Array.prototype.equals)
   console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
 
@@ -391,3 +392,12 @@ Object.defineProperty(Array.prototype, "equals", {
   }
 });
 
+
+
+
+
+
+export function escapeString (s) {
+  let stringified = JSON.stringify(s)
+  return stringified.slice(1, stringified.length - 1) //Removes quotations that stringify adds
+}
