@@ -88,6 +88,20 @@
         }
     }
 
+    .warningModal {
+        position: relative;
+        top: 180px;
+        left: auto;
+        width: 650px;
+        right: auto;
+        bottom: 40px;
+        border: 1px solid rgb(204, 204, 204);
+        background: rgb(255, 255, 255);
+        overflow: auto;
+        outline: none;
+        padding: 20px;
+    }
+
     .tourModal {
         position: relative;
         top: 100px;
