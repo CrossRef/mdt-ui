@@ -10,7 +10,7 @@ export default class FormInput extends React.Component {
 
   static propTypes = {
     label: is.string.isRequired,
-    name: is.string.isRequired,
+    name: is.oneOfType([is.string, is.array]).isRequired,
     value: is.string.isRequired,
     placeholder: is.string,
     required: is.bool,
@@ -24,14 +24,18 @@ export default class FormInput extends React.Component {
     onBlur: is.func,
     onFocus: is.func,
     disabled: is.bool,
-    tooltip: is.oneOfType([is.string, is.bool]),
-    deferredTooltipBubbleRefresh: is.object,
+    tooltip: is.object,
+    tooltipUtility: is.object.isRequired,
     inputProps: is.object
   }
 
 
-  state = {
-    focus: false
+  generateId = () => {
+    if(Array.isArray(this.props.name)) {
+      return `${this.props.name.join('-')}`
+    }
+
+    return `${this.props.name}-${this.props.subItemIndex}`
   }
 
 
@@ -40,24 +44,17 @@ export default class FormInput extends React.Component {
       this.props.onFocus()
     }
 
-    const setErrorMessages = () => {
-      if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
-        if(this.props.subItemIndex) {
-          this.props.errorUtility.subItemIndex = this.props.subItemIndex
-        }
-        this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+    if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
+      if(this.props.subItemIndex) {
+        this.props.errorUtility.subItemIndex = this.props.subItemIndex
       }
+      this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+
+    } else if (this.props.tooltip) {
+      this.props.setErrorMessages([])
     }
 
-    this.setState({focus: true}, ()=>{
-      if(this.props.tooltip) {
-        this.props.setErrorMessages([])
-        setErrorMessages()
-        this.props.deferredTooltipBubbleRefresh.resolve(this.props.tooltip)
-      } else {
-        setErrorMessages()
-      }
-    })
+    this.props.tooltipUtility.assignFocus(this.generateId(), this.props.tooltip)
   }
 
 
@@ -65,16 +62,12 @@ export default class FormInput extends React.Component {
     if(this.props.onBlur) {
       this.props.onBlur()
     }
-
-    this.setState({focus: false}, ()=>{
-      if(this.props.tooltip) {
-        this.props.deferredTooltipBubbleRefresh.resolve()
-      }
-    })
   }
 
 
   render() {
+    const isFocus = this.props.tooltipUtility.getFocusedInput() === this.generateId()
+
     return (
       <div className='fieldinnerholder halflength'>
         <div className='labelholder'>
@@ -88,20 +81,20 @@ export default class FormInput extends React.Component {
           </div>
           <div className='field'>
 
-            {this.state.focus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+            {isFocus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
 
             <input
               className={
                 `height32 ${
                 this.props.error ? 'fieldError' : ''} ${
                 this.props.disabled ? 'disabledDoi' : ''} ${
-                this.state.focus && this.props.tooltip ? 'infoFlagBorder' : ''} ${
+                isFocus && this.props.tooltip ? 'infoFlagBorder' : ''} ${
                 this.props.disabled ? 'disabledDoi' : ''}`
               }
               type='text'
               name={this.props.name}
               onChange={this.props.changeHandler}
-              value={this.props.value || this.props.defaultValue}
+              value={this.props.value || this.props.defaultValue || ''}
               onFocus={this.onFocus}
               onBlur={this.onBlur}
               disabled={this.props.disabled}

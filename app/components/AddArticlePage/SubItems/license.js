@@ -7,6 +7,7 @@ import FormInput from '../../Common/formInput'
 import FormSelect from '../../Common/formSelect'
 import FormDate from '../../Common/formDate'
 import ErrorIndicator from '../../Common/errorIndicator'
+import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
 const AppliesTo = require('../../../utilities/lists/appliesTo.json')
 
 
@@ -92,6 +93,8 @@ export default class License extends Component {
                   trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
+                  tooltip={this.props.tooltip && tooltips.licenseDate}
+                  tooltipUtility={this.props.tooltipUtility}
                   errorUtility={this.props.errorUtility}
                   fields={{
                     year: {
@@ -110,10 +113,11 @@ export default class License extends Component {
               </div>
 
               <ErrorIndicator
-                date
+                style="dateErrorHolder"
                 trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}
                 subItem='license'
                 subItemIndex={String(this.props.index)}/>
@@ -133,6 +137,8 @@ export default class License extends Component {
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
+                  tooltip={this.props.tooltip && tooltips.licenseUrl}
+                  tooltipUtility={this.props.tooltipUtility}
                   onBlur={this.props.validate}/>
 
                 <FormSelect
@@ -142,6 +148,9 @@ export default class License extends Component {
                   options={AppliesTo}
                   changeHandler={this.handleLicense}
                   setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  tooltip={this.props.tooltip && tooltips.licenseAppliesTo}
+                  tooltipUtility={this.props.tooltipUtility}
+                  subItemIndex={String(this.props.index)}
                   onSelect={this.props.validate}/>
               </div>
 
@@ -149,6 +158,7 @@ export default class License extends Component {
                 trackErrors={['licenseUrl', 'licenseUrlInvalid']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
                 allErrors={errors}
                 subItem='license'
                 subItemIndex={String(this.props.index)}/>

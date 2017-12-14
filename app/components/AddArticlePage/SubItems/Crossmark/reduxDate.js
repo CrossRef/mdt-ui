@@ -26,15 +26,18 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class ReduxDate extends Component {
 
   static propTypes = {
+    label: is.string.isRequired,
     className: is.string,
-    options: is.array.isRequired,
     reduxValue: is.string,
+    name: is.string,
     errors: is.object.isRequired,
-    keyPath: is.array,
+    keyPath: is.array.isRequired,
     handler:is.func,
     trackErrors: is.array,
     setErrorMessages: is.func,
-    errorUtility: is.object
+    errorUtility: is.object,
+    tooltip: is.object,
+    tooltipUtility: is.object.isRequired
   }
 
   componentWillReceiveProps (nextProps) {
@@ -57,7 +60,7 @@ export default class ReduxDate extends Component {
     return(
       <FormDate
         label={this.props.label}
-        name={this.props.name || ''}
+        name={[...this.props.keyPath, 'date']}
         value={this.props.reduxValue}
         required={this.props.required}
         allErrors={this.props.errors}
@@ -65,10 +68,9 @@ export default class ReduxDate extends Component {
         setErrorMessages={this.props.setErrorMessages}
         subItemIndex={String(this.props.keyPath[1])}
         errorUtility={this.props.errorUtility}
-        options={this.props.options}
         changeHandler={this.handler}
         tooltip={this.props.tooltip}
-        deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+        tooltipUtility={this.props.tooltipUtility}
         fields={{
           year: {
             value: this.props.yearValue,

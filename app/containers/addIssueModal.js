@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { controlModal, getPublications } from '../actions/application'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
-import {DeferredTask} from '../utilities/helpers'
+import {finishUpdate, doiEntered, escapeString} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
@@ -16,7 +16,9 @@ import { XMLSerializer, DOMParser } from 'xmldom'
 
 
 
-const mapStateToProps = (state, props) => ({})
+const mapStateToProps = (state, props) => ({
+  publication: state.publications[props.pubDoi]
+})
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
@@ -28,27 +30,31 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class AddIssueModal extends Component {
 
   static propTypes = {
-    ownerPrefix: is.string.isRequired,
+    pubDoi: is.string.isRequired,
     reduxControlModal: is.func.isRequired,
-    asyncGetPublications: is.func.isRequired
+    asyncGetPublications: is.func.isRequired,
+    publication: is.object.isRequired
   }
 
   constructor (props) {
-    super(props);
+    super();
+
     this.state = {...defaultState};
-    this.state.ownerPrefix = props.ownerPrefix
+    this.state.mode = props.mode || 'add'
+    this.state.ownerPrefix = props.pubDoi.split('/')[0]
     if(props.preFilledData) {
       this.state.issue = {...this.state.issue, ...props.preFilledData}
     }
-    this.state.issue.issueDoi = props.ownerPrefix + '/'
-    this.state.issue.volumeDoi = props.ownerPrefix + '/'
+    this.state.issue.issueDoi = this.state.ownerPrefix + '/'
+    this.state.issue.volumeDoi = this.state.ownerPrefix + '/'
 
-    this.state.deferredErrorBubbleRefresh = new DeferredTask()
+    this.state.errorMessages = []
+    this.state.focusedInput = ''
   }
 
 
   async componentDidMount () {
-    if(this.props.mode === 'edit') {
+    if(this.state.mode === 'edit') {
       let id, Publication, Issue, issueDoiDisabled = false, volumeDoiDisabled = false;
 
       id = {
@@ -61,21 +67,22 @@ export default class AddIssueModal extends Component {
 
       const version = Issue['mdt-version']
 
-      const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.props.duplicate, this.props.ownerPrefix)
+      const {issue, optionalIssueInfo, showSection} = parseXMLIssue(Issue.content, this.state.ownerPrefix)
 
-      if(issue.issueDoi === '') {
-        issue.issueDoi = this.props.ownerPrefix + '/'
+      if(!doiEntered(issue.issueDoi, this.state.ownerPrefix)) {
+        issue.issueDoi = this.state.ownerPrefix + '/'
       } else {
         issueDoiDisabled = true
       }
 
-      if(issue.volumeDoi === '') {
-        issue.volumeDoi = this.props.ownerPrefix + '/'
+      if(!doiEntered(issue.volumeDoi, this.state.ownerPrefix)) {
+        issue.volumeDoi = this.state.ownerPrefix + '/'
       } else {
         volumeDoiDisabled = true
       }
 
-      const {validatedPayload} = await this.validation(issue, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled)
+      const checkDuplicateId = false
+      const {validatedPayload} = await this.validation(checkDuplicateId, issue, optionalIssueInfo, issueDoiDisabled)
 
       const setStatePayload = {
         version: version,
@@ -93,15 +100,28 @@ export default class AddIssueModal extends Component {
   }
 
 
-  async validation (issueData, optionalIssueInfo, issueDoiDisabled, volumeDoiDisabled) {
+  async validation (
+    checkDuplicateId = false,
+    issueData = this.state.issue,
+    optionalIssueInfo = this.state.optionalIssueInfo,
+    issueDoiDisabled = this.state.issueDoiDisabled
+  ) {
 
-    const { criticalErrors, warnings, contributors, enableVolumeDoi } =
-      await asyncValidateIssue(issueData, optionalIssueInfo, this.props.ownerPrefix, issueDoiDisabled, volumeDoiDisabled)
+    const { criticalErrors, warnings, contributors, enableVolumeDoi, issueDoiEntered } =
+      await asyncValidateIssue({
+        issueData,
+        optionalIssueInfo,
+        ownerPrefix: this.state.ownerPrefix,
+        publicationRecords: this.props.publication.normalizedRecords,
+        issueDoiDisabled,
+        checkDuplicateId
+      })
 
     const validatedPayload = {
       validating: true,
       error: false,
       errors: {...criticalErrors, ...warnings},
+      mode: 'edit',
       optionalIssueInfo: (contributors && contributors.length) ? contributors : optionalIssueInfo
     }
     if(enableVolumeDoi) {
@@ -111,25 +131,46 @@ export default class AddIssueModal extends Component {
 
     for(const key in warnings) {
       if (warnings[key]) {
-        validatedPayload.error = true;
+        validatedPayload.error = true
       }
     }
 
     for(const key in criticalErrors) {
       if(criticalErrors[key]) {
         validatedPayload.error = true
-        valid = false;
+        valid = false
       }
     }
 
-    return {valid, validatedPayload, criticalErrors}
+    validatedPayload.errorMessages = this.errorUtility.onValidate(validatedPayload.errors, validatedPayload.optionalIssueInfo)
+
+    return {valid, validatedPayload, criticalErrors, issueDoiEntered}
+  }
+
+
+  validate = async () => {
+    const title = this.state.issue.issueTitle, issue = this.state.issue.issue, volume = this.state.issue.volume
+    const newTitleId = JSON.stringify({issue, volume, title})
+    const oldTitleId = this.state.titleId
+    const titleIdChanged = oldTitleId !== newTitleId
+
+    if(this.state.mode === 'edit') {
+      const {validatedPayload} = await this.validation(titleIdChanged)
+      this.setState(validatedPayload)
+    }
   }
 
 
   save = async () => {
+    const title = this.state.issue.issueTitle, issue = this.state.issue.issue, volume = this.state.issue.volume
+    const newTitleId = JSON.stringify({issue, volume, title})
+    const oldTitleId = this.state.titleId
+    const titleIdChanged = oldTitleId !== newTitleId
 
     const {valid, validatedPayload, criticalErrors, issueDoiEntered} =
-      await this.validation(this.state.issue, this.state.optionalIssueInfo, this.state.issueDoiDisabled, this.state.volumeDoiDisabled)
+      await this.validation(titleIdChanged)
+
+    validatedPayload.focusedInput = ''
 
     if (valid) {
       const issueDoi = issueDoiEntered ? this.state.issue.issueDoi : ''
@@ -143,19 +184,17 @@ export default class AddIssueModal extends Component {
         version = String(Number(this.state.version) + 1)
       }
 
-      const title = this.state.issue.issueTitle
-      const issue = this.state.issue.issue
-      const volume =this.state.issue.volume
       const newRecord = {
-        'title': JSON.parse(JSON.stringify({issue, volume, title})),
+        'title': {issue: escapeString(issue), volume: escapeString(volume), title: escapeString(title)},
         'date': new Date(),
         'doi': issueDoi,
-        'owner-prefix': this.props.ownerPrefix,
+        'owner-prefix': this.state.ownerPrefix,
         'type': 'issue',
         'mdt-version': version,
         'status': 'draft',
         'content': new XMLSerializer().serializeToString(issueXML)
       }
+
       const submissionPayload = {
         ...publication,
         message: {
@@ -164,17 +203,15 @@ export default class AddIssueModal extends Component {
         }
       }
 
-      const newTitleId = JSON.stringify(newRecord.title)
-      const oldTitleId = this.state.titleId
       validatedPayload.titleId = newTitleId
 
       //check if new titleId, if so, do rename
-      if(!issueDoiEntered && oldTitleId && oldTitleId !== newTitleId) {
+      if(!issueDoiEntered && oldTitleId && titleIdChanged) {
         const issueInfo = mode === 'edit' ?
           publication.normalizedRecords.find( record =>
             JSON.stringify(record.title) === oldTitleId
           )
-        : undefined
+          : undefined
 
         //get article content
         let articles = []
@@ -213,17 +250,13 @@ export default class AddIssueModal extends Component {
       validatedPayload.confirmationPayload = confirmationPayload
       validatedPayload.timeOut = timeOut
 
-      this.setState(validatedPayload, () => {
-        this.state.validating = false
-      })
+      this.setState(validatedPayload)
 
     } else /*if not valid*/ {
       const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
       validatedPayload.confirmationPayload = confirmationPayload
       validatedPayload.timeOut = timeOut
-      this.setState(validatedPayload, () => {
-        this.state.validating = false
-      })
+      this.setState(validatedPayload)
     }
   }
 
@@ -239,6 +272,7 @@ export default class AddIssueModal extends Component {
 
     const criticalErrorMsg = {
       issueVolume: 'Issue or Volume Number.',
+      dupTitleIdIssue: 'Issue/Volume already exists.',
       invalidissuedoi: 'DOI must be valid.',
       invalidIssueDoiPrefix: 'DOI must be valid.',
       dupeissuedoi: 'DOI must be valid.',
@@ -261,6 +295,123 @@ export default class AddIssueModal extends Component {
     }, 7000)
 
     return {confirmationPayload, timeOut}
+  }
+
+
+  errorUtility = {
+
+    errorIndicators: [],
+
+    activeIndicator: -1,
+
+    openingSubItem: false,
+    subItemIndex: "0",
+
+    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex, openSubItem) => {
+      if(node){
+        this.errorUtility.errorIndicators.push({
+          activeErrors,
+          trackErrors,
+          node,
+          subItem,
+          subItemIndex,
+          openSubItem
+        })
+
+        if(node.id === 'errorBubble') {
+          this.errorUtility.activeIndicator = this.errorUtility.errorIndicators.length - 1
+        }
+      }
+    },
+
+    setErrorMessages: (setErrors, allErrors = this.state.errors) => {
+      const filteredErrorMessage = setErrors.filter((error)=>{
+        return allErrors[error]
+      })
+      this.setState({errorMessages: filteredErrorMessage})
+    },
+
+    onValidate: (newValidationErrors, optionalIssueInfo) => {
+      if(!this.state.errorMessages.length) {
+        return []
+      }
+
+      const {errorIndicators, activeIndicator} = this.errorUtility
+      const activeIndicatorObj = errorIndicators[activeIndicator]
+      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+      let newErrorMessages
+      const {subItem, subItemIndex} = activeIndicatorObj || {}
+
+      if(subItem) {
+
+        let allErrors = optionalIssueInfo[subItemIndex].errors
+
+        newErrorMessages = this.state.errorMessages.filter((error) => {
+          return allErrors[error]
+        })
+
+        if(!newErrorMessages.length) {
+          newErrorMessages = trackedIndicatorErrors.filter((error) => {
+            return allErrors[error]
+          })
+        }
+
+      } else {
+        newErrorMessages = this.state.errorMessages.filter((error) => {
+          return newValidationErrors[error]
+        })
+
+        if(!newErrorMessages.length) {
+          newErrorMessages = trackedIndicatorErrors.filter((error)=>{
+            return newValidationErrors[error]
+          })
+        }
+
+        this.errorUtility.subItemIndex = "0"
+      }
+
+      if(!newErrorMessages.length) {
+        const indicatorBelow = errorIndicators[activeIndicator + 1]
+        const indicatorAbove = errorIndicators[activeIndicator - 1]
+
+        if(indicatorBelow) {
+          newErrorMessages = indicatorBelow.activeErrors
+          this.errorUtility.subItemIndex = indicatorBelow.subItemIndex || "0"
+        } else if(indicatorAbove) {
+          newErrorMessages = indicatorAbove.activeErrors
+          this.errorUtility.subItemIndex = indicatorAbove.subItemIndex || "0"
+        }
+      }
+
+      return newErrorMessages
+    }
+  }
+
+
+  tooltipUtility = {
+
+    getFocusedInput: () => this.state.focusedInput,
+
+    tooltipMounted: false,
+
+    assignRefreshTask: (func) => {
+      this.tooltipUtility.tooltipMounted = true
+      this.tooltipUtility.refreshTask = func
+    },
+
+    refresh: (param) => {
+      if(
+        this.tooltipUtility.tooltipMounted &&
+        typeof this.tooltipUtility.refreshTask === 'function'
+      ) {
+        return finishUpdate().then(()=>this.tooltipUtility.refreshTask(param))
+      }
+    },
+
+    assignFocus: (inputId, tooltip) => {
+      this.setState({focusedInput: inputId})
+      return this.tooltipUtility.refresh(tooltip)
+    }
   }
 
 
@@ -287,49 +438,37 @@ export default class AddIssueModal extends Component {
   }
 
 
-  optionalIssueInfoHandlers = () => {
-    return {
-      handler: (index, OptIssueInfo) => {
-        var optIssueInfo = {}
-        for(var i in OptIssueInfo.refs){
-          if(OptIssueInfo.refs[i]){
-            optIssueInfo[i] = OptIssueInfo.refs[i].value
-          }
-        }
+  boundSetState = (...args) => { this.setState(...args) }
 
-        this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
-          optionalIssueInfo: update(this.state.optionalIssueInfo, {[index]: {$set: optIssueInfo }})
-        })
-      },
 
-      addOptionalIssueInfo: () => {
-        this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
-          optionalIssueInfo: update(this.state.optionalIssueInfo, {$push:
-            [{
-              firstName: '',
-              lastName: '',
-              suffix: '',
-              affiliation: '',
-              orcid: '',
-              alternativeName: '',
-              role: '',
-              errors: {}
-            }]
-          })
-        })
-      },
-
-      remove: (index) => {
-        this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
-          optionalIssueInfo: update(this.state.optionalIssueInfo, {$splice: [[index, 1]] })
-        })
-      }
-    }
+  addSubItem = () => {
+    this.setState({
+      optionalIssueInfo: update(this.state.optionalIssueInfo, {$push: defaultState.optionalIssueInfo})
+    })
   }
 
 
-  componentDidUpdate () {
-    this.state.deferredErrorBubbleRefresh.resolve()
+  removeSubItem = (index) => {
+    this.setState({ // this situation, state did NOT update immediately to see change, must pass in a call back
+      optionalIssueInfo: update(this.state.optionalIssueInfo, {$splice: [[index, 1]] })
+    })
+  }
+
+
+  componentDidUpdate (prevProps, prevState) {
+    //Select first error if first validation
+    if(
+      this.state.validating &&
+      this.state.error && !prevState.error
+    ) {
+      try {
+        this.errorUtility.setErrorMessages(this.errorUtility.errorIndicators[0].activeErrors)
+      } catch (e) {}
+    }
+
+    this.tooltipUtility.refresh()
+
+    this.state.validating = false
   }
 
 
@@ -339,15 +478,20 @@ export default class AddIssueModal extends Component {
 
 
   render () {
+    this.errorUtility.errorIndicators = []  //Saving refs of any errorIndicators rendered so need to clear it before each render
+    this.errorUtility.openingSubItem = false
     return (
       <AddIssueCard
         save={this.save}
-        duplicate={this.props.duplicate}
         handler={this.handler}
-        optionalIssueInfoHandlers={this.optionalIssueInfoHandlers}
+        addSubItem={this.addSubItem}
+        removeSubItem={this.removeSubItem}
         closeModal={this.closeModal}
         helperSwitch={this.helperSwitch}
-
+        errorUtility={this.errorUtility}
+        validate={this.validate}
+        boundSetState={this.boundSetState}
+        tooltipUtility={this.tooltipUtility}
         {...this.state}
       />
     )

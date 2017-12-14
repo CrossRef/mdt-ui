@@ -13,11 +13,9 @@ export default class ActionBar extends Component {
   static propTypes ={
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-    doi: is.string.isRequired,
-    publication: is.object.isRequired,
+    pubDoi: is.string.isRequired,
     handleAddCart: is.func.isRequired,
     deleteSelections: is.func.isRequired,
-    ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired
   }
 
@@ -59,8 +57,7 @@ export default class ActionBar extends Component {
       style: 'addIssueModal',
       Component: AddIssueModal,
       props: {
-        publication: this.props.publication,
-        ownerPrefix: this.props.ownerPrefix
+        pubDoi: this.props.pubDoi
       }
     })
   }
@@ -71,7 +68,7 @@ export default class ActionBar extends Component {
       return false
     }
     const types = selections.map((selection) => {
-      return selection.article.type
+      return selection.type
     })
     return !(types.indexOf('article') !== -1)
   }
@@ -79,12 +76,12 @@ export default class ActionBar extends Component {
 
   render () {
     const onlyIssue = this.onlyIssueSelected()
-    const { doi, publication, handleAddCart, deleteSelections, duplicateSelection } = this.props
+    const { pubDoi, handleAddCart, deleteSelections, duplicateSelection, moveSelection } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add Record
         {this.state.addRecordMenuOpen && <div className='actionBarDropDown'>
-          <p onClick={()=>browserHistory.push(`${routes.publications}/${encodeURIComponent(doi)}/addarticle`)}>New Article</p>
+          <p onClick={()=>browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/addarticle`)}>New Article</p>
           <p onClick={this.openAddIssueModal}>New Volume/Issue</p>
         </div>}
       </div>
@@ -95,6 +92,7 @@ export default class ActionBar extends Component {
           Action
           {this.state.actionMenuOpen && <div className='actionBarDropDown'>
             {!onlyIssue ? <p onClick={handleAddCart}>Add to Cart</p> : <p className="grayedOut">Add to Cart</p>}
+            {!onlyIssue ? <p onClick={moveSelection}>Move to</p> : <p className="grayedOut">Move to</p>}
             {this.props.selections.length === 1 && !onlyIssue ? <p onClick={duplicateSelection}>Duplicate</p> : <p className="grayedOut">Duplicate</p>}
             <p onClick={deleteSelections}>Remove</p>
           </div>}

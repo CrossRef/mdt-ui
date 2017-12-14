@@ -47,10 +47,10 @@ export default class Search extends Component {
 
   onSelect = async (value, item) => {
     this.setState({ searchingFor: '', forceClose:true });
-    if(item.doi) {
+    if(item.doi.length===1) {
       let savedPublication
       try {
-        savedPublication = await api.getItem(item.doi)
+        savedPublication = await api.getItem(item.doi[0])
         savedPublication = savedPublication.message
       } catch (e) {
         console.error('Unable to retrieve saved data of publication found in Search', e)
@@ -58,9 +58,9 @@ export default class Search extends Component {
 
       const newPublication = {
         'title': savedPublication.title || typeof item.title === 'string' ? {title: item.title} : item.title,
-        'doi': item.doi,
+        'doi': item.doi[0],
         'date': new Date(),
-        'owner-prefix': savedPublication['owner-prefix'] || item.doi.split('/')[0],
+        'owner-prefix': savedPublication['owner-prefix'] || item.doi[0].split('/')[0],
         'type': 'Publication',
         'mdt-version': '1',
         'status': 'draft',
@@ -87,6 +87,20 @@ export default class Search extends Component {
   }
 
 
+  RenderItem = class extends Component {
+    render () {
+      const {item, ...props} = this.props
+
+      return (
+        <div className='search-result-holder' {...props}>
+          <div className='search-result'>{item.title}</div>
+          <div className="add">Add</div>
+        </div>
+      )
+    }
+  }
+
+
   render () {
     const { results } = this.props
     const { searchingFor, forceClose } = this.state
@@ -101,14 +115,8 @@ export default class Search extends Component {
           getItemValue={(item) => item.title}
           onSelect={this.onSelect}
           onChange={this.onChange}
-          renderItem={(item, isHighlighted) => (
-            <div key={item.title + '-' + item.doi} className='search-result-holder'>
-              <div className='search-result'>{item.title}</div>
-              <div className="add">Add</div>
-            </div>
-
-          )}
-          renderMenu={(items, value, style) => (
+          renderItem={ item => <this.RenderItem key={`${item.title}-${item.doi}`} item={item}/>}
+          renderMenu={(items, value, style) =>
             <div className='publication-search-results'>
               {this.props.loading ? (
                 <div>Loading...</div>
@@ -118,7 +126,7 @@ export default class Search extends Component {
                 <div>No matches for {value}</div>
               ) : items}
             </div>
-          )}
+          }
           className='publication-search'
           />
       </div>

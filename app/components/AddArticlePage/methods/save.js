@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {browserHistory} from 'react-router'
 import { XMLSerializer, DOMParser } from 'xmldom'
 
-import {compareDois} from '../../../utilities/helpers'
+import {compareDois, escapeString} from '../../../utilities/helpers'
 import {routes} from '../../../routing'
 import * as api from '../../../actions/api'
 import journalArticleXml from '../../AddArticlePage/articleXmlGenerator'
@@ -17,6 +17,7 @@ export default async function (addToCart) {
 
   validatedPayload.openSubItems = true
   validatedPayload.saving = true
+  validatedPayload.focusedInput = ''
 
   if (valid) {
     const publication = this.state.publication
@@ -28,7 +29,7 @@ export default async function (addToCart) {
     const title = this.state.article.title
 
     const newRecord = {
-      'title':JSON.parse(JSON.stringify({'title': title})),
+      'title': {title: escapeString(title)},
       'date': new Date(),
       'doi': this.state.article.doi,
       'owner-prefix': this.state.ownerPrefix,
@@ -38,21 +39,18 @@ export default async function (addToCart) {
       'content': new XMLSerializer().serializeToString(journalDoc)
     }
 
-    // check if its part of a issue, the issue props will tell us
-    let savePub
+    let savePub = publication
 
     if (this.state.issueDoi || this.state.issueTitle) {
-      const issuePublication = this.state.issuePublication
-      const theIssue = issuePublication.message.contains[0]
+      const issue = this.state.issue
+      issue.contains = [newRecord]
+      savePub.message.contains = [issue]
 
-      theIssue.contains = [newRecord]
-      issuePublication.message.contains = [theIssue]
-
-      savePub = issuePublication
     } else { // not issue, so just put directly under the publication
-      publication.message.contains = [newRecord]
-      savePub = publication
+      savePub.message.contains = [newRecord]
     }
+
+    delete savePub.message.content
 
     try {
       await api.submitItem(savePub)

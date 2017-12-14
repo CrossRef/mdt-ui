@@ -21,8 +21,6 @@ export default class Funding extends Component {
       funder_identifier: funding.funder_identifier.trim().length ? funding.funder_identifier : '',
       isLoading: false,
       grantNumbers: funding.grantNumbers.length > 0 ? funding.grantNumbers : [''],
-      focusFunder: false,
-      focusGrant: false
     }
   }
 
@@ -155,10 +153,11 @@ export default class Funding extends Component {
             grantInputNodes={this.grantInputNodes}
             handleFunding={this.handleFunding}
             index={i}
+            subItemIndex={this.props.index}
             value={grantNumber}
             removeGrant={this.removeGrant}
             tooltip={this.props.tooltip}
-            deferredTooltipBubbleRefresh={this.props.deferredTooltipBubbleRefresh}
+            tooltipUtility={this.props.tooltipUtility}
           />
         )
       })
@@ -168,6 +167,9 @@ export default class Funding extends Component {
 
 
   render () {
+    const focusFunderId = `funderId-${this.props.index}`
+    const funderIdFocused = this.props.tooltipUtility.getFocusedInput() === focusFunderId
+
     return (
         <div>
             <div className='row subItemRow' onClick={this.toggle}>
@@ -209,25 +211,17 @@ export default class Funding extends Component {
                                       getSuggestionValue={this.getSuggestionValue}
                                       renderInputComponent={(inputProps) =>
                                         <div>
-                                          {this.props.tooltip && this.state.focusFunder && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+                                          {this.props.tooltip && funderIdFocused && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
                                           <input
                                             {...inputProps}
-                                            className={`${this.props.tooltip && this.state.focusFunder ? 'infoFlagBorder' : ''}`}
+                                            className={`${this.props.tooltip && funderIdFocused ? 'infoFlagBorder' : ''}`}
                                             onFocus={()=>{
-                                              this.setState({focusFunder:true}, ()=>{
-                                                if(this.props.tooltip) {
-                                                  this.props.deferredTooltipBubbleRefresh.resolve(tooltips.funderId)
-                                                }
-                                                inputProps.onFocus()
-                                              })
+                                              this.props.tooltipUtility.assignFocus(focusFunderId, tooltips.funderId)
+                                              //this.props.tooltipUtility.refresh(tooltips.funderId)
+                                              inputProps.onFocus()
                                             }}
                                             onBlur={()=>{
-                                              this.setState({focusFunder:false}, ()=>{
-                                                if(this.props.tooltip) {
-                                                  this.props.deferredTooltipBubbleRefresh.resolve()
-                                                }
-                                                inputProps.onBlur()
-                                              })
+                                              inputProps.onBlur()
                                             }}
                                           />
                                         </div>
@@ -294,24 +288,26 @@ class GrantField extends React.Component {
   static propTypes = {
     handleFunding: is.func.isRequired,
     index: is.number.isRequired,
+    subItemIndex: is.number.isRequired,
     value: is.string.isRequired,
     removeGrant: is.func.isRequired,
     tooltip:is.oneOfType([is.string, is.bool]).isRequired,
-    deferredTooltipBubbleRefresh: is.object.isRequired,
+    tooltipUtility: is.object.isRequired,
     grantInputNodes: is.object.isRequired
   }
 
-  state = {focus: false}
-
 
   render() {
+    const focusGrantId = `funderGrantNumber-${this.props.subItemIndex}-${this.props.index}`
+    const grantIsFocused = this.props.tooltipUtility.getFocusedInput() === focusGrantId
+
     return (
       <div className='grantSection' key={this.props.index} >
         <div className='grantTitle'>Grant Number {this.props.index + 1}</div>
         <div className="grantRow">
-          {this.props.tooltip && this.state.focus && <img className='infoFlag infoFlagGrant' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+          {this.props.tooltip && grantIsFocused && <img className='infoFlag infoFlagGrant' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
           <input
-            className={`height32 grantInput ${this.props.tooltip && this.state.focus ? 'infoFlagBorder' : ''}`}
+            className={`height32 grantInput ${this.props.tooltip && grantIsFocused ? 'infoFlagBorder' : ''}`}
             type='text'
             ref={(node)=>{
               this.props.grantInputNodes[`grantNumber_${this.props.index}`] = node
@@ -320,18 +316,7 @@ class GrantField extends React.Component {
             onChange={this.props.handleFunding}
             value={this.props.value}
             onFocus={()=>{
-              this.setState({focus:true}, ()=>{
-                if(this.props.tooltip) {
-                  this.props.deferredTooltipBubbleRefresh.resolve(tooltips.grantNumber)
-                }
-              })
-            }}
-            onBlur={()=>{
-              this.setState({focus:false}, ()=>{
-                if(this.props.tooltip) {
-                  this.props.deferredTooltipBubbleRefresh.resolve()
-                }
-              })
+              this.props.tooltipUtility.assignFocus(focusGrantId, tooltips.grantNumber)
             }}
           />
           {this.props.index > 0 &&

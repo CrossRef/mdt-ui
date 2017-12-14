@@ -2,15 +2,15 @@ import React from 'react'
 import _ from 'lodash'
 
 import { parseCrossmark } from './crossmarkHelpers'
-import {objectSearch, objectDelete, xmldoc} from './helpers'
+import {objectSearch, xmldoc} from './helpers'
 
 
 
 const parseXMLArticle = function (articleXML) {
     var retObj = {}
-    const parsedArticle = xmldoc(articleXML)
+    const parsedXml = xmldoc(articleXML)
 
-    objectDelete(parsedArticle, 'journal_metadata')
+    const parsedArticle = objectSearch(parsedXml, 'journal_article')
 
     // article loading
     let publication_date = objectSearch(parsedArticle, 'publication_date');

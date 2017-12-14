@@ -11,10 +11,9 @@ import ArticlesContainer from './articlesContainer'
 export default class Listing extends Component {
   static propTypes = {
     filterBy: is.string.isRequired,
-    ownerPrefix: is.string.isRequired,
     selections: is.array.isRequired,
-    publication: is.object,
     cart: is.array.isRequired,
+    publication: is.object.isRequired,
 
     handleRemoveFromList: is.func.isRequired,
     handleAddToList: is.func.isRequired,
@@ -64,7 +63,7 @@ export default class Listing extends Component {
   }
 
   render () {
-    const publication = this.props.publication
+    const pubDoi = this.props.publication.message.doi
     let contains = this.props.publication.message.contains || []
     contains = this.sortRecords(contains);
 
@@ -74,12 +73,11 @@ export default class Listing extends Component {
           case 'issue':
             return [
               <Issue key={JSON.stringify(child.title)}
-                ownerPrefix={this.props.ownerPrefix}
                 triggerModal={this.props.triggerModal}
 
                 record={child}
                 selections={this.props.selections}
-                publication={publication}
+                pubDoi={pubDoi}
                 cart={this.props.cart}
 
                 handleRemoveFromList={this.props.handleRemoveFromList}
@@ -91,9 +89,9 @@ export default class Listing extends Component {
 
               <ArticlesContainer key={`${JSON.stringify(child.title)}-articles`}
                 filterBy={this.props.filterBy}
+                pubDoi={pubDoi}
 
                 record={child}
-                publication={publication}
                 selections={this.props.selections}
 
                 handleRemoveFromList={this.props.handleRemoveFromList}
@@ -106,7 +104,7 @@ export default class Listing extends Component {
             return <Article key={child.doi}
               record={child}
               selections={this.props.selections}
-              publication={publication}
+              pubDoi={pubDoi}
 
               handleRemoveFromList={this.props.handleRemoveFromList}
               handleAddToList={this.props.handleAddToList}
@@ -166,9 +164,9 @@ export default class Listing extends Component {
           </tr>
         </thead>
         <tbody>
-          {
-              itemlist
-          }
+
+          {itemlist}
+
         </tbody>
       </table>
     )

@@ -136,6 +136,12 @@ export function xmldoc (content) {
 
 
 
+//This helper returns a thenable object that will run its then callback at the end of the current event loop.
+//This guarantees that the callback will come after any UI updates that have already been scheduled by React
+export function finishUpdate () {
+  return Promise.resolve()
+}
+
 
 
 
@@ -217,30 +223,43 @@ export function objectSearch (object, search, returnVal) {
 }
 
 
-export function objectDelete (object, search) {
-  return Object.keys(object).some(function (k) {
-    if (object[k]) {
-      if (k === search) {
-        delete object[k]
-        return true
-      } else if (typeof object[k] === 'object') {
-        return objectDelete(object[k], search)
-      } else return false
-    }
-  });
-}
-
 
 
 export function objectFind (object, finder) {
   let result = undefined
   for (let key in object) {
-    if(finder(object[key])) {
-      return object[key]
+    try {
+      if(finder(object[key])) {
+        return object[key]
+      }
+      if(typeof object[key] === 'object') {
+        result = objectFind(object[key], finder)
+        if(result !== undefined) return result
+      }
+    } catch (e) {
+      console.error('Error in objectFind', e)
     }
-    if(typeof object[key] === 'object') {
-      result = objectFind(object[key], finder)
-      if(result !== undefined) return result
+  }
+
+  return result
+}
+
+
+
+export function objectFindAll (object, finder) {
+  let result = []
+  for (let key in object) {
+    try {
+
+      if(finder(object[key])) {
+        result.push(object[key])
+      }
+      if(typeof object[key] === 'object') {
+        result = [...result, ...objectFindAll(object[key], finder)]
+      }
+
+    } catch(e) {
+      console.error('Error in objectFindAll', e)
     }
   }
 
@@ -256,13 +275,28 @@ export class SearchableRecords {
   constructor (records) {
     Object.assign(this, records)
 
-    this.find = (finder) => {
-      return objectFind(this, finder)
-    }
+    Object.defineProperties(this, {
+      'find': {
+        enumberable: false,
+        value: (finder) => {
+          return objectFind(this, finder)
+        }
+      },
 
-    this.searchKey = (key) => {
-      return objectSearch(this, key)
-    }
+      'findAll': {
+        enumberable: false,
+        value: (finder) => {
+          return objectFindAll(this, finder)
+        }
+      },
+
+      'searchByKey': {
+        enumberable: false,
+        value: (key) => {
+          return objectSearch(this, key)
+        }
+      }
+    })
   }
 }
 
@@ -311,21 +345,6 @@ export const errorHandler = (error, action = ()=>{}) => {
 
 
 
-export function getErrorPosition () {
-  const firstError = $('.errorIndicator').first()
-  const switchLicense = $('.switchLicense').first()
-  let errorBubblePosition
-  try {
-    errorBubblePosition =
-      ((firstError.offset().top + (firstError.position().top - (firstError.position().top * .9))
-      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15))) + 25
-
-  } catch (e) {
-    errorBubblePosition = false
-  }
-  return errorBubblePosition
-}
-
 
 export function getTooltipPosition () {
   const infoFlag = $('.infoFlag')
@@ -350,22 +369,35 @@ export function getTooltipPosition () {
 
 
 
+
 if(Array.prototype.equals)
   console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
-Array.prototype.equals = function (array) {
-  if (!array)
-    return false;
 
-  // compare lengths - can save a lot of time
-  if (this.length !== array.length)
-    return false;
-
-  for (let i in this) {
-    if (this[i] !== array[i]) {
+Object.defineProperty(Array.prototype, "equals", {
+  enumerable: false,
+  value: function (array) {
+    if (!array)
       return false;
-    }
-  }
-  return true;
-}
-Object.defineProperty(Array.prototype, "equals", {enumerable: false});
 
+    // compare lengths - can save a lot of time
+    if (this.length !== array.length)
+      return false;
+
+    for (let i in this) {
+      if (this[i] !== array[i]) {
+        return false;
+      }
+    }
+    return true;
+  }
+});
+
+
+
+
+
+
+export function escapeString (s) {
+  let stringified = JSON.stringify(s)
+  return stringified.slice(1, stringified.length - 1) //Removes quotations that stringify adds
+}

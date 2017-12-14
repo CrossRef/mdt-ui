@@ -183,3 +183,52 @@
       border-left: 8px solid transparent;
     }
 }
+
+
+.issuedatepickerholder {
+
+    .dateselectholder {
+        margin: 0 5px 0 0;
+        width: 79px !important;
+        float: left;
+
+        .datepickselects {
+            width: 79px !important;
+            float: left;
+            padding: 0 10px;
+        }
+    }
+
+    .dateicon {
+        width: 30px !important;
+        display: inline-block;
+        margin: 0 0 0 -5.5px;
+
+        .iconHolder {
+            background: #FFF;
+            display: inline-block;
+            margin: 0;
+            width: 36px;
+            border-top: 1px solid black;
+            border-right: 1px solid black;
+            border-bottom: 1px solid black;
+
+            .calendarButton {
+                display: inline-block;
+                height:auto;
+                padding: 2px 0 0 4.5px;
+
+                .calendarIcon {
+                    display: inline-block;
+                    width: 27px;
+                }
+            }
+        }
+    }
+
+}
+
+
+.shiftLeft {
+  left: -10px
+}

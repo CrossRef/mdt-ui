@@ -10,11 +10,10 @@ import {recordTitle} from '../../utilities/helpers'
 
 export default class Issue extends Component {
   static propTypes = {
-    ownerPrefix: is.string.isRequired,
     triggerModal: is.string,
     cart: is.array,
 
-    publication: is.object.isRequired,
+    pubDoi: is.string.isRequired,
     record: is.object.isRequired,
     selections: is.array.isRequired,
 
@@ -25,20 +24,23 @@ export default class Issue extends Component {
     reduxCartUpdate: is.func.isRequired,
   }
 
+
   toggleCheckBox = (e) => {
     const { record } = this.props
     if(e.currentTarget.checked) {
-      this.props.handleAddToList({ article: record })
+      this.props.handleAddToList(record)
     } else {
-      this.props.handleRemoveFromList({ article: record })
+      this.props.handleRemoveFromList(record)
     }
   }
+
 
   componentDidMount() {
     if (this.props.triggerModal === this.props.record.doi || this.props.triggerModal === JSON.stringify(this.props.record.title)) {
       this.modalOpen();
     }
   }
+
 
   modalOpen = (e) => {
     if(e && e.preventDefault) e.preventDefault();
@@ -49,10 +51,9 @@ export default class Issue extends Component {
       Component: AddIssueModal,
       props: {
         mode: 'edit',
+        pubDoi: this.props.pubDoi,
         issue: this.props.record,
         triggerModal: this.props.triggerModal,
-        ownerPrefix: this.props.ownerPrefix,
-        publication: this.props.publication,
         cart: this.props.cart,
 
         handleAddCart: this.props.handleAddCart,
@@ -61,8 +62,8 @@ export default class Issue extends Component {
     })
   }
 
+
   render () {
-    const publicationDoi = this.props.publication.message.doi;
     let { status, type, date, doi, title } = this.props.record;
     date = moment(date || undefined).format('MMM Do YYYY')
     const displayTitle = recordTitle(type, title)
@@ -89,7 +90,7 @@ export default class Issue extends Component {
         &nbsp;
         <Link
           className='issueDoiAddNew'
-          to={`${routes.publications}/${encodeURIComponent(publicationDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`}>
+          to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`}>
           <span>Add Article</span>
         </Link>
       </td>

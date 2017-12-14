@@ -1,4 +1,3 @@
-import {removeDuplicates} from '../utilities/helpers'
 import {routes} from '../routing'
 import * as api from '../actions/api'
 
