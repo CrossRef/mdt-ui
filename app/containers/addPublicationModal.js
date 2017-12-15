@@ -329,7 +329,7 @@ export default class AddPublicationModal extends Component {
     const doiList = this.props.searchResult.doi.map( doi =>
       <div key={doi} className="doiOptionContainer" onMouseDown={()=>this.setState({DOI: doi})}>
         {this.state.DOI === doi &&
-          <img className='checkmark' src={`${routes.images}/Publications/White_Tick.png`}/>}
+          <img className='checkmark' src={`${routes.images}/Publications/Asset_Icons_White_Check 2.svg`}/>}
         <p className='doiOption'>{doi}</p>
       </div>
     )
