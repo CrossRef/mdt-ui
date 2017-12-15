@@ -12,7 +12,7 @@ import AddPublicationModal from './addPublicationModal'
 
 const mapStateToProps = state => ({
   DOIs: state.dois,
-  searchResults: state.search.result,
+  searchResults: state.search.result.filter( item => item.doi.every( doi => !state.publications[doi])),
   loading: state.search.loading,
   crossmarkPrefixes: state.login['crossmark-prefixes'],
   prefixes: state.login.prefixes
