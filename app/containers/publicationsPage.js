@@ -12,10 +12,11 @@ import AddPublicationModal from './addPublicationModal'
 
 const mapStateToProps = state => ({
   DOIs: state.dois,
-  searchResults: state.search.result.filter( item => item.doi.every( doi => !state.publications[doi])),
+  searchResults: state.search.result,
   loading: state.search.loading,
   crossmarkPrefixes: state.login['crossmark-prefixes'],
-  prefixes: state.login.prefixes
+  prefixes: state.login.prefixes,
+  publications: state.publications
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -33,6 +34,7 @@ export default class PublicationsPage extends Component {
   static propTypes = {
     DOIs: is.array.isRequired,
     searchResults: is.array,
+    publications: is.object.isRequired,
     reduxControlModal: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
@@ -56,13 +58,14 @@ export default class PublicationsPage extends Component {
   })
 
   render () {
-    const { searchResults, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication, reduxCartUpdate} = this.props;
+    const { searchResults, publications, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication, reduxCartUpdate} = this.props;
     return (
       <div className='publications'>
         <div className='management-bar'>
           <Search
             asyncSearch={asyncSearch}
             results={searchResults}
+            publications={publications}
             loading={loading}
             reduxControlModal={reduxControlModal}
             reduxCartUpdate={reduxCartUpdate}
