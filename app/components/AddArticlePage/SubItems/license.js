@@ -93,9 +93,12 @@ export default class License extends Component {
                   trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
+                  subItem="license"
                   tooltip={this.props.tooltip && tooltips.licenseDate}
                   tooltipUtility={this.props.tooltipUtility}
                   errorUtility={this.props.errorUtility}
+                  activeCalendar={this.props.activeCalendar}
+                  calendarHandler={this.props.calendarHandler}
                   fields={{
                     year: {
                       value: acceptedDateYear,

@@ -29,7 +29,7 @@ export default class FormTextArea extends React.Component {
 
   generateId = () => {
     if(Array.isArray(this.props.name)) {
-      return `${this.props.name.join('-')}`
+      return `${this.props.name.join('-')}`.replace(/\s+/g, '')
     }
 
     return `${this.props.name}-${this.props.subItemIndex}`

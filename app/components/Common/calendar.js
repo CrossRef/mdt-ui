@@ -10,9 +10,11 @@ export default class Calendar extends Component {
 
   static propTypes = {
     name: is.string.isRequired,
-    date: is.object.isRequired,
+    date: is.object,
     calendarHandler: is.func.isRequired,
-    activeCalendar: is.string.isRequired
+    activeCalendar: is.string.isRequired,
+    subItem: is.string,
+    subItemIndex: is.string
   }
 
 
@@ -39,7 +41,7 @@ export default class Calendar extends Component {
 
   render() {
     return (
-      <div className={`${this.props.name}Calendar`}>
+      <div className={`${this.props.name}Calendar calendarContainer`}>
         <DatePicker
           selected={this.props.date}
           onChange={(date)=>{
@@ -50,7 +52,7 @@ export default class Calendar extends Component {
               month: m,
               year: y,
             }
-            this.props.calendarHandler('', dateObj)
+            this.props.calendarHandler('', dateObj, this.props.subItem, this.props.subItemIndex)
           }}
         />
       </div>

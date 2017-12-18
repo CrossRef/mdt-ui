@@ -26,7 +26,9 @@ function generateCard (name, WrappedComponent) {
       tooltip: is.oneOfType([is.string, is.bool]),
       tooltipUtility: is.object.isRequired,
       errorMessages: is.array.isRequired,
-      errorUtility: is.object.isRequired
+      errorUtility: is.object.isRequired,
+      activeCalendar: is.string.isRequired,
+      calendarHandler: is.func.isRequired
     }
 
 
@@ -104,6 +106,8 @@ function PublicationHistoryCard (props) {
           label="Date"
           onSelect={props.validate}
           tooltipUtility={props.tooltipUtility}
+          activeCalendar={props.activeCalendar}
+          calendarHandler={props.calendarHandler}
           keyPath={[pubHist, props.i]}/>
       </div>
 
@@ -353,6 +357,8 @@ function StatusUpdateCard (props) {
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.updateDate}
             tooltipUtility={props.tooltipUtility}
+            activeCalendar={props.activeCalendar}
+            calendarHandler={props.calendarHandler}
             required={true} />
         </div>
 

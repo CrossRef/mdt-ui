@@ -44,8 +44,6 @@ AddArticleView.propTypes = {
 
 export default function AddArticleView (props) {
 
-  const errors = props.errors
-
   return (
     <div>
 
@@ -209,6 +207,8 @@ export default function AddArticleView (props) {
                 tooltip={props.showHelper}
                 errorUtility={props.errorUtility}
                 errorMessages={props.errorMessages}
+                activeCalendar={props.activeCalendar}
+                calendarHandler={props.calendarHandler}
               />
 
               <div className='row'>
@@ -375,6 +375,8 @@ export default function AddArticleView (props) {
                     allErrors={props.errors}
                     tooltip={props.showHelper}
                     tooltipUtility={props.tooltipUtility}
+                    activeCalendar={props.activeCalendar}
+                    calendarHandler={props.calendarHandler}
                     freetolicense={i===0 ? props.article.freetolicense : ''}/>
                 )}
             </SubItem>
@@ -458,6 +460,8 @@ export default function AddArticleView (props) {
                     tooltipUtility={props.tooltipUtility}
                     errorMessages={props.errorMessages}
                     errorUtility={props.errorUtility}
+                    activeCalendar={props.activeCalendar}
+                    calendarHandler={props.calendarHandler}
                     reduxDeleteCard={props.reduxDeleteCard}/>
               </SubItem>
             }

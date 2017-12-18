@@ -18,11 +18,11 @@ export default class DepositHistoryPage extends Component {
     this.state = {
       depositHistory: [],
       activeCalendar: '',
-      startFullDate: '',
+      startFullDate: undefined,
       startDate: '',
       startMonth: '',
       startYear: '',
-      endFullDate: '',
+      endFullDate: undefined,
       endDate: '',
       endMonth: '12',
       endYear: '',
@@ -194,11 +194,11 @@ export default class DepositHistoryPage extends Component {
       [`${this.state.activeCalendar}Month`]: dateObj.month,
       [`${this.state.activeCalendar}Year`]: dateObj.year,
       query: {...this.state.query, [this.state.activeCalendar]: `${dateObj.year}-${dateObj.month}-${dateObj.day}`}
-    } : null
+    } : {}
 
     this.setState({
       activeCalendar: target,
-      ...(dateObj ? datePayload : {})
+      ...datePayload
     })
   }
 

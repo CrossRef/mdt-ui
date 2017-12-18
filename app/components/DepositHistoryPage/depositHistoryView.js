@@ -3,9 +3,8 @@ import is from 'prop-types'
 
 //import ReactPaginate from 'react-paginate';
 import Pagination from 'rc-pagination';
-import {makeDateDropDown} from '../../utilities/date'
 import {routes} from '../../routing'
-import Calendar from './calendar'
+import HistoryDate from './historyDate'
 
 
 
@@ -43,92 +42,27 @@ export default class DepositHistoryView extends Component {
         </div>
         <div className='dateSearchHolder'>
           <div className='start'>
-            <div className='datepickerholder'>
-              <div className='dateselectholder'>
-                <div>&nbsp;</div>
-                <div className='labelHolder'>Date From</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Year</div>
-                <div>{makeDateDropDown(this.props.handleChange,'startYear','y', this.props.startYear)}</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Month</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'startMonth','m', this.props.startMonth)}
-                </div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Day</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'startDate','d', this.props.startDate)}
-                </div>
-              </div>
+            <HistoryDate
+              name="start"
+              changeHandler={this.props.handleChange}
+              fullDate={this.props.startFulldate}
+              activeCalendar={this.props.activeCalendar}
+              calendarHandler={this.props.calendarHandler}
+              yearValue={this.props.startYear}
+              monthValue={this.props.startMonth}
+              dayValue={this.props.startDate}/>
 
-              <div className='dateicon'>
-                <div>&nbsp;</div>
-                <div
-                  className={`iconHolder startContainer`}
-                  onClick={()=>{
-                    this.props.calendarHandler(this.props.activeCalendar === 'start' ? '' : 'start')
-                  }}>
-                    {this.props.activeCalendar === 'start' &&
-                    <Calendar
-                      name='start'
-                      date={this.props.startFullDate}
-                      activeCalendar={this.props.activeCalendar}
-                      calendarHandler={this.props.calendarHandler}/>}
-
-                    <a className="calendarButton">
-                      <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
-                    </a>
-                </div>
-              </div>
-            </div>
           </div>
           <div className='end'>
-            <div className='datepickerholder'>
-              <div className='dateselectholder'>
-                <div>&nbsp;</div>
-                <div className='labelHolder'>Date To</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Year</div>
-                <div>{makeDateDropDown(this.props.handleChange,'endYear','y', this.props.endYear)}</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Month</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'endMonth','m', this.props.endMonth)}
-                </div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Day</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'endDate','d', this.props.endDate)}
-                </div>
-              </div>
-
-              <div className='dateicon'>
-                <div>&nbsp;</div>
-                <div
-                  className={`iconHolder endContainer`}
-                  onClick={()=>{
-                    this.props.calendarHandler(this.props.activeCalendar === 'end' ? '' : 'end')
-                  }}>
-                    {this.props.activeCalendar === 'end' &&
-                      <Calendar
-                        name='end'
-                        date={this.props.endFullDate}
-                        activeCalendar={this.props.activeCalendar}
-                        calendarHandler={this.props.calendarHandler}/>}
-
-                    <a className="calendarButton">
-                      <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
-                    </a>
-                </div>
-              </div>
-            </div>
+            <HistoryDate
+              name="end"
+              changeHandler={this.props.handleChange}
+              fullDate={this.props.endFulldate}
+              activeCalendar={this.props.activeCalendar}
+              calendarHandler={this.props.calendarHandler}
+              yearValue={this.props.endYear}
+              monthValue={this.props.endMonth}
+              dayValue={this.props.endDate}/>
           </div>
         </div>
         <div className='doiSearchHolder'>

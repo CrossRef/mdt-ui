@@ -2,6 +2,8 @@ import React from 'react'
 import is from 'prop-types'
 
 import { MakeDateDropDown } from '../../utilities/date'
+import Calendar from '../Common/calendar'
+import {routes} from '../../routing'
 
 
 export default class HistoryDate extends React.Component {
@@ -9,9 +11,12 @@ export default class HistoryDate extends React.Component {
   static propTypes = {
     name: is.string.isRequired,
     changeHandler: is.func.isRequired,
+    fullDate: is.object,
     yearValue: is.string.isRequired,
     monthValue: is.string.isRequired,
     dayValue: is.string.isRequired,
+    activeCalendar: is.string.isRequired,
+    calendarHandler: is.func.isRequired
   }
 
 
@@ -24,31 +29,35 @@ export default class HistoryDate extends React.Component {
         </div>
         <div className='dateselectholder'>
           <div>Year</div>
-          <MakeDateDropDown handler={this.props.changeHandler} name='startYear' type="y" value={this.props.yearValue}/>
+          <MakeDateDropDown handler={this.props.changeHandler} name={`${this.props.name}Year`} type="y" value={this.props.yearValue}/>
         </div>
         <div className='dateselectholder'>
           <div>Month</div>
           <div>
-            <MakeDateDropDown handler={this.props.changeHandler} name='startMonth' type="m" value={this.props.monthValue}/>
+            <MakeDateDropDown handler={this.props.changeHandler} name={`${this.props.name}Month`} type="m" value={this.props.monthValue}/>
           </div>
         </div>
         <div className='dateselectholder'>
           <div>Day</div>
           <div>
-            <MakeDateDropDown handler={this.props.changeHandler} name='startDay' type="d" value={this.props.dayValue}/>
+            <MakeDateDropDown handler={this.props.changeHandler} name={`${this.props.name}Day`} type="d" value={this.props.dayValue}/>
           </div>
         </div>
+
         <div className='dateicon'>
           <div>&nbsp;</div>
-          <div className='iconHolder' onClick={()=>this.props.calendarHandler(this.props.name)}>
+          <div className={`iconHolder ${this.props.name}Container`}>
             {this.props.activeCalendar === this.props.name &&
-              <Calendar
-                type='start'
-                calendarHandler={this.props.calendarHandler}
-                date={this.props.startFullDate}
-                query={this.props.query}/>}
+            <Calendar
+              name='end'
+              date={this.props.fullDate}
+              activeCalendar={this.props.activeCalendar}
+              calendarHandler={this.props.calendarHandler}/>}
 
-            <a className="calendarButton">
+            <a className="calendarButton"
+               onClick={()=>{
+                 this.props.calendarHandler(this.props.activeCalendar === this.props.name ? '' : this.props.name)
+               }}>
               <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
             </a>
           </div>

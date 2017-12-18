@@ -95,7 +95,8 @@ export default class AddArticlePage extends Component {
       version: '1',
       errorMessages: [],
       deferredStickyErrorRefresh: new DeferredTask(),
-      focusedInput: ''
+      focusedInput: '',
+      activeCalendar: ''
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -422,6 +423,38 @@ export default class AddArticlePage extends Component {
   }
 
 
+  calendarHandler = (name, dateObj, subItem = 'article', subItemIndex) => {
+    if(dateObj) {
+      const stateName = this.state.activeCalendar.split('-')[0]
+      const datePayload = dateObj ? {
+        [`${stateName}Year`]: dateObj.year,
+        [`${stateName}Month`]: dateObj.month,
+        [`${stateName}Day`]: dateObj.day
+      } : {}
+
+      const subItemPayload = subItemIndex ? this.state[subItem].map((item, i) => {
+        if(i === Number(subItemIndex)) {
+          return {
+            ...item,
+            ...datePayload
+          }
+        } else {
+          return item
+        }
+      })
+        : {...this.state.article, ...datePayload}
+
+      this.setState({
+        activeCalendar: name,
+        [subItem]: subItemPayload
+      }, () => this.validate())
+
+    } else {
+      this.setState({activeCalendar: name})
+    }
+  }
+
+
   render () {
     this.errorUtility.errorIndicators = []  //Saving refs of any errorIndicators rendered so need to clear it before each render
     this.errorUtility.openingSubItem = false
@@ -444,6 +477,7 @@ export default class AddArticlePage extends Component {
           errorUtility={this.errorUtility}
           crossmarkUtility={this.crossmarkUtility}
           tooltipUtility={this.tooltipUtility}
+          calendarHandler={this.calendarHandler}
           {...this.state}
         />
       </div>

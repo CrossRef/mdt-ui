@@ -50,6 +50,7 @@ export default class AddIssueModal extends Component {
 
     this.state.errorMessages = []
     this.state.focusedInput = ''
+    this.state.activeCalendar = ''
   }
 
 
@@ -416,14 +417,14 @@ export default class AddIssueModal extends Component {
 
 
   handler = (e) => {
-    const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
+    const name = e.target.name
 
     if (name === 'issueUrl') {
-      (e.currentTarget.value.trim().length > 0) ? this.setState({showIssueDoiReq:true}) : this.setState({showIssueDoiReq:false})
+      (e.target.value.trim().length > 0) ? this.setState({showIssueDoiReq:true}) : this.setState({showIssueDoiReq:false})
     }
 
     this.setState({
-      issue: update(this.state.issue, {[name]: {$set: e.currentTarget.value ? e.currentTarget.value : '' }})
+      issue: update(this.state.issue, {[name]: {$set: e.target.value ? e.target.value : '' }})
     })
   }
 
@@ -477,6 +478,31 @@ export default class AddIssueModal extends Component {
   }
 
 
+  calendarHandler = (name, dateObj) => {
+    if(dateObj) {
+      const stateName = this.state.activeCalendar.split('-')[0]
+      const datePayload = {
+        [`${stateName}Year`]: dateObj.year,
+        [`${stateName}Month`]: dateObj.month,
+        [`${stateName}Day`]: dateObj.day
+      }
+
+      this.setState({
+        activeCalendar: name,
+        issue: {
+          ...this.state.issue,
+          ...datePayload
+        }
+      }, () => this.validate())
+
+    } else {
+      this.setState({
+        activeCalendar: name
+      })
+    }
+  }
+
+
   render () {
     this.errorUtility.errorIndicators = []  //Saving refs of any errorIndicators rendered so need to clear it before each render
     this.errorUtility.openingSubItem = false
@@ -492,6 +518,7 @@ export default class AddIssueModal extends Component {
         validate={this.validate}
         boundSetState={this.boundSetState}
         tooltipUtility={this.tooltipUtility}
+        calendarHandler={this.calendarHandler}
         {...this.state}
       />
     )
