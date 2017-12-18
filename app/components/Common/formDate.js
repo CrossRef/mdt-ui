@@ -3,7 +3,7 @@ import is from 'prop-types'
 import moment from 'moment'
 
 import {routes} from '../../routing'
-import {MakeDateDropDown} from '../../utilities/date'
+import DateSelect from './dateSelect'
 import Calendar from '../Common/calendar'
 
 
@@ -130,7 +130,7 @@ export default class FormDate extends React.Component {
               <div className='dateselectholder'>
                 <div>Year {this.props.fields.year.required ? '(*)' : ''}</div>
                 <div>
-                  <MakeDateDropDown
+                  <DateSelect
                     handler={this.onSelect}
                     name={`${typeof this.props.name === 'string' ? this.props.name : ''}Year`}
                     type="y"
@@ -143,7 +143,7 @@ export default class FormDate extends React.Component {
               <div className='dateselectholder'>
                 <div>Month</div>
                 <div>
-                  <MakeDateDropDown
+                  <DateSelect
                     handler={this.onSelect}
                     name={`${typeof this.props.name === 'string' ? this.props.name : ''}Month`}
                     type="m"
@@ -156,7 +156,7 @@ export default class FormDate extends React.Component {
               <div className='dateselectholder'>
                 <div>Day</div>
                 <div>
-                  <MakeDateDropDown
+                  <DateSelect
                     handler={this.onSelect}
                     name={`${typeof this.props.name === 'string' ? this.props.name : ''}Day`}
                     type="d"

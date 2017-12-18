@@ -391,3 +391,21 @@ Object.defineProperty(Array.prototype, "equals", {
   }
 });
 
+
+
+
+
+
+export function validDate ( yearfield, monthfield, dayfield ){
+  yearfield = parseInt(yearfield); monthfield = parseInt(monthfield); dayfield = parseInt(dayfield);
+  if (!dayfield || !monthfield || !yearfield){
+    return true;
+  }
+  // we have a year, month and day.
+  const dayobj = new Date(yearfield, monthfield-1, dayfield)
+
+  if ((dayobj.getMonth()+1 !== monthfield)||(dayobj.getDate() !== dayfield)||(dayobj.getFullYear() !== yearfield)) return false
+
+  return true;
+}
+

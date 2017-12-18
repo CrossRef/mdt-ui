@@ -2,8 +2,7 @@ import {Map, fromJS} from 'immutable'
 
 import { getSubItems } from './getSubItems'
 import {cardNames} from './crossmarkHelpers'
-import { validDate } from './date'
-import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered} from './helpers'
+import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered, validDate} from './helpers'
 import defaultArticleState from '../components/AddArticlePage/defaultState'
 
 

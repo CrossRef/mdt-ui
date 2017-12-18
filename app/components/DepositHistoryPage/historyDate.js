@@ -1,7 +1,7 @@
 import React from 'react'
 import is from 'prop-types'
 
-import { MakeDateDropDown } from '../../utilities/date'
+import DateSelect from '../Common/dateSelect'
 import Calendar from '../Common/calendar'
 import {routes} from '../../routing'
 
@@ -29,18 +29,18 @@ export default class HistoryDate extends React.Component {
         </div>
         <div className='dateselectholder'>
           <div>Year</div>
-          <MakeDateDropDown handler={this.props.changeHandler} name={`${this.props.name}Year`} type="y" value={this.props.yearValue}/>
+          <DateSelect handler={this.props.changeHandler} name={`${this.props.name}Year`} type="y" value={this.props.yearValue}/>
         </div>
         <div className='dateselectholder'>
           <div>Month</div>
           <div>
-            <MakeDateDropDown handler={this.props.changeHandler} name={`${this.props.name}Month`} type="m" value={this.props.monthValue}/>
+            <DateSelect handler={this.props.changeHandler} name={`${this.props.name}Month`} type="m" value={this.props.monthValue}/>
           </div>
         </div>
         <div className='dateselectholder'>
           <div>Day</div>
           <div>
-            <MakeDateDropDown handler={this.props.changeHandler} name={`${this.props.name}Day`} type="d" value={this.props.dayValue}/>
+            <DateSelect handler={this.props.changeHandler} name={`${this.props.name}Day`} type="d" value={this.props.dayValue}/>
           </div>
         </div>
 
