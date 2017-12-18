@@ -210,11 +210,13 @@ input.height64, textarea.height64, select.height64 {
         border-bottom: 1px solid black;
 
         .react-datepicker-popper[data-placement^="top"] {
-          margin-left: -45px
+          margin-left: -45px;
+          z-index: 10000;
         }
 
         .react-datepicker-popper[data-placement^="bottom"] {
-          margin-left: -45px
+          margin-left: -45px;
+          z-index: 10000;
         }
 
         .calendarButton {
