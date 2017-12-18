@@ -180,47 +180,49 @@ input.height64, textarea.height64, select.height64 {
 }
 
 
-.datepickerholder {
+.field {
+  .datepickerholder {
 
-  .dateselectholder {
-    margin: 0 5px 0 0;
-    width: 85px !important;
-    float: left;
-
-    .datepickselects {
+    .dateselectholder {
+      margin: 0 5px 0 0;
       width: 85px !important;
       float: left;
-      padding: 0 10px;
+
+      .datepickselects {
+        width: 85px !important;
+        float: left;
+        padding: 0 10px;
+      }
     }
-  }
 
-  .dateicon {
-    width: 30px !important;
-    display: inline-block;
-    margin: 0 0 0 -11.5px;
-
-    .iconHolder {
-      background: #FFF;
+    .dateicon {
+      width: 30px !important;
       display: inline-block;
-      margin: 0;
-      width: 37px;
-      border-top: 1px solid black;
-      border-right: 1px solid black;
-      border-bottom: 1px solid black;
+      margin: 0 0 0 -11.5px;
 
-      .calendarButton {
+      .iconHolder {
+        background: #FFF;
         display: inline-block;
-        height:auto;
-        padding: 2px 0 0 1px;
+        margin: 0;
+        width: 37px;
+        border-top: 1px solid black;
+        border-right: 1px solid black;
+        border-bottom: 1px solid black;
 
-        .calendarIcon {
+        .calendarButton {
           display: inline-block;
-          width: 27px;
+          height:auto;
+          padding: 2px 0 0 1px;
+
+          .calendarIcon {
+            display: inline-block;
+            width: 27px;
+          }
         }
       }
     }
-  }
 
+  }
 }
 
 

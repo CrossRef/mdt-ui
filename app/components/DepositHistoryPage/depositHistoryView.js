@@ -13,7 +13,7 @@ import Calendar from './calendar'
 export default class DepositHistoryView extends Component {
   static propTypes = {
     listDepositHistory: is.func.isRequired,
-    boundSetState: is.func.isRequired,
+    calendarHandler: is.func.isRequired,
     handleChange: is.func.isRequired,
     handlePageClick: is.func.isRequired
   }
@@ -64,13 +64,24 @@ export default class DepositHistoryView extends Component {
                   {makeDateDropDown(this.props.handleChange,'startDate','d', this.props.startDate)}
                 </div>
               </div>
-              <div className='dateselectholder dateicon'>
+
+              <div className='dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'>
-                  {this.props.startCalendarOpen && <Calendar type='start' setParentState={this.props.boundSetState} date={this.props.startFullDate} query={this.props.query}/>}
-                  <a className="calendarButton" onClick={()=>this.props.boundSetState({startCalendarOpen: !this.props.startCalendarOpen, endCalendarOpen: false})}>
-                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
-                  </a>
+                <div
+                  className={`iconHolder startContainer`}
+                  onClick={()=>{
+                    this.props.calendarHandler(this.props.activeCalendar === 'start' ? '' : 'start')
+                  }}>
+                    {this.props.activeCalendar === 'start' &&
+                    <Calendar
+                      name='start'
+                      date={this.props.startFullDate}
+                      activeCalendar={this.props.activeCalendar}
+                      calendarHandler={this.props.calendarHandler}/>}
+
+                    <a className="calendarButton">
+                      <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                    </a>
                 </div>
               </div>
             </div>
@@ -97,13 +108,24 @@ export default class DepositHistoryView extends Component {
                   {makeDateDropDown(this.props.handleChange,'endDate','d', this.props.endDate)}
                 </div>
               </div>
-              <div className='dateselectholder dateicon'>
+
+              <div className='dateicon'>
                 <div>&nbsp;</div>
-                <div className='iconHolder'>
-                  {this.props.endCalendarOpen && <Calendar type='end' setParentState={this.props.boundSetState} date={this.props.endFullDate} query={this.props.query}/>}
-                  <a className="calendarButton" onClick={()=>this.props.boundSetState({endCalendarOpen: !this.props.endCalendarOpen, startCalendarOpen: false})}>
-                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
-                  </a>
+                <div
+                  className={`iconHolder endContainer`}
+                  onClick={()=>{
+                    this.props.calendarHandler(this.props.activeCalendar === 'end' ? '' : 'end')
+                  }}>
+                    {this.props.activeCalendar === 'end' &&
+                      <Calendar
+                        name='end'
+                        date={this.props.endFullDate}
+                        activeCalendar={this.props.activeCalendar}
+                        calendarHandler={this.props.calendarHandler}/>}
+
+                    <a className="calendarButton">
+                      <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                    </a>
                 </div>
               </div>
             </div>

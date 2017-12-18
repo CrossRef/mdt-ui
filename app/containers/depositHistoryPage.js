@@ -17,14 +17,13 @@ export default class DepositHistoryPage extends Component {
     super(props)
     this.state = {
       depositHistory: [],
-      startCalendarOpen: false,
+      activeCalendar: '',
       startFullDate: '',
       startDate: '',
       startMonth: '',
       startYear: '',
-      endCalendarOpen: false,
       endFullDate: '',
-      endDate: '31',
+      endDate: '',
       endMonth: '12',
       endYear: '',
       total: 0,
@@ -42,6 +41,7 @@ export default class DepositHistoryPage extends Component {
     }
   }
 
+
   componentWillMount () {
     api.getDepositHistory(cleanObj(this.state.query)).then(results => {
       this.setState({
@@ -51,6 +51,7 @@ export default class DepositHistoryPage extends Component {
     })
       .catch(e => this.setState({serverError: e}))
   }
+
 
   componentWillUpdate (nextProps, nextState) {
     if (this.state.query !== nextState.query) {
@@ -64,6 +65,7 @@ export default class DepositHistoryPage extends Component {
     }
   }
 
+
   handlePageClick = (current, pageSize) => {
     var selected = current
     let offset = Math.ceil(selected * this.state.query.count)
@@ -71,6 +73,7 @@ export default class DepositHistoryPage extends Component {
       query: update(this.state.query, {offset: {$set: offset}})
     })
   }
+
 
   handleChange = (e, sortFields) => {
     if (e.target) {
@@ -147,8 +150,8 @@ export default class DepositHistoryPage extends Component {
         query: update(this.state.query, sortFields)
       })
     }
-
   }
+
 
   listDepositHistory = () => {
     var depositHistory = []
@@ -183,15 +186,28 @@ export default class DepositHistoryPage extends Component {
     })
   }
 
-  boundSetState = (object) => {
-    this.setState(object)
+
+  calendarHandler = (target, dateObj) => {
+    const datePayload = dateObj ? {
+      [`${this.state.activeCalendar}FullDate`]: dateObj.fullDate,
+      [`${this.state.activeCalendar}Date`]: dateObj.day,
+      [`${this.state.activeCalendar}Month`]: dateObj.month,
+      [`${this.state.activeCalendar}Year`]: dateObj.year,
+      query: {...this.state.query, [this.state.activeCalendar]: `${dateObj.year}-${dateObj.month}-${dateObj.day}`}
+    } : null
+
+    this.setState({
+      activeCalendar: target,
+      ...(dateObj ? datePayload : {})
+    })
   }
+
 
   render () {
     return (
       <DepositHistoryView
         listDepositHistory={this.listDepositHistory}
-        boundSetState={this.boundSetState}
+        calendarHandler={this.calendarHandler}
         handleChange={this.handleChange}
         handlePageClick={this.handlePageClick}
 
