@@ -55,6 +55,7 @@
         }
     }
 
+
     .defaultModal {
         position: relative;
         top: 40px;
@@ -67,6 +68,26 @@
         outline: none;
         padding: 20px;
     }
+
+
+    .warningModal {
+        position: relative;
+        top: 180px;
+        left: auto;
+        right: auto;
+        bottom: 40px;
+        border: 1px solid rgb(204, 204, 204);
+        background: rgb(255, 255, 255);
+        overflow: auto;
+        outline: none;
+        padding: 20px;
+        .modal {
+            .titlebar {
+                background: #ff4f52;
+            }
+        }
+    }
+
 
     .errorModal {
         position: relative;
@@ -87,6 +108,7 @@
             }
         }
     }
+
 
     .tourModal {
         position: relative;
