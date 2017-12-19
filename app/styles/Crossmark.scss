@@ -19,9 +19,8 @@
     background: #616B6B;
     line-height: 30px;
     text-align: left;
-    border-radius: 0px;
     border: 1px solid black;
-    padding: 10px 0 10px 20px;
+    padding: 10px 0 10px 0;
     visibility: visible;
     opacity: 1;
     bottom: 45px;
@@ -29,10 +28,15 @@
     z-index: 999;
     display: grid;
     .crossmark {
-      padding-bottom: 5px;
+      padding-bottom: 2.5px;
+      padding-top: 2.5px;
+      padding-left: 20px;
       margin: 0;
       background-color: #616B6B !important;
       color: white;
+    }
+    .crossmark:hover {
+      background-color: #3AAFC6 !important;
     }
   }
   a.tooltips div:after {

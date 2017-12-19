@@ -836,11 +836,10 @@ input.height64, textarea.height64, select.height64 {
       width: 174px;
       color: #FFFFFF;
       background: #616B6B;
-      height: 120px;
       line-height: 30px;
       text-align: left;
       border-radius: 0px;
-      padding: 10px 0 10px 30px;
+      padding: 10px 0 5px 0;
       visibility: visible;
       opacity: 1;
       top: 57px;
@@ -849,8 +848,13 @@ input.height64, textarea.height64, select.height64 {
       border-left: solid 1px rgb(84, 84, 84);
       p {
         font-size:.88em;
-        margin-top:3px;
-        margin-bottom:3px;
+        padding-top:3px;
+        padding-bottom:3px;
+        padding-left: 30px;
+        margin: 0;
+      }
+      p:hover {
+        background: #3AAFC6;
       }
     }
     div:after {

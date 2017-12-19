@@ -99,7 +99,7 @@ export default class NavBar extends Component {
             <div className='userProfileMenuHolder'>
               <span className='profileMenuTrigger tooltips' onClick={() => {this.openProfileMenu()}}>{localStorage.user} <img className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')} src={`${routes.images}/AddArticle/DarkTriangle.svg`} /></span>
               {this.state.profileMenu && <div className='profileMenu'>
-                <span onClick={()=>{this.logout()}}>Logout</span>
+                <p onClick={()=>{this.logout()}}>Logout</p>
               </div>}
             </div>
           </div>
