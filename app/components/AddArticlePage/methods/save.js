@@ -2,10 +2,10 @@ import React, { Component } from 'react'
 import {browserHistory} from 'react-router'
 import { XMLSerializer, DOMParser } from 'xmldom'
 
-import {compareDois} from '../../../utilities/helpers'
+import {compareDois, escapeString} from '../../../utilities/helpers'
 import {routes} from '../../../routing'
 import * as api from '../../../actions/api'
-import journalArticleXml from '../../AddArticlePage/articleXmlGenerator'
+import articleXmlGenerator from '../../AddArticlePage/articleXmlGenerator'
 
 
 
@@ -22,14 +22,14 @@ export default async function (addToCart) {
   if (valid) {
     const publication = this.state.publication
 
-    const journalArticle = journalArticleXml(this.state, this.props.reduxForm)
+    const journalArticle = articleXmlGenerator(this.state, this.props.reduxForm)
     const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
     const journalElm = journalDoc.getElementsByTagName("journal")[0]
     journalElm.appendChild(journalArticle)
     const title = this.state.article.title
 
     const newRecord = {
-      'title':JSON.parse(JSON.stringify({'title': title})),
+      'title': {title: escapeString(title)},
       'date': new Date(),
       'doi': this.state.article.doi,
       'owner-prefix': this.state.ownerPrefix,
@@ -38,7 +38,6 @@ export default async function (addToCart) {
       'status': 'draft',
       'content': new XMLSerializer().serializeToString(journalDoc)
     }
-
 
     let savePub = publication
 

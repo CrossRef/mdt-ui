@@ -1,36 +1,55 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
+import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 import verifyIssn from 'issn-verify'
+
+import { submitPublication } from '../actions/application'
 import {appendElm,appendAttribute} from '../utilities/helpers'
 import { XMLSerializer, DOMParser } from 'xmldom'
 import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
 const languages = require('../utilities/lists/language.json')
 import { ArchiveLocations } from '../utilities/lists/archiveLocations'
+import { routes } from '../routing'
 
 
+
+
+
+const mapStateToProps = (state) => ({
+  crossmarkPrefixes: state.login['crossmark-prefixes'],
+  prefixes: state.login.prefixes
+})
+
+
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  asyncSubmitPublication: submitPublication,
+}, dispatch)
+
+
+@connect(mapStateToProps, mapDispatchToProps)
 export default class AddPublicationModal extends Component {
 
   static propTypes = {
     mode: is.string.isRequired,
+    prefixes: is.array.isRequired,
     crossmarkPrefixes: is.array.isRequired,
+    multipleDOIs: is.bool,
 
     Journal: is.shape({
       journal_metadata: is.object.isRequired
     }),
 
     searchResult: is.shape({
-      doi: is.string.isRequired,
+      doi: is.array.isRequired,
       issns: is.array.isRequired,
       "owner-prefix": is.string.isRequired,
       publicationId: is.node,
       title: is.string
     }),
 
-    reduxCartUpdate: is.func.isRequired,
-    reduxControlModal: is.func.isRequired,
-    reduxStorePublications: is.func,
-
-    asyncSubmitPublication: is.func.isRequired
+    asyncSubmitPublication: is.func.isRequired,
+    close: is.func.isRequired //close function and reduxControlModal provided by modal container parent
   }
 
   constructor(props) {
@@ -38,7 +57,6 @@ export default class AddPublicationModal extends Component {
 
     const defaultState = {
       mode: props.mode,
-      menuOpen: false,
       timeOut: '',
       confirmationPayload: {
         status: '',
@@ -101,13 +119,14 @@ export default class AddPublicationModal extends Component {
         'mdt-version': '1',
         title: result.title,
         abbreviation: '',
-        DOI: result['owner-prefix'] || result.prefix || '',
+        DOI: props.multipleDOIs ? '' : result['owner-prefix'] || result.prefix || '',
         url: '',
         printISSN: pissn,
         electISSN: eissn,
         language: '',
         archivelocation: '',
         crossmarkDoi: '',
+        doiDropdown: false
       }
     }
     else if (props.mode === 'add') {
@@ -158,7 +177,7 @@ export default class AddPublicationModal extends Component {
       !criticalErrors.showDOIEmptyError &&
       !criticalErrors.showDOIInvalidError &&
       !criticalErrors.showDOIPrefixError &&
-      this.props.mode !== 'edit' ?
+      this.props.mode !== 'edit' && !this.props.multipleDOIs ?
         await asyncCheckDupeDoi(this.state.DOI) : false
 
 
@@ -258,11 +277,6 @@ export default class AddPublicationModal extends Component {
   }
 
 
-  closeModal = () => {
-    this.props.reduxControlModal({showModal:false})
-  }
-
-
   componentWillUnmount () {
     clearTimeout(this.state.timeOut)
   }
@@ -308,6 +322,38 @@ export default class AddPublicationModal extends Component {
 
     return {confirmationPayload, timeOut}
   }
+
+
+  multipleDOIs = () => {
+
+    const doiList = this.props.searchResult.doi.map( doi =>
+      <div key={doi} className="doiOptionContainer" onMouseDown={()=>this.setState({DOI: doi})}>
+        {this.state.DOI === doi &&
+          <img className='checkmark' src={`${routes.images}/Publications/Asset_Icons_White_Check 2.svg`}/>}
+        <p className='doiOption'>{doi}</p>
+      </div>
+    )
+
+    return (
+      <div>
+        <input
+          type='text'
+          autoComplete="off"
+          name='DOI'
+          value={this.state.DOI}
+          onFocus={()=>this.setState({doiDropdown: true})}
+          onBlur={()=>this.setState({doiDropdown: false})}
+        />
+
+        {this.state.doiDropdown &&
+          <div className="doiDropdown">
+            <div className="instruction">Please select one DOI</div>
+            {doiList}
+          </div>}
+      </div>
+    )
+  }
+
 
   render () {
 
@@ -371,12 +417,13 @@ export default class AddPublicationModal extends Component {
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className={ isEdit ? 'notrequired' : 'required'}>{!isEdit && <span>*</span>}</div>
-                  <input
-                    {...disabledInput}
-                    type='text'
-                    name='DOI'
-                    value={this.state.DOI}
-                    onChange={this.inputHandler} />
+                  {this.props.multipleDOIs ? this.multipleDOIs() :
+                    <input
+                      {...disabledInput}
+                      type='text'
+                      name='DOI'
+                      value={this.state.DOI}
+                      onChange={this.inputHandler} />}
                 </div>
                 {errors.showDOIError && <div className='inputinnerholder'><div className='invalid'>Duplicate DOI. Registering a new DOI? This one already exists.</div></div>}
                 {errors.showDOIInvalidError && <div className='inputinnerholder'><div className='invalid'>Invalid DOI. Please check your DOI (10.xxxx/xx...).</div></div>}
@@ -463,7 +510,7 @@ export default class AddPublicationModal extends Component {
             <div className='fieldinput' />
             <div className='fieldinput'>
               <button
-                onClick={this.closeModal}
+                onClick={this.props.close}
                 className='button-anchor button-white-cancel'
               >Close</button>
               <div onClick={this.save} className='button-anchor actionTooltip'>

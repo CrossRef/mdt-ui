@@ -150,32 +150,9 @@ export class DeferredTask {
   constructor () {
     this.promise = new Promise((resolve, reject) => {
 
-      this._resolve = resolve
-      this._reject = reject
+      this.reject = reject
 
-      this.reject = (x) => {
-        this._reject(x)
-        this.rejected = true
-      }
-
-      this.resolve = (x) => {
-        this._resolve(x)
-        this.resolved = true
-      }
-
-      this.resolved = false
-      this.rejected = false
-
-      this.reset = function () {
-        this.promise = new Promise((resolve, reject) => {
-
-          this._resolve = resolve
-          this._reject = reject
-
-          this.resolved = false
-          this.rejected = false
-        })
-      }
+      this.resolve = resolve
     })
   }
 }
@@ -369,6 +346,7 @@ export function getTooltipPosition () {
 
 
 
+
 if(Array.prototype.equals)
   console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
 
@@ -391,3 +369,12 @@ Object.defineProperty(Array.prototype, "equals", {
   }
 });
 
+
+
+
+
+
+export function escapeString (s) {
+  let stringified = JSON.stringify(s)
+  return stringified.slice(1, stringified.length - 1) //Removes quotations that stringify adds
+}

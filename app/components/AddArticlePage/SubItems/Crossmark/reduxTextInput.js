@@ -28,9 +28,8 @@ export default class ReduxTextInput extends Component {
     className: is.string,
     reduxValue: is.string,
     errors: is.object.isRequired,
-    trackErrors: is.array,
-    setErrorMessages: is.func,
-    errorUtility: is.object,
+    indicatorErrors: is.array,
+    errorUtility: is.object.isRequired,
     keyPath: is.array.isRequired,
     handler:is.func,
     tooltip: is.object,
@@ -60,8 +59,7 @@ export default class ReduxTextInput extends Component {
         required={this.props.required}
         error={error}
         allErrors={this.props.errors}
-        trackErrors={this.props.trackErrors}
-        setErrorMessages={this.props.setErrorMessages}
+        indicatorErrors={this.props.indicatorErrors}
         errorUtility={this.props.errorUtility}
         subItemIndex={String(this.props.keyPath[1])}
         onFocus={this.props.onFocus}

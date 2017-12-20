@@ -14,14 +14,11 @@ const mapStateToProps = state => ({
   DOIs: state.dois,
   searchResults: state.search.result,
   loading: state.search.loading,
-  crossmarkPrefixes: state.login['crossmark-prefixes'],
-  prefixes: state.login.prefixes,
   publications: state.publications
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
-  asyncGetPublications: getPublications,
   asyncSubmitPublication: submitPublication,
   asyncSearch: search,
   reduxCartUpdate: cartUpdate
@@ -36,13 +33,11 @@ export default class PublicationsPage extends Component {
     searchResults: is.array,
     publications: is.object.isRequired,
     reduxControlModal: is.func.isRequired,
-    asyncGetPublications: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
     asyncSearch: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
-    crossmarkPrefixes: is.array.isRequired,
-    prefixes: is.array.isRequired
   }
+
 
   openAddPublicationModal = () => this.props.reduxControlModal({
     showModal:true,
@@ -50,15 +45,12 @@ export default class PublicationsPage extends Component {
     Component: AddPublicationModal,
     props:{
       mode: 'add',
-      reduxCartUpdate: this.props.reduxCartUpdate,
-      asyncSubmitPublication: this.props.asyncSubmitPublication,
-      crossmarkPrefixes: this.props.crossmarkPrefixes,
-      prefixes: this.props.prefixes
     }
   })
 
+
   render () {
-    const { searchResults, publications, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication, reduxCartUpdate} = this.props;
+    const { searchResults, publications, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication} = this.props;
     return (
       <div className='publications'>
         <div className='management-bar'>
@@ -68,10 +60,7 @@ export default class PublicationsPage extends Component {
             publications={publications}
             loading={loading}
             reduxControlModal={reduxControlModal}
-            reduxCartUpdate={reduxCartUpdate}
-            asyncSubmitPublication={asyncSubmitPublication}
-            prefixes={this.props.prefixes}
-            crossmarkPrefixes={this.props.crossmarkPrefixes}/>
+            asyncSubmitPublication={asyncSubmitPublication}/>
           <button
             className='addPublication'
             onClick={this.openAddPublicationModal}

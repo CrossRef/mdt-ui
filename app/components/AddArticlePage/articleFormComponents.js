@@ -33,7 +33,7 @@ export class OptionalTitleData extends Component {
               value={this.props.subtitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
-              setErrorMessages={this.props.setErrorMessages}
+              errorUtility={this.props.errorUtility}
               tooltipUtility={this.props.tooltipUtility}
               tooltip={this.props.tooltip && tooltips.articleSubtitle}/>
           </div>
@@ -45,7 +45,7 @@ export class OptionalTitleData extends Component {
               value={this.props.originallanguagetitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
-              setErrorMessages={this.props.setErrorMessages}
+              errorUtility={this.props.errorUtility}
               tooltipUtility={this.props.tooltipUtility}
               tooltip={this.props.tooltip && tooltips.alternateTitle}/>
           </div>
@@ -57,7 +57,7 @@ export class OptionalTitleData extends Component {
               value={this.props.originallanguagetitlesubtitle}
               changeHandler={this.props.handleChange}
               onBlur={this.props.validate}
-              setErrorMessages={this.props.setErrorMessages}
+              errorUtility={this.props.errorUtility}
               tooltipUtility={this.props.tooltipUtility}
               tooltip={this.props.tooltip && tooltips.alternateSubtitle}/>
           </div>
@@ -83,8 +83,8 @@ export class DatesRow extends Component {
             onSelect={this.props.validate}
             tooltip={this.props.tooltip && tooltips.printDate}
             error={printDateInvalid}
-            trackErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
-            setErrorMessages={this.props.errorUtility.setErrorMessages}
+            indicatorErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
+            errorUtility={this.props.errorUtility}
             required={!onlineDateYear}
             tooltipUtility={this.props.tooltipUtility}
             fields={{
@@ -109,8 +109,8 @@ export class DatesRow extends Component {
             onSelect={this.props.validate}
             tooltip={this.props.tooltip && tooltips.onlineDate}
             error={onlineDateInvalid}
-            trackErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
-            setErrorMessages={this.props.errorUtility.setErrorMessages}
+            indicatorErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
+            errorUtility={this.props.errorUtility}
             required={!printDateYear}
             tooltipUtility={this.props.tooltipUtility}
             fields={{
@@ -131,7 +131,7 @@ export class DatesRow extends Component {
 
         <ErrorIndicator
           style="dateErrorHolder"
-          trackErrors={['printDateYear', 'printDateIncomplete', 'printDateInvalid', 'onlineDateYear', 'onlineDateIncomplete', 'onlineDateInvalid']}
+          indicatorErrors={['printDateYear', 'printDateIncomplete', 'printDateInvalid', 'onlineDateYear', 'onlineDateIncomplete', 'onlineDateInvalid']}
           errorMessages={this.props.errorMessages}
           allErrors={this.props.errors}
           tooltipUtility={this.props.tooltipUtility}

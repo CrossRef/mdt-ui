@@ -11,7 +11,6 @@ export default class Search extends Component {
 
   static propTypes = {
     reduxControlModal: is.func.isRequired,
-    reduxCartUpdate: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
     asyncSearch: is.func.isRequired,
     results: is.array,
@@ -70,7 +69,8 @@ export default class Search extends Component {
       }
 
       this.props.asyncSubmitPublication(newPublication)
-    } else {
+
+    } else if(!item.doi.length) {
       this.props.reduxControlModal({
         showModal: true,
         title: 'Edit Journal Record',
@@ -78,13 +78,49 @@ export default class Search extends Component {
         props: {
           mode: 'search',
           searchResult: item,
-          asyncSubmitPublication: this.props.asyncSubmitPublication,
-          reduxCartUpdate: this.props.reduxCartUpdate,
-          crossmarkPrefixes: this.props.crossmarkPrefixes,
-          prefixes: this.props.prefixes
+        }
+      })
+
+    } else if(item.doi.length > 1) {
+      this.props.reduxControlModal({
+        showModal: true,
+        title: 'Resolve DOI Journal conflict',
+        style: 'warningModal',
+        Component: this.ResolveWarning,
+        props: {
+          title: item.title,
+          confirm: () => {
+            this.props.reduxControlModal({
+              showModal: true,
+              title: 'Edit Journal Record',
+              Component: AddPublicationModal,
+              props: {
+                mode: 'search',
+                multipleDOIs: true,
+                searchResult: item,
+              }
+            })
+          }
         }
       })
     }
+  }
+
+
+  ResolveWarning = ({title, confirm, close}) => {
+    return (
+      <div className="resolveWarning">
+        <div className="messageHolder">
+          <div>Warning! Resolve DOI conflict before you add <b>{title}</b> to your workspace. Two or more DOIs are associated with this Journal.</div>
+
+          <div>Please select one DOI from the Journal edit screen.</div>
+        </div>
+        <div className="buttonHolder">
+          <button className="ok" onClick={confirm}>Ok</button>
+          <button className="cancel" onClick={close}>Cancel</button>
+        </div>
+      </div>
+    )
   }
 
 

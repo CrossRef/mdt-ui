@@ -92,8 +92,7 @@ function PublicationHistoryCard (props) {
           label=''
           onSelect={props.validate}
           keyPath={[pubHist, props.i, 'label']}
-          trackErrors={[`${pubHist} label`]}
-          setErrorMessages={props.errorUtility.setErrorMessages}
+          indicatorErrors={[`${pubHist} label`]}
           errorUtility={props.errorUtility}
           style="dateAlignSelect"
           tooltip={props.tooltip && tooltips.publicationHistoryLabel}
@@ -104,13 +103,14 @@ function PublicationHistoryCard (props) {
           label="Date"
           onSelect={props.validate}
           tooltipUtility={props.tooltipUtility}
+          errorUtility={props.errorUtility}
           keyPath={[pubHist, props.i]}/>
       </div>
 
       <ReduxErrorIndicator
         style="dateErrorHolder"
         errorsKeyPath={[pubHist, props.i, 'errors']}
-        trackErrors={[`${pubHist} label`]}
+        indicatorErrors={[`${pubHist} label`]}
         errorMessages={props.errorMessages}
         tooltipUtility={props.tooltipUtility}
         errorUtility={props.errorUtility}/>
@@ -129,8 +129,7 @@ function PeerReviewCard (props) {
             label=''
             onSelect={props.validate}
             keyPath={[peer, props.i, 'label']}
-            trackErrors={[`${peer} label`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${peer} label`]}
             errorUtility={props.errorUtility}
             style="textAlignSelect"
             tooltip={props.tooltip && tooltips.peerReviewLabel}
@@ -146,7 +145,7 @@ function PeerReviewCard (props) {
 
         <ReduxErrorIndicator
           errorsKeyPath={[peer, props.i, 'errors']}
-          trackErrors={[`${peer} label`]}
+          indicatorErrors={[`${peer} label`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -158,8 +157,7 @@ function PeerReviewCard (props) {
             label='URL'
             onBlur={props.validate}
             keyPath={[peer, props.i, 'href']}
-            trackErrors={[`${peer} href`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${peer} href`]}
             errorUtility={props.errorUtility}
             tooltipUtility={props.tooltipUtility}
             style="floatRight"/>
@@ -167,7 +165,7 @@ function PeerReviewCard (props) {
 
         <ReduxErrorIndicator
           errorsKeyPath={[peer, props.i, 'errors']}
-          trackErrors={[`${peer} href`]}
+          indicatorErrors={[`${peer} href`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -187,8 +185,7 @@ function CopyrightCard (props) {
             label=''
             onSelect={props.validate}
             keyPath={[copyright, props.i, 'label']}
-            trackErrors={[`${copyright} label`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${copyright} label`]}
             errorUtility={props.errorUtility}
             style="textAlignSelect"
             tooltip={props.tooltip && tooltips.copyrightLicensingUrl}
@@ -199,12 +196,13 @@ function CopyrightCard (props) {
             label='Description'
             onBlur={props.validate}
             tooltipUtility={props.tooltipUtility}
+            errorUtility={props.errorUtility}
             keyPath={[copyright, props.i, 'explanation']}/>
         </div>
 
         <ReduxErrorIndicator
           errorsKeyPath={[copyright, props.i, 'errors']}
-          trackErrors={[`${copyright} label`]}
+          indicatorErrors={[`${copyright} label`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -216,8 +214,7 @@ function CopyrightCard (props) {
             label='URL'
             onBlur={props.validate}
             keyPath={[copyright, props.i, 'href']}
-            trackErrors={[`${copyright} href`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${copyright} href`]}
             errorUtility={props.errorUtility}
             tooltipUtility={props.tooltipUtility}
             style="floatRight" />
@@ -225,7 +222,7 @@ function CopyrightCard (props) {
 
         <ReduxErrorIndicator
           errorsKeyPath={[copyright, props.i, 'errors']}
-          trackErrors={[`${copyright} href`]}
+          indicatorErrors={[`${copyright} href`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -243,7 +240,6 @@ function SupplementaryMaterialCard (props) {
         <ReduxTextInput
           label='Description'
           onBlur={props.validate}
-          setErrorMessages={props.errorUtility.setErrorMessages}
           tooltip={props.tooltip && tooltips.suppDescription}
           tooltipUtility={props.tooltipUtility}
           keyPath={[supp, props.i, 'explanation']}/>
@@ -252,15 +248,14 @@ function SupplementaryMaterialCard (props) {
           label='URL'
           keyPath={[supp, props.i, 'href']}
           onBlur={props.validate}
-          trackErrors={[`${supp} href`]}
+          indicatorErrors={[`${supp} href`]}
           errorUtility={props.errorUtility}
-          tooltipUtility={props.tooltipUtility}
-          setErrorMessages={props.errorUtility.setErrorMessages}/>
+          tooltipUtility={props.tooltipUtility}/>
       </div>
 
       <ReduxErrorIndicator
         errorsKeyPath={[supp, props.i, 'errors']}
-        trackErrors={[`${supp} href`]}
+        indicatorErrors={[`${supp} href`]}
         errorMessages={props.errorMessages}
         tooltipUtility={props.tooltipUtility}
         errorUtility={props.errorUtility}/>
@@ -278,8 +273,7 @@ function OtherCard (props) {
           <ReduxTextInput
             label={`Label ${Number(props.i)+1}`}
             keyPath={[other, props.i, 'label']}
-            trackErrors={[`${other} label`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${other} label`]}
             errorUtility={props.errorUtility}
             onBlur={props.validate}
             tooltip={props.tooltip && tooltips.otherLabel}
@@ -294,7 +288,7 @@ function OtherCard (props) {
 
         <ReduxErrorIndicator
           errorsKeyPath={[other, props.i, 'errors']}
-          trackErrors={[`${other} label`]}
+          indicatorErrors={[`${other} label`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -306,8 +300,7 @@ function OtherCard (props) {
             label='URL'
             onBlur={props.validate}
             keyPath={[other, props.i, 'href']}
-            trackErrors={[`${other} href`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${other} href`]}
             errorUtility={props.errorUtility}
             tooltipUtility={props.tooltipUtility}
             style="floatRight" />
@@ -315,7 +308,7 @@ function OtherCard (props) {
 
         <ReduxErrorIndicator
           errorsKeyPath={[other, props.i, 'errors']}
-          trackErrors={[`${other} href`]}
+          indicatorErrors={[`${other} href`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -335,8 +328,7 @@ function StatusUpdateCard (props) {
             label='Update Type (Required)'
             onSelect={props.validate}
             keyPath={[update, props.i, 'type']}
-            trackErrors={[`${update} type`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${update} type`]}
             errorUtility={props.errorUtility}
             style="textAlignSelect"
             tooltip={props.tooltip && tooltips.updateType}
@@ -348,8 +340,7 @@ function StatusUpdateCard (props) {
             label="Update Date"
             onSelect={props.validate}
             keyPath={[update, props.i]}
-            trackErrors={[`${update} date`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${update} date`]}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.updateDate}
             tooltipUtility={props.tooltipUtility}
@@ -359,7 +350,7 @@ function StatusUpdateCard (props) {
         <ReduxErrorIndicator
           style="dateErrorHolder"
           errorsKeyPath={[update, props.i, 'errors']}
-          trackErrors={[`${update} type`, `${update} date`]}
+          indicatorErrors={[`${update} type`, `${update} date`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -371,8 +362,7 @@ function StatusUpdateCard (props) {
             label='DOI for Update'
             onBlur={props.validate}
             keyPath={[update, props.i, 'doi']}
-            trackErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.updateDoi}
             tooltipUtility={props.tooltipUtility}
@@ -381,7 +371,7 @@ function StatusUpdateCard (props) {
 
         <ReduxErrorIndicator
           errorsKeyPath={[update, props.i, 'errors']}
-          trackErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
+          indicatorErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -401,8 +391,7 @@ function ClinicalTrialsCards (props) {
             label='Clinical trial registry (Required)'
             onSelect={props.validate}
             keyPath={[clinical, props.i, 'registry']}
-            trackErrors={[`${clinical} registry`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${clinical} registry`]}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.clinicalTrialRegistry}
             tooltipUtility={props.tooltipUtility}
@@ -413,8 +402,7 @@ function ClinicalTrialsCards (props) {
             label="Registered trial number (Required)"
             onBlur={props.validate}
             keyPath={[clinical, props.i, 'trialNumber']}
-            trackErrors={[`${clinical} trialNumber`]}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            indicatorErrors={[`${clinical} trialNumber`]}
             errorUtility={props.errorUtility}
             tooltip={props.tooltip && tooltips.clinicalTrialNumber}
             tooltipUtility={props.tooltipUtility}
@@ -423,7 +411,7 @@ function ClinicalTrialsCards (props) {
 
         <ReduxErrorIndicator
           errorsKeyPath={[clinical, props.i, 'errors']}
-          trackErrors={[`${clinical} registry`, `${clinical} trialNumber`]}
+          indicatorErrors={[`${clinical} registry`, `${clinical} trialNumber`]}
           errorMessages={props.errorMessages}
           tooltipUtility={props.tooltipUtility}
           errorUtility={props.errorUtility}/>
@@ -437,7 +425,7 @@ function ClinicalTrialsCards (props) {
             keyPath={[clinical, props.i, 'type']}
             tooltip={props.tooltip && tooltips.clinicalRelationship}
             tooltipUtility={props.tooltipUtility}
-            setErrorMessages={props.errorUtility.setErrorMessages}
+            errorUtility={props.errorUtility}
             options={['Pre-Results', 'Results', 'Post-Results']}/>
         </div>
       </div>
