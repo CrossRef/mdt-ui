@@ -22,7 +22,6 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
-  reduxControlModal: controlModal
 }, dispatch)
 
 
@@ -31,9 +30,9 @@ export default class AddIssueModal extends Component {
 
   static propTypes = {
     pubDoi: is.string.isRequired,
-    reduxControlModal: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
-    publication: is.object.isRequired
+    publication: is.object.isRequired,
+    close: is.func.isRequired //close function and reduxControlModal provided by modal container parent
   }
 
   constructor (props) {
@@ -428,11 +427,6 @@ export default class AddIssueModal extends Component {
   }
 
 
-  closeModal = () => {
-    this.props.reduxControlModal({showModal:false})
-  }
-
-
   helperSwitch = () => {
       this.setState({showHelper: !this.state.showHelper})
   }
@@ -486,7 +480,7 @@ export default class AddIssueModal extends Component {
         handler={this.handler}
         addSubItem={this.addSubItem}
         removeSubItem={this.removeSubItem}
-        closeModal={this.closeModal}
+        closeModal={this.props.close}
         helperSwitch={this.helperSwitch}
         errorUtility={this.errorUtility}
         validate={this.validate}
