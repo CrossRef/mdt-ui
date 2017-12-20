@@ -3,6 +3,7 @@ import is from 'prop-types'
 
 import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial } from './crossmarkCards'
 import {cardNames} from '../../../../utilities/crossmarkHelpers'
+import AddList from './addList'
 const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
 
 const crossmarkCardSelector = {
@@ -14,6 +15,7 @@ const crossmarkCardSelector = {
   [clinical]: ClinicalTrials,
   [update]: StatusUpdate
 }
+
 
 
 
@@ -94,11 +96,7 @@ export class Crossmark extends Component {
             <a className='tooltips' onClick={this.toggle}>
               Add New
               {this.state.showList &&
-              <div className='crossmarkAddList'>
-                {addList.map((value, index) =>
-                  <a className='crossmark' onClick={()=>this.addCrossmarkCard(value)} key={index}>{value}</a>
-                )}
-              </div>
+                <AddList addList={addList} addCrossmarkCard={this.addCrossmarkCard} toggle={this.toggle}/>
               }
             </a>
           </div>
