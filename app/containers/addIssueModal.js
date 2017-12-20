@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { controlModal, getPublications } from '../actions/application'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
-import {finishUpdate, doiEntered} from '../utilities/helpers'
+import {finishUpdate, doiEntered, escapeString} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
@@ -186,7 +186,7 @@ export default class AddIssueModal extends Component {
       }
 
       const newRecord = {
-        'title': JSON.parse(newTitleId),
+        'title': {issue: escapeString(issue), volume: escapeString(volume), title: escapeString(title)},
         'date': new Date(),
         'doi': issueDoi,
         'owner-prefix': this.state.ownerPrefix,

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import {browserHistory} from 'react-router'
 import { XMLSerializer, DOMParser } from 'xmldom'
 
-import {compareDois} from '../../../utilities/helpers'
+import {compareDois, escapeString} from '../../../utilities/helpers'
 import {routes} from '../../../routing'
 import * as api from '../../../actions/api'
 import journalArticleXml from '../../AddArticlePage/articleXmlGenerator'
@@ -29,7 +29,7 @@ export default async function (addToCart) {
     const title = this.state.article.title
 
     const newRecord = {
-      'title':JSON.parse(JSON.stringify({'title': title})),
+      'title': {title: escapeString(title)},
       'date': new Date(),
       'doi': this.state.article.doi,
       'owner-prefix': this.state.ownerPrefix,
@@ -38,7 +38,6 @@ export default async function (addToCart) {
       'status': 'draft',
       'content': new XMLSerializer().serializeToString(journalDoc)
     }
-
 
     let savePub = publication
 
