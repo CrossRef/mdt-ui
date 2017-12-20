@@ -3,9 +3,8 @@ import is from 'prop-types'
 
 //import ReactPaginate from 'react-paginate';
 import Pagination from 'rc-pagination';
-import {makeDateDropDown} from '../../utilities/date'
 import {routes} from '../../routing'
-import Calendar from './calendar'
+import HistoryDate from './historyDate'
 
 
 
@@ -13,7 +12,7 @@ import Calendar from './calendar'
 export default class DepositHistoryView extends Component {
   static propTypes = {
     listDepositHistory: is.func.isRequired,
-    boundSetState: is.func.isRequired,
+    calendarHandler: is.func.isRequired,
     handleChange: is.func.isRequired,
     handlePageClick: is.func.isRequired
   }
@@ -43,70 +42,27 @@ export default class DepositHistoryView extends Component {
         </div>
         <div className='dateSearchHolder'>
           <div className='start'>
-            <div className='datepickerholder'>
-              <div className='dateselectholder'>
-                <div>&nbsp;</div>
-                <div className='labelHolder'>Date From</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Year</div>
-                <div>{makeDateDropDown(this.props.handleChange,'startYear','y', this.props.startYear)}</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Month</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'startMonth','m', this.props.startMonth)}
-                </div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Day</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'startDate','d', this.props.startDate)}
-                </div>
-              </div>
-              <div className='dateselectholder dateicon'>
-                <div>&nbsp;</div>
-                <div className='iconHolder'>
-                  {this.props.startCalendarOpen && <Calendar type='start' setParentState={this.props.boundSetState} date={this.props.startFullDate} query={this.props.query}/>}
-                  <a className="calendarButton" onClick={()=>this.props.boundSetState({startCalendarOpen: !this.props.startCalendarOpen, endCalendarOpen: false})}>
-                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
-                  </a>
-                </div>
-              </div>
-            </div>
+            <HistoryDate
+              name="start"
+              changeHandler={this.props.handleChange}
+              fullDate={this.props.startFulldate}
+              activeCalendar={this.props.activeCalendar}
+              calendarHandler={this.props.calendarHandler}
+              yearValue={this.props.startYear}
+              monthValue={this.props.startMonth}
+              dayValue={this.props.startDate}/>
+
           </div>
           <div className='end'>
-            <div className='datepickerholder'>
-              <div className='dateselectholder'>
-                <div>&nbsp;</div>
-                <div className='labelHolder'>Date To</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Year</div>
-                <div>{makeDateDropDown(this.props.handleChange,'endYear','y', this.props.endYear)}</div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Month</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'endMonth','m', this.props.endMonth)}
-                </div>
-              </div>
-              <div className='dateselectholder'>
-                <div>Day</div>
-                <div>
-                  {makeDateDropDown(this.props.handleChange,'endDate','d', this.props.endDate)}
-                </div>
-              </div>
-              <div className='dateselectholder dateicon'>
-                <div>&nbsp;</div>
-                <div className='iconHolder'>
-                  {this.props.endCalendarOpen && <Calendar type='end' setParentState={this.props.boundSetState} date={this.props.endFullDate} query={this.props.query}/>}
-                  <a className="calendarButton" onClick={()=>this.props.boundSetState({endCalendarOpen: !this.props.endCalendarOpen, startCalendarOpen: false})}>
-                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
-                  </a>
-                </div>
-              </div>
-            </div>
+            <HistoryDate
+              name="end"
+              changeHandler={this.props.handleChange}
+              fullDate={this.props.endFulldate}
+              activeCalendar={this.props.activeCalendar}
+              calendarHandler={this.props.calendarHandler}
+              yearValue={this.props.endYear}
+              monthValue={this.props.endMonth}
+              dayValue={this.props.endDate}/>
           </div>
         </div>
         <div className='doiSearchHolder'>
@@ -122,6 +78,7 @@ export default class DepositHistoryView extends Component {
         <tbody>
           <tr>
             <th className='first'>Deposit ID</th>
+
             <th className="titleCell">
               <span
                 className={`cursor ${(sortField === 'title') && 'sorted'}`}
@@ -132,6 +89,7 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((sortField === 'title' && order === 'asc') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
             <th className="dateCell">
               <span
                 className={`cursor ${(sortField === 'event_timestamp') && 'sorted'}`}
@@ -142,6 +100,7 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((sortField === 'event_timestamp' && order === 'asc') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
             <th className="typeCell">
               <span
                 className={`cursor ${(sortField === 'type') && 'sorted'}`}
@@ -152,6 +111,7 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((order === 'asc' && sortField === 'type') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
             <th className="statusCell">
               <span
                 className={`cursor ${(sortField === 'event_status') && 'sorted'}`}
@@ -162,6 +122,9 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((order === 'asc' && sortField === 'event_status') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
+            <th className='errorCell'/>
+
             <th className='last'>
               <span
                 className={`cursor ${(sortField === 'doi') && 'sorted'}`}
@@ -173,9 +136,9 @@ export default class DepositHistoryView extends Component {
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
           </tr>
-          {
-            this.props.listDepositHistory()
-          }
+
+          {this.props.listDepositHistory()}
+
           </tbody>
         </table>
         <Pagination className="pagination"

@@ -1,8 +1,10 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
+import { Link } from 'react-router'
 
 import DepositCartRecord from './depositCartRecord'
 import {DeferredTask} from '../../utilities/helpers'
+import {routes} from '../../routing'
 
 
 
@@ -100,7 +102,11 @@ export default class DepositCartItem extends Component {
                   <tbody>
                     <tr className="borderBottom">
                       <td className='stateIcon deposittitle'>&nbsp;</td>
-                      <td className='depositpubtitle'><a href="">{this.props.cartItem.title}</a></td>
+                      <td className='depositpubtitle'>
+                        <Link to={`${routes.publications}/${encodeURIComponent(this.props.cartItem.doi)}`}>
+                          {this.props.cartItem.title}
+                        </Link>
+                      </td>
                       <td className="status">{/*{pascaleCase(this.props.cartItem.status)}*/}</td>
                       <td className="action">{this.props.inCart && <a onClick={this.remove}>Remove</a>}</td>
                       <td className='titlerror errorholder'>&nbsp;</td>

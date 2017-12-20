@@ -17,14 +17,13 @@ export default class DepositHistoryPage extends Component {
     super(props)
     this.state = {
       depositHistory: [],
-      startCalendarOpen: false,
-      startFullDate: '',
+      activeCalendar: '',
+      startFullDate: undefined,
       startDate: '',
       startMonth: '',
       startYear: '',
-      endCalendarOpen: false,
-      endFullDate: '',
-      endDate: '31',
+      endFullDate: undefined,
+      endDate: '',
       endMonth: '12',
       endYear: '',
       total: 0,
@@ -38,9 +37,11 @@ export default class DepositHistoryPage extends Component {
         offset: 0,
         worktype: 'article'
       },
-      serverError: ''
+      serverError: '',
+      activeErrorMessage: ''
     }
   }
+
 
   componentWillMount () {
     api.getDepositHistory(cleanObj(this.state.query)).then(results => {
@@ -51,6 +52,7 @@ export default class DepositHistoryPage extends Component {
     })
       .catch(e => this.setState({serverError: e}))
   }
+
 
   componentWillUpdate (nextProps, nextState) {
     if (this.state.query !== nextState.query) {
@@ -64,6 +66,7 @@ export default class DepositHistoryPage extends Component {
     }
   }
 
+
   handlePageClick = (current, pageSize) => {
     var selected = current
     let offset = Math.ceil(selected * this.state.query.count)
@@ -71,6 +74,7 @@ export default class DepositHistoryPage extends Component {
       query: update(this.state.query, {offset: {$set: offset}})
     })
   }
+
 
   handleChange = (e, sortFields) => {
     if (e.target) {
@@ -147,12 +151,16 @@ export default class DepositHistoryPage extends Component {
         query: update(this.state.query, sortFields)
       })
     }
-
   }
 
+
+  errorMessageHandler = (name) => {
+    this.setState({activeErrorMessage: name})
+  }
+
+
   listDepositHistory = () => {
-    var depositHistory = []
-    _.each(this.state.depositHistory, (historyItem, i) => {
+    return this.state.depositHistory.map((historyItem, i) => {
       const historyInfo = xmldoc(historyItem.eventInfo)
       const depositId = objectSearch(historyInfo, 'submission_id')
       const depositDate = historyItem.eventTime
@@ -160,38 +168,54 @@ export default class DepositHistoryPage extends Component {
       const status = historyItem.evenStatus
       const doi = historyItem.doi
       const pubDoi = historyItem.pubDoi
-      var titleObj = JSON.parse(historyItem.title)
+      const titleObj = JSON.parse(historyItem.title)
       const title = titleObj.title
-      depositHistory.push({
-        version: mdtVersion,
-        id: depositId,
-        date: depositDate,
-        doi: doi,
-        title: title,
-        pubDoi: pubDoi,
-        status: status === 'OK' ? 'Accepted' : 'Failed'
-      })
-    })
+      const errorMessage = objectSearch(historyInfo, 'msg')
 
-    return depositHistory.map((historyItem, i) => {
+      const uniqueId = `${i}-${doi}-${title}-${depositId}`
+
       return (
         <DepositHistoryItem
-          key={i}
-          history={historyItem}
-        />
+          key={uniqueId}
+          name={uniqueId}
+          activeErrorMessage={this.state.activeErrorMessage}
+          errorMessageHandler={this.errorMessageHandler}
+          history={{
+            version: mdtVersion,
+            id: depositId,
+            date: depositDate,
+            doi: doi,
+            title: title,
+            pubDoi: pubDoi,
+            status: status === 'OK' ? 'Accepted' : 'Failed',
+            errorMessage
+          }}/>
       )
     })
   }
 
-  boundSetState = (object) => {
-    this.setState(object)
+
+  calendarHandler = (target, dateObj) => {
+    const datePayload = dateObj ? {
+      [`${this.state.activeCalendar}FullDate`]: dateObj.fullDate,
+      [`${this.state.activeCalendar}Date`]: dateObj.day,
+      [`${this.state.activeCalendar}Month`]: dateObj.month,
+      [`${this.state.activeCalendar}Year`]: dateObj.year,
+      query: {...this.state.query, [this.state.activeCalendar]: `${dateObj.year}-${dateObj.month}-${dateObj.day}`}
+    } : {}
+
+    this.setState({
+      activeCalendar: target,
+      ...datePayload
+    })
   }
+
 
   render () {
     return (
       <DepositHistoryView
         listDepositHistory={this.listDepositHistory}
-        boundSetState={this.boundSetState}
+        calendarHandler={this.calendarHandler}
         handleChange={this.handleChange}
         handlePageClick={this.handlePageClick}
 
