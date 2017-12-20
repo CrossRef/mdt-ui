@@ -15,9 +15,7 @@ export default class Search extends Component {
     asyncSearch: is.func.isRequired,
     results: is.array,
     publications: is.object.isRequired,
-    loading: is.bool.isRequired,
-    crossmarkPrefixes: is.array.isRequired,
-    prefixes: is.array.isRequired
+    loading: is.bool.isRequired
   }
 
   constructor (props) {
