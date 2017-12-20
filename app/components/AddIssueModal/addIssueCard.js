@@ -24,6 +24,7 @@ AddIssueCard.propTypes = {
   errorUtility: is.object.isRequired,
   boundSetState: is.func.isRequired,
   tooltipUtility: is.object.isRequired,
+  calendarHandler: is.object.isRequired
 }
 
 
@@ -62,7 +63,7 @@ export default function AddIssueCard (props) {
                 <div className='fieldHolder'>
                   <FormInput
                     label="Issue"
-                    name="issue.issue"
+                    name="issue"
                     value={props.issue.issue}
                     changeHandler={props.handler}
                     error={errors.issueVolume || (!!props.issue.issue && errors.dupTitleIdIssue) || errors.issueNumberLimit}
@@ -75,7 +76,7 @@ export default function AddIssueCard (props) {
 
                   <FormInput
                     label="Issue Title"
-                    name="issue.issueTitle"
+                    name="issueTitle"
                     value={props.issue.issueTitle}
                     changeHandler={props.handler}
                     errorUtility={props.errorUtility}
@@ -100,7 +101,7 @@ export default function AddIssueCard (props) {
                 <div className='fieldHolder'>
                   <FormInput
                     label="Issue DOI"
-                    name="issue.issueDoi"
+                    name="issueDoi"
                     value={props.issue.issueDoi}
                     changeHandler={props.handler}
                     disabled={props.issueDoiDisabled}
@@ -114,7 +115,7 @@ export default function AddIssueCard (props) {
 
                   <FormInput
                     label="Issue URL"
-                    name="issue.issueUrl"
+                    name="issueUrl"
                     value={props.issue.issueUrl}
                     changeHandler={props.handler}
                     error={errors.issueUrl || errors.invalidissueurl}
@@ -140,7 +141,7 @@ export default function AddIssueCard (props) {
                 <div className='fieldHolder'>
                   <FormDate issue
                     label="Print Date"
-                    name="issue.printDate"
+                    name="printDate"
                     required={!props.issue.onlineDateYear || errors.printDateIncomplete}
                     changeHandler={props.handler}
                     onSelect={props.validate}
@@ -149,6 +150,8 @@ export default function AddIssueCard (props) {
                     error={errors.printDateInvalid}
                     indicatorErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
                     errorUtility={props.errorUtility}
+                    activeCalendar={props.activeCalendar}
+                    calendarHandler={props.calendarHandler}
                     fields={{
                       year: {
                         value: props.issue.printDateYear,
@@ -165,7 +168,7 @@ export default function AddIssueCard (props) {
 
                   <FormDate issue
                     label="Online Date"
-                    name="issue.onlineDate"
+                    name="onlineDate"
                     required={!props.issue.printDateYear || errors.onlineDateIncomplete}
                     changeHandler={props.handler}
                     onSelect={props.validate}
@@ -174,6 +177,8 @@ export default function AddIssueCard (props) {
                     error={errors.onlineDateInvalid}
                     indicatorErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
                     errorUtility={props.errorUtility}
+                    activeCalendar={props.activeCalendar}
+                    calendarHandler={props.calendarHandler}
                     fields={{
                       year: {
                         value: props.issue.onlineDateYear,
@@ -204,7 +209,7 @@ export default function AddIssueCard (props) {
                 <div className='fieldHolder'>
                   <FormSelect
                     label="Archive Location"
-                    name="issue.archiveLocation"
+                    name="archiveLocation"
                     value={props.issue.archiveLocation}
                     options={ArchiveLocations}
                     errorUtility={props.errorUtility}
@@ -215,7 +220,7 @@ export default function AddIssueCard (props) {
 
                   <FormInput
                     label="Special Issue Number"
-                    name="issue.specialIssueNumber"
+                    name="specialIssueNumber"
                     value={props.issue.specialIssueNumber}
                     error={errors.specialNumberLimit}
                     indicatorErrors={['specialNumberLimit']}
@@ -242,7 +247,7 @@ export default function AddIssueCard (props) {
                 <div className='fieldHolder'>
                   <FormInput
                     label="Volume"
-                    name="issue.volume"
+                    name="volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}
                     error={errors.volumeIssue || (!!props.issue.volume && errors.dupTitleIdVolume) || errors.volumeNumberLimit}
@@ -268,7 +273,7 @@ export default function AddIssueCard (props) {
                 <div className='fieldHolder'>
                   <FormInput
                     label="Volume DOI"
-                    name="issue.volumeDoi"
+                    name="volumeDoi"
                     value={props.issue.volumeDoi}
                     changeHandler={props.handler}
                     disabled={props.volumeDoiDisabled}
@@ -282,7 +287,7 @@ export default function AddIssueCard (props) {
 
                   <FormInput
                     label="Volume URL"
-                    name="issue.volumeUrl"
+                    name="volumeUrl"
                     value={props.issue.volumeUrl}
                     changeHandler={props.handler}
                     error={errors.volumeUrl || errors.invalidvolumeurl}

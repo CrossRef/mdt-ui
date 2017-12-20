@@ -1,9 +1,10 @@
 import React from 'react'
-import ReactDOM from 'react-dom'
 import is from 'prop-types'
+import moment from 'moment'
 
 import {routes} from '../../routing'
-import {MakeDateDropDown} from '../../utilities/date'
+import DateSelect from './dateSelect'
+import Calendar from '../Common/calendar'
 
 
 
@@ -19,12 +20,15 @@ export default class FormDate extends React.Component {
     allErrors: is.object,
     errorUtility: is.object.isRequired,
     subItemIndex: is.string,
+    subItem: is.string,
     changeHandler: is.func.isRequired,
     onSelect: is.func,
     onBlur: is.func,
     onFocus: is.func,
     tooltip: is.object,
     tooltipUtility: is.object.isRequired,
+    activeCalendar: is.string.isRequired,
+    calendarHandler: is.func.isRequired,
     fields: is.shape({
       year: is.shape({
         value: is.string.isRequired,
@@ -47,7 +51,7 @@ export default class FormDate extends React.Component {
 
   generateId = () => {
     if(Array.isArray(this.props.name)) {
-      return `${this.props.name.join('-')}`
+      return `${this.props.name.join('-')}`.replace(/\s+/g, '')
     }
 
     return `${this.props.name}-${this.props.subItemIndex}`
@@ -97,7 +101,12 @@ export default class FormDate extends React.Component {
 
 
   render() {
-    const isFocus = this.props.tooltipUtility.getFocusedInput() === this.generateId()
+    const generatedId = this.generateId()
+    const isFocus = this.props.tooltipUtility.getFocusedInput() === generatedId
+    const {year, month, day} = this.props.fields
+    const fullDate = year.value && month.value && day.value ?
+      moment(`${year.value}-${month.value.length > 1 ? month.value : `0${month.value}`}-${day.value.length > 1 ? day.value : `0${day.value}`}`)
+      : moment()
 
     return (
       <div className='fieldinnerholder halflength'>
@@ -120,7 +129,7 @@ export default class FormDate extends React.Component {
               <div className='dateselectholder'>
                 <div>Year {this.props.fields.year.required ? '(*)' : ''}</div>
                 <div>
-                  <MakeDateDropDown
+                  <DateSelect
                     handler={this.onSelect}
                     name={`${typeof this.props.name === 'string' ? this.props.name : ''}Year`}
                     type="y"
@@ -133,7 +142,7 @@ export default class FormDate extends React.Component {
               <div className='dateselectholder'>
                 <div>Month</div>
                 <div>
-                  <MakeDateDropDown
+                  <DateSelect
                     handler={this.onSelect}
                     name={`${typeof this.props.name === 'string' ? this.props.name : ''}Month`}
                     type="m"
@@ -146,7 +155,7 @@ export default class FormDate extends React.Component {
               <div className='dateselectholder'>
                 <div>Day</div>
                 <div>
-                  <MakeDateDropDown
+                  <DateSelect
                     handler={this.onSelect}
                     name={`${typeof this.props.name === 'string' ? this.props.name : ''}Day`}
                     type="d"
@@ -158,9 +167,20 @@ export default class FormDate extends React.Component {
               </div>
               <div className='dateicon'>
                 <div>&nbsp;</div>
-                <div className={`iconHolder ${isFocus && this.props.tooltip ? 'infoFlag infoFlagIconHolder' : ''}`}>
-                  <a className="calendarButton">
-                    <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                <div className={`iconHolder ${generatedId}Container ${isFocus && this.props.tooltip ? 'infoFlag infoFlagIconHolder' : ''}`}>
+                  {this.props.activeCalendar === generatedId &&
+                    <Calendar
+                      name={generatedId}
+                      calendarHandler={this.props.calendarHandler}
+                      activeCalendar={this.props.activeCalendar}
+                      date={fullDate}
+                      subItem={this.props.subItem}
+                      subItemIndex={this.props.subItemIndex}
+                    />}
+
+                  <a className="calendarButton"
+                    onClick={()=>{this.props.calendarHandler(this.props.activeCalendar === generatedId ? '' : generatedId)}}>
+                      <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
                   </a>
                 </div>
               </div>

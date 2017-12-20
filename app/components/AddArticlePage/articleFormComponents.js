@@ -87,6 +87,8 @@ export class DatesRow extends Component {
             errorUtility={this.props.errorUtility}
             required={!onlineDateYear}
             tooltipUtility={this.props.tooltipUtility}
+            activeCalendar={this.props.activeCalendar}
+            calendarHandler={this.props.calendarHandler}
             fields={{
               year: {
                 value: printDateYear,
@@ -113,6 +115,8 @@ export class DatesRow extends Component {
             errorUtility={this.props.errorUtility}
             required={!printDateYear}
             tooltipUtility={this.props.tooltipUtility}
+            activeCalendar={this.props.activeCalendar}
+            calendarHandler={this.props.calendarHandler}
             fields={{
               year: {
                 value: onlineDateYear,
