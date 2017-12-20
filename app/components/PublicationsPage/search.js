@@ -14,6 +14,7 @@ export default class Search extends Component {
     asyncSubmitPublication: is.func.isRequired,
     asyncSearch: is.func.isRequired,
     results: is.array,
+    publications: is.object.isRequired,
     loading: is.bool.isRequired,
     crossmarkPrefixes: is.array.isRequired,
     prefixes: is.array.isRequired
@@ -123,14 +124,32 @@ export default class Search extends Component {
   }
 
 
-  RenderItem = class extends Component {
+  renderItem = item => {
+    let addable = true
+    for (let pubDoi in this.props.publications) {
+      if(item.doi.some( doi => doi === pubDoi)) {
+        addable = false
+        break
+      }
+      if(this.props.publications[pubDoi].message.title.title === item.title) {
+        addable = false
+        break
+      }
+    }
+    return (
+      <this.ItemComponent key={`${item.title}-${item.doi}`} item={item} addable={addable}/>
+    )
+  }
+
+  //Item component has to be a class object because Autocomplete needs to use refs which are only available with classes
+  ItemComponent = class extends Component {
     render () {
-      const {item, ...props} = this.props
+      const {item, addable, ...props} = this.props
 
       return (
-        <div className='search-result-holder' {...props}>
+        <div className={`search-result-holder ${!addable ? 'notAddable' : ''}`} {...(addable ? props : {})}>
           <div className='search-result'>{item.title}</div>
-          <div className="add">Add</div>
+          {addable && <div className="add">Add</div>}
         </div>
       )
     }
@@ -151,7 +170,7 @@ export default class Search extends Component {
           getItemValue={(item) => item.title}
           onSelect={this.onSelect}
           onChange={this.onChange}
-          renderItem={ item => <this.RenderItem key={`${item.title}-${item.doi}`} item={item}/>}
+          renderItem={this.renderItem}
           renderMenu={(items, value, style) =>
             <div className='publication-search-results'>
               {this.props.loading ? (

@@ -13,7 +13,8 @@ import AddPublicationModal from './addPublicationModal'
 const mapStateToProps = state => ({
   DOIs: state.dois,
   searchResults: state.search.result,
-  loading: state.search.loading
+  loading: state.search.loading,
+  publications: state.publications
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -30,6 +31,7 @@ export default class PublicationsPage extends Component {
   static propTypes = {
     DOIs: is.array.isRequired,
     searchResults: is.array,
+    publications: is.object.isRequired,
     reduxControlModal: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
     asyncSearch: is.func.isRequired,
@@ -48,13 +50,14 @@ export default class PublicationsPage extends Component {
 
 
   render () {
-    const { searchResults, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication} = this.props;
+    const { searchResults, publications, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication} = this.props;
     return (
       <div className='publications'>
         <div className='management-bar'>
           <Search
             asyncSearch={asyncSearch}
             results={searchResults}
+            publications={publications}
             loading={loading}
             reduxControlModal={reduxControlModal}
             asyncSubmitPublication={asyncSubmitPublication}/>

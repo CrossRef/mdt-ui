@@ -110,8 +110,8 @@ export default class AddPublicationModal extends Component {
       let pissn = '', eissn = ''
       if(Array.isArray(result.issns)) {
         result.issns.forEach(issn => {
-          if(issn.type === 'pissn') pissn = issn.issn
-          if(issn.type === 'eissn') eissn = issn.issn
+          if(issn.type === 'pissn') pissn = issn.issn || ''
+          if(issn.type === 'eissn') eissn = issn.issn || ''
         })
       }
       this.state = {
