@@ -38,17 +38,17 @@ export default async function () {
 
 
   //Build publication metadata and xml
-  let publicationXml = isNewArticle || isDuplicate ?
-    publicationData.message.content.substring(
+  let publicationXml
+  if(isNewArticle || isDuplicate) {
+    publicationXml = publicationData.message.content.substring(
       publicationData.message.content.indexOf('<journal_metadata>'),
       publicationData.message.content.indexOf('</journal_metadata>') + 19
     )
-  : ''
 
-  if(!publicationXml) {
+  } else {
     let article = fullHierarchy.message.contains[0].type === 'article' ?
       fullHierarchy.message.contains[0]
-    : fullHierarchy.message.contains[0].contains[0]
+      : fullHierarchy.message.contains[0].contains[0]
 
     publicationXml = article.content.substring(
       article.content.indexOf('<journal_metadata>'),
@@ -59,7 +59,7 @@ export default async function () {
   const publicationMetaData = xmldoc(publicationXml)
 
 
-  //In case of duplicate, copy publicationData info into the fullHierarchy object which will be used to submit
+  //In case of duplicate, copy updated publicationData info into the fullHierarchy object which will be used to submit
   if(isDuplicate) {
     delete fullHierarchy.message.content
     fullHierarchy.message.date = publicationData.message.date

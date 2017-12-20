@@ -120,6 +120,7 @@ export default class RelatedItems extends Component {
                 errorUtility={this.props.errorUtility}
                 allErrors={errors}
                 subItem='relatedItems'
+                tooltipUtility={this.props.tooltipUtility}
                 subItemIndex={String(this.props.index)}/>
             </div>
 
@@ -159,6 +160,7 @@ export default class RelatedItems extends Component {
                 errorUtility={this.props.errorUtility}
                 allErrors={errors}
                 subItem='relatedItems'
+                tooltipUtility={this.props.tooltipUtility}
                 subItemIndex={String(this.props.index)}/>
             </div>
           </div>

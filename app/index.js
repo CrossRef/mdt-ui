@@ -50,6 +50,7 @@ Merged branches / tickets in this build
 
 MM-168
 MM-150
+MM-195
 MM-135
 MM-191
 MM-127

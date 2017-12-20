@@ -89,10 +89,10 @@ export default class Search extends Component {
 
   RenderItem = class extends Component {
     render () {
-      const {item} = this.props
+      const {item, ...props} = this.props
 
       return (
-        <div className='search-result-holder'>
+        <div className='search-result-holder' {...props}>
           <div className='search-result'>{item.title}</div>
           <div className="add">Add</div>
         </div>
