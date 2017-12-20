@@ -89,8 +89,7 @@ export default class RelatedItems extends Component {
                   error={relatedItemDoiInvalid}
                   value={relatedItemIdentifier}
                   changeHandler={this.handleRelatedItems}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['relatedItemDoiInvalid']}
+                  indicatorErrors={['relatedItemDoiInvalid']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
@@ -106,8 +105,7 @@ export default class RelatedItems extends Component {
                   value={identifierType}
                   options={IdentifierTypes}
                   changeHandler={this.handleRelatedItems}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['relatedItemIdType']}
+                  indicatorErrors={['relatedItemIdType']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
@@ -117,7 +115,7 @@ export default class RelatedItems extends Component {
               </div>
 
               <ErrorIndicator
-                trackErrors={['relatedItemIdType', 'relatedItemDoiInvalid']}
+                indicatorErrors={['relatedItemIdType', 'relatedItemDoiInvalid']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 allErrors={errors}
@@ -133,7 +131,7 @@ export default class RelatedItems extends Component {
                   name="description"
                   value={description}
                   changeHandler={this.handleRelatedItems}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   tooltipUtility={this.props.tooltipUtility}
                   tooltip={this.props.tooltip && tooltips.relatedItemDescription}
                   subItemIndex={String(this.props.index)}
@@ -148,8 +146,7 @@ export default class RelatedItems extends Component {
                   options={RelationTypes}
                   changeHandler={this.handleRelatedItems}
                   onSelect={this.props.validate}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['relatedItemRelType']}
+                  indicatorErrors={['relatedItemRelType']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
@@ -158,7 +155,7 @@ export default class RelatedItems extends Component {
               </div>
 
               <ErrorIndicator
-                trackErrors={['relatedItemRelType']}
+                indicatorErrors={['relatedItemRelType']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 allErrors={errors}

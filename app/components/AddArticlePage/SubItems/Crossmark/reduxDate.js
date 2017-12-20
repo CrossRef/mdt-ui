@@ -33,9 +33,8 @@ export default class ReduxDate extends Component {
     errors: is.object.isRequired,
     keyPath: is.array.isRequired,
     handler:is.func,
-    trackErrors: is.array,
-    setErrorMessages: is.func,
-    errorUtility: is.object,
+    indicatorErrors: is.array,
+    errorUtility: is.object.isRequired,
     tooltip: is.object,
     tooltipUtility: is.object.isRequired
   }
@@ -64,8 +63,7 @@ export default class ReduxDate extends Component {
         value={this.props.reduxValue}
         required={this.props.required}
         allErrors={this.props.errors}
-        trackErrors={this.props.trackErrors}
-        setErrorMessages={this.props.setErrorMessages}
+        indicatorErrors={this.props.indicatorErrors}
         subItemIndex={String(this.props.keyPath[1])}
         errorUtility={this.props.errorUtility}
         changeHandler={this.handler}

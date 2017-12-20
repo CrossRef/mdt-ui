@@ -150,32 +150,9 @@ export class DeferredTask {
   constructor () {
     this.promise = new Promise((resolve, reject) => {
 
-      this._resolve = resolve
-      this._reject = reject
+      this.reject = reject
 
-      this.reject = (x) => {
-        this._reject(x)
-        this.rejected = true
-      }
-
-      this.resolve = (x) => {
-        this._resolve(x)
-        this.resolved = true
-      }
-
-      this.resolved = false
-      this.rejected = false
-
-      this.reset = function () {
-        this.promise = new Promise((resolve, reject) => {
-
-          this._resolve = resolve
-          this._reject = reject
-
-          this.resolved = false
-          this.rejected = false
-        })
-      }
+      this.resolve = resolve
     })
   }
 }

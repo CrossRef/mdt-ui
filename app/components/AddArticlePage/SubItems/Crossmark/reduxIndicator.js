@@ -19,7 +19,7 @@ export default class ReduxIndicator extends Component {
   static propTypes = {
     className: is.string,
     errorsKeyPath: is.array.isRequired,
-    trackErrors: is.array.isRequired,
+    indicatorErrors: is.array.isRequired,
     errorMessages: is.array.isRequired,
     errorUtility: is.object.isRequired,
     tooltipUtility: is.object.isRequired,
@@ -32,7 +32,7 @@ export default class ReduxIndicator extends Component {
     return(
       <ErrorIndicator
         style={this.props.style}
-        trackErrors={this.props.trackErrors}
+        indicatorErrors={this.props.indicatorErrors}
         allErrors={this.props.allErrors}
         errorMessages={this.props.errorMessages}
         errorUtility={this.props.errorUtility}
