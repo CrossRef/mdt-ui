@@ -32,8 +32,7 @@ export default class Calendar extends Component {
 
 
   handleClick = e => {
-    const element = $(e.target)
-    if(!(element.parents(`.${this.props.name}Container`).length || element.is(`.${this.props.name}Container`))) {
+    if(!this.node.contains(e.target)) {
       this.props.calendarHandler('')
     }
   }
@@ -41,7 +40,7 @@ export default class Calendar extends Component {
 
   render() {
     return (
-      <div className={`${this.props.name}Calendar calendarContainer`}>
+      <div className={`${this.props.name}Calendar calendarContainer`} ref={ ref => this.node = ref}>
         <DatePicker
           selected={this.props.date}
           onChange={(date)=>{

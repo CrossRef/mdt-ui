@@ -45,7 +45,7 @@ export default class DepositHistoryView extends Component {
             <HistoryDate
               name="start"
               changeHandler={this.props.handleChange}
-              fullDate={this.props.startFulldate}
+              fullDate={this.props.startFullDate}
               activeCalendar={this.props.activeCalendar}
               calendarHandler={this.props.calendarHandler}
               yearValue={this.props.startYear}
@@ -57,7 +57,7 @@ export default class DepositHistoryView extends Component {
             <HistoryDate
               name="end"
               changeHandler={this.props.handleChange}
-              fullDate={this.props.endFulldate}
+              fullDate={this.props.endFullDate}
               activeCalendar={this.props.activeCalendar}
               calendarHandler={this.props.calendarHandler}
               yearValue={this.props.endYear}
