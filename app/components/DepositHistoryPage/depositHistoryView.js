@@ -78,6 +78,7 @@ export default class DepositHistoryView extends Component {
         <tbody>
           <tr>
             <th className='first'>Deposit ID</th>
+
             <th className="titleCell">
               <span
                 className={`cursor ${(sortField === 'title') && 'sorted'}`}
@@ -88,6 +89,7 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((sortField === 'title' && order === 'asc') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
             <th className="dateCell">
               <span
                 className={`cursor ${(sortField === 'event_timestamp') && 'sorted'}`}
@@ -98,6 +100,7 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((sortField === 'event_timestamp' && order === 'asc') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
             <th className="typeCell">
               <span
                 className={`cursor ${(sortField === 'type') && 'sorted'}`}
@@ -108,6 +111,7 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((order === 'asc' && sortField === 'type') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
             <th className="statusCell">
               <span
                 className={`cursor ${(sortField === 'event_status') && 'sorted'}`}
@@ -118,6 +122,9 @@ export default class DepositHistoryView extends Component {
                 className={'orderBy' + ((order === 'asc' && sortField === 'event_status') ? ' ordered' : '')}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
+
+            <th className='errorCell'/>
+
             <th className='last'>
               <span
                 className={`cursor ${(sortField === 'doi') && 'sorted'}`}
@@ -129,9 +136,9 @@ export default class DepositHistoryView extends Component {
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </th>
           </tr>
-          {
-            this.props.listDepositHistory()
-          }
+
+          {this.props.listDepositHistory()}
+
           </tbody>
         </table>
         <Pagination className="pagination"

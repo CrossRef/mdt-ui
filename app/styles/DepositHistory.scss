@@ -110,8 +110,65 @@
             .statusCell {
                 width: 85px
             }
+            .errorCell {
+              width: 60px;
+              .errorButton {
+                width: 25px;
+              }
+              .errorMessage {
+                background: white;
+                position: absolute;
+                margin-left: -188px;
+                margin-top: 10px;
+                width: 400px;
+                max-height: 350px;
+                padding: 0 0 0 12px;
+                box-shadow: 0px 1px 6px 3px #d0d0d0;
+
+                p {
+                  margin-left: 10px;
+                  margin-bottom: 12px;
+                  font-size: 1.03em;
+                  color: #676262;
+                }
+
+                .scrollBox {
+                  overflow: scroll;
+                  max-height: 305px;
+                  padding-right: 12px;
+
+                  .singleError {
+                    margin-bottom: 2px;
+                    color: white;
+                    background: #ff5354;
+                    white-space: normal;
+                    padding: 8px 12px 8px 12px;
+                    font-size: .9em;
+                    line-height: 200%;
+                  }
+                }
+              }
+
+              .errorContainer {
+                position: absolute;
+              }
+
+              .errorContainer:after {
+                content: "";
+                position: absolute;
+                width: 0;
+                height: 0;
+                left: 6px;
+                top: 3px;
+                border: .5em solid black;
+                border-color: transparent transparent white white;
+                transform: rotate(135deg);
+                box-shadow: -2px 2px 2px 0 #d0d0d0;
+              }
+            }
+
             td {
-                max-width: 290px;
+                max-width: 250px;
                 white-space: nowrap;
                 text-overflow: ellipsis;
                 overflow: hidden;
@@ -219,4 +276,3 @@
     -ms-transform: rotate(0deg);
     transform: rotate(0deg);
 }
-
