@@ -22,7 +22,6 @@ const mapStateToProps = (state, props) => ({
 
 const mapDispatchToProps = dispatch => bindActionCreators({
   asyncGetPublications: getPublications,
-  reduxControlModal: controlModal
 }, dispatch)
 
 
@@ -31,9 +30,9 @@ export default class AddIssueModal extends Component {
 
   static propTypes = {
     pubDoi: is.string.isRequired,
-    reduxControlModal: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
-    publication: is.object.isRequired
+    publication: is.object.isRequired,
+    close: is.func.isRequired //close function and reduxControlModal provided by modal container parent
   }
 
   constructor (props) {
@@ -50,6 +49,7 @@ export default class AddIssueModal extends Component {
 
     this.state.errorMessages = []
     this.state.focusedInput = ''
+    this.state.activeCalendar = ''
   }
 
 
@@ -307,11 +307,11 @@ export default class AddIssueModal extends Component {
     openingSubItem: false,
     subItemIndex: "0",
 
-    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex, openSubItem) => {
+    saveRef: (activeErrors, indicatorErrors, node, subItem, subItemIndex, openSubItem) => {
       if(node){
         this.errorUtility.errorIndicators.push({
           activeErrors,
-          trackErrors,
+          indicatorErrors,
           node,
           subItem,
           subItemIndex,
@@ -338,7 +338,7 @@ export default class AddIssueModal extends Component {
 
       const {errorIndicators, activeIndicator} = this.errorUtility
       const activeIndicatorObj = errorIndicators[activeIndicator]
-      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.indicatorErrors : []
       let newErrorMessages
       const {subItem, subItemIndex} = activeIndicatorObj || {}
 
@@ -416,20 +416,15 @@ export default class AddIssueModal extends Component {
 
 
   handler = (e) => {
-    const name = e.currentTarget.name.substr(e.currentTarget.name.indexOf('.') + 1, e.currentTarget.name.length-1)
+    const name = e.target.name
 
     if (name === 'issueUrl') {
-      (e.currentTarget.value.trim().length > 0) ? this.setState({showIssueDoiReq:true}) : this.setState({showIssueDoiReq:false})
+      (e.target.value.trim().length > 0) ? this.setState({showIssueDoiReq:true}) : this.setState({showIssueDoiReq:false})
     }
 
     this.setState({
-      issue: update(this.state.issue, {[name]: {$set: e.currentTarget.value ? e.currentTarget.value : '' }})
+      issue: update(this.state.issue, {[name]: {$set: e.target.value ? e.target.value : '' }})
     })
-  }
-
-
-  closeModal = () => {
-    this.props.reduxControlModal({showModal:false})
   }
 
 
@@ -477,6 +472,31 @@ export default class AddIssueModal extends Component {
   }
 
 
+  calendarHandler = (name, dateObj) => {
+    if(dateObj) {
+      const stateName = this.state.activeCalendar.split('-')[0]
+      const datePayload = {
+        [`${stateName}Year`]: dateObj.year,
+        [`${stateName}Month`]: dateObj.month,
+        [`${stateName}Day`]: dateObj.day
+      }
+
+      this.setState({
+        activeCalendar: name,
+        issue: {
+          ...this.state.issue,
+          ...datePayload
+        }
+      }, () => this.validate())
+
+    } else {
+      this.setState({
+        activeCalendar: name
+      })
+    }
+  }
+
+
   render () {
     this.errorUtility.errorIndicators = []  //Saving refs of any errorIndicators rendered so need to clear it before each render
     this.errorUtility.openingSubItem = false
@@ -486,12 +506,13 @@ export default class AddIssueModal extends Component {
         handler={this.handler}
         addSubItem={this.addSubItem}
         removeSubItem={this.removeSubItem}
-        closeModal={this.closeModal}
+        closeModal={this.props.close}
         helperSwitch={this.helperSwitch}
         errorUtility={this.errorUtility}
         validate={this.validate}
         boundSetState={this.boundSetState}
         tooltipUtility={this.tooltipUtility}
+        calendarHandler={this.calendarHandler}
         {...this.state}
       />
     )

@@ -44,8 +44,8 @@ export default class AdditionalInformation extends Component {
                 error={this.props.simCheckError}
                 changeHandler={this.handleAddInfo}
                 onBlur={this.props.validate}
-                setErrorMessages={this.props.errorUtility.setErrorMessages}
-                trackErrors={['simCheckUrlInvalid']}
+                errorUtility={this.props.errorUtility}
+                indicatorErrors={['simCheckUrlInvalid']}
                 tooltipUtility={this.props.tooltipUtility}
                 tooltip={this.props.tooltip && tooltips.similarityCheckURL}/>
 
@@ -56,13 +56,13 @@ export default class AdditionalInformation extends Component {
                 options={ArchiveLocations}
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
-                setErrorMessages={this.props.errorUtility.setErrorMessages}
+                errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
                 tooltip={this.props.tooltip && tooltips.archiveLocation}/>
             </div>
 
             <ErrorIndicator
-              trackErrors={['simCheckUrlInvalid']}
+              indicatorErrors={['simCheckUrlInvalid']}
               errorMessages={this.props.errorMessages}
               errorUtility={this.props.errorUtility}
               tooltipUtility={this.props.tooltipUtility}
@@ -77,7 +77,7 @@ export default class AdditionalInformation extends Component {
                 options={Languages}
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
-                setErrorMessages={this.props.errorUtility.setErrorMessages}
+                errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
                 tooltip={this.props.tooltip && tooltips.language}/>
             </div>

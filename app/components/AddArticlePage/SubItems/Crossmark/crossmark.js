@@ -26,7 +26,9 @@ export class Crossmark extends Component {
     tooltip: is.bool.isRequired,
     tooltipUtility: is.object.isRequired,
     errorMessages: is.array.isRequired,
-    errorUtility: is.object.isRequired
+    errorUtility: is.object.isRequired,
+    activeCalendar: is.string.isRequired,
+    calendarHandler: is.func.isRequired
   }
 
   constructor (props) {
@@ -81,6 +83,8 @@ export class Crossmark extends Component {
               cardName={cardName}
               errorMessages={this.props.errorMessages}
               errorUtility={this.props.errorUtility}
+              activeCalendar={this.props.activeCalendar}
+              calendarHandler={this.props.calendarHandler}
               remove={this.removeCrossmarkCard}/>
           : null
         })}
