@@ -16,10 +16,9 @@ export default class FormDate extends React.Component {
     name: is.oneOfType([is.string, is.array]).isRequired,
     required: is.bool,
     error: is.bool,
-    trackErrors: is.array,
+    indicatorErrors: is.array,
     allErrors: is.object,
-    setErrorMessages: is.func,
-    errorUtility: is.object,
+    errorUtility: is.object.isRequired,
     subItemIndex: is.string,
     subItem: is.string,
     changeHandler: is.func.isRequired,
@@ -67,14 +66,14 @@ export default class FormDate extends React.Component {
     const fieldErrors = this.props.fields
     const isError = this.props.error || fieldErrors.year.error || fieldErrors.month.error || fieldErrors.day.error
 
-    if(this.props.setErrorMessages && isError && this.props.trackErrors) {
+    if(isError && this.props.indicatorErrors) {
       if(this.props.subItemIndex) {
         this.props.errorUtility.subItemIndex = this.props.subItemIndex
       }
-      this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+      this.props.errorUtility.setErrorMessages(this.props.indicatorErrors, this.props.allErrors)
 
     } else if (this.props.tooltip) {
-      this.props.setErrorMessages([])
+      this.props.errorUtility.setErrorMessages([])
     }
 
     this.props.tooltipUtility.assignFocus(this.generateId(), this.props.tooltip)

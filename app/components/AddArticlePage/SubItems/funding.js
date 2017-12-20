@@ -217,7 +217,6 @@ export default class Funding extends Component {
                                             className={`${this.props.tooltip && funderIdFocused ? 'infoFlagBorder' : ''}`}
                                             onFocus={()=>{
                                               this.props.tooltipUtility.assignFocus(focusFunderId, tooltips.funderId)
-                                              //this.props.tooltipUtility.refresh(tooltips.funderId)
                                               inputProps.onFocus()
                                             }}
                                             onBlur={()=>{

@@ -8,7 +8,7 @@ import defaultArticleState from '../components/AddArticlePage/defaultState'
 
 
 export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDisabled = false) {
-  const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage, freetolicense } = data.article
+  const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage, freetolicense, locationId } = data.article
   const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames
 
   let criticalErrors = {
@@ -39,6 +39,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     licenseDateInvalid: false,
 
     contributorLastName: false,
+    contributorSuffixLimit: false,
     contributorRole: false,
     contributorGroupName: false,
     contributorGroupRole: false,
@@ -82,6 +83,10 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   warnings.onlineDateInvalid = warnings.onlineDateIncomplete ? false : !validDate(onlineDateYear, onlineDateMonth, onlineDateDay)
 
   warnings.firstPage = !!lastPage && !firstPage
+  warnings.firstPageLimit = firstPage.length > 32
+  warnings.lastPageLimit = lastPage.length > 32
+  warnings.lastPageLessFirst = lastPage && firstPage ? lastPage < firstPage : false
+  warnings.locationIdLimit = locationId.length > 32
   warnings.simCheckUrlInvalid = urlEntered(data.addInfo.similarityCheckURL) && !isURL(data.addInfo.similarityCheckURL)
 
 
@@ -150,11 +155,13 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = contributor
     const errors = {
       contributorLastName: !!(firstName && !lastName),
+      contributorSuffixLimit: suffix.length > 10,
       contributorRole: !!((lastName || firstName || suffix || affiliation || orcid) && !role),
       contributorGroupName: !!(groupAuthorRole && !groupAuthorName),
       contributorGroupRole: !!(groupAuthorName && !groupAuthorRole)
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
+    if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
     if(errors.contributorRole) warnings.contributorRole = true
     if(errors.contributorGroupName) warnings.contributorGroupName = true
     if(errors.contributorGroupRole) warnings.contributorGroupRole = true
@@ -313,7 +320,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
 
 export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPrefix, publicationRecords, issueDoiDisabled, checkDuplicateId}) {
-  const { issueDoi, issue, issueTitle, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl } = issueData
+  const { issueDoi, issue, issueTitle, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl, specialIssueNumber } = issueData
 
   const issueDoiEntered = doiEntered(issueDoi, ownerPrefix)
   const issueUrlEntered = urlEntered(issueUrl)
@@ -346,6 +353,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
 
   const hasDate = !!(printDateYear || onlineDateYear)
   let warnings = {
+    issueNumberLimit: issue.length > 32,
     issuedoi: issueUrlEntered && !issueDoiEntered,
     issueUrl: issueDoiEntered && !issueUrlEntered,
     invalidissueurl: false,
@@ -357,6 +365,9 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     onlineDateIncomplete: false,
     onlineDateInvalid: false,
 
+    specialNumberLimit: specialIssueNumber.length > 15,
+
+    volumeNumberLimit: volume.length > 32,
     volumedoi: false,
     invalidvolumedoi: false,
     invalidVolumeDoiPrefix: false,
@@ -366,6 +377,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     dupeDois: false,
 
     contributorLastName: false,
+    contributorSuffixLimit: false,
     contributorRole: false
   }
 
@@ -393,10 +405,12 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
   const contributors = getSubItems(optionalIssueInfo).map( contributor => {
     const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role} = contributor
     const errors = {
-      contributorLastName: firstName && !lastName,
+      contributorLastName: !!(firstName && !lastName),
+      contributorSuffixLimit: suffix.length > 10,
       contributorRole: (lastName || firstName || suffix || affiliation || alternativeName || orcid) && !role,
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
+    if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
     if(errors.contributorRole) warnings.contributorRole = true
 
     return {...contributor, errors}

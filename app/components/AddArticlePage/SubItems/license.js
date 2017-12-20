@@ -89,8 +89,7 @@ export default class License extends Component {
                   name="acceptedDate"
                   changeHandler={this.handleLicense}
                   onSelect={this.props.validate}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
+                  indicatorErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   subItem="license"
@@ -117,7 +116,7 @@ export default class License extends Component {
 
               <ErrorIndicator
                 style="dateErrorHolder"
-                trackErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
+                indicatorErrors={['licenseDateInvalid', 'licenseDateIncomplete']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
@@ -135,8 +134,7 @@ export default class License extends Component {
                   error={errors.freetolicense || errors.licenseUrl || errors.licenseUrlInvalid}
                   value={ urlEntered(licenseurl) ? licenseurl : 'http://'}
                   changeHandler={this.handleLicense}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
-                  trackErrors={['licenseUrl', 'licenseUrlInvalid']}
+                  indicatorErrors={['licenseUrl', 'licenseUrlInvalid']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
@@ -150,7 +148,7 @@ export default class License extends Component {
                   value={appliesto}
                   options={AppliesTo}
                   changeHandler={this.handleLicense}
-                  setErrorMessages={this.props.errorUtility.setErrorMessages}
+                  errorUtility={this.props.errorUtility}
                   tooltip={this.props.tooltip && tooltips.licenseAppliesTo}
                   tooltipUtility={this.props.tooltipUtility}
                   subItemIndex={String(this.props.index)}
@@ -158,7 +156,7 @@ export default class License extends Component {
               </div>
 
               <ErrorIndicator
-                trackErrors={['licenseUrl', 'licenseUrlInvalid']}
+                indicatorErrors={['licenseUrl', 'licenseUrlInvalid']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}

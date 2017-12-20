@@ -15,11 +15,10 @@ export default class FormInput extends React.Component {
     placeholder: is.string,
     required: is.bool,
     error: is.bool,
-    setErrorMessages: is.func,
-    trackErrors: is.array,
+    indicatorErrors: is.array,
     allErrors: is.object,
     subItemIndex: is.string,
-    errorUtility: is.object,
+    errorUtility: is.object.isRequired,
     changeHandler: is.func.isRequired,
     onBlur: is.func,
     onFocus: is.func,
@@ -44,14 +43,14 @@ export default class FormInput extends React.Component {
       this.props.onFocus()
     }
 
-    if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
+    if(this.props.error && this.props.indicatorErrors) {
       if(this.props.subItemIndex) {
         this.props.errorUtility.subItemIndex = this.props.subItemIndex
       }
-      this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+      this.props.errorUtility.setErrorMessages(this.props.indicatorErrors, this.props.allErrors)
 
     } else if (this.props.tooltip) {
-      this.props.setErrorMessages([])
+      this.props.errorUtility.setErrorMessages([])
     }
 
     this.props.tooltipUtility.assignFocus(this.generateId(), this.props.tooltip)

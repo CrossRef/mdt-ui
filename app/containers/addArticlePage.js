@@ -7,7 +7,7 @@ import {browserHistory} from 'react-router'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
-import {DeferredTask, finishUpdate} from '../utilities/helpers'
+import {finishUpdate} from '../utilities/helpers'
 import {cardNamesArray} from '../utilities/crossmarkHelpers'
 import AddArticleView from '../components/AddArticlePage/addArticleView'
 import {routes} from '../routing'
@@ -94,7 +94,6 @@ export default class AddArticlePage extends Component {
       crossmarkCards: {},
       version: '1',
       errorMessages: [],
-      deferredStickyErrorRefresh: new DeferredTask(),
       focusedInput: '',
       activeCalendar: ''
     }
@@ -178,11 +177,13 @@ export default class AddArticlePage extends Component {
     openingSubItem: false,
     subItemIndex: "0",
 
-    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex, openSubItem) => {
+    stickyErrorMounted: false,
+
+    saveRef: (activeErrors, indicatorErrors, node, subItem, subItemIndex, openSubItem) => {
       if(node){
         this.errorUtility.errorIndicators.push({
           activeErrors,
-          trackErrors,
+          indicatorErrors,
           node,
           subItem,
           subItemIndex,
@@ -210,7 +211,7 @@ export default class AddArticlePage extends Component {
 
       const {errorIndicators, activeIndicator} = this.errorUtility
       const activeIndicatorObj = errorIndicators[activeIndicator]
-      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.indicatorErrors : []
 
       let newErrorMessages
       const {subItem, subItemIndex} = activeIndicatorObj || {}
@@ -270,6 +271,17 @@ export default class AddArticlePage extends Component {
       }
 
       return newErrorMessages
+    },
+
+    assignStickyErrorRefresh: (func) => {
+      this.errorUtility.stickyErrorMounted = true
+      this.errorUtility.refreshTask = func
+    },
+
+    refreshStickyError: () => {
+      if(this.errorUtility.stickyErrorMounted && typeof this.errorUtility.refreshTask === 'function') {
+        return finishUpdate().then(()=>this.errorUtility.refreshTask())
+      }
     }
   }
 
@@ -312,7 +324,7 @@ export default class AddArticlePage extends Component {
       } catch (e) {}
     }
 
-    this.state.deferredStickyErrorRefresh.resolve()
+    this.errorUtility.refreshStickyError()
 
     this.tooltipUtility.refresh()
 
