@@ -33,6 +33,12 @@ export const IssueMessages = {
     message: 'Please provide issue number.'
   },
 
+  issueNumberLimit: {
+    type: 'invalid',
+    bold: 'Invalid Issue Number',
+    message: 'Character limit of 32 exceeded.'
+  },
+
   issuedoi: {
     type: 'required',
     bold: 'Required',
@@ -103,10 +109,22 @@ export const IssueMessages = {
     message: 'Please verify date.'
   },
 
+  specialNumberLimit: {
+    type: 'invalid',
+    bold: 'Invalid Special Issue Number',
+    message: 'Character limit of 15 exceeded.'
+  },
+
   volume: {
     type: 'required',
     bold: 'Required',
     message: 'Please provide volume number.'
+  },
+
+  volumeNumberLimit: {
+    type: 'invalid',
+    bold: 'Invalid Volume Number',
+    message: 'Character limit of 32 exceeded.'
   },
 
   volumeUrl: {
@@ -146,6 +164,13 @@ export const IssueMessages = {
     bold: 'Required',
     message: 'Please provide contributor last name with first name.'
   },
+
+  contributorSuffixLimit: {
+    type: 'invalid',
+    bold: 'Invalid Contributor Suffix',
+    message: 'Character limit of 10 exceeded..'
+  },
+
   contributorRole: {
     type: 'required',
     bold: 'Required',
@@ -232,10 +257,39 @@ export const ArticleMessages = {
     message: 'Please provide article first page with last page.'
   },
 
+  firstPageLimit: {
+    type: 'invalid',
+    bold: 'Invalid First Page',
+    message: 'Character limit of 32 exceeded.'
+  },
+
+  lastPageLimit: {
+    type: 'invalid',
+    bold: 'Invalid Last Page',
+    message: 'Character limit of 32 exceeded.'
+  },
+
+  lastPageLessFirst: {
+    type: 'invalid',
+    bold: 'Invalid Last Page',
+    message: 'Last page must be greater than first page.'
+  },
+
+  locationIdLimit: {
+    type: 'invalid',
+    bold: 'Invalid Location ID',
+    message: 'Character limit of 32 exceeded.'
+  },
+
   contributorLastName: {
     type: 'required',
     bold: 'Required',
     message: 'Please provide contributor last name with first name.'
+  },
+  contributorSuffixLimit: {
+    type: 'invalid',
+    bold: 'Invalid Contributor Suffix',
+    message: 'Character limit of 10 exceeded.'
   },
   contributorRole: {
     type: 'required',

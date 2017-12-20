@@ -65,9 +65,9 @@ export default function AddIssueCard (props) {
                     name="issue.issue"
                     value={props.issue.issue}
                     changeHandler={props.handler}
-                    error={errors.issueVolume || (!!props.issue.issue && errors.dupTitleIdIssue)}
-                    trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    error={errors.issueVolume || (!!props.issue.issue && errors.dupTitleIdIssue) || errors.issueNumberLimit}
+                    indicatorErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '', 'issueNumberLimit']}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.issueNumber}
                     tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
@@ -78,14 +78,14 @@ export default function AddIssueCard (props) {
                     name="issue.issueTitle"
                     value={props.issue.issueTitle}
                     changeHandler={props.handler}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.issueTitle}
                     tooltipUtility={props.tooltipUtility}/>
                 </div>
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '']}
+                  indicatorErrors={['issueVolume', props.issue.issue ? 'dupTitleIdIssue' : '', 'issueNumberLimit']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
@@ -105,8 +105,8 @@ export default function AddIssueCard (props) {
                     changeHandler={props.handler}
                     disabled={props.issueDoiDisabled}
                     error={errors.issuedoi || errors.dupeissuedoi || errors.invalidissuedoi || errors.invalidIssueDoiPrefix}
-                    trackErrors={['issuedoi', 'dupeissuedoi', 'invalidissuedoi', 'invalidIssueDoiPrefix']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    indicatorErrors={['issuedoi', 'dupeissuedoi', 'invalidissuedoi', 'invalidIssueDoiPrefix']}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.issueDoi}
                     tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
@@ -118,8 +118,8 @@ export default function AddIssueCard (props) {
                     value={props.issue.issueUrl}
                     changeHandler={props.handler}
                     error={errors.issueUrl || errors.invalidissueurl}
-                    trackErrors={['issueUrl', 'invalidissueurl']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    indicatorErrors={['issueUrl', 'invalidissueurl']}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.issueUrl}
                     tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
@@ -128,7 +128,7 @@ export default function AddIssueCard (props) {
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['issuedoi', 'dupeissuedoi', 'invalidissuedoi', 'invalidIssueDoiPrefix', 'issueUrl', 'invalidissueurl']}
+                  indicatorErrors={['issuedoi', 'dupeissuedoi', 'invalidissuedoi', 'invalidIssueDoiPrefix', 'issueUrl', 'invalidissueurl']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
@@ -147,8 +147,8 @@ export default function AddIssueCard (props) {
                     tooltip={props.showHelper && tooltips.printDate}
                     tooltipUtility={props.tooltipUtility}
                     error={errors.printDateInvalid}
-                    trackErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    indicatorErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete']}
+                    errorUtility={props.errorUtility}
                     fields={{
                       year: {
                         value: props.issue.printDateYear,
@@ -172,8 +172,8 @@ export default function AddIssueCard (props) {
                     tooltip={props.showHelper && tooltips.onlineDate}
                     tooltipUtility={props.tooltipUtility}
                     error={errors.onlineDateInvalid}
-                    trackErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    indicatorErrors={['onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
+                    errorUtility={props.errorUtility}
                     fields={{
                       year: {
                         value: props.issue.onlineDateYear,
@@ -192,7 +192,7 @@ export default function AddIssueCard (props) {
                 <ErrorIndicator
                   issue
                   style="dateErrorHolder"
-                  trackErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete', 'onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
+                  indicatorErrors={['printDateInvalid', 'printDateYear', 'printDateIncomplete', 'onlineDateInvalid', 'onlineDateYear', 'onlineDateIncomplete']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
@@ -207,7 +207,7 @@ export default function AddIssueCard (props) {
                     name="issue.archiveLocation"
                     value={props.issue.archiveLocation}
                     options={ArchiveLocations}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.archiveLocation}
                     tooltipUtility={props.tooltipUtility}
                     changeHandler={props.handler}
@@ -217,11 +217,22 @@ export default function AddIssueCard (props) {
                     label="Special Issue Number"
                     name="issue.specialIssueNumber"
                     value={props.issue.specialIssueNumber}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    error={errors.specialNumberLimit}
+                    indicatorErrors={['specialNumberLimit']}
+                    onBlur={props.validate}
+                    errorUtility={props.errorUtility}
                     changeHandler={props.handler}
                     tooltip={props.showHelper && tooltips.specialNumber}
                     tooltipUtility={props.tooltipUtility}/>
                 </div>
+
+                <ErrorIndicator
+                  issue
+                  indicatorErrors={['specialNumberLimit']}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
+                  allErrors={props.errors}/>
               </div>
 
 
@@ -234,9 +245,9 @@ export default function AddIssueCard (props) {
                     name="issue.volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}
-                    error={errors.volumeIssue || (!!props.issue.volume && errors.dupTitleIdVolume)}
-                    trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    error={errors.volumeIssue || (!!props.issue.volume && errors.dupTitleIdVolume) || errors.volumeNumberLimit}
+                    indicatorErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '', 'volumeNumberLimit']}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.volumeNumber}
                     tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
@@ -245,7 +256,7 @@ export default function AddIssueCard (props) {
 
                 <ErrorIndicator
                   issue
-                  trackErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '']}
+                  indicatorErrors={['volumeIssue', props.issue.volume ? 'dupTitleIdVolume' : '', 'volumeNumberLimit']}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
@@ -262,8 +273,8 @@ export default function AddIssueCard (props) {
                     changeHandler={props.handler}
                     disabled={props.volumeDoiDisabled}
                     error={errors.volumedoi || errors.dupevolumedoi || errors.invalidvolumedoi || errors.dupeDois || errors.invalidVolumeDoiPrefix}
-                    trackErrors={['volumedoi', 'dupevolumedoi', 'invalidvolumedoi', 'dupeDois', 'invalidVolumeDoiPrefix']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    indicatorErrors={['volumedoi', 'dupevolumedoi', 'invalidvolumedoi', 'dupeDois', 'invalidVolumeDoiPrefix']}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.volumeDoi}
                     tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
@@ -275,8 +286,8 @@ export default function AddIssueCard (props) {
                     value={props.issue.volumeUrl}
                     changeHandler={props.handler}
                     error={errors.volumeUrl || errors.invalidvolumeurl}
-                    trackErrors={['volumeUrl', 'invalidvolumeurl']}
-                    setErrorMessages={props.errorUtility.setErrorMessages}
+                    indicatorErrors={['volumeUrl', 'invalidvolumeurl']}
+                    errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltips.volumeUrl}
                     tooltipUtility={props.tooltipUtility}
                     onBlur={props.validate}
@@ -293,7 +304,7 @@ export default function AddIssueCard (props) {
               boundSetState={props.boundSetState}
               showSection={props.showSection}>
                 <ErrorIndicator
-                  trackErrors={['contributorLastName', 'contributorRole']}
+                  indicatorErrors={['contributorLastName', 'contributorRole', 'contributorSuffixLimit']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}

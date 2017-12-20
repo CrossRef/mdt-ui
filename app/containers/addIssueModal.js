@@ -7,7 +7,7 @@ import { bindActionCreators } from 'redux'
 import { controlModal, getPublications } from '../actions/application'
 import AddIssueCard from '../components/AddIssueModal/addIssueCard'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
-import {finishUpdate, doiEntered} from '../utilities/helpers'
+import {finishUpdate, doiEntered, escapeString} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
 import {asyncValidateIssue} from '../utilities/validation'
 import parseXMLIssue from '../utilities/parseXMLIssue'
@@ -184,7 +184,7 @@ export default class AddIssueModal extends Component {
       }
 
       const newRecord = {
-        'title': JSON.parse(newTitleId),
+        'title': {issue: escapeString(issue), volume: escapeString(volume), title: escapeString(title)},
         'date': new Date(),
         'doi': issueDoi,
         'owner-prefix': this.state.ownerPrefix,
@@ -306,11 +306,11 @@ export default class AddIssueModal extends Component {
     openingSubItem: false,
     subItemIndex: "0",
 
-    saveRef: (activeErrors, trackErrors, node, subItem, subItemIndex, openSubItem) => {
+    saveRef: (activeErrors, indicatorErrors, node, subItem, subItemIndex, openSubItem) => {
       if(node){
         this.errorUtility.errorIndicators.push({
           activeErrors,
-          trackErrors,
+          indicatorErrors,
           node,
           subItem,
           subItemIndex,
@@ -337,7 +337,7 @@ export default class AddIssueModal extends Component {
 
       const {errorIndicators, activeIndicator} = this.errorUtility
       const activeIndicatorObj = errorIndicators[activeIndicator]
-      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.trackErrors : []
+      const trackedIndicatorErrors = activeIndicatorObj ? activeIndicatorObj.indicatorErrors : []
       let newErrorMessages
       const {subItem, subItemIndex} = activeIndicatorObj || {}
 
