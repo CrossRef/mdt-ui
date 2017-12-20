@@ -509,10 +509,10 @@ export default class AddPublicationModal extends Component {
           <div className='fieldRowHolder buttonholder'>
             <div className='fieldinput' />
             <div className='fieldinput'>
-              <button
+              <div
                 onClick={this.props.close}
                 className='button-anchor button-white-cancel'
-              >Close</button>
+              >Close</div>
               <div onClick={this.save} className='button-anchor actionTooltip'>
                 Save
               </div>
