@@ -4,7 +4,7 @@ import is from 'prop-types'
 import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 
-import {errorHandler} from '../../utilities/helpers'
+import {errorHandler, compareDois} from '../../utilities/helpers'
 import * as api from '../../actions/api'
 import {routes} from '../../routing'
 
@@ -111,17 +111,25 @@ export default class Search extends Component {
   }
 
 
-  RenderItem = class extends Component {
+  renderItem =  item => {
+    const addable = !this.props.publication.normalizedRecords.find( record => compareDois(record.doi, item.doi))
+    return (
+      <this.ItemComponent key={`${item.title.title}-${item.doi}`} item={item} addable={addable}/>
+    )
+  }
+
+  //Item component has to be a class object because Autocomplete needs to use refs which are only available with classes
+  ItemComponent = class extends Component {
     render () {
-      const {item, ...props} = this.props
+      const {item, addable, ...props} = this.props
       const title = item.title.title
 
       return (
-        <div className='record-search-result-holder' {...props}>
+        <div className={`record-search-result-holder ${!addable ? 'notAddable' : ''}`} {...(addable ? props : {})}>
           <div className='record-search-result'>
             {title || item.doi || 'Error retrieving metadata'}
           </div>
-          <div className="add">Add</div>
+          {addable && <div className="add">Add</div>}
         </div>
       )
     }
@@ -151,7 +159,7 @@ export default class Search extends Component {
             }}
             onSelect={this.onSelect}
             onChange={this.onChange}
-            renderItem={ item => <this.RenderItem key={`${item.title.title}-${item.doi}`} item={item}/> }
+            renderItem={this.renderItem}
             renderMenu={(items, value, style) =>
               <div className='record-search-results'>
                 {this.props.search.loading ? (

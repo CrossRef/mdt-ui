@@ -33,11 +33,12 @@ export default class ReduxDate extends Component {
     errors: is.object.isRequired,
     keyPath: is.array.isRequired,
     handler:is.func,
-    trackErrors: is.array,
-    setErrorMessages: is.func,
-    errorUtility: is.object,
+    indicatorErrors: is.array,
+    errorUtility: is.object.isRequired,
     tooltip: is.object,
-    tooltipUtility: is.object.isRequired
+    tooltipUtility: is.object.isRequired,
+    activeCalendar: is.string.isRequired,
+    calendarHandler: is.func.isRequired
   }
 
   componentWillReceiveProps (nextProps) {
@@ -51,10 +52,24 @@ export default class ReduxDate extends Component {
     }
   }
 
+
   handler = (e) => {
     if(this.props.handler) this.props.handler(e);
     this.props.reduxEditForm([...this.props.keyPath, e.target.name.toLowerCase()], e.target.value)
   }
+
+
+  reduxCalendarHandler = (name, dateObj) => {
+    if(dateObj) {
+      this.props.reduxEditForm(this.props.keyPath, {
+        year: dateObj.year,
+        month: dateObj.month,
+        day: dateObj.day
+      })
+    }
+    this.props.calendarHandler(name)
+  }
+
 
   render() {
     return(
@@ -64,13 +79,14 @@ export default class ReduxDate extends Component {
         value={this.props.reduxValue}
         required={this.props.required}
         allErrors={this.props.errors}
-        trackErrors={this.props.trackErrors}
-        setErrorMessages={this.props.setErrorMessages}
+        indicatorErrors={this.props.indicatorErrors}
         subItemIndex={String(this.props.keyPath[1])}
         errorUtility={this.props.errorUtility}
         changeHandler={this.handler}
         tooltip={this.props.tooltip}
         tooltipUtility={this.props.tooltipUtility}
+        activeCalendar={this.props.activeCalendar}
+        calendarHandler={this.reduxCalendarHandler}
         fields={{
           year: {
             value: this.props.yearValue,

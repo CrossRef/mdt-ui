@@ -22,7 +22,12 @@ export default function reduxFormReducer (state = Map({}), action) {
           return state.deleteIn(action.keyPath)
         }
       } else {
-        return state.setIn(action.keyPath, action.value)
+        let newValue = action.value
+        const oldValue = state.getIn(action.keyPath)
+        if(typeof oldValue === 'object') {
+          newValue = oldValue.merge(newValue)
+        }
+        return state.setIn(action.keyPath, newValue)
       }
     case 'REDUXFORM_DELETE':
       return state.deleteIn(action.keyPath)

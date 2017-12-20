@@ -15,7 +15,6 @@ export default class StickyError extends React.Component {
 
   static propTypes = {
     errorUtility: is.object.isRequired,
-    deferredStickyErrorRefresh: is.object.isRequired
   }
 
 
@@ -28,21 +27,9 @@ export default class StickyError extends React.Component {
 
 
   componentDidMount() {
-    this.deferredStickyErrorRefresh()
+    this.refreshStickyError()
+    this.props.errorUtility.assignStickyErrorRefresh(this.refreshStickyError)
     document.addEventListener('scroll', this.refreshStickyError, false)
-  }
-
-
-  deferredStickyErrorRefresh = () => {
-    this.props.deferredStickyErrorRefresh.reset()
-    this.props.deferredStickyErrorRefresh.promise
-      .then(()=>{
-        if(this._calledComponentWillUnmount) {
-          return
-        }
-        this.deferredStickyErrorRefresh()
-        this.refreshStickyError()
-      })
   }
 
 
@@ -187,7 +174,7 @@ export default class StickyError extends React.Component {
 
   componentWillUnmount () {
     document.removeEventListener('scroll', this.refreshStickyError, false)
-    this.props.deferredStickyErrorRefresh.reject()
+    this.props.errorUtility.stickyErrorMounted = false
   }
 
 

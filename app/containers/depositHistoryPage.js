@@ -17,14 +17,13 @@ export default class DepositHistoryPage extends Component {
     super(props)
     this.state = {
       depositHistory: [],
-      startCalendarOpen: false,
-      startFullDate: '',
+      activeCalendar: '',
+      startFullDate: undefined,
       startDate: '',
       startMonth: '',
       startYear: '',
-      endCalendarOpen: false,
-      endFullDate: '',
-      endDate: '31',
+      endFullDate: undefined,
+      endDate: '',
       endMonth: '12',
       endYear: '',
       total: 0,
@@ -196,8 +195,19 @@ export default class DepositHistoryPage extends Component {
   }
 
 
-  boundSetState = (object) => {
-    this.setState(object)
+  calendarHandler = (target, dateObj) => {
+    const datePayload = dateObj ? {
+      [`${this.state.activeCalendar}FullDate`]: dateObj.fullDate,
+      [`${this.state.activeCalendar}Date`]: dateObj.day,
+      [`${this.state.activeCalendar}Month`]: dateObj.month,
+      [`${this.state.activeCalendar}Year`]: dateObj.year,
+      query: {...this.state.query, [this.state.activeCalendar]: `${dateObj.year}-${dateObj.month}-${dateObj.day}`}
+    } : {}
+
+    this.setState({
+      activeCalendar: target,
+      ...datePayload
+    })
   }
 
 
@@ -205,7 +215,7 @@ export default class DepositHistoryPage extends Component {
     return (
       <DepositHistoryView
         listDepositHistory={this.listDepositHistory}
-        boundSetState={this.boundSetState}
+        calendarHandler={this.calendarHandler}
         handleChange={this.handleChange}
         handlePageClick={this.handlePageClick}
 
