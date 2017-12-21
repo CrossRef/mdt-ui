@@ -1,7 +1,6 @@
 import React, {Component} from 'react'
 import is from 'prop-types'
 import DatePicker from 'react-datepicker'
-import $ from 'jquery'
 
 
 
@@ -9,7 +8,6 @@ import $ from 'jquery'
 export default class Calendar extends Component {
 
   static propTypes = {
-    name: is.string.isRequired,
     date: is.object,
     calendarHandler: is.func.isRequired,
     activeCalendar: is.string.isRequired,
@@ -19,8 +17,7 @@ export default class Calendar extends Component {
 
 
   componentDidMount() {
-    const selector = $(`.${this.props.name}Calendar input`)
-    selector.focus()
+    this.node.getElementsByTagName('input')[0].focus()
     document.addEventListener('click', this.handleClick, false)
 
   }
@@ -40,7 +37,7 @@ export default class Calendar extends Component {
 
   render() {
     return (
-      <div className={`${this.props.name}Calendar calendarContainer`} ref={ ref => this.node = ref}>
+      <div ref={ ref => this.node = ref}>
         <DatePicker
           selected={this.props.date}
           onChange={(date)=>{
@@ -57,5 +54,4 @@ export default class Calendar extends Component {
       </div>
     )
   }
-
 }

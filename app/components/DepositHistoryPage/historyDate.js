@@ -46,19 +46,18 @@ export default class HistoryDate extends React.Component {
 
         <div className='dateicon'>
           <div>&nbsp;</div>
-          <div className={`iconHolder ${this.props.name}Container`}>
+          <div className='iconHolder'>
             {this.props.activeCalendar === this.props.name &&
-            <Calendar
-              name='end'
-              date={this.props.fullDate}
-              activeCalendar={this.props.activeCalendar}
-              calendarHandler={this.props.calendarHandler}/>}
+              <Calendar
+                date={this.props.fullDate}
+                activeCalendar={this.props.activeCalendar}
+                calendarHandler={this.props.calendarHandler}/>}
 
             <a className="calendarButton"
-               onClick={()=>{
-                 this.props.calendarHandler(this.props.activeCalendar === this.props.name ? '' : this.props.name)
-               }}>
-              <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+              onClick={()=>{
+                this.props.calendarHandler(this.props.activeCalendar === this.props.name ? '' : this.props.name)
+              }}>
+                <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
             </a>
           </div>
         </div>

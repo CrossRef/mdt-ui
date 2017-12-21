@@ -6,7 +6,7 @@ import is from 'prop-types'
 export default class ErrorMessage extends React.Component {
 
   static propTypes = {
-    errorMessage: is.object.isRequired,
+    errorMessage: is.string.isRequired,
     errorMessageHandler: is.func.isRequired
   }
 
@@ -26,14 +26,15 @@ export default class ErrorMessage extends React.Component {
     document.removeEventListener('click', this.handleClick)
   }
 
+
   render () {
-    const errorArray = this.props.errorMessage.split('Error: ').map( error =>
-      <div className="singleError">{error}</div>
+    const errorArray = this.props.errorMessage.split('Error: ').map( (error, i) =>
+      <div key={i} className="singleError">{error}</div>
     )
     errorArray.shift() //Removes first item created by the first 'Error: '
     const numberOfErrors = errorArray.length
 
-    errorArray.push(<div className="whiteSpace">&nbsp;</div>)
+    errorArray.push(<div key='whiteSpace' className="whiteSpace">&nbsp;</div>)
 
     return (
       <div className="errorContainer">

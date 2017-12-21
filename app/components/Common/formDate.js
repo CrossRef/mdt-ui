@@ -167,16 +167,14 @@ export default class FormDate extends React.Component {
               </div>
               <div className='dateicon'>
                 <div>&nbsp;</div>
-                <div className={`iconHolder ${generatedId}Container ${isFocus && this.props.tooltip ? 'infoFlag infoFlagIconHolder' : ''}`}>
+                <div className={`iconHolder ${isFocus && this.props.tooltip ? 'infoFlag infoFlagIconHolder' : ''}`}>
                   {this.props.activeCalendar === generatedId &&
                     <Calendar
-                      name={generatedId}
                       calendarHandler={this.props.calendarHandler}
                       activeCalendar={this.props.activeCalendar}
                       date={fullDate}
                       subItem={this.props.subItem}
-                      subItemIndex={this.props.subItemIndex}
-                    />}
+                      subItemIndex={this.props.subItemIndex}/>}
 
                   <a className="calendarButton"
                     onClick={()=>{this.props.calendarHandler(this.props.activeCalendar === generatedId ? '' : generatedId)}}>
