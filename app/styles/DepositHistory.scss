@@ -114,6 +114,8 @@
               width: 60px;
               .errorButton {
                 width: 25px;
+                position: absolute;
+                margin-top: -12px;
               }
               .errorMessage {
                 background: white;
@@ -124,6 +126,7 @@
                 max-height: 350px;
                 padding: 0 0 0 12px;
                 box-shadow: 0px 1px 6px 3px #d0d0d0;
+                z-index: 1;
 
                 p {
                   margin-left: 10px;
@@ -151,11 +154,13 @@
 
               .errorContainer {
                 position: absolute;
+                margin-top: 15px;
               }
 
               .errorContainer:after {
                 content: "";
                 position: absolute;
+                z-index: 2;
                 width: 0;
                 height: 0;
                 left: 6px;
