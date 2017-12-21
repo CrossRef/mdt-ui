@@ -376,7 +376,7 @@
 .actionModal {
   padding:20px 43px 45px 43px;
   .messageHolder {
-    height: 170px;
+    min-height: 170px;
     font-size: 1.05em;
   }
   .buttonTable {

@@ -1,53 +1,37 @@
 import React from 'react'
 import is from 'prop-types'
 
+import {recordTitle} from '../../utilities/helpers'
+
 
 
 
 export default function DeleteConfirmModal ({confirm, selections, close}) {
 
-  const onlyIssues = selections.every( record => record.type === 'issue' )
-
-  const usedDois = []
-
   const nameReducer = (accumulator, selection) => {
     const type = selection.type
 
     if(type === 'issue') {
+      accumulator.add(`- ${recordTitle('issue', selection.title)}`)
       return selection.contains.reduce(nameReducer, accumulator)
-    } else {
-      if(usedDois.indexOf(selection.doi) > -1) {
-        return accumulator
-      } else {
-        usedDois.push(selection.doi)
-      }
     }
 
-    const title = (selection.status === 'draft') ? selection.title.title : '';
-    if(!accumulator && title) {
-      return title;
-    }
-    if(accumulator && title) {
-      return accumulator + ', ' + title;
-    }
-    else return accumulator
+    return (selection.status !== 'accepted') ? accumulator.add(`- ${selection.title.title}`)
+      : accumulator
   }
 
-  const selectionNames = selections.reduce(nameReducer, '');
+  const selectionNames = selections.reduce(nameReducer, new Set)
 
   return (
     <div className="actionModal">
       <div className="messageHolder">
-        {onlyIssues ?
-          <div>
-            <h4>Do you want to permanently remove the Issue Record from your workspace?</h4>
+        <div>
+          <h4>Do you want to remove the selected records? Record data in draft state will be permanently deleted.</h4>
 
-            <h4>This action will remove all articles in the workspace which are associated with the Issue Record. Articles in draft state, which have not been deposited, will be deleted.</h4>
-          </div>
+          <h4>If an issue is selected, this action will also remove and delete any articles associated with it in draft state.</h4>
+        </div>
 
-          : <h4>Do you want to remove the selected records? Record data in draft state will be deleted.</h4>}
-
-        <p>{`- ${selectionNames ? selectionNames : 'No articles in draft state'}`}</p>
+        {selectionNames.size ? [...selectionNames].map(title => <p>{title}</p>) : '- No articles in draft state'}
       </div>
       <div className="buttonTable">
         <div className="tableRow">
