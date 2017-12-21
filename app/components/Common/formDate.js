@@ -133,6 +133,7 @@ export default class FormDate extends React.Component {
                     handler={this.onSelect}
                     name={`${typeof this.props.name === 'string' ? this.props.name : ''}Year`}
                     type="y"
+                    startYear={this.props.fields.year.value}
                     value={this.props.fields.year.value}
                     validation={this.props.error || this.props.fields.year.error}
                     nodeRef={this.nodeRef}

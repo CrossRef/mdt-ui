@@ -39,6 +39,7 @@ export default class Calendar extends Component {
     return (
       <div ref={ ref => this.node = ref}>
         <DatePicker
+          fixedHeight
           selected={this.props.date}
           onChange={(date)=>{
             const d = date.format('D'), m = date.format('M'), y = date.format('Y');
