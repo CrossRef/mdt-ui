@@ -1,3 +1,6 @@
+@import 'common';
+
+
 .height16 {
   height: 16px;
 }
@@ -342,15 +345,9 @@ input.height64, textarea.height64, select.height64 {
       flex-direction: column;
       hr {width: 90%}
       .addNewButton {
+        @extend ._subItemAddNewButton;
         top: 24px;
         left: 78px;
-        width: 120px;
-        border: 1px solid black;
-        background: #F9F9F9;
-        color: #646464;
-        cursor: pointer;
-        display: block;
-        padding: 4px 20px;
         position: relative;
       }
     }
@@ -1039,6 +1036,36 @@ input.height64, textarea.height64, select.height64 {
       position: relative;
 
 
+    }
+  }
+}
+
+
+.references {
+  padding: 20px 78px 40px 78px;
+  text-align: left;
+  .topText {
+    margin-left: 15px;
+  }
+  textarea {
+    height: 150px;
+    width: 100%;
+    overflow: scroll;
+    resize: none;
+    margin-bottom: 25px;
+  }
+  .getReferencesButton {
+    @extend ._subItemAddNewButton;
+  }
+  .resultsContainer {
+    margin-top: 30px;
+    padding-left: 10px;
+    .result {
+      margin-top: 20px ;
+    }
+    p, a {
+      font-size: .9em;
+      margin: 1px
     }
   }
 }

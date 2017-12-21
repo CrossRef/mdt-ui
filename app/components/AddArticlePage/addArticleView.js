@@ -10,6 +10,7 @@ import TooltipBubble from '../Common/tooltipBubble'
 import Contributor from './SubItems/contributor'
 import Funding from './SubItems/funding'
 import License from './SubItems/license'
+import References from './SubItems/references'
 import RelatedItems from './SubItems/relatedItems'
 import AdditionalInformation from './SubItems/additionalInfo'
 import { Crossmark, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
@@ -387,10 +388,21 @@ export default function AddArticleView (props) {
 
 
             <SubItem
+              title={'References'}
+              boundSetState={props.boundSetState}
+              openSubItems={props.openSubItems}
+              showSection={props.openItems.References}>
+
+
+                <References references={props.references} setReferences={props.boundSetState}/>
+            </SubItem>
+
+
+            <SubItem
               title={'Related Items'}
               boundSetState={props.boundSetState}
               openSubItems={props.openSubItems}
-              showSection={props.openItems.relatedItems}
+              showSection={props.openItems.RelatedItems}
               addHandler={props.addSection.bind(null, 'relatedItems')}>
                 <ErrorIndicator
                   indicatorErrors={['relatedItemIdType', 'relatedItemRelType', 'relatedItemDoiInvalid']}
