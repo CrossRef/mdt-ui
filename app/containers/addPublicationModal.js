@@ -4,10 +4,11 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import verifyIssn from 'issn-verify'
 
+import * as api from '../actions/api'
 import { submitPublication } from '../actions/application'
 import {appendElm,appendAttribute} from '../utilities/helpers'
 import { XMLSerializer, DOMParser } from 'xmldom'
-import {isDOI, isURL, asyncCheckDupeDoi} from '../utilities/helpers'
+import {isDOI, isURL, asyncCheckDupeDoi, xmldoc} from '../utilities/helpers'
 const languages = require('../utilities/lists/language.json')
 import { ArchiveLocations } from '../utilities/lists/archiveLocations'
 import { routes } from '../routing'
@@ -327,7 +328,7 @@ export default class AddPublicationModal extends Component {
   multipleDOIs = () => {
 
     const doiList = this.props.searchResult.doi.map( doi =>
-      <div key={doi} className="doiOptionContainer" onMouseDown={()=>this.setState({DOI: doi})}>
+      <div key={doi} className="doiOptionContainer" onMouseDown={()=>this.selectDoi(doi)}>
         {this.state.DOI === doi &&
           <img className='checkmark' src={`${routes.images}/Publications/Asset_Icons_White_Check 2.svg`}/>}
         <p className='doiOption'>{doi}</p>
@@ -352,6 +353,22 @@ export default class AddPublicationModal extends Component {
           </div>}
       </div>
     )
+  }
+
+
+  selectDoi = async (doi) => {
+    const publication = await api.getItem(doi)
+    const parsedXMLContent = xmldoc(publication.message.content)
+    const data = parsedXMLContent.Journal.journal_metadata
+    const archive = data.archive_locations ? data.archive_locations.archive || {} : {}
+    const doi_data = data.doi_data || {}
+    this.setState({
+      DOI: doi,
+      abbreviation: data.abbrev_title,
+      url: doi_data.resource,
+      language: data['-language'],
+      archivelocation: archive['-name'],
+    })
   }
 
 
