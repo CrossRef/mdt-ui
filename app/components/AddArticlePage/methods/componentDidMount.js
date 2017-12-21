@@ -41,7 +41,7 @@ export default async function () {
   let publicationXml
   if(isNewArticle || isDuplicate) {
     publicationXml = publicationData.message.content.substring(
-      publicationData.message.content.indexOf('<journal_metadata>'),
+      publicationData.message.content.indexOf('<journal_metadata'),
       publicationData.message.content.indexOf('</journal_metadata>') + 19
     )
 
