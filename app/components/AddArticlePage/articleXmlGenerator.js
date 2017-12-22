@@ -55,7 +55,6 @@ export default function (state, reduxForm) {
   appendPublisherItems(doc.documentElement)
   appendCrossmarkXml(doc.documentElement)
   appendRelatedItemsElm(doc.documentElement)
-  console.log(state.addInfo.archiveLocation)
   if (state.addInfo.archiveLocation.trim().length > 0) {
     el = doc.createElement('archive_locations')
     el2 = doc.createElement("archive")
