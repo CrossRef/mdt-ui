@@ -268,6 +268,7 @@ export default function AddArticleView (props) {
                   <FormTextArea
                     label="Abstract"
                     name="abstract"
+                    style="abstract"
                     value={props.article.abstract}
                     errorUtility={props.errorUtility}
                     tooltip={props.showHelper && tooltip.abstract}

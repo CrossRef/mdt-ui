@@ -577,7 +577,6 @@ input.height64, textarea.height64, select.height64 {
                 width: 100%
               }
               textarea {
-                border: 1px solid #EDEFF1;
                 margin: 0;
                 padding: 5px 16px;
                 resize: none;
@@ -985,7 +984,7 @@ input.height64, textarea.height64, select.height64 {
 
 .infoFlagTextArea {
   position: absolute;
-  right: 1px;
+  right: 0;
   top: -29px;
   width: 38px;
 }
@@ -1041,4 +1040,9 @@ input.height64, textarea.height64, select.height64 {
 
     }
   }
+}
+
+
+.abstract {
+  height: 256px !important;
 }

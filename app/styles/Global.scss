@@ -22,7 +22,7 @@ input[type=button], input[type=submit] {
   }
 }
 
-input, select {
+input, select, textarea {
   padding: 5px 16px;
   border: 0px solid black;
   outline: 1px solid black; outline-offset:-1px
@@ -105,4 +105,14 @@ label {
 .empty-message {
   padding: 35px 0;
   text-align: center;
+}
+
+
+.react-datepicker__day--selected {
+  background-color: #3eb1cB !important;
+}
+
+
+.react-datepicker__day--keyboard-selected {
+  background-color: #3eb1cB !important;
 }
