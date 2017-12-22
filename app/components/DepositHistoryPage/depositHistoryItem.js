@@ -27,6 +27,9 @@ export default class DepositHistoryItem extends Component {
     if(title.length > 35) {
       title = title.substring(0, 35) + '...'
     }
+
+    const failedDeposit = this.props.history.status === 'Failed'
+
     return (
         <tr>
           <td className='firstTd'>{this.props.history.id}</td>
@@ -35,7 +38,7 @@ export default class DepositHistoryItem extends Component {
           <td>Article</td>
           <td>{this.props.history.status}</td>
           <td className="errorCell">
-            {this.props.history.status === 'Failed' &&
+            {failedDeposit &&
               <img
                 className="errorButton"
                 src={`${routes.images}/Deposit/Asset_Icons_Red_Caution.png`}
@@ -43,7 +46,13 @@ export default class DepositHistoryItem extends Component {
             {this.props.name === this.props.activeErrorMessage &&
               <ErrorMessage errorMessage={this.props.history.errorMessage} errorMessageHandler={this.props.errorMessageHandler}/>}
           </td>
-          <td>{this.props.history.doi}</td>
+          <td>
+            <a className={`${failedDeposit ? 'failedDeposit' : ''}`}
+               href={failedDeposit ? null : `https://doi.org/${this.props.history.doi}`}
+            >
+                https://doi.org/{this.props.history.doi}
+            </a>
+          </td>
         </tr>
     )
   }
