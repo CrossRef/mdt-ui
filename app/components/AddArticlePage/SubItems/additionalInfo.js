@@ -22,7 +22,6 @@ export default class AdditionalInformation extends Component {
 
 
   handleAddInfo = (e) => {
-    console.log(e.target.name, e.target.value)
     this.props.handler({
       addInfo: update(this.props.addInfo, {$set:{
         ...this.props.addInfo,
