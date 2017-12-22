@@ -14,10 +14,9 @@ export default class FormTextArea extends React.Component {
     value: is.string.isRequired,
     required: is.bool,
     error: is.bool,
-    trackErrors: is.array,
+    indicatorErrors: is.array,
     allErrors: is.object,
-    setErrorMessages: is.func,
-    errorUtility: is.object,
+    errorUtility: is.object.isRequired,
     subItemIndex: is.string,
     changeHandler: is.func.isRequired,
     onBlur: is.func,
@@ -29,7 +28,7 @@ export default class FormTextArea extends React.Component {
 
   generateId = () => {
     if(Array.isArray(this.props.name)) {
-      return `${this.props.name.join('-')}`
+      return `${this.props.name.join('-')}`.replace(/\s+/g, '')
     }
 
     return `${this.props.name}-${this.props.subItemIndex}`
@@ -41,14 +40,14 @@ export default class FormTextArea extends React.Component {
       this.props.onFocus()
     }
 
-    if(this.props.setErrorMessages && this.props.error && this.props.trackErrors) {
+    if(this.props.errorUtility.setErrorMessages && this.props.error && this.props.indicatorErrors) {
       if(this.props.subItemIndex) {
         this.props.errorUtility.subItemIndex = this.props.subItemIndex
       }
-      this.props.setErrorMessages(this.props.trackErrors, this.props.allErrors)
+      this.props.errorUtility.setErrorMessages(this.props.indicatorErrors, this.props.allErrors)
 
     } else if (this.props.tooltip) {
-      this.props.setErrorMessages([])
+      this.props.errorUtility.setErrorMessages([])
     }
 
     this.props.tooltipUtility.assignFocus(this.generateId(), this.props.tooltip)

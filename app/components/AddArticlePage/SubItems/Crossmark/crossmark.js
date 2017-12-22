@@ -3,6 +3,7 @@ import is from 'prop-types'
 
 import { PublicationHistory, PeerReview, ClinicalTrials, Copyright, Other, StatusUpdate, SupplementaryMaterial } from './crossmarkCards'
 import {cardNames} from '../../../../utilities/crossmarkHelpers'
+import AddList from './addList'
 const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames;
 
 const crossmarkCardSelector = {
@@ -17,6 +18,7 @@ const crossmarkCardSelector = {
 
 
 
+
 export class Crossmark extends Component {
 
   static propTypes = {
@@ -26,7 +28,9 @@ export class Crossmark extends Component {
     tooltip: is.bool.isRequired,
     tooltipUtility: is.object.isRequired,
     errorMessages: is.array.isRequired,
-    errorUtility: is.object.isRequired
+    errorUtility: is.object.isRequired,
+    activeCalendar: is.string.isRequired,
+    calendarHandler: is.func.isRequired
   }
 
   constructor (props) {
@@ -81,6 +85,8 @@ export class Crossmark extends Component {
               cardName={cardName}
               errorMessages={this.props.errorMessages}
               errorUtility={this.props.errorUtility}
+              activeCalendar={this.props.activeCalendar}
+              calendarHandler={this.props.calendarHandler}
               remove={this.removeCrossmarkCard}/>
           : null
         })}
@@ -90,11 +96,7 @@ export class Crossmark extends Component {
             <a className='tooltips' onClick={this.toggle}>
               Add New
               {this.state.showList &&
-              <div className='crossmarkAddList'>
-                {addList.map((value, index) =>
-                  <a className='crossmark' onClick={()=>this.addCrossmarkCard(value)} key={index}>{value}</a>
-                )}
-              </div>
+                <AddList addList={addList} addCrossmarkCard={this.addCrossmarkCard} toggle={this.toggle}/>
               }
             </a>
           </div>

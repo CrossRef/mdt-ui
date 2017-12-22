@@ -78,9 +78,14 @@ body, #root, .app {
     text-align: left;
     top: 90px;
     left: -30px;
-    padding: 20px 5px 20px 15px;
-    span {
+    padding: 8px 0 8px 0;
+    p {
       cursor: pointer;
+      margin: 0;
+      padding: 12px 15px 12px 15px;
+    }
+    p:hover {
+      background: #3eb1c8;
     }
   }
 

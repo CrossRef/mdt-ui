@@ -5,14 +5,16 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import { getPublications, controlModal, cartUpdate, clearCart, deleteRecord, searchRecords, firstLogin, moveArticles } from '../actions/application'
-import * as api from '../actions/api'
 import Listing from '../components/Publication/listing'
 import Filter from '../components/Publication/filter'
 import ActionBar from '../components/Publication/actionBar'
 import TitleBar from '../components/Publication/titleBar'
 import TourModal from '../components/Publication/tourModal'
+import DeleteConfirmModal from '../components/Publication/deleteConfirmModal'
+import MoveSelectionModal from '../components/Publication/moveSelectionModal'
 import {routes} from  '../routing'
-import {compareDois, recordTitle} from '../utilities/helpers'
+import {compareDois} from '../utilities/helpers'
+
 
 
 
@@ -34,7 +36,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   asyncDeleteRecord: deleteRecord,
   asyncSearchRecords: searchRecords,
   asyncMoveArticles: moveArticles
-
 }, dispatch)
 
 
@@ -165,8 +166,8 @@ export default class PublicationPage extends Component {
     this.props.reduxControlModal({
       showModal: true,
       title: 'Remove Record',
-      style: 'defaultModal',
-      Component: this.DeleteConfirmModal,
+      style: 'warningModal',
+      Component: DeleteConfirmModal,
       props: {
         confirm: () => {
           for(let i in this.state.selections){
@@ -178,37 +179,6 @@ export default class PublicationPage extends Component {
         selections: this.state.selections
       }
     })
-  }
-
-
-  DeleteConfirmModal = ({confirm, selections, close}) => {
-
-    const selectionNames = selections.reduce((accumulator, selection) => {
-      const title = (selection.status === 'draft') ? selection.title.title : '';
-      if(!accumulator && title) return title;
-      if(accumulator && title) return accumulator + ', ' + title;
-      else return accumulator
-    }, '');
-
-    return (
-      <div className="actionModal">
-        <div className="messageHolder">
-          <h4>Do you want to remove the selected records? Record data in draft state will be deleted.</h4>
-          <br/><br/>
-          <p>{`- ${selectionNames ? selectionNames : 'No records in draft state'}`}</p>
-        </div>
-        <div className="buttonTable">
-          <div className="tableRow">
-            <div className="leftCell"></div>
-            <div className="rightCell">
-              <button className="leftButton" onClick={close}>Cancel</button>
-              <button className="rightButton" onClick={confirm}>Remove</button>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    )
   }
 
 
@@ -237,7 +207,7 @@ export default class PublicationPage extends Component {
       showModal: true,
       title: 'Move to Issue',
       style: 'defaultModal',
-      Component: this.MoveSelectionModal,
+      Component: MoveSelectionModal,
       props: {
         confirm: async (issueTargetId) => {
           const issue = this.props.publication.normalizedRecords[issueTargetId]
@@ -251,48 +221,6 @@ export default class PublicationPage extends Component {
         issues: this.props.publication.normalizedRecords.findAll( record => record.type === 'issue' )
       }
     });
-
-  }
-
-
-  MoveSelectionModal = class extends React.Component {
-    static propTypes = {
-      confirm: is.func.isRequired,
-      issues: is.array.isRequired,
-      close: is.func.isRequired
-    }
-
-    state = {targetIssue: null}
-
-    render() {
-      return (
-        <div className="moveModal">
-          <div className="issuesContainer">
-
-            {this.props.issues.map((issue)=>{
-              const name = recordTitle('issue', issue.title)
-              const issueId = issue.doi || JSON.stringify(issue.title)
-              return (
-                <div
-                  key={issueId}
-                  className={`issueBox ${this.state.targetIssue === issueId ? 'selectedIssue' : ''}`}
-                  onClick={()=>{this.setState({targetIssue: issueId})}}>
-                    {name}
-                </div>
-              )
-            })}
-
-          </div>
-          <div className="buttonContainer">
-            <button className="leftButton" onClick={this.props.close}>Cancel</button>
-            {this.state.targetIssue ?
-              <button className="rightButton" onClick={() => this.props.confirm(this.state.targetIssue)}>Move</button>
-              : <button className="rightButton inactive">Move</button>
-            }
-          </div>
-        </div>
-      )
-    }
   }
 
 
