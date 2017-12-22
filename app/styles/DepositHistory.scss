@@ -179,7 +179,10 @@
               overflow: hidden;
               padding-top: 32px;
               .failedDeposit {
-                color: red
+                color: red !important
+              }
+              .doiLink {
+                color: inherit
               }
             }            
             .first {

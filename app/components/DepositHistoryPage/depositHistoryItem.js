@@ -47,7 +47,7 @@ export default class DepositHistoryItem extends Component {
               <ErrorMessage errorMessage={this.props.history.errorMessage} errorMessageHandler={this.props.errorMessageHandler}/>}
           </td>
           <td>
-            <a className={`${failedDeposit ? 'failedDeposit' : ''}`}
+            <a className={`doiLink ${failedDeposit ? 'failedDeposit' : ''}`}
                href={failedDeposit ? null : `https://doi.org/${this.props.history.doi}`}
             >
                 https://doi.org/{this.props.history.doi}
