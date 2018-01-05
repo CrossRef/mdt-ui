@@ -227,6 +227,7 @@
       text-overflow: ellipsis;
       overflow: hidden;
       font-size: 12px;
+      background-clip: padding-box;
 
       &.title {
         width: 300px;
@@ -258,19 +259,19 @@
     // Backgrounds for status
 
     tr.issue:not(.failed) > td {
-      background: #f5f5f5;
+      background-color: #f5f5f5;
     }
 
     tr.failed > td {
-      background: #fff2f2;
+      background-color: #fff2f2;
 
       &.status {
         color: #ef3340;
       }
     }
 
-    tr:not(.failed) td {
-      background: white;
+    tr:not(.failed) > td {
+      background-color: white;
     }
 
     // Primary table

@@ -159,7 +159,6 @@
             }
             &.invalid {
                 input:not([type=button]):not([type=submit]) {
-                    border: 1px solid #ef3340;
                     background-color: #ffe3e3!important;
                 }
                 .invalid {

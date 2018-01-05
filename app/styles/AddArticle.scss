@@ -161,6 +161,7 @@ input.height64, textarea.height64, select.height64 {
       }
       img {
         width: 25px;
+        height: 25px;
       }
     }
   }
@@ -171,7 +172,6 @@ input.height64, textarea.height64, select.height64 {
 
 .fieldError {
   background: #FFE9E8;
-  border: 1px solid #EE6068 !important;
 }
 
 
@@ -205,6 +205,7 @@ input.height64, textarea.height64, select.height64 {
         display: inline-block;
         margin: 0;
         width: 37px;
+        height: 34px;
         border-top: 1px solid black;
         border-right: 1px solid black;
         border-bottom: 1px solid black;
@@ -992,7 +993,7 @@ input.height64, textarea.height64, select.height64 {
 .infoFlagDate {
   position: absolute;
   right: -0.5px;
-  top: -13px;
+  top: -12.5px;
   width: 38px;
   height: auto;
 }
