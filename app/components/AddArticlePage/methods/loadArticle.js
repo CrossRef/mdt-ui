@@ -8,7 +8,7 @@ import parseXMLArticle from '../../../utilities/parseXMLArticle'
 
 
 
-export default async function () {
+export default async function loadArticle () {
 
   const { pubDoi } = this.props.routeParams;
   const getItems = []

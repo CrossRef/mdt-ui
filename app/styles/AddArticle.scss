@@ -239,12 +239,32 @@ input.height64, textarea.height64, select.height64 {
 .addArticles {
   margin: 40px 0;
   width: 100%;
+  position: relative;
   .addarticlecard {
     margin: 0 auto;
     width: 960px;
     .addArticleForm {
       width: 100%;
     }
+  }
+
+  .scrollToTopButton {
+    position: fixed;
+    right: 5%;
+    top: 65%;
+    height: 64px;
+    width: 64px;
+    background: #4f5858;
+    font-size: 3em;
+    color: white;
+    padding-top: 9px;
+    cursor: pointer;
+  }
+
+  .rightSidebar {
+    //position: absolute;
+
+
   }
 }
 
@@ -1042,3 +1062,5 @@ input.height64, textarea.height64, select.height64 {
     }
   }
 }
+
+
