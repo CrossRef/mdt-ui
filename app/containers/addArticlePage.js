@@ -474,7 +474,6 @@ export default class AddArticlePage extends Component {
 
 
   scrollHandler = () => {
-    console.log(window.pageYOffset)
     if(window.pageYOffset > 240 && !this.state.scrollToTopButton) {
       this.setState({scrollToTopButton: true})
     }

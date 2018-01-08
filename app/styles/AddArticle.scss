@@ -259,6 +259,7 @@ input.height64, textarea.height64, select.height64 {
     color: white;
     padding-top: 9px;
     cursor: pointer;
+    z-index: 9999999999;
   }
 
   .rightSidebar {
