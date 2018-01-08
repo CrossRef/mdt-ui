@@ -237,34 +237,68 @@ input.height64, textarea.height64, select.height64 {
 
 
 .addArticles {
-  margin: 40px 0;
   width: 100%;
-  position: relative;
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+
   .addarticlecard {
-    margin: 0 auto;
     width: 960px;
+
     .addArticleForm {
       width: 100%;
     }
   }
 
-  .scrollToTopButton {
-    position: fixed;
-    right: 5%;
-    top: 65%;
-    height: 64px;
-    width: 64px;
-    background: #4f5858;
-    font-size: 3em;
-    color: white;
-    padding-top: 6px;
-    cursor: pointer;
-    z-index: 9999999999;
+  .leftBar {
+    width: 1fr;
+  }
 
-    img {
-      width: 32px;
-      height: 32px;
-      transform: rotate(180deg);
+  .rightBar {
+    .scrollToTopButton {
+      position: fixed;
+      top: 65%;
+      height: 64px;
+      width: 64px;
+      background: #4f5858;
+      color: white;
+      padding-top: 15px;
+      cursor: pointer;
+      z-index: 9999999999;
+      margin-left: 50px;
+
+      img {
+        width: 32px;
+        height: 32px;
+        transform: rotate(180deg);
+      }
+    }
+
+    .rightBarAbsolute {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      .scrollToTopButton {
+        position: fixed;
+        top: 65%;
+        height: 64px;
+        width: 64px;
+        background: #4f5858;
+        color: white;
+        padding-top: 15px;
+        cursor: pointer;
+        z-index: 9999999999;
+        margin-left: 50px;
+
+        img {
+          width: 32px;
+          height: 32px;
+          transform: rotate(180deg);
+        }
+      }
     }
   }
 }

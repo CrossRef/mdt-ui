@@ -497,11 +497,6 @@ export default class AddArticlePage extends Component {
     return (
       <div className='addArticles'>
 
-        {this.state.scrollToTopButton &&
-          <div className="scrollToTopButton" onClick={this.scrollToTop}>
-            <img className="scrollToTopChevron" src={`${routes.images}/AddArticle/Asset_Icons_White_Chevron.svg`}/>
-          </div>}
-
         <AddArticleView
           back={this.back}
           addToCart={this.addToCart}
@@ -521,6 +516,13 @@ export default class AddArticlePage extends Component {
           calendarHandler={this.calendarHandler}
           {...this.state}
         />
+
+        <div className="rightBar">
+          {this.state.scrollToTopButton &&
+            <div className="scrollToTopButton" onClick={this.scrollToTop}>
+              <img className="scrollToTopChevron" src={`${routes.images}/AddArticle/Asset_Icons_White_Chevron.svg`}/>
+            </div>}
+        </div>
       </div>
     )
   }

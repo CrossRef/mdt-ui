@@ -45,431 +45,428 @@ AddArticleView.propTypes = {
 export default function AddArticleView (props) {
 
   return (
-    <div>
+    <div className='addarticlecard'>
 
-      <div className='addarticlecard'>
+      <form className='addArticleForm'>
 
-        <form className='addArticleForm'>
+        <ActionBar
+          back={props.back}
+          addToCart={props.addToCart}
+          save={props.save}
+          openReviewArticleModal={props.openReviewArticleModal}
+          saving={props.saving}
+          inCart={props.inCart}
+          criticalErrors={props.criticalErrors}/>
 
-          <ActionBar
-            back={props.back}
-            addToCart={props.addToCart}
-            save={props.save}
-            openReviewArticleModal={props.openReviewArticleModal}
-            saving={props.saving}
-            inCart={props.inCart}
-            criticalErrors={props.criticalErrors}/>
+        <div className='articleInnerForm'>
 
-          <div className='articleInnerForm'>
+          <div className="topbar">
+            <div className="titleholder">
+              <div className="titleinnerholder">
+                <div className='titleIconHolder'>
+                  <img src={`${routes.images}/AddArticle/Asset_Icons_White_Write.svg`} />
+                </div>
+                <div className='articletitle'>
+                  {props.article.title}
+                </div>
+              </div>
+            </div>
+          </div>
 
-            <div className="topbar">
-              <div className="titleholder">
-                <div className="titleinnerholder">
-                  <div className='titleIconHolder'>
-                    <img src={`${routes.images}/AddArticle/Asset_Icons_White_Write.svg`} />
+
+          <div className='body'>
+
+            <div className='row infohelper'>
+              <div className="fieldHolder">
+                <div className="fieldinnerholder fulllength">
+                  <div className="labelholder">
+                    <div className="labelinnerholder">
+                      <div className='label'>* Indicates Required fields</div>
+                    </div>
                   </div>
-                  <div className='articletitle'>
-                    {props.article.title}
+                </div>
+              </div>
+
+              <div className="errorHolder">
+                <div className="switchOuterHolder">
+                  <div className="switchInnerHolder">
+                    <div className="switchLicense">
+                      <div className='switchLabel'><span>Show Help</span></div>
+                      <Switch
+                        onClick={() => props.boundSetState({
+                          showHelper: !props.showHelper,
+                          focusedInput: ''
+                        })}
+                        on={props.showHelper}
+                      />
+                    </div>
                   </div>
                 </div>
               </div>
             </div>
 
-
-            <div className='body'>
-
-              <div className='row infohelper'>
-                <div className="fieldHolder">
-                  <div className="fieldinnerholder fulllength">
-                    <div className="labelholder">
-                      <div className="labelinnerholder">
-                        <div className='label'>* Indicates Required fields</div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="errorHolder">
-                  <div className="switchOuterHolder">
-                    <div className="switchInnerHolder">
-                      <div className="switchLicense">
-                        <div className='switchLabel'><span>Show Help</span></div>
-                        <Switch
-                          onClick={() => props.boundSetState({
-                            showHelper: !props.showHelper,
-                            focusedInput: ''
-                          })}
-                          on={props.showHelper}
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className='row'>
-                <div className='fieldHolder'>
-                  <FormTextArea
-                    label="Article Title (Required)"
-                    name="title"
-                    value={props.article.title}
-                    required
-                    error={props.errors.title}
-                    indicatorErrors={['title']}
-                    changeHandler={props.handleChange}
-                    tooltipUtility={props.tooltipUtility}
-                    errorUtility={props.errorUtility}
-                    onBlur={props.validate}/>
-                </div>
-
-                <ErrorIndicator
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormTextArea
+                  label="Article Title (Required)"
+                  name="title"
+                  value={props.article.title}
+                  required
+                  error={props.errors.title}
                   indicatorErrors={['title']}
-                  allErrors={props.errors}
-                  errorMessages={props.errorMessages}
+                  changeHandler={props.handleChange}
                   tooltipUtility={props.tooltipUtility}
-                  errorUtility={props.errorUtility}/>
-
-
-                {props.showHelper &&
-                  <TooltipBubble
-                    errorUtility={props.errorUtility}
-                    tooltipUtility={props.tooltipUtility}/>}
-
-
-                {props.error &&
-                  <StickyError errorUtility={props.errorUtility}/>}
-
-              </div>
-
-              <div className='row'>
-                <OptionalTitleData
-                  show={props.showOptionalTitleData}
-                  toggleFields={props.toggleFields}
-                  subtitle={props.article.subtitle}
-                  originallanguagetitle={props.article.originallanguagetitle}
-                  originallanguagetitlesubtitle={props.article.originallanguagetitlesubtitle}
-                  validate={props.validate}
-                  tooltipUtility={props.tooltipUtility}
-                  tooltip={props.showHelper}
                   errorUtility={props.errorUtility}
-                  handleChange={props.handleChange}/>
+                  onBlur={props.validate}/>
               </div>
 
-              <div className='row'>
-                <div className="fieldHolder">
-                  <FormInput
-                    label="Article DOI (Required)"
-                    name="doi"
-                    value={props.article.doi}
-                    required
-                    errorUtility={props.errorUtility}
-                    error={props.errors.doi || props.errors.dupedoi || props.errors.invaliddoi || props.errors.invalidDoiPrefix}
-                    indicatorErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix']}
-                    tooltip={props.showHelper && tooltip.doi}
-                    tooltipUtility={props.tooltipUtility}
-                    disabled={props.doiDisabled}
-                    changeHandler={props.handleChange}
-                    onBlur={props.validate}/>
+              <ErrorIndicator
+                indicatorErrors={['title']}
+                allErrors={props.errors}
+                errorMessages={props.errorMessages}
+                tooltipUtility={props.tooltipUtility}
+                errorUtility={props.errorUtility}/>
 
-                  <FormInput
-                    label="Article URL (Required)"
-                    name="url"
-                    value={ urlEntered(props.article.url) ? props.article.url : 'http://' }
-                    required
-                    error={props.errors.url || props.errors.invalidurl}
-                    indicatorErrors={['url', 'invalidurl']}
-                    errorUtility={props.errorUtility}
-                    tooltip={props.showHelper && tooltip.url}
-                    tooltipUtility={props.tooltipUtility}
-                    changeHandler={props.handleChange}
-                    onBlur={props.validate}/>
-                </div>
 
-                <ErrorIndicator
-                  indicatorErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}
-                  allErrors={props.errors}
-                  errorMessages={props.errorMessages}
-                  tooltipUtility={props.tooltipUtility}
-                  errorUtility={props.errorUtility}/>
-              </div>
+              {props.showHelper &&
+                <TooltipBubble
+                  errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}/>}
 
-              <DatesRow
-                article={props.article}
-                errors={props.errors}
-                handleChange={props.handleChange}
+
+              {props.error &&
+                <StickyError errorUtility={props.errorUtility}/>}
+
+            </div>
+
+            <div className='row'>
+              <OptionalTitleData
+                show={props.showOptionalTitleData}
+                toggleFields={props.toggleFields}
+                subtitle={props.article.subtitle}
+                originallanguagetitle={props.article.originallanguagetitle}
+                originallanguagetitlesubtitle={props.article.originallanguagetitlesubtitle}
                 validate={props.validate}
                 tooltipUtility={props.tooltipUtility}
                 tooltip={props.showHelper}
                 errorUtility={props.errorUtility}
-                errorMessages={props.errorMessages}
-                activeCalendar={props.activeCalendar}
-                calendarHandler={props.calendarHandler}
-              />
-
-              <div className='row'>
-                <div className='fieldHolder'>
-                  <FormInput
-                    label="First Page"
-                    name="firstPage"
-                    value={props.article.firstPage}
-                    required={!!props.article.lastPage}
-                    error={props.errors.firstPage || props.errors.firstPageLimit}
-                    indicatorErrors={['firstPage', 'firstPageLimit']}
-                    errorUtility={props.errorUtility}
-                    changeHandler={props.handleChange}
-                    tooltipUtility={props.tooltipUtility}
-                    onBlur={props.validate}/>
-
-                  <FormInput
-                    label="Last Page"
-                    name="lastPage"
-                    value={props.article.lastPage}
-                    error={props.errors.lastPageLimit || props.errors.lastPageLessFirst}
-                    indicatorErrors={['lastPageLimit', 'lastPageLessFirst']}
-                    changeHandler={props.handleChange}
-                    errorUtility={props.errorUtility}
-                    tooltipUtility={props.tooltipUtility}
-                    onBlur={props.validate}/>
-                </div>
-
-                <ErrorIndicator
-                  indicatorErrors={['firstPage', 'firstPageLimit', 'lastPageLimit', 'lastPageLessFirst']}
-                  allErrors={props.errors}
-                  errorMessages={props.errorMessages}
-                  tooltipUtility={props.tooltipUtility}
-                  errorUtility={props.errorUtility}/>
-              </div>
-
-              <div className='row'>
-                <div className='fieldHolder'>
-                  <FormInput
-                    label="Article / Electronic Location ID"
-                    name="locationId"
-                    value={props.article.locationId}
-                    error={props.errors.locationIdLimit}
-                    indicatorErrors={['locationIdLimit']}
-                    changeHandler={props.handleChange}
-                    onBlur={props.validate}
-                    errorUtility={props.errorUtility}
-                    tooltipUtility={props.tooltipUtility}
-                    tooltip={props.showHelper && tooltip.locationId}/>
-                </div>
-
-                <ErrorIndicator
-                  indicatorErrors={['locationIdLimit']}
-                  allErrors={props.errors}
-                  errorMessages={props.errorMessages}
-                  tooltipUtility={props.tooltipUtility}
-                  errorUtility={props.errorUtility}/>
-              </div>
-
-              <div className='row'>
-                <div className='fieldHolder'>
-                  <FormTextArea
-                    label="Abstract"
-                    name="abstract"
-                    value={props.article.abstract}
-                    errorUtility={props.errorUtility}
-                    tooltip={props.showHelper && tooltip.abstract}
-                    tooltipUtility={props.tooltipUtility}
-                    changeHandler={props.handleChange}/>
-                </div>
-              </div>
-
+                handleChange={props.handleChange}/>
             </div>
 
+            <div className='row'>
+              <div className="fieldHolder">
+                <FormInput
+                  label="Article DOI (Required)"
+                  name="doi"
+                  value={props.article.doi}
+                  required
+                  errorUtility={props.errorUtility}
+                  error={props.errors.doi || props.errors.dupedoi || props.errors.invaliddoi || props.errors.invalidDoiPrefix}
+                  indicatorErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix']}
+                  tooltip={props.showHelper && tooltip.doi}
+                  tooltipUtility={props.tooltipUtility}
+                  disabled={props.doiDisabled}
+                  changeHandler={props.handleChange}
+                  onBlur={props.validate}/>
 
-            <SubItem
-              title={'Contributor'}
-              boundSetState={props.boundSetState}
-              openSubItems={props.openSubItems}
-              showSection={props.openItems.Contributors}
-              addHandler={props.addSection.bind(null, 'contributors')}>
-                <ErrorIndicator
-                  indicatorErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole', 'contributorSuffixLimit']}
+                <FormInput
+                  label="Article URL (Required)"
+                  name="url"
+                  value={ urlEntered(props.article.url) ? props.article.url : 'http://' }
+                  required
+                  error={props.errors.url || props.errors.invalidurl}
+                  indicatorErrors={['url', 'invalidurl']}
+                  errorUtility={props.errorUtility}
+                  tooltip={props.showHelper && tooltip.url}
+                  tooltipUtility={props.tooltipUtility}
+                  changeHandler={props.handleChange}
+                  onBlur={props.validate}/>
+              </div>
+
+              <ErrorIndicator
+                indicatorErrors={['doi', 'dupedoi', 'invaliddoi', 'invalidDoiPrefix', 'url', 'invalidurl']}
+                allErrors={props.errors}
+                errorMessages={props.errorMessages}
+                tooltipUtility={props.tooltipUtility}
+                errorUtility={props.errorUtility}/>
+            </div>
+
+            <DatesRow
+              article={props.article}
+              errors={props.errors}
+              handleChange={props.handleChange}
+              validate={props.validate}
+              tooltipUtility={props.tooltipUtility}
+              tooltip={props.showHelper}
+              errorUtility={props.errorUtility}
+              errorMessages={props.errorMessages}
+              activeCalendar={props.activeCalendar}
+              calendarHandler={props.calendarHandler}
+            />
+
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormInput
+                  label="First Page"
+                  name="firstPage"
+                  value={props.article.firstPage}
+                  required={!!props.article.lastPage}
+                  error={props.errors.firstPage || props.errors.firstPageLimit}
+                  indicatorErrors={['firstPage', 'firstPageLimit']}
+                  errorUtility={props.errorUtility}
+                  changeHandler={props.handleChange}
+                  tooltipUtility={props.tooltipUtility}
+                  onBlur={props.validate}/>
+
+                <FormInput
+                  label="Last Page"
+                  name="lastPage"
+                  value={props.article.lastPage}
+                  error={props.errors.lastPageLimit || props.errors.lastPageLessFirst}
+                  indicatorErrors={['lastPageLimit', 'lastPageLessFirst']}
+                  changeHandler={props.handleChange}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
-                  allErrors={props.errors}/>
+                  onBlur={props.validate}/>
+              </div>
 
-                {props.contributors.map((data, i)=>
-                  <Contributor
-                    openSubItems={props.openSubItems}
-                    validate={props.validate}
-                    key={i}
-                    contributor={data}
-                    remove={props.removeSection.bind(null, 'contributors', i)}
-                    handler={props.boundSetState}
-                    data={props.contributors}
-                    tooltipUtility={props.tooltipUtility}
-                    tooltip={props.showHelper}
-                    errorMessages={props.errorMessages}
-                    errorUtility={props.errorUtility}
-                    allErrors={props.errors}
-                    index={i}/>
-                )}
-            </SubItem>
+              <ErrorIndicator
+                indicatorErrors={['firstPage', 'firstPageLimit', 'lastPageLimit', 'lastPageLessFirst']}
+                allErrors={props.errors}
+                errorMessages={props.errorMessages}
+                tooltipUtility={props.tooltipUtility}
+                errorUtility={props.errorUtility}/>
+            </div>
 
-
-            <SubItem
-              title={'Funding'}
-              boundSetState={props.boundSetState}
-              openSubItems={props.openSubItems}
-              showSection={props.openItems.Funding}
-              addHandler={props.addSection.bind(null, 'funding')}>
-                {props.funding.map((data, i)=>
-                  <Funding
-                    openSubItems={props.openSubItems}
-                    validate={props.validate}
-                    key={i}
-                    funding={data}
-                    remove={props.removeSection.bind(null, 'funding', i)}
-                    handler={props.boundSetState}
-                    data={props.funding}
-                    tooltipUtility={props.tooltipUtility}
-                    tooltip={props.showHelper}
-                    index={i}/>
-                )}
-            </SubItem>
-
-
-            <SubItem
-              title={'License'}
-              boundSetState={props.boundSetState}
-              openSubItems={props.openSubItems}
-              showSection={props.openItems.Licenses}
-              addHandler={props.addSection.bind(null, 'license')}>
-                <ErrorIndicator
-                  indicatorErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete']}
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormInput
+                  label="Article / Electronic Location ID"
+                  name="locationId"
+                  value={props.article.locationId}
+                  error={props.errors.locationIdLimit}
+                  indicatorErrors={['locationIdLimit']}
+                  changeHandler={props.handleChange}
+                  onBlur={props.validate}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}
-                  allErrors={props.errors}/>
+                  tooltip={props.showHelper && tooltip.locationId}/>
+              </div>
 
-                <div className="freeToLicense">
-                  <div className='row'>
-                    <div className='fieldHolder'>
-                      <FormSelect
-                        label="Free to License"
-                        name="freetolicense"
-                        value={props.article.freetolicense}
-                        options={[
-                            {value: 'yes', name: 'Yes'},
-                            {value: 'no', name: 'No'}
-                        ]}
-                        errorUtility={props.errorUtility}
-                        changeHandler={props.handleChange}
-                        tooltipUtility={props.tooltipUtility}
-                        tooltip={props.showHelper && tooltip.freeToLicense}
-                        onSelect={props.validate}/>
-                    </div>
+              <ErrorIndicator
+                indicatorErrors={['locationIdLimit']}
+                allErrors={props.errors}
+                errorMessages={props.errorMessages}
+                tooltipUtility={props.tooltipUtility}
+                errorUtility={props.errorUtility}/>
+            </div>
+
+            <div className='row'>
+              <div className='fieldHolder'>
+                <FormTextArea
+                  label="Abstract"
+                  name="abstract"
+                  value={props.article.abstract}
+                  errorUtility={props.errorUtility}
+                  tooltip={props.showHelper && tooltip.abstract}
+                  tooltipUtility={props.tooltipUtility}
+                  changeHandler={props.handleChange}/>
+              </div>
+            </div>
+
+          </div>
+
+
+          <SubItem
+            title={'Contributor'}
+            boundSetState={props.boundSetState}
+            openSubItems={props.openSubItems}
+            showSection={props.openItems.Contributors}
+            addHandler={props.addSection.bind(null, 'contributors')}>
+              <ErrorIndicator
+                indicatorErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole', 'contributorSuffixLimit']}
+                errorUtility={props.errorUtility}
+                tooltipUtility={props.tooltipUtility}
+                allErrors={props.errors}/>
+
+              {props.contributors.map((data, i)=>
+                <Contributor
+                  openSubItems={props.openSubItems}
+                  validate={props.validate}
+                  key={i}
+                  contributor={data}
+                  remove={props.removeSection.bind(null, 'contributors', i)}
+                  handler={props.boundSetState}
+                  data={props.contributors}
+                  tooltipUtility={props.tooltipUtility}
+                  tooltip={props.showHelper}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}
+                  index={i}/>
+              )}
+          </SubItem>
+
+
+          <SubItem
+            title={'Funding'}
+            boundSetState={props.boundSetState}
+            openSubItems={props.openSubItems}
+            showSection={props.openItems.Funding}
+            addHandler={props.addSection.bind(null, 'funding')}>
+              {props.funding.map((data, i)=>
+                <Funding
+                  openSubItems={props.openSubItems}
+                  validate={props.validate}
+                  key={i}
+                  funding={data}
+                  remove={props.removeSection.bind(null, 'funding', i)}
+                  handler={props.boundSetState}
+                  data={props.funding}
+                  tooltipUtility={props.tooltipUtility}
+                  tooltip={props.showHelper}
+                  index={i}/>
+              )}
+          </SubItem>
+
+
+          <SubItem
+            title={'License'}
+            boundSetState={props.boundSetState}
+            openSubItems={props.openSubItems}
+            showSection={props.openItems.Licenses}
+            addHandler={props.addSection.bind(null, 'license')}>
+              <ErrorIndicator
+                indicatorErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete']}
+                errorUtility={props.errorUtility}
+                tooltipUtility={props.tooltipUtility}
+                allErrors={props.errors}/>
+
+              <div className="freeToLicense">
+                <div className='row'>
+                  <div className='fieldHolder'>
+                    <FormSelect
+                      label="Free to License"
+                      name="freetolicense"
+                      value={props.article.freetolicense}
+                      options={[
+                          {value: 'yes', name: 'Yes'},
+                          {value: 'no', name: 'No'}
+                      ]}
+                      errorUtility={props.errorUtility}
+                      changeHandler={props.handleChange}
+                      tooltipUtility={props.tooltipUtility}
+                      tooltip={props.showHelper && tooltip.freeToLicense}
+                      onSelect={props.validate}/>
                   </div>
                 </div>
+              </div>
 
-                {props.license.map((data, i)=>
-                  <License
-                    openSubItems={props.openSubItems}
-                    validate={props.validate}
-                    key={i}
-                    license={data}
-                    remove={props.removeSection.bind(null, 'license', i)}
-                    handler={props.boundSetState}
-                    data={props.license}
-                    index={i}
-                    errorMessages={props.errorMessages}
-                    errorUtility={props.errorUtility}
-                    allErrors={props.errors}
-                    tooltip={props.showHelper}
-                    tooltipUtility={props.tooltipUtility}
-                    activeCalendar={props.activeCalendar}
-                    calendarHandler={props.calendarHandler}
-                    freetolicense={i===0 ? props.article.freetolicense : ''}/>
-                )}
-            </SubItem>
-
-
-            <SubItem
-              title={'Related Items'}
-              boundSetState={props.boundSetState}
-              openSubItems={props.openSubItems}
-              showSection={props.openItems.relatedItems}
-              addHandler={props.addSection.bind(null, 'relatedItems')}>
-                <ErrorIndicator
-                  indicatorErrors={['relatedItemIdType', 'relatedItemRelType', 'relatedItemDoiInvalid']}
-                  errorUtility={props.errorUtility}
-                  tooltipUtility={props.tooltipUtility}
-                  allErrors={props.errors}/>
-
-                {props.relatedItems.map((data, i)=>
-                  <RelatedItems
-                    openSubItems={props.openSubItems}
-                    validate={props.validate}
-                    key={i}
-                    relateditem={data}
-                    remove={props.removeSection.bind(null, 'relatedItems', i)}
-                    handler={props.boundSetState}
-                    data={props.relatedItems}
-                    tooltipUtility={props.tooltipUtility}
-                    tooltip={props.showHelper}
-                    errorMessages={props.errorMessages}
-                    errorUtility={props.errorUtility}
-                    allErrors={props.errors}
-                    index={i}/>
-                )}
-            </SubItem>
-
-
-            <SubItem
-              title={'Additional Information'}
-              boundSetState={props.boundSetState}
-              openSubItems={props.openSubItems}
-              showSection={props.openItems.addInfo}>
-                <ErrorIndicator
-                  indicatorErrors={['simCheckUrlInvalid']}
-                  errorUtility={props.errorUtility}
-                  tooltipUtility={props.tooltipUtility}
-                  allErrors={props.errors}/>
-
-                <AdditionalInformation
-                  addInfo={props.addInfo}
+              {props.license.map((data, i)=>
+                <License
+                  openSubItems={props.openSubItems}
+                  validate={props.validate}
+                  key={i}
+                  license={data}
+                  remove={props.removeSection.bind(null, 'license', i)}
                   handler={props.boundSetState}
+                  data={props.license}
+                  index={i}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}
+                  tooltip={props.showHelper}
+                  tooltipUtility={props.tooltipUtility}
+                  activeCalendar={props.activeCalendar}
+                  calendarHandler={props.calendarHandler}
+                  freetolicense={i===0 ? props.article.freetolicense : ''}/>
+              )}
+          </SubItem>
+
+
+          <SubItem
+            title={'Related Items'}
+            boundSetState={props.boundSetState}
+            openSubItems={props.openSubItems}
+            showSection={props.openItems.relatedItems}
+            addHandler={props.addSection.bind(null, 'relatedItems')}>
+              <ErrorIndicator
+                indicatorErrors={['relatedItemIdType', 'relatedItemRelType', 'relatedItemDoiInvalid']}
+                errorUtility={props.errorUtility}
+                tooltipUtility={props.tooltipUtility}
+                allErrors={props.errors}/>
+
+              {props.relatedItems.map((data, i)=>
+                <RelatedItems
+                  openSubItems={props.openSubItems}
+                  validate={props.validate}
+                  key={i}
+                  relateditem={data}
+                  remove={props.removeSection.bind(null, 'relatedItems', i)}
+                  handler={props.boundSetState}
+                  data={props.relatedItems}
+                  tooltipUtility={props.tooltipUtility}
+                  tooltip={props.showHelper}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}
+                  index={i}/>
+              )}
+          </SubItem>
+
+
+          <SubItem
+            title={'Additional Information'}
+            boundSetState={props.boundSetState}
+            openSubItems={props.openSubItems}
+            showSection={props.openItems.addInfo}>
+              <ErrorIndicator
+                indicatorErrors={['simCheckUrlInvalid']}
+                errorUtility={props.errorUtility}
+                tooltipUtility={props.tooltipUtility}
+                allErrors={props.errors}/>
+
+              <AdditionalInformation
+                addInfo={props.addInfo}
+                handler={props.boundSetState}
+                validate={props.validate}
+                tooltip={props.showHelper}
+                tooltipUtility={props.tooltipUtility}
+                errorMessages={props.errorMessages}
+                errorUtility={props.errorUtility}
+                allErrors={props.errors}
+                simCheckError={props.errors.simCheckUrlInvalid}/>
+          </SubItem>
+
+
+          {props.crossmark &&
+            <SubItem
+              title={'Crossmark'}
+              boundSetState={props.boundSetState}
+              showSection={!!Object.keys(props.crossmarkCards).length || !!props.reduxForm.size}
+              openSubItems={props.openSubItems}>
+                <ErrorIndicator
+                  indicatorErrors={crossmarkErrors}
+                  errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
+                  allErrors={props.errors}/>
+
+                <Crossmark
+                  crossmarkUtility={props.crossmarkUtility}
+                  crossmarkCards={props.crossmarkCards}
                   validate={props.validate}
                   tooltip={props.showHelper}
                   tooltipUtility={props.tooltipUtility}
                   errorMessages={props.errorMessages}
                   errorUtility={props.errorUtility}
-                  allErrors={props.errors}
-                  simCheckError={props.errors.simCheckUrlInvalid}/>
+                  activeCalendar={props.activeCalendar}
+                  calendarHandler={props.calendarHandler}
+                  reduxDeleteCard={props.reduxDeleteCard}/>
             </SubItem>
+          }
 
-
-            {props.crossmark &&
-              <SubItem
-                title={'Crossmark'}
-                boundSetState={props.boundSetState}
-                showSection={!!Object.keys(props.crossmarkCards).length || !!props.reduxForm.size}
-                openSubItems={props.openSubItems}>
-                  <ErrorIndicator
-                    indicatorErrors={crossmarkErrors}
-                    errorUtility={props.errorUtility}
-                    tooltipUtility={props.tooltipUtility}
-                    allErrors={props.errors}/>
-
-                  <Crossmark
-                    crossmarkUtility={props.crossmarkUtility}
-                    crossmarkCards={props.crossmarkCards}
-                    validate={props.validate}
-                    tooltip={props.showHelper}
-                    tooltipUtility={props.tooltipUtility}
-                    errorMessages={props.errorMessages}
-                    errorUtility={props.errorUtility}
-                    activeCalendar={props.activeCalendar}
-                    calendarHandler={props.calendarHandler}
-                    reduxDeleteCard={props.reduxDeleteCard}/>
-              </SubItem>
-            }
-
-          </div>
-        </form>
-      </div>
+        </div>
+      </form>
     </div>
   )
 }
