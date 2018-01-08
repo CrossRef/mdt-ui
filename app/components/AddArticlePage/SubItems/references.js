@@ -18,40 +18,6 @@ export default class References extends React.Component {
   }
 
 
-  dummyData = [
-    {
-      reference: 'Dummy Text 1.',
-      doi: '10.5555/awgawgaerh',
-      matchValuation: 98
-    },
-    {
-      reference: 'Dummy Text 2',
-      doi: '10.5555/awgawgaerh',
-      matchValuation: 23
-    },
-    {
-      reference: 'Dummy Text 3',
-      doi: '10.5555/awgawgaerh',
-      matchValuation: 52
-    },
-    {
-      reference: 'Dummy Text 4',
-      doi: '10.5555/awgawgaerh',
-      matchValuation: 44
-    },
-    {
-      reference: 'Dummy Text 5',
-      doi: '10.5555/awgawgaerh',
-      matchValuation: 87
-    },
-    {
-      reference: 'Dummy Text 6',
-      doi: '10.5555/awgawgaerh',
-      matchValuation: 100
-    }
-  ]
-
-
   componentWillReceiveProps (nextProps) {
     if(nextProps.references.length > this.props.references.length) {
       this.setState({referenceText: '', loading: false})
