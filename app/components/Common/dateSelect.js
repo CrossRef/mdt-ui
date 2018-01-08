@@ -11,13 +11,26 @@ DateSelect.propTypes = {
   value: is.oneOfType([is.string, is.number]).isRequired,
   validation: is.bool,
   style: is.string,
-  nodeRef: is.object
+  nodeRef: is.object,
+  startYear: is.oneOfType([is.string, is.number])
 }
 
-export default function DateSelect ({handler, name, type, value, validation, style, nodeRef}) {
-  var s = [<option key='-1' />], start = 0, end = 0
+export default function DateSelect ({
+  handler,
+  name,
+  type,
+  value,
+  validation,
+  style,
+  nodeRef,
+  startYear
+}) {
+
+  const currentYear = (new Date).getFullYear()
+
+  let s = [<option key='-1' />], start = 0, end = 0
   if (type === 'y' || type === 'year') {
-    start = 2017
+    start = Number(startYear) > currentYear ? Number(startYear) : currentYear
     end = 1980
   } else if (type === 'd' || type === 'day') {
     start = 1

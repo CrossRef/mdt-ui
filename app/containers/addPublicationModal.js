@@ -151,7 +151,7 @@ export default class AddPublicationModal extends Component {
 
 
   validatePrefix () {
-    return this.props.prefixes.indexOf(this.state.DOI.split('/')[0]) !== -1
+    return this.props.prefixes.indexOf(this.state.ownerPrefix || this.state.DOI.split('/')[0]) !== -1
   }
 
 
@@ -173,7 +173,10 @@ export default class AddPublicationModal extends Component {
 
     criticalErrors.showDOIEmptyError = !this.state.DOI.length
     criticalErrors.showDOIInvalidError = !criticalErrors.showDOIEmptyError ? !isDOI(this.state.DOI) : false
-    criticalErrors.showDOIPrefixError = !criticalErrors.showDOIEmptyError && !criticalErrors.showDOIInvalidError && this.props.mode !== 'edit' ? !this.validatePrefix() : false
+    criticalErrors.showDOIPrefixError =
+      !criticalErrors.showDOIEmptyError &&
+      !criticalErrors.showDOIInvalidError &&
+      this.props.mode !== 'edit' ? !this.validatePrefix() : false
     criticalErrors.showDOIError =
       !criticalErrors.showDOIEmptyError &&
       !criticalErrors.showDOIInvalidError &&
@@ -363,6 +366,7 @@ export default class AddPublicationModal extends Component {
     const archive = data.archive_locations ? data.archive_locations.archive || {} : {}
     const doi_data = data.doi_data || {}
     this.setState({
+      ownerPrefix: publication.message['owner-prefix'],
       DOI: doi,
       abbreviation: data.abbrev_title,
       url: doi_data.resource,
