@@ -257,15 +257,15 @@ input.height64, textarea.height64, select.height64 {
     background: #4f5858;
     font-size: 3em;
     color: white;
-    padding-top: 9px;
+    padding-top: 6px;
     cursor: pointer;
     z-index: 9999999999;
-  }
 
-  .rightSidebar {
-    //position: absolute;
-
-
+    img {
+      width: 32px;
+      height: 32px;
+      transform: rotate(180deg);
+    }
   }
 }
 

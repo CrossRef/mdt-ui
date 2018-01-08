@@ -497,7 +497,10 @@ export default class AddArticlePage extends Component {
     return (
       <div className='addArticles'>
 
-        {this.state.scrollToTopButton && <div className="scrollToTopButton" onClick={this.scrollToTop}>^</div>}
+        {this.state.scrollToTopButton &&
+          <div className="scrollToTopButton" onClick={this.scrollToTop}>
+            <img className="scrollToTopChevron" src={`${routes.images}/AddArticle/Asset_Icons_White_Chevron.svg`}/>
+          </div>}
 
         <AddArticleView
           back={this.back}
