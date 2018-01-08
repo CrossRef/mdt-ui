@@ -391,7 +391,7 @@ export default function AddArticleView (props) {
               title={'References'}
               boundSetState={props.boundSetState}
               openSubItems={props.openSubItems}
-              showSection={props.openItems.References}>
+              showSection={props.openItems.references}>
 
                 <References references={props.references} setReferences={props.boundSetState}/>
             </SubItem>

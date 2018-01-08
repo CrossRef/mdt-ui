@@ -244,12 +244,15 @@ const parseXMLArticle = function (articleXML) {
     })
 
     // references
-    const references = objectSearch(parsedArticle, 'citation_list')
+    let references = objectSearch(parsedArticle, 'citation_list')
     const parsedReferences = []
+
     if(references) {
-      references.citation.forEach( citation => {
+      references = Array.isArray(references.citation) ? references.citation : [references.citation]
+
+      references.forEach( citation => {
         parsedReferences.push({
-          reference: citation.unstructured_citation || "No Title",
+          reference: citation.unstructured_citation,
           DOI: citation.doi,
           matchValuation: citation.doi ? 61 : 30
         })
