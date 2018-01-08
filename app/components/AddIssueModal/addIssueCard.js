@@ -42,7 +42,7 @@ export default function AddIssueCard (props) {
 
 
               <div className='row infohelper'>
-                <div className={`saveConfirmation ${props.confirmationPayload.status}`}><p>{props.confirmationPayload.message}</p></div>
+                <div className={`saveConfirmation ${props.confirmationPayload.status}`}>{props.confirmationPayload.message}&nbsp;</div>
                 <div className='errorHolder'>
                   <div className='switchOuterHolder'>
                     <div className='switchInnerHolder'>

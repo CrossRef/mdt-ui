@@ -386,7 +386,7 @@ export default class AddPublicationModal extends Component {
 
     return (
       <div className='addPublicationCard'>
-        <div className={`saveConfirmation publicationConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
+        <div className={`saveConfirmation publicationConfirmation ${this.state.confirmationPayload.status}`}>{this.state.confirmationPayload.message}</div>
         <form className='addPublications'>
           <div className='fieldRowHolder'>
             <div className={(errors.showTitleEmptyError ? 'fieldinput invalid' : 'fieldinput')}>

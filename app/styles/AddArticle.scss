@@ -334,17 +334,18 @@ input.height64, textarea.height64, select.height64 {
 
     .addholder {
       margin-top:20px;
-      padding: 0 0 0 0;
+      padding: 0 50px;
       height: 100px;
       width: 100%;
       display: inline-flex;
       justify-content: flex-start;
       align-content: center;
       flex-direction: column;
-      hr {width: 90%}
+      hr{width: 100%}
+
       .addNewButton {
         top: 24px;
-        left: 78px;
+        left: 28px;
         width: 120px;
         border: 1px solid black;
         background: #F9F9F9;
@@ -888,17 +889,12 @@ input.height64, textarea.height64, select.height64 {
 }
 
 .saveConfirmation {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
+  text-align: center;
   margin-bottom: 7px;
   clear: both;
   height: 25px;
-
-  p {
-    color: white
-  }
+  padding-top: 4px;
+  color: white;
 }
 
 .saveSuccess {
