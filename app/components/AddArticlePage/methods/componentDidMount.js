@@ -142,6 +142,7 @@ export default async function () {
       contributors: parsedArticle.contributors,
       funding: parsedArticle.funding,
       license: parsedArticle.license,
+      references: parsedArticle.references,
       relatedItems: parsedArticle.relatedItems,
       openItems: parsedArticle.openItems,
       ...validatedPayload

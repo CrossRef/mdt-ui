@@ -153,3 +153,20 @@ export function getDepositHistory (params) {
   })
     .then(depositHistory => depositHistory.json())
 }
+
+
+
+
+export function getReference (referencesArray) {
+  return Promise.all(referencesArray.map( referenceText =>
+    new Promise ((resolve, reject) =>
+      authorizedFetch(`${apiBaseUrl}/search/references?q=${encodeURIComponent(referenceText)}`, {
+        method: 'get',
+        headers: {Authorization: localStorage.getItem('auth')}
+      })
+        .then( result => result.json()).then( result => resolve(result))
+        .catch( e => resolve({ message: [{reference: referenceText, DOI: '', matchValuation: 0}]}))
+    )
+  ))
+}
+
