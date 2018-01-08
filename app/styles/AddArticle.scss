@@ -648,24 +648,28 @@ input.height64, textarea.height64, select.height64 {
                   text-align: left;
                 }
                 .grantRow {
-                  width: 500px;
+                  width: 450px;
                   display: flex;
                   position: relative;
                   flex-direction: row;
 
                   .infoFlagGrant {
                     position: absolute;
-                    right: 186px;
-                    top: -29px;
-                    width: 35px;
+                    right: 148.5px;
+                    bottom: 34px;
+                    width: 38px;
                   }
                 }
                 .grantInput {
-                  flex: .6
+                  width: 301.375px
+
                 }
                 .grantRemove {
                   padding-top: 8px;
-                  flex: .2
+                  width: 130px;
+                  a{
+                    cursor: pointer;
+                  }
                 }
               }
             }
