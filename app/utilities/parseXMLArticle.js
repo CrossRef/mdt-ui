@@ -11,6 +11,7 @@ const parseXMLArticle = function (articleXML) {
     const parsedXml = xmldoc(articleXML)
 
     const parsedArticle = objectSearch(parsedXml, 'journal_article')
+    console.log(parsedArticle)
 
     // article loading
     let publication_date = objectSearch(parsedArticle, 'publication_date');
@@ -241,6 +242,25 @@ const parseXMLArticle = function (articleXML) {
     retObj = _.extend(retObj, {
         license: lic
     })
+
+    // references
+    let references = objectSearch(parsedArticle, 'citation_list')
+    const parsedReferences = []
+
+    if(references) {
+      references = Array.isArray(references.citation) ? references.citation : [references.citation]
+
+      references.forEach( citation => {
+        parsedReferences.push({
+          reference: citation.unstructured_citation,
+          DOI: citation.doi,
+          matchValuation: citation.doi ? 61 : 30
+        })
+      })
+    }
+
+    retObj.openItems.references = parsedReferences.length > 0
+    retObj = {...retObj, references: parsedReferences}
 
     // related items
     const relatedItems = objectSearch(parsedArticle, 'related_item')

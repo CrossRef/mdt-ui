@@ -121,7 +121,14 @@ export default class AddArticlePage extends Component {
 
 
   validation = async (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) => {
-    const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
+    const {
+      criticalErrors,
+      warnings,
+      licenses,
+      contributors,
+      relatedItems,
+      newReduxForm,
+    } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
 
     const validatedPayload = {
       validating: true,
@@ -137,7 +144,8 @@ export default class AddArticlePage extends Component {
         Funding: !!getSubItems(data.funding).length,
         Licenses: !!licenses.length,
         relatedItems: !!relatedItems.length,
-        addInfo: !!getSubItems(data.addInfo).length
+        addInfo: !!getSubItems(data.addInfo).length,
+        references: !!data.references.length
       }
     }
     let valid = true

@@ -10,6 +10,7 @@ import TooltipBubble from '../Common/tooltipBubble'
 import Contributor from './SubItems/contributor'
 import Funding from './SubItems/funding'
 import License from './SubItems/license'
+import References from './SubItems/references'
 import RelatedItems from './SubItems/relatedItems'
 import AdditionalInformation from './SubItems/additionalInfo'
 import { Crossmark, CrossmarkAddButton } from './SubItems/Crossmark/crossmark'
@@ -382,6 +383,16 @@ export default function AddArticleView (props) {
                   calendarHandler={props.calendarHandler}
                   freetolicense={i===0 ? props.article.freetolicense : ''}/>
               )}
+          </SubItem>
+
+
+          <SubItem
+            title={'References'}
+            boundSetState={props.boundSetState}
+            openSubItems={props.openSubItems}
+            showSection={props.openItems.references}>
+
+              <References references={props.references} setReferences={props.boundSetState}/>
           </SubItem>
 
 

@@ -72,6 +72,27 @@ export default function (state, reduxForm) {
   appendCollectionXML(el)
   doc.documentElement.appendChild(el)
 
+  //citation list
+  if(state.references && state.references.length) {
+    el = doc.createElement("citation_list")
+    state.references.forEach( (reference, i) => {
+      el2 = doc.createElement("citation")
+      el2.setAttribute("key", `ref${i}`)
+      let el3
+      if(reference.matchValuation > 60 && reference.DOI) {
+        el3 = doc.createElement("doi")
+        el3.textContent = reference.DOI
+        el2.appendChild(el3)
+      }
+
+      el3 = doc.createElement("unstructured_citation")
+      el3.textContent = reference.reference
+      el2.appendChild(el3)
+      el.appendChild(el2)
+      doc.documentElement.appendChild(el)
+    })
+  }
+
   return doc
 
   function appendContributorElm(root) {

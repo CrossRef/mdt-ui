@@ -111,6 +111,7 @@ export default {
       }
     }
   ],
+  references: [],
   relatedItems: [
     {
       relatedItemIdentifier: '',
@@ -134,7 +135,8 @@ export default {
     Contributors:false,
     Funding:false,
     Licenses:false,
-    relatedItems:false,
+    References: false,
+    RelatedItems:false,
     addInfo:false
   }
 }
