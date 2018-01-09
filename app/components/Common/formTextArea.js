@@ -11,6 +11,7 @@ export default class FormTextArea extends React.Component {
   static propTypes = {
     label: is.string.isRequired,
     name: is.oneOfType([is.string, is.array]).isRequired,
+    style: is.string,
     value: is.string.isRequired,
     required: is.bool,
     error: is.bool,
@@ -78,7 +79,7 @@ export default class FormTextArea extends React.Component {
           <div className='field'>
             {isFocus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
             <textarea
-              className={`height64 ${this.props.error ? 'fieldError' : ''} ${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
+              className={`height64 ${this.props.style ? this.props.style : ''} ${this.props.error ? 'fieldError' : ''} ${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
               type='text'
               name={this.props.name}
               onChange={this.props.changeHandler}
