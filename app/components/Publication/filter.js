@@ -23,7 +23,8 @@ export default class PublicationFilter extends Component {
   }
 
   render () {
-    return (<div className='publication-header'>
+    return (
+    <div className='publication-header'>
       <div className='publication-status-selector'>
         <Link onClick={()=>{this.filter('all')}} className={(this.state.current === 'all') ? 'selected' : ''}>All</Link>
         <Link onClick={()=>{this.filter('draft')}} className={(this.state.current === 'draft') ? 'selected' : ''}>Draft</Link>
