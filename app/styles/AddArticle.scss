@@ -237,13 +237,37 @@ input.height64, textarea.height64, select.height64 {
 
 
 .addArticles {
-  margin: 40px 0;
   width: 100%;
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+
   .addarticlecard {
-    margin: 0 auto;
     width: 960px;
+
     .addArticleForm {
       width: 100%;
+    }
+  }
+
+  .rightBar {
+    .scrollToTopButton {
+      position: fixed;
+      top: 65%;
+      height: 64px;
+      width: 64px;
+      background: #4f5858;
+      color: white;
+      padding-top: 15px;
+      cursor: pointer;
+      z-index: 9999999999;
+      margin-left: 50px;
+
+      img {
+        width: 32px;
+        height: 32px;
+        transform: rotate(180deg);
+      }
     }
   }
 }
