@@ -50,7 +50,7 @@ export function doiEntered (doi, ownerPrefix) {
 }
 
 export function urlEntered (url) {
-  return url && url.length > 'http://'.length
+  return !!url && url.length > 'http://'.length
 }
 
 export function isDOI (doi) {

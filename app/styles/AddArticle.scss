@@ -240,13 +240,37 @@ input.height64, textarea.height64, select.height64 {
 
 
 .addArticles {
-  margin: 40px 0;
   width: 100%;
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+
   .addarticlecard {
-    margin: 0 auto;
     width: 960px;
+
     .addArticleForm {
       width: 100%;
+    }
+  }
+
+  .rightBar {
+    .scrollToTopButton {
+      position: fixed;
+      top: 65%;
+      height: 64px;
+      width: 64px;
+      background: #4f5858;
+      color: white;
+      padding-top: 15px;
+      cursor: pointer;
+      z-index: 9999999999;
+      margin-left: 50px;
+
+      img {
+        width: 32px;
+        height: 32px;
+        transform: rotate(180deg);
+      }
     }
   }
 }
@@ -574,7 +598,6 @@ input.height64, textarea.height64, select.height64 {
                 width: 100%
               }
               textarea {
-                border: 1px solid #EDEFF1;
                 margin: 0;
                 padding: 5px 16px;
                 resize: none;
@@ -982,7 +1005,7 @@ input.height64, textarea.height64, select.height64 {
 
 .infoFlagTextArea {
   position: absolute;
-  right: 1px;
+  right: 0;
   top: -29px;
   width: 38px;
 }
@@ -1041,6 +1064,11 @@ input.height64, textarea.height64, select.height64 {
 }
 
 
+.abstract {
+  height: 256px !important;
+}
+
+
 .references {
   padding: 20px 78px 40px 78px;
   text-align: left;
@@ -1051,7 +1079,6 @@ input.height64, textarea.height64, select.height64 {
 
   .referencesLoader {
     @extend ._loader;
-    //margin: 20px 0 10px 10px;
     position: relative;
     left: 120px;
     bottom: 19px;
