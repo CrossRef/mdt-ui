@@ -261,18 +261,19 @@ export default function AddArticleView (props) {
                 errorUtility={props.errorUtility}/>
             </div>
 
-            <div className='row'>
-              <div className='fieldHolder'>
-                <FormTextArea
-                  label="Abstract"
-                  name="abstract"
-                  value={props.article.abstract}
-                  errorUtility={props.errorUtility}
-                  tooltip={props.showHelper && tooltip.abstract}
-                  tooltipUtility={props.tooltipUtility}
-                  changeHandler={props.handleChange}/>
+              <div className='row'>
+                <div className='fieldHolder'>
+                  <FormTextArea
+                    label="Abstract"
+                    name="abstract"
+                    style="abstract"
+                    value={props.article.abstract}
+                    errorUtility={props.errorUtility}
+                    tooltip={props.showHelper && tooltip.abstract}
+                    tooltipUtility={props.tooltipUtility}
+                    changeHandler={props.handleChange}/>
+                </div>
               </div>
-            </div>
 
           </div>
 

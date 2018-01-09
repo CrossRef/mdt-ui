@@ -42,7 +42,6 @@ export default class App extends Component {
             {this.props.children}
           </div>
         </div>
-        <Footer />
         <Modal modalState={this.props.modalState} reduxControlModal={this.props.reduxControlModal}/>
       </div>
     )

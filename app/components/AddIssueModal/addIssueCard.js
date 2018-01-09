@@ -62,7 +62,7 @@ export default function AddIssueCard (props) {
               <div className='row'>
                 <div className='fieldHolder'>
                   <FormInput
-                    label="Issue"
+                    label="Issue Number"
                     name="issue"
                     value={props.issue.issue}
                     changeHandler={props.handler}
@@ -246,7 +246,7 @@ export default function AddIssueCard (props) {
               <div className='row'>
                 <div className='fieldHolder'>
                   <FormInput
-                    label="Volume"
+                    label="Volume Number"
                     name="volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}

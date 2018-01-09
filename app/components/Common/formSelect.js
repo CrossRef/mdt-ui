@@ -78,7 +78,9 @@ export default class FormSelect extends React.Component {
 
     var options = [
       <option key='-1'></option>,
-      ...this.props.options.map((option, i) => (<option key={i} value={option.value || option}>{option.name || option}</option>))
+      ...this.props.options.map((option, i) => (
+        <option key={i} value={typeof option === 'object' ? option.value : option}>{option.name || option}</option>
+      ))
     ]
 
     return (
