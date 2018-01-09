@@ -250,10 +250,6 @@ input.height64, textarea.height64, select.height64 {
     }
   }
 
-  .leftBar {
-    width: 1fr;
-  }
-
   .rightBar {
     .scrollToTopButton {
       position: fixed;
@@ -271,33 +267,6 @@ input.height64, textarea.height64, select.height64 {
         width: 32px;
         height: 32px;
         transform: rotate(180deg);
-      }
-    }
-
-    .rightBarAbsolute {
-      position: absolute;
-      top: 0;
-      bottom: 0;
-      left: 0;
-      right: 0;
-
-      .scrollToTopButton {
-        position: fixed;
-        top: 65%;
-        height: 64px;
-        width: 64px;
-        background: #4f5858;
-        color: white;
-        padding-top: 15px;
-        cursor: pointer;
-        z-index: 9999999999;
-        margin-left: 50px;
-
-        img {
-          width: 32px;
-          height: 32px;
-          transform: rotate(180deg);
-        }
       }
     }
   }
