@@ -178,12 +178,12 @@ export default class AddPublicationModal extends Component {
     criticalErrors.showDOIPrefixError =
       !criticalErrors.showDOIEmptyError &&
       !criticalErrors.showDOIInvalidError &&
-      this.props.mode !== 'edit' ? !this.validatePrefix() : false
+      this.state.mode !== 'edit' ? !this.validatePrefix() : false
     criticalErrors.showDOIError =
       !criticalErrors.showDOIEmptyError &&
       !criticalErrors.showDOIInvalidError &&
       !criticalErrors.showDOIPrefixError &&
-      this.props.mode !== 'edit' && !this.props.multipleDOIs ?
+      this.state.mode !== 'edit' && !this.props.multipleDOIs ?
         await asyncCheckDupeDoi(this.state.DOI) : false
 
 
@@ -233,6 +233,7 @@ export default class AddPublicationModal extends Component {
           .then(() => {
             const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
             this.setState({
+              mode: 'edit',
               'mdt-version': String( Number(this.state['mdt-version']) + 1),
               errors: errorStates,
               confirmationPayload,
@@ -391,7 +392,7 @@ export default class AddPublicationModal extends Component {
 
   render () {
 
-    const isEdit = this.props.mode === 'edit'
+    const isEdit = this.state.mode === 'edit'
     const disabledInput = isEdit ? {disabled: true, className: 'disabledDoi'} : {}
 
     const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
