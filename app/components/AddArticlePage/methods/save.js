@@ -23,7 +23,9 @@ export default async function (addToCart) {
     const publication = this.state.publication
 
     const journalArticle = articleXmlGenerator(this.state, this.props.reduxForm)
-    const journalDoc = new DOMParser().parseFromString(`<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`)
+    const journalDoc = new DOMParser().parseFromString(
+      `<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"><journal>${this.state.publicationXml}</journal></crossref>`
+    )
     const journalElm = journalDoc.getElementsByTagName("journal")[0]
     journalElm.appendChild(journalArticle)
     const title = this.state.article.title
@@ -36,10 +38,25 @@ export default async function (addToCart) {
       'type': 'article',
       'mdt-version': this.state.version,
       'status': 'draft',
-      'content': new XMLSerializer().serializeToString(journalDoc)
+      'content': new XMLSerializer().serializeToString(journalDoc),
     }
 
-    let savePub = publication
+    let state = {}
+    let hasState = false
+    if(this.state.addInfo.archiveLocation) {
+      state.archiveLocation = this.state.addInfo.archiveLocation
+      hasState = true
+    }
+    if(this.state.article.freetolicense) {
+      state.freetolicense = this.state.article.freetolicense
+      hasState = true
+    }
+
+    if(hasState) {
+      newRecord.state = state
+    }
+
+    let savePub = {message: publication.message}
 
     if (this.state.issueDoi || this.state.issueTitle) {
       const issue = this.state.issue

@@ -1,10 +1,10 @@
-import {
-  doiEntered,
-  urlEntered
-} from '../../utilities/helpers'
+import { doiEntered, urlEntered } from '../../utilities/helpers'
 import {appendElm,appendAttribute} from '../../utilities/helpers'
 import { XMLSerializer, DOMParser } from 'xmldom'
 import { getSubItems } from '../../utilities/getSubItems'
+
+
+
 export default function (issueObj) {
   var doc = new DOMParser().parseFromString('<?xml version="1.0" encoding="UTF-8"?><crossref xmlns="http://www.crossref.org/xschema/1.1"></crossref>','text/xml')
   var issueElm = doc.createElement("journal_issue")
@@ -15,6 +15,7 @@ export default function (issueObj) {
     optionalIssueInfo,
     ownerPrefix
   } = issueObj
+
   appendContributorElm(issueElm, optionalIssueInfo)
   var el
   if (issue.issueTitle.trim().length) {
@@ -64,7 +65,7 @@ export default function (issueObj) {
   appendElm("issue", issue.issue, issueElm)
 
   appendElm("special_numbering", issue.specialIssueNumber, issueElm)
-  if (issue.archiveLocation.trim().length ){
+  if (issue.archiveLocation.trim().length  && issue.archiveLocation !== 'N/A'){
     el = doc.createElement("archive_locations")
     var el2 = doc.createElement("archive")
     appendAttribute("name", issue.archiveLocation, el2)

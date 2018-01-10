@@ -115,7 +115,7 @@ export default class ActionBar extends Component {
           </div>
         </div>
 
-        <div className={`saveConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
+        <div className={`saveConfirmation ${this.state.confirmationPayload.status}`}>{this.state.confirmationPayload.message}</div>
       </div>
     )
   }

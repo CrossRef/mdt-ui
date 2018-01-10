@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-
-//import ReactPaginate from 'react-paginate';
 import Pagination from 'rc-pagination';
+
 import {routes} from '../../routing'
 import HistoryDate from './historyDate'
 
@@ -43,6 +42,7 @@ export default class DepositHistoryView extends Component {
         <div className='dateSearchHolder'>
           <div className='start'>
             <HistoryDate
+              title="Date From"
               name="start"
               changeHandler={this.props.handleChange}
               fullDate={this.props.startFullDate}
@@ -55,6 +55,7 @@ export default class DepositHistoryView extends Component {
           </div>
           <div className='end'>
             <HistoryDate
+              title="Date To"
               name="end"
               changeHandler={this.props.handleChange}
               fullDate={this.props.endFullDate}

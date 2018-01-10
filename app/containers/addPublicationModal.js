@@ -41,6 +41,8 @@ export default class AddPublicationModal extends Component {
       journal_metadata: is.object.isRequired
     }),
 
+    state: is.object,
+
     searchResult: is.shape({
       doi: is.array.isRequired,
       issns: is.array.isRequired,
@@ -102,7 +104,7 @@ export default class AddPublicationModal extends Component {
         url: doi_data.resource,
         DOI: doi_data.doi,
         language: data['-language'],
-        archivelocation: archive['-name'],
+        archivelocation: archive['-name'] || props.state.archivelocation || '',
         crossmarkDoi: '',
       }
     }
@@ -176,12 +178,12 @@ export default class AddPublicationModal extends Component {
     criticalErrors.showDOIPrefixError =
       !criticalErrors.showDOIEmptyError &&
       !criticalErrors.showDOIInvalidError &&
-      this.props.mode !== 'edit' ? !this.validatePrefix() : false
+      this.state.mode !== 'edit' ? !this.validatePrefix() : false
     criticalErrors.showDOIError =
       !criticalErrors.showDOIEmptyError &&
       !criticalErrors.showDOIInvalidError &&
       !criticalErrors.showDOIPrefixError &&
-      this.props.mode !== 'edit' && !this.props.multipleDOIs ?
+      this.state.mode !== 'edit' && !this.props.multipleDOIs ?
         await asyncCheckDupeDoi(this.state.DOI) : false
 
 
@@ -216,10 +218,22 @@ export default class AddPublicationModal extends Component {
           'contains': []
         }
 
+        let state = {}
+        let hasState = false
+        if(this.state.archiveLocation) {
+          state.archiveLocation = this.state.archiveLocation
+          hasState = true
+        }
+
+        if(hasState) {
+          publication.state = state
+        }
+
         this.props.asyncSubmitPublication(publication)
           .then(() => {
             const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
             this.setState({
+              mode: 'edit',
               'mdt-version': String( Number(this.state['mdt-version']) + 1),
               errors: errorStates,
               confirmationPayload,
@@ -257,7 +271,7 @@ export default class AddPublicationModal extends Component {
       el = appendElm("issn",form.printISSN,pubElm)
       appendAttribute("media_type","print",el)
     }
-    if(form.archivelocation) {
+    if(form.archivelocation  && form.archiveLocation !== 'N/A') {
       el = doc.createElement("archive_locations")
       var el2 = doc.createElement("archive")
       appendAttribute("name", form.archivelocation, el2)
@@ -378,7 +392,7 @@ export default class AddPublicationModal extends Component {
 
   render () {
 
-    const isEdit = this.props.mode === 'edit'
+    const isEdit = this.state.mode === 'edit'
     const disabledInput = isEdit ? {disabled: true, className: 'disabledDoi'} : {}
 
     const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
@@ -386,7 +400,7 @@ export default class AddPublicationModal extends Component {
 
     return (
       <div className='addPublicationCard'>
-        <div className={`saveConfirmation publicationConfirmation ${this.state.confirmationPayload.status}`}><p>{this.state.confirmationPayload.message}</p></div>
+        <div className={`saveConfirmation publicationConfirmation ${this.state.confirmationPayload.status}`}>{this.state.confirmationPayload.message}</div>
         <form className='addPublications'>
           <div className='fieldRowHolder'>
             <div className={(errors.showTitleEmptyError ? 'fieldinput invalid' : 'fieldinput')}>

@@ -25,20 +25,9 @@ export default class NavBar extends Component {
     }
   }
 
-  handleClick = () => {
-    this.setState({profileMenu: false})
-  }
 
-  componentWillUpdate(nextProps, nextState) { //need to update this to do cause REACTJS to rerender
-
-    if(nextState.profileMenu) {
-      document.addEventListener('click', this.handleClick, false)
-    } else if (this.state.profileMenu && !nextState.profileMenu) {
-      document.removeEventListener('click', this.handleClick, false)
-    }
-
+  componentWillUpdate(nextProps) {
     if (nextProps.toast.title !== '') {
-
       const nothingRemoved = (nextProps.toast.updateType === 'removeFromCart' && this.props.cart.length === nextProps.cart.length)
       if(!nothingRemoved) {
         this.addAlert(nextProps.toast)
@@ -47,10 +36,6 @@ export default class NavBar extends Component {
     }
   }
 
-
-  componentWillUnmount () {
-    document.removeEventListener('click', this.handleClick, false)
-  }
 
   addAlert({title, recordType, updateType}) {
     this.setState({type: updateType !== 'removeFromCart' ? 'add' : 'remove'})
@@ -61,22 +46,34 @@ export default class NavBar extends Component {
     }
     this.refs.container.success(
       <div className='toastMessage'>
-        <div className={'iconHolder' + (updateType === 'remove' ? ' remove-message' : '') }><img src={`${routes.images}/Toast/Asset_Icons_White_Check.svg`} /></div>
+        <div className={'iconHolder' + (updateType === 'remove' ? ' remove-message' : '') }>
+          <img src={`${routes.images}/Toast/Asset_Icons_White_Check.svg`} />
+        </div>
         <div className='message'>{pascaleCase(recordType)} {messages[updateType]} ({title})</div>
       </div>,
-      <div className='toastTitle'><div className='arrow'></div></div>,
+      <div className='toastTitle'><div className='arrow'/></div>,
       )
   }
 
-  openProfileMenu () {
+
+  toggleProfileMenu = () => {
     this.setState({
       profileMenu: !this.state.profileMenu
     })
   }
 
-  logout () {
+
+  closeProfileMenu = () => {
+    this.setState((prevState) => {
+      return prevState.profileMenu ? {profileMenu: false} : null
+    })
+  }
+
+
+  logout = () => {
     browserHistory.push(routes.base)
   }
+
 
   render () {
     return (
@@ -87,20 +84,29 @@ export default class NavBar extends Component {
             <Link to={routes.depositHistory}>Deposit History</Link>
             <Link className='depositCartHolder' to={routes.depositCart}>
               Deposit Cart
-              <span className='cartItemCount'>{this.props.cart.length}</span>
+              {!!this.props.cart.length && <span className='cartItemCount'>{this.props.cart.length}</span>}
               <ToastContainer
                 toastMessageFactory={ToastMessageFactory}
                 ref="container"
-                className={'toast-top-right topnav' + (this.state.type !== 'add' ? ' remove-message' : '')}
-              />
+                className={'toast-top-right topnav' + (this.state.type !== 'add' ? ' remove-message' : '')} />
               </Link>
           </div>
           <div className='user'>
-            <div className='userProfileMenuHolder'>
-              <span className='profileMenuTrigger tooltips' onClick={() => {this.openProfileMenu()}}>{localStorage.user} <img className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')} src={`${routes.images}/AddArticle/DarkTriangle.svg`} /></span>
-              {this.state.profileMenu && <div className='profileMenu'>
-                <p onClick={()=>{this.logout()}}>Logout</p>
-              </div>}
+            <div className='userProfileMenuHolder' >
+              <div
+                className='profileMenuTrigger tooltips'
+                tabIndex="0"
+                onBlur={this.closeProfileMenu}
+                onClick={this.toggleProfileMenu}>
+                  {localStorage.user}
+                  <img
+                    className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')}
+                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+              </div>
+              {this.state.profileMenu &&
+                <div className='profileMenu'>
+                  <p onMouseDown={this.logout}>Logout</p>
+                </div>}
             </div>
           </div>
         </div>
