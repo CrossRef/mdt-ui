@@ -8,10 +8,10 @@ import {objectSearch, xmldoc} from './helpers'
 
 const parseXMLArticle = function (articleXML) {
     var retObj = {}
+
     const parsedXml = xmldoc(articleXML)
 
     const parsedArticle = objectSearch(parsedXml, 'journal_article')
-    console.log(parsedArticle)
 
     // article loading
     let publication_date = objectSearch(parsedArticle, 'publication_date');
@@ -108,7 +108,10 @@ const parseXMLArticle = function (articleXML) {
         lastPage: lastPage,
         locationId: locationId,
         abstract: abstract,
-        freetolicense: (objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1) ? 'yes' : ''
+        freetolicense:
+          (objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1) ?
+            'yes'
+          : ''
     }
 
     retObj = _.extend(retObj, {
@@ -252,8 +255,8 @@ const parseXMLArticle = function (articleXML) {
 
       references.forEach( citation => {
         parsedReferences.push({
-          reference: citation.unstructured_citation,
-          DOI: citation.doi,
+          reference: citation.article_title || citation.unstructured_citation || 'Title not found in citation element',
+          DOI: typeof citation.doi === 'object' ? citation.doi['#text'] : citation.doi,
           matchValuation: citation.doi ? 61 : 30
         })
       })

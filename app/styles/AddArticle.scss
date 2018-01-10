@@ -257,14 +257,14 @@ input.height64, textarea.height64, select.height64 {
     .scrollToTopButton {
       position: fixed;
       top: 65%;
-      height: 64px;
-      width: 64px;
+      height: 48px;
+      width: 48px;
       background: #4f5858;
       color: white;
-      padding-top: 15px;
+      padding-top: 8px;
       cursor: pointer;
       z-index: 9999999999;
-      margin-left: 50px;
+      margin-left: 10px;
 
       img {
         width: 32px;

@@ -142,7 +142,7 @@ export default class AddArticlePage extends Component {
       openItems: {
         Contributors: !!contributors.length,
         Funding: !!getSubItems(data.funding).length,
-        Licenses: !!licenses.length,
+        Licenses: !!licenses.length || !!data.article.freetolicense,
         relatedItems: !!relatedItems.length,
         addInfo: !!getSubItems(data.addInfo).length,
         references: !!data.references.length

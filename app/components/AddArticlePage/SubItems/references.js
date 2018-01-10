@@ -65,7 +65,7 @@ export default class References extends React.Component {
                 <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference}`}</p>
                 <p className="referenceRemove" onClick={() => this.removeReference(i)}>Remove</p>
                 {item.matchValuation > 60 ?
-                  <a href={`https://doi.org/${item.DOI}`}>{`https://doi.org/${item.DOI}`}</a>
+                  <a target="_blank" href={`https://doi.org/${item.DOI}`}>{`https://doi.org/${item.DOI}`}</a>
                   : <div className="clearReference"/>}
               </div>
             )}

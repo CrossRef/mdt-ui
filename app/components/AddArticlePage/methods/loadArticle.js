@@ -112,6 +112,7 @@ export default async function loadArticle () {
     }
 
     const parsedArticle = parseXMLArticle(articleUnderPub.message.contains[0].content)
+    const savedArticleState = articleUnderPub.message.contains[0].state || {}
 
     let reduxForm
     if(parsedArticle.crossmark) {
@@ -146,6 +147,15 @@ export default async function loadArticle () {
       relatedItems: parsedArticle.relatedItems,
       openItems: parsedArticle.openItems,
       ...validatedPayload
+    }
+
+    if(savedArticleState.archiveLocation) {
+      setStatePayload.addInfo.archiveLocation = savedArticleState.archiveLocation
+      setStatePayload.openItems.addInfo = true
+    }
+    if(savedArticleState.freetolicense) {
+      setStatePayload.article.freetolicense = savedArticleState.freetolicense
+      setStatePayload.openItems.Licenses = true
     }
 
     this.setState(setStatePayload)
