@@ -37,7 +37,11 @@ export default class Calendar extends Component {
 
   render() {
     return (
-      <div ref={ ref => this.node = ref}>
+      <div ref={ ref => {
+        if(ref && typeof ref === 'object') {
+          this.node = ref
+        }
+      }}>
         <DatePicker
           fixedHeight
           selected={this.props.date}

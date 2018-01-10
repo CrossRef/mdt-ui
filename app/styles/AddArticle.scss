@@ -230,6 +230,7 @@ input.height64, textarea.height64, select.height64 {
           .calendarIcon {
             display: inline-block;
             width: 27px;
+            height: 27px;
           }
         }
       }
@@ -360,18 +361,19 @@ input.height64, textarea.height64, select.height64 {
 
     .addholder {
       margin-top:20px;
-      padding: 0 0 0 0;
+      padding: 0 50px;
       height: 100px;
       width: 100%;
       display: inline-flex;
       justify-content: flex-start;
       align-content: center;
       flex-direction: column;
-      hr {width: 90%}
+      hr{width: 100%}
+
       .addNewButton {
         @extend ._subItemAddNewButton;
         top: 24px;
-        left: 78px;
+        left: 28px;
         position: relative;
       }
     }

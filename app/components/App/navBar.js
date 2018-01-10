@@ -51,7 +51,7 @@ export default class NavBar extends Component {
         </div>
         <div className='message'>{pascaleCase(recordType)} {messages[updateType]} ({title})</div>
       </div>,
-      <div className='toastTitle'><div className='arrow'></div></div>,
+      <div className='toastTitle'><div className='arrow'/></div>,
       )
   }
 

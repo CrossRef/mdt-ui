@@ -15,6 +15,16 @@ const wrappedFetch = function () {
     }
     return response
   })
+    .catch( e => {
+      console.error('Error in isomorphic-fetch', e)
+      //Edge fix
+      if(e.name === 'TypeMismatchError') {
+        if(browserHistory.getCurrentLocation().pathname !== routes.base) {
+          browserHistory.push(routes.base);
+          return console.error('Authorization failed, kicking back to HomePage')
+        }
+      }
+    })
 }
 
 export const regularFetch = fetch
