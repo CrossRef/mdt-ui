@@ -1,3 +1,6 @@
+@import 'common';
+
+
 .height16 {
   height: 16px;
 }
@@ -370,7 +373,7 @@ input.height64, textarea.height64, select.height64 {
       .addNewButton {
         @extend ._subItemAddNewButton;
         top: 24px;
-        left: 78px;
+        left: 28px;
         position: relative;
       }
     }
@@ -1065,4 +1068,82 @@ input.height64, textarea.height64, select.height64 {
 
 .abstract {
   height: 256px !important;
+}
+
+
+.references {
+  padding: 20px 78px 40px 78px;
+  text-align: left;
+
+  .topText {
+    margin-left: 15px;
+  }
+
+  .referencesLoader {
+    @extend ._loader;
+    position: relative;
+    left: 120px;
+    bottom: 19px;
+  }
+
+  .textBox {
+    height: 150px;
+    width: 100%;
+    overflow: scroll;
+    resize: none;
+    margin-bottom: 25px;
+  }
+
+  $referencePlaceHolderPadding: 65px;
+  $referencePlaceHolderColor: #a7a7a7;
+  .textBox:-moz-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+  .textBox::-moz-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+  .textBox:-ms-input-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+  .textBox::-webkit-input-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+
+  .getReferencesButton {
+    @extend ._subItemAddNewButton;
+  }
+
+  .resultsContainer {
+    margin-top: 30px;
+    padding-left: 10px;
+    .result {
+      margin-top: 20px;
+      .referenceText {
+        width: 650px;
+        float: left;
+        font-size: 14px;
+      }
+      .referenceRemove {
+        float: right;
+        font-size: 14px;
+        margin: 1px 10px;
+        cursor: pointer;
+      }
+      .clearReference {
+        clear: both;
+      }
+    }
+    p, a {
+      font-size: 14px;
+      margin: 1px
+    }
+  }
 }
