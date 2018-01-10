@@ -53,10 +53,14 @@ export default class PublicationCardContainer extends Component {
     if(!publication) {
       return console.error(`${this.props.doi} is not fetching from server`)
     }
+
     const parsedXMLContent = xmldoc(publication.message.content)
+
     const savedMetaData = {
-      ...parsedXMLContent, 'mdt-version': publication.message['mdt-version']
-    };
+      ...parsedXMLContent,
+      'mdt-version': publication.message['mdt-version'],
+      state: publication.message.state || {}
+    }
 
     this.props.reduxControlModal({
       showModal:true,

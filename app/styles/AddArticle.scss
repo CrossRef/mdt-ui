@@ -161,7 +161,6 @@ input.height64, textarea.height64, select.height64 {
       }
       img {
         width: 25px;
-        height: 25px;
       }
     }
   }
@@ -172,6 +171,7 @@ input.height64, textarea.height64, select.height64 {
 
 .fieldError {
   background: #FFE9E8;
+  border: 1px solid #EE6068 !important;
 }
 
 
@@ -205,7 +205,6 @@ input.height64, textarea.height64, select.height64 {
         display: inline-block;
         margin: 0;
         width: 37px;
-        height: 34px;
         border-top: 1px solid black;
         border-right: 1px solid black;
         border-bottom: 1px solid black;
@@ -239,13 +238,37 @@ input.height64, textarea.height64, select.height64 {
 
 
 .addArticles {
-  margin: 40px 0;
   width: 100%;
+  margin: 40px 0;
+  display: flex;
+  justify-content: center;
+
   .addarticlecard {
-    margin: 0 auto;
     width: 960px;
+
     .addArticleForm {
       width: 100%;
+    }
+  }
+
+  .rightBar {
+    .scrollToTopButton {
+      position: fixed;
+      top: 65%;
+      height: 48px;
+      width: 48px;
+      background: #4f5858;
+      color: white;
+      padding-top: 8px;
+      cursor: pointer;
+      z-index: 9999999999;
+      margin-left: 10px;
+
+      img {
+        width: 32px;
+        height: 32px;
+        transform: rotate(180deg);
+      }
     }
   }
 }
@@ -345,15 +368,9 @@ input.height64, textarea.height64, select.height64 {
       hr{width: 100%}
 
       .addNewButton {
+        @extend ._subItemAddNewButton;
         top: 24px;
-        left: 28px;
-        width: 120px;
-        border: 1px solid black;
-        background: #F9F9F9;
-        color: #646464;
-        cursor: pointer;
-        display: block;
-        padding: 4px 20px;
+        left: 78px;
         position: relative;
       }
     }
@@ -650,28 +667,24 @@ input.height64, textarea.height64, select.height64 {
                   text-align: left;
                 }
                 .grantRow {
-                  width: 450px;
+                  width: 500px;
                   display: flex;
                   position: relative;
                   flex-direction: row;
 
                   .infoFlagGrant {
                     position: absolute;
-                    right: 148.5px;
-                    bottom: 34px;
-                    width: 38px;
+                    right: 186px;
+                    top: -29px;
+                    width: 35px;
                   }
                 }
                 .grantInput {
-                  width: 301.375px
-
+                  flex: .6
                 }
                 .grantRemove {
                   padding-top: 8px;
-                  width: 130px;
-                  a{
-                    cursor: pointer;
-                  }
+                  flex: .2
                 }
               }
             }
@@ -890,12 +903,17 @@ input.height64, textarea.height64, select.height64 {
 }
 
 .saveConfirmation {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
   margin-bottom: 7px;
   clear: both;
   height: 25px;
-  padding-top: 4px;
-  color: white;
+
+  p {
+    color: white
+  }
 }
 
 .saveSuccess {
@@ -994,7 +1012,7 @@ input.height64, textarea.height64, select.height64 {
 .infoFlagDate {
   position: absolute;
   right: -0.5px;
-  top: -12.5px;
+  top: -13px;
   width: 38px;
   height: auto;
 }

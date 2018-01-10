@@ -8,7 +8,7 @@ import parseXMLArticle from '../../../utilities/parseXMLArticle'
 
 
 
-export default async function () {
+export default async function loadArticle () {
 
   const { pubDoi } = this.props.routeParams;
   const getItems = []
@@ -112,6 +112,7 @@ export default async function () {
     }
 
     const parsedArticle = parseXMLArticle(articleUnderPub.message.contains[0].content)
+    const savedArticleState = articleUnderPub.message.contains[0].state || {}
 
     let reduxForm
     if(parsedArticle.crossmark) {
@@ -142,9 +143,19 @@ export default async function () {
       contributors: parsedArticle.contributors,
       funding: parsedArticle.funding,
       license: parsedArticle.license,
+      references: parsedArticle.references,
       relatedItems: parsedArticle.relatedItems,
       openItems: parsedArticle.openItems,
       ...validatedPayload
+    }
+
+    if(savedArticleState.archiveLocation) {
+      setStatePayload.addInfo.archiveLocation = savedArticleState.archiveLocation
+      setStatePayload.openItems.addInfo = true
+    }
+    if(savedArticleState.freetolicense) {
+      setStatePayload.article.freetolicense = savedArticleState.freetolicense
+      setStatePayload.openItems.Licenses = true
     }
 
     this.setState(setStatePayload)

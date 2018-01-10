@@ -41,6 +41,8 @@ export default class AddPublicationModal extends Component {
       journal_metadata: is.object.isRequired
     }),
 
+    state: is.object,
+
     searchResult: is.shape({
       doi: is.array.isRequired,
       issns: is.array.isRequired,
@@ -102,7 +104,7 @@ export default class AddPublicationModal extends Component {
         url: doi_data.resource,
         DOI: doi_data.doi,
         language: data['-language'],
-        archivelocation: archive['-name'],
+        archivelocation: archive['-name'] || props.state.archivelocation || '',
         crossmarkDoi: '',
       }
     }
@@ -216,6 +218,17 @@ export default class AddPublicationModal extends Component {
           'contains': []
         }
 
+        let state = {}
+        let hasState = false
+        if(this.state.archiveLocation) {
+          state.archiveLocation = this.state.archiveLocation
+          hasState = true
+        }
+
+        if(hasState) {
+          publication.state = state
+        }
+
         this.props.asyncSubmitPublication(publication)
           .then(() => {
             const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
@@ -257,7 +270,7 @@ export default class AddPublicationModal extends Component {
       el = appendElm("issn",form.printISSN,pubElm)
       appendAttribute("media_type","print",el)
     }
-    if(form.archivelocation) {
+    if(form.archivelocation  && form.archiveLocation !== 'N/A') {
       el = doc.createElement("archive_locations")
       var el2 = doc.createElement("archive")
       appendAttribute("name", form.archivelocation, el2)

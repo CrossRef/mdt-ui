@@ -8,6 +8,7 @@ import {objectSearch, xmldoc} from './helpers'
 
 const parseXMLArticle = function (articleXML) {
     var retObj = {}
+
     const parsedXml = xmldoc(articleXML)
 
     const parsedArticle = objectSearch(parsedXml, 'journal_article')
@@ -107,7 +108,10 @@ const parseXMLArticle = function (articleXML) {
         lastPage: lastPage,
         locationId: locationId,
         abstract: abstract,
-        freetolicense: (objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1) ? 'yes' : ''
+        freetolicense:
+          (objectSearch(parsedArticle, 'ai:free_to_read') || articleXML.indexOf('<ai:free_to_read/>') !== -1) ?
+            'yes'
+          : ''
     }
 
     retObj = _.extend(retObj, {
@@ -241,6 +245,25 @@ const parseXMLArticle = function (articleXML) {
     retObj = _.extend(retObj, {
         license: lic
     })
+
+    // references
+    let references = objectSearch(parsedArticle, 'citation_list')
+    const parsedReferences = []
+
+    if(references) {
+      references = Array.isArray(references.citation) ? references.citation : [references.citation]
+
+      references.forEach( citation => {
+        parsedReferences.push({
+          reference: citation.article_title || citation.unstructured_citation || 'Title not found in citation element',
+          DOI: typeof citation.doi === 'object' ? citation.doi['#text'] : citation.doi,
+          matchValuation: citation.doi ? 61 : 30
+        })
+      })
+    }
+
+    retObj.openItems.references = parsedReferences.length > 0
+    retObj = {...retObj, references: parsedReferences}
 
     // related items
     const relatedItems = objectSearch(parsedArticle, 'related_item')

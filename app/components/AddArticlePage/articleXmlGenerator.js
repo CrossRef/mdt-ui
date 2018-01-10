@@ -55,7 +55,7 @@ export default function (state, reduxForm) {
   appendPublisherItems(doc.documentElement)
   appendCrossmarkXml(doc.documentElement)
   appendRelatedItemsElm(doc.documentElement)
-  if (state.addInfo.archiveLocation.trim().length > 0) {
+  if (state.addInfo.archiveLocation.trim().length && state.addInfo.archiveLocation !== 'N/A') {
     el = doc.createElement('archive_locations')
     el2 = doc.createElement("archive")
     el2.setAttribute("name", state.addInfo.archiveLocation)
@@ -71,6 +71,27 @@ export default function (state, reduxForm) {
   el.appendChild(el2)
   appendCollectionXML(el)
   doc.documentElement.appendChild(el)
+
+  //citation list
+  if(state.references && state.references.length) {
+    el = doc.createElement("citation_list")
+    state.references.forEach( (reference, i) => {
+      el2 = doc.createElement("citation")
+      el2.setAttribute("key", `ref${i}`)
+      let el3
+      if(reference.matchValuation > 60 && reference.DOI) {
+        el3 = doc.createElement("doi")
+        el3.textContent = reference.DOI
+        el2.appendChild(el3)
+      }
+
+      el3 = doc.createElement("unstructured_citation")
+      el3.textContent = reference.reference
+      el2.appendChild(el3)
+      el.appendChild(el2)
+      doc.documentElement.appendChild(el)
+    })
+  }
 
   return doc
 
