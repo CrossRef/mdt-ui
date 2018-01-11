@@ -22,19 +22,11 @@ if(currentLocation !== routes.base) {
 }
 
 
-const routerActions = {
-  resetPage: () => {
-    store.dispatch(controlModal({ showModal: false }))
-    window.scrollTo(0, 0)
-  }
-}
-
-
 document.addEventListener('DOMContentLoaded', () => {
   ReactDOM.render(<Provider store={store}>
     <div>
       <Router history={history}>
-        {Routing(routerActions)}
+        {Routing(store)}
       </Router>
     </div>
   </Provider>, document.querySelector('#root'))

@@ -51,7 +51,7 @@ export default async function loadArticle () {
       : fullHierarchy.message.contains[0].contains[0]
 
     publicationXml = article.content.substring(
-      article.content.indexOf('<journal_metadata>'),
+      article.content.indexOf('<journal_metadata'),
       article.content.indexOf('</journal_metadata>') + 19
     )
   }
