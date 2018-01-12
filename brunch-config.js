@@ -40,12 +40,7 @@ exports.plugins = {
   sass: {
     mode: 'native'
   },
-  babel: {
-    presets: [
-      'env', 'stage-0', "react"
-    ],
-    plugins: ['transform-decorators-legacy', 'transform-runtime', 'system-import-transformer']
-  }
+  babel: config.babelConfig
 }
 
 exports.server = {
