@@ -5,7 +5,7 @@ import * as api from '../actions/api'
 var blacklistActions = [
   'SET_STATE', // We don't want to sync back what we just got
   'SET_AUTH_BEARER', // Setting a new auth token shouldn't over-write the existing state
-  'PUBLICATIONS',
+  'STOREPUBLICATIONS',
   'MODAL',
   'GET_CART',
   'GET_ITEM',

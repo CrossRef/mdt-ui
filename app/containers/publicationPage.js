@@ -79,9 +79,9 @@ export default class PublicationPage extends Component {
 
 
   componentDidMount () {
-    this.props.asyncGetPublications(this.props.routeParams.pubDoi, undefined, error => {
-      this.setState({ serverError: error })
-    })
+    this.props.asyncGetPublications(this.props.routeParams.pubDoi)
+      .catch( e => this.setState({serverError: e}))
+
     if(this.props.firstLogin) {
       this.showTour()
     }

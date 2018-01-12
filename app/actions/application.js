@@ -38,11 +38,7 @@ export function controlModal(modalObj) {
 }
 
 export function storePublications(publications) {
-	return { type: 'PUBLICATIONS', publications }
-}
-
-export function addDOIs(doi) {
-	return { type: 'DOI_ADD', doi }
+	return { type: 'STOREPUBLICATIONS', publications }
 }
 
 export function editForm(keyPath, value) {
@@ -143,18 +139,19 @@ export function searchRecords (query, pubTitle, type, error = (reason) => consol
 
 
 
-export function getPublications (DOIs, callback, error = (reason) => console.error('ERROR in getPublications', reason)) {
+export function getPublications (DOIs) {
   return function(dispatch) {
     if(!Array.isArray(DOIs)) DOIs = [DOIs]
-    Promise.all(
-      DOIs.map( doi => api.getItem(doi).catch(reason => console.error(`ERROR: publication DOI fetch failed for`, doi, reason)) )
+    return Promise.all(
+      DOIs.map( doi => api.getItem(doi).catch(reason => console.error(`ERROR: publication DOI fetch failed `, doi, reason)) )
     )
       .then((publications) => {
         dispatch(storePublications(publications))
-        if(callback) callback(publications)
+        return publications
       })
-      .catch((reason) => {
-        error(reason)
+      .catch( e => {
+        console.error('ERROR in getPublications', e)
+        throw e
       })
   }
 }
@@ -167,7 +164,6 @@ export function getPublications (DOIs, callback, error = (reason) => console.err
 export function submitPublication (publication, error = reason => console.error('ERROR in submitPublication', reason)) {
   return function(dispatch) {
     return api.submitItem({message: publication}).then(() => {
-      dispatch(addDOIs(publication.doi))
       dispatch(getPublications(publication.doi))
     })
     .catch( reason => error(reason))
