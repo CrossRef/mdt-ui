@@ -40,6 +40,7 @@ function version () {
 `
 Merged branches / tickets in this build
 
+MM-181
 MM-167
 MM-190
 MM-180
