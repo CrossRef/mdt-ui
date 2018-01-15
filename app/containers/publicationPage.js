@@ -13,7 +13,7 @@ import TourModal from '../components/Publication/tourModal'
 import DeleteConfirmModal from '../components/Publication/deleteConfirmModal'
 import MoveSelectionModal from '../components/Publication/moveSelectionModal'
 import {routes} from  '../routing'
-import {compareDois} from '../utilities/helpers'
+import {compareDois, errorHandler} from '../utilities/helpers'
 
 
 
@@ -80,7 +80,10 @@ export default class PublicationPage extends Component {
 
   componentDidMount () {
     this.props.asyncGetPublications(this.props.routeParams.pubDoi)
-      .catch( e => this.setState({serverError: e}))
+      .catch( e => {
+        errorHandler(`Error retrieving or reading publication (${this.props.routeParams.pubDoi}): ${e.toString()}`, e)
+        this.setState({serverError: e.toString()})
+      })
 
     if(this.props.firstLogin) {
       this.showTour()
@@ -239,7 +242,7 @@ export default class PublicationPage extends Component {
 
     return (
       <div>
-        {this.props.publication ?
+        {this.props.publication && !this.state.serverError ?
           <div className='publication'>
             <Filter
               handleFilter={this.handleFilter.bind(this)}
@@ -290,7 +293,7 @@ export default class PublicationPage extends Component {
           <div>
             <br/><br/><br/> {/*TEMPORARY STYLING, SHOULD USE CSS*/}
             {this.state.serverError ?
-              <div>Sorry, this DOI ({doi}) is not retrieving a publication... <br/><br/> Error: {this.state.serverError} </div>
+              <div>Sorry, this DOI ({doi}) is not retrieving valid Publication data. <br/><br/> Error: {this.state.serverError} </div>
               : <div>Loading...</div>
             }
           </div>

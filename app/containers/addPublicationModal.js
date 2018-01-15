@@ -9,7 +9,7 @@ import * as api from '../actions/api'
 import {getPublications} from '../actions/application'
 import { submitPublication } from '../actions/application'
 import {appendElm,appendAttribute} from '../utilities/helpers'
-import {isDOI, isURL, asyncCheckDupeDoi, xmldoc} from '../utilities/helpers'
+import {isDOI, isURL, asyncCheckDupeDoi, xmldoc, errorHandler} from '../utilities/helpers'
 import LanguageSelector from '../utilities/lists/language'
 import { ArchiveLocations } from '../utilities/lists/archiveLocations'
 import { routes } from '../routing'
@@ -154,6 +154,10 @@ export default class AddPublicationModal extends Component {
   componentDidMount () {
     if(this.props.doi) {
       this.props.asyncGetPublications(this.props.doi)
+        .catch( e => {
+          const overideModal = true
+          errorHandler(`Error retrieving or reading publication (${this.props.doi}): ${e.toString()}`, e, overideModal)
+        })
     }
   }
 

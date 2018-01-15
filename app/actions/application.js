@@ -143,7 +143,10 @@ export function getPublications (DOIs) {
   return function(dispatch) {
     if(!Array.isArray(DOIs)) DOIs = [DOIs]
     return Promise.all(
-      DOIs.map( doi => api.getItem(doi).catch(reason => console.error(`ERROR: publication DOI fetch failed `, doi, reason)) )
+      DOIs.map( doi => api.getItem(doi).catch( e => {
+        console.error(`ERROR: publication DOI fetch failed `, doi, e)
+        throw e
+      }))
     )
       .then((publications) => {
         dispatch(storePublications(publications))
