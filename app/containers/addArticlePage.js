@@ -97,7 +97,8 @@ export default class AddArticlePage extends Component {
       errorMessages: [],
       focusedInput: '',
       activeCalendar: '',
-      scrollToTopButton: false
+      scrollToTopButton: false,
+      scrollTimeout: null
     }
     this.state.article.doi = ownerPrefix + '/'
   }
@@ -446,6 +447,7 @@ export default class AddArticlePage extends Component {
   componentWillUnmount () {
     document.removeEventListener('scroll', this.scrollHandler, false)
     this.props.reduxClearForm();
+    clearTimeout(this.state.scrollTimer)
   }
 
 
@@ -482,13 +484,18 @@ export default class AddArticlePage extends Component {
 
 
   scrollHandler = () => {
-    if(window.pageYOffset > 240 && !this.state.scrollToTopButton) {
-      this.setState({scrollToTopButton: true})
+    if(this.state.scrollTimer) {
+      clearTimeout(this.state.scrollTimer)
     }
+    this.state.scrollTimer = setTimeout(() => {
+      if(window.pageYOffset > 240 && !this.state.scrollToTopButton) {
+        this.setState({scrollToTopButton: true})
+      }
 
-    if(window.pageYOffset < 240 && this.state.scrollToTopButton) {
-      this.setState({scrollToTopButton: false})
-    }
+      if(window.pageYOffset < 240 && this.state.scrollToTopButton) {
+        this.setState({scrollToTopButton: false})
+      }
+    }, 80)
   }
 
 
