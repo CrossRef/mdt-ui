@@ -41,6 +41,10 @@ export function storePublications(publications) {
 	return { type: 'PUBLICATIONS', publications }
 }
 
+export function resetPublications() {
+  return { type: 'RESETPUBLICATIONS' }
+}
+
 export function addDOIs(doi) {
 	return { type: 'DOI_ADD', doi }
 }

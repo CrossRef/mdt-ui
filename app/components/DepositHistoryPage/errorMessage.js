@@ -28,10 +28,21 @@ export default class ErrorMessage extends React.Component {
 
 
   render () {
-    const errorArray = this.props.errorMessage.split('Error: ').map( (error, i) =>
-      <div key={i} className="singleError">{error}</div>
-    )
-    errorArray.shift() //Removes first item created by the first 'Error: '
+    const errorMessage = this.props.errorMessage
+
+    let errorArray
+    if(errorMessage.indexOf('Error: ') > -1) {
+      errorArray = errorMessage.split('Error: ').map( (error, i) =>
+        <div key={i} className="singleError">{error}</div>
+      )
+      errorArray.shift() //Removes first item created by the first 'Error: '
+
+    } else {
+      errorArray = [
+        <div key={1} className="singleError">{errorMessage}</div>
+      ]
+    }
+
     const numberOfErrors = errorArray.length
 
     errorArray.push(<div key='whiteSpace' className="whiteSpace">&nbsp;</div>)
