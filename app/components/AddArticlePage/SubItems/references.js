@@ -35,9 +35,9 @@ export default class References extends React.Component {
   }
 
 
-  removeReference = (index) => {
+  rejectReference = (index, reference) => {
     const newArray = [...this.props.references]
-    newArray.splice(index, 1)
+    newArray.splice(index, 1, {reference})
     this.props.setReferences({references: newArray})
   }
 
@@ -55,18 +55,26 @@ export default class References extends React.Component {
           placeholder="Type or paste references here"/>
 
         <div className="getReferencesButton" onClick={this.getReferences}>
-          Get References {this.state.loading && <div className="referencesLoader"/>}
+          Match Reference {this.state.loading && <div className="referencesLoader"/>}
         </div>
 
         {this.props.references.length > 0 &&
           <div className="resultsContainer">
+
+            <div className="removeAllReferences">
+              <span onClick={()=> this.props.setReferences({references: []})}>Remove All</span>
+            </div>
+
             {this.props.references.map((item, i) =>
               <div key={`${i}_${item.reference}`} className="result">
                 <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference}`}</p>
-                <p className="referenceRemove" onClick={() => this.removeReference(i)}>Remove</p>
-                {item.matchValuation > 60 ?
-                  <a target="_blank" href={`https://doi.org/${item.DOI}`}>{`https://doi.org/${item.DOI}`}</a>
-                  : <div className="clearReference"/>}
+
+                {item.DOI ?
+                  <a className="referenceReview" target="_blank" href={`https://doi.org/${item.DOI}`}>Review match</a>
+                  : <p className="referenceReview noMatch">No match</p>}
+
+                {item.DOI && <p className="referenceRemove" onClick={() => this.rejectReference(i, item.reference)}>Reject</p>}
+
               </div>
             )}
           </div>}
