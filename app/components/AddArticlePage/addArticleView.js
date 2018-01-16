@@ -392,7 +392,12 @@ export default function AddArticleView (props) {
             openSubItems={props.openSubItems}
             showSection={props.openItems.references}>
 
-              <References references={props.references} setReferences={props.boundSetState}/>
+              <References
+                references={props.references}
+                setReferences={props.boundSetState}
+                tooltipUtility={props.tooltipUtility}
+                tooltip={props.showHelper}
+                errorUtility={props.errorUtility}/>
           </SubItem>
 
 
