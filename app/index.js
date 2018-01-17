@@ -41,6 +41,12 @@ function version () {
 Merged branches / tickets in this build
 
 MM-219
+MM-212
+MM-220
+MM-214
+MM-217
+MM-181
+MM-151
 
 `
   console.log(mergedBranches)

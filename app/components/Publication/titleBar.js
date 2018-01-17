@@ -9,14 +9,12 @@ export default class TitleBar extends Component {
   static propTypes = {
     ownerPrefix: is.string.isRequired,
     publication: is.shape({
-      title: is.shape({
-        title: is.string.isRequired
-      }),
-      status: is.string.isRequired,
-      'message-type': is.string.isRequired,
-      'message-version': is.string.isRequired,
-      message: is.object.isRequired
-    }).isRequired,
+      message: is.shape({
+        title: is.shape({
+          title: is.string.isRequired
+        }).isRequired,
+      }).isRequired
+    }),
     search: is.object.isRequired,
     cart: is.array,
 
@@ -43,7 +41,7 @@ export default class TitleBar extends Component {
         reduxCartUpdate={this.props.reduxCartUpdate}
 
         asyncSearchRecords={this.props.asyncSearchRecords}
-        />
+      />
     </div>)
   }
 }

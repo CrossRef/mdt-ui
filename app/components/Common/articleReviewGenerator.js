@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import _ from 'lodash'
 
-const Languages = require('../../utilities/lists/language.json')
+import {languages} from '../../utilities/lists/language'
 import { ArchiveLocations } from '../../utilities/lists/archiveLocations'
 const AppliesTo = require('../../utilities/lists/appliesTo.json')
 const IdentifierTypes = require('../../utilities/lists/identifierTypes.json')
@@ -96,7 +96,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
             retInfo.push(<span>Archive Location: {arLoc.name}<br /></span>)
         }
         if (reviewData.addInfo.language.length > 0) {
-            const lang= _.find(Languages, (language) => {
+            const lang= _.find(languages, (language) => {
             if (language.value.trim().toLowerCase() === reviewData.addInfo.language.trim().toLowerCase()){
                 return language
             }
