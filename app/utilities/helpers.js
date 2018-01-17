@@ -312,18 +312,20 @@ export function removeDuplicates(a) {
 
 
 
-export const errorHandler = (error, action = ()=>{}) => {
-  console.error('Error Handler: ', error)
-  action()
-  if(!exposedStore.getState().modal.showModal) {
+export const errorHandler = (errorString, error, overideModal) => {
+  console.error('Error Handler: ', error || errorString)
+
+  if(overideModal || !exposedStore.getState().modal.showModal) {
     exposedStore.dispatch(controlModal({
       showModal: true,
-      title: error,
+      title: errorString.toString(),
       style: 'errorModal',
       Component: ()=>null
     }))
+  } else {
+    console.warn('Error Handler: Modal already open, cancelled Modal message. See error above.')
   }
-
+  return finishUpdate()
 }
 
 

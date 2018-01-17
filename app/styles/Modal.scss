@@ -103,6 +103,10 @@
         .modal {
             .titlebar {
                 background: #ff4f52;
+                .titlebarinner {
+                    top: 0;
+                    padding: 20px 0 15px 0
+                }
             }
             .modalbody{
                 display: none;
