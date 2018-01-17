@@ -2,6 +2,8 @@ import React from 'react'
 import is from 'prop-types'
 
 import * as api from '../../../actions/api'
+import FormTextArea from '../../Common/formTextArea'
+import {routes} from '../../../routing'
 
 
 
@@ -10,6 +12,9 @@ export default class References extends React.Component {
   static propTypes = {
     references: is.array.isRequired,
     setReferences: is.func.isRequired,
+    errorUtility: is.object.isRequired,
+    tooltipUtility: is.object.isRequired,
+    tooltip: is.bool
   }
 
   state = {
@@ -42,17 +47,29 @@ export default class References extends React.Component {
   }
 
 
+  onFocus = () => {
+    const dummyTooltip = "Depositing DOIs for each of your references will ensure precise citations. Paste article references into the text box and click 'Match reference'. The system will return any DOI matches found. Review the accuracy of a reference, by clicking on 'Review Match'. If the match is incorrect, click Reject to drop the match. All references pasted will be deposited. You can remove them by clicking 'Remove all references'."
+    this.props.tooltipUtility.assignFocus('referencesTooltip', dummyTooltip)
+  }
+
+
   render () {
+    const isFocus = this.props.tooltipUtility.getFocusedInput() === 'referencesTooltip'
+
     return (
       <div className="references">
 
         <p className="topText">Reference list or bibliography</p>
 
-        <textarea
-          className="textBox"
-          value={this.state.referenceText}
-          onChange={ e => this.setState({referenceText: e.target.value})}
-          placeholder="Type or paste references here"/>
+        <div style={{position:'relative', width: '80.5%'}}>
+          {isFocus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+          <textarea
+            className={`textBox ${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
+            value={this.state.referenceText}
+            onChange={ e => this.setState({referenceText: e.target.value})}
+            placeholder="Type or paste references here"
+            onFocus={this.onFocus}/>
+        </div>
 
         <div className="getReferencesButton" onClick={this.getReferences}>
           Match Reference {this.state.loading && <div className="referencesLoader"/>}
