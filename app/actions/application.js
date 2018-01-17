@@ -41,6 +41,10 @@ export function storePublications(publications) {
 	return { type: 'STOREPUBLICATIONS', publications }
 }
 
+export function resetPublications() {
+  return { type: 'RESETPUBLICATIONS' }
+}
+
 export function editForm(keyPath, value) {
   return { type: 'REDUXFORM_ADD', keyPath, value}
 }

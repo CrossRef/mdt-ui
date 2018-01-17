@@ -44,6 +44,9 @@ export default function publicationsReducer (state = new SearchableRecords(), ac
       }
 
       return new SearchableRecords({...state, ...normalize(action.publications)})
+
+    case 'RESETPUBLICATIONS':
+      return new SearchableRecords()
     default:
       return state
   }
