@@ -7,7 +7,7 @@ import { Provider } from 'react-redux'
 
 import configureStore from './store'
 import Routing, { routes } from './routing'
-import { getCRState } from './actions/application'
+import { getCRState, controlModal } from './actions/application'
 
 
 window.version = version()
@@ -40,8 +40,9 @@ function version () {
 `
 Merged branches / tickets in this build
 
-MM-151
+MM-217
 MM-181
+MM-151
 
 `
   console.log(mergedBranches)
