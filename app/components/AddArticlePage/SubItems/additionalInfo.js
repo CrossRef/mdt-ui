@@ -4,7 +4,7 @@ import update from 'immutability-helper'
 import FormInput from '../../Common/formInput'
 import FormSelect from '../../Common/formSelect'
 import {urlEntered} from '../../../utilities/helpers'
-const Languages = require('../../../utilities/lists/language.json')
+import {languages} from '../../../utilities/lists/language'
 import { ArchiveLocations } from '../../../utilities/lists/archiveLocations'
 import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
 import ErrorIndicator from '../../Common/errorIndicator'
@@ -74,7 +74,7 @@ export default class AdditionalInformation extends Component {
                 label="Language"
                 name="language"
                 value={this.props.addInfo.language}
-                options={Languages}
+                options={languages}
                 changeHandler={this.handleAddInfo}
                 onSelect={this.props.validate}
                 errorUtility={this.props.errorUtility}

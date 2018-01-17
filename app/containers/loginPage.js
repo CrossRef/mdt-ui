@@ -1,8 +1,9 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
+import { bindActionCreators } from 'redux'
 
-import { SET_AUTH_BEARER, login, resetLogin } from '../actions/application'
+import { SET_AUTH_BEARER, login, resetLogin, resetPublications } from '../actions/application'
 
 
 
@@ -10,10 +11,11 @@ const mapStateToProps = (state) => ({
   loginState: state.login
 })
 
-const mapDispatchToProps = (dispatch) => ({
-  asyncLogin: (...args) => dispatch(login(...args)),
-  reduxResetLogin: (...args) => dispatch(resetLogin(...args))
-})
+const mapDispatchToProps = (dispatch) => bindActionCreators({
+  asyncLogin: login,
+  reduxResetLogin: resetLogin,
+  reduxResetPublications: resetPublications
+}, dispatch)
 
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -22,7 +24,8 @@ export default class LoginPage extends Component {
   static propTypes = {
     loginState: is.object.isRequired,
     asyncLogin: is.func.isRequired,
-    reduxResetLogin: is.func.isRequired
+    reduxResetLogin: is.func.isRequired,
+    reduxResetPublications: is.func.isRequired
   }
 
   state = {
@@ -33,6 +36,7 @@ export default class LoginPage extends Component {
   componentDidMount () {
     localStorage.setItem('auth', '');
     this.props.reduxResetLogin()
+    this.props.reduxResetPublications()
   }
 
   onSubmit = (e) => {
