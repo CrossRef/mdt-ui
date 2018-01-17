@@ -51,6 +51,8 @@ export default class PublicationsPage extends Component {
 
   render () {
     const { searchResults, publications, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication} = this.props;
+    const doiArray = Object.keys(publications) || []
+
     return (
       <div className='publications'>
         <div className='management-bar'>
@@ -68,11 +70,11 @@ export default class PublicationsPage extends Component {
           </button>
         </div>
 
-        {DOIs.length ?
+        {doiArray.length ?
           <div className='content'>
             <div className='tools' />
             <div className='cards'>
-              {DOIs.map((doi, i) => <PublicationCard doi={doi} key={i} />)}
+              {doiArray.reverse().map((doi, i) => <PublicationCard doi={doi} key={doi} />)}
             </div>
           </div>
         : <div className='empty-message'>No publications, please create one!</div>}

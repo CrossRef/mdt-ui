@@ -42,6 +42,7 @@ export default class DepositCartPage extends Component {
     publications: is.object.isRequired
   }
 
+
   constructor (props) {
     super(props)
     this.state = {
@@ -56,9 +57,11 @@ export default class DepositCartPage extends Component {
     }
   }
 
+
   componentDidMount() {
     this.getFullCart()
   }
+
 
   getFullCart (cart = this.props.cart) {
     const promises = []
@@ -157,12 +160,14 @@ export default class DepositCartPage extends Component {
     }
   }
 
+
   componentWillReceiveProps(nextProps, nextState) {
     if(nextProps.location !== this.props.location) this.setState({status:'cart'});
     if (this.props.cart !== nextProps.cart) {
       this.getFullCart(nextProps.cart)
     }
   }
+
 
   review = () => {
       this.props.reduxControlModal({
@@ -185,6 +190,7 @@ export default class DepositCartPage extends Component {
       })
   }
 
+
   deposit = () => {
     if(!this.state.showDeposit || this.state.status === 'processing') return
 
@@ -198,14 +204,14 @@ export default class DepositCartPage extends Component {
       this.setState({status:'result', result: processDepositResult(result, this.props.publications, this.props.cart)})
       this.props.reduxClearCart()
     })
-    .catch(reason => errorHandler(reason, ()=>this.setState({status: 'cart'})))
+      .catch(reason => errorHandler(reason).then(()=>this.setState({status: 'cart'})))
   }
-
 
 
   toggleDeposit = (showDeposit) => {
     this.setState({showDeposit})
   }
+
 
   render () {
     const {resultData, resultCount, depositId} = this.state.result
