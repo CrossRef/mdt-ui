@@ -1084,14 +1084,14 @@ input.height64, textarea.height64, select.height64 {
   }
 
   .textBox {
-    height: 150px;
+    height: 240px;
     width: 100%;
     overflow: scroll;
     resize: none;
     margin-bottom: 32px;
   }
 
-  $referencePlaceHolderPadding: 65px;
+  $referencePlaceHolderPadding: 105px;
   $referencePlaceHolderColor: #a7a7a7;
   .textBox:-moz-placeholder {
     text-align: center;
