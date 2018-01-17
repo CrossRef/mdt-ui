@@ -80,6 +80,9 @@ const parseXMLArticle = function (articleXML) {
     var abstract = ''
     if (abstractHolder) {
         abstract = objectSearch(abstractHolder, 'jats:p')
+        if(typeof abstract === 'object') {
+          abstract = abstract['#text'] || ''
+        }
     }
     var doiData = objectSearch(parsedArticle, 'doi_data')
     const doi = doiData.doi
