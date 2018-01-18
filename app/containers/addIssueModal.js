@@ -93,6 +93,7 @@ export default class AddIssueModal extends Component {
         optionalIssueInfo: optionalIssueInfo,
         showSection: showSection,
         titleId: JSON.stringify({issue: issue.issue, volume: issue.volume, title: issue.issueTitle}),
+        depositTimestamp: Issue['deposit-timestamp'],
         ...validatedPayload
       }
 
@@ -192,6 +193,7 @@ export default class AddIssueModal extends Component {
       const newRecord = {
         'title': {issue: escapeString(issue), volume: escapeString(volume), title: escapeString(title)},
         'date': new Date(),
+        'deposit-timestamp': this.state.depositTimestamp || null,
         'doi': issueDoi,
         'owner-prefix': this.state.ownerPrefix,
         'type': 'issue',

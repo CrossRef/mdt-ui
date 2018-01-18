@@ -43,7 +43,15 @@ export default function publicationsReducer (state = new SearchableRecords(), ac
         }, {})
       }
 
-      return new SearchableRecords({...state, ...normalize(action.publications)})
+      const normalizedPublications = normalize(action.publications)
+
+      //If user's initial load is a publication page, the api.getItem for that publication might come back before the
+      //getDraftWorks. In which case we dont want the getDraftworks to overwrite the already loaded publication
+      const newState = action.getDraftWorks ?
+        {...normalizedPublications, ...state}
+      : {...state, ...normalizedPublications}
+
+      return new SearchableRecords(newState)
 
     case 'RESETPUBLICATIONS':
       return new SearchableRecords()

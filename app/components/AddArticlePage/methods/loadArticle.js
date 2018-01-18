@@ -111,8 +111,9 @@ export default async function loadArticle () {
       setStatePayload.issueTitle = fullHierarchy.message.contains[0].title
     }
 
-    const parsedArticle = parseXMLArticle(articleUnderPub.message.contains[0].content)
-    const savedArticleState = articleUnderPub.message.contains[0].state || {}
+    const article = articleUnderPub.message.contains[0]
+    const parsedArticle = parseXMLArticle(article.content)
+    const savedArticleState = article.state || {}
 
     let reduxForm
     if(parsedArticle.crossmark) {
@@ -133,6 +134,7 @@ export default async function loadArticle () {
     setStatePayload = {
       ...setStatePayload,
       publication: articleUnderPub,
+      depositTimestamp: article['deposit-timestamp'],
       issue,
       publicationMetaData,
       publicationXml,

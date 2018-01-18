@@ -32,7 +32,8 @@ export default function _getCRState (type, currentLocation, error = (reason) => 
 
         getDraftWorks().then((response)=>{
           const draftWorksArray = response.message
-          dispatch(storePublications(draftWorksArray))
+          const getDraftWorks = true
+          dispatch(storePublications(draftWorksArray, getDraftWorks))
         })
 
         let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.

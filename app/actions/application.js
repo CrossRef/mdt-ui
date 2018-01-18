@@ -37,8 +37,8 @@ export function controlModal(modalObj) {
 	return { type: 'MODAL', modalObj }
 }
 
-export function storePublications(publications) {
-	return { type: 'STOREPUBLICATIONS', publications }
+export function storePublications(publications, getDraftWorks) {
+	return { type: 'STOREPUBLICATIONS', publications, getDraftWorks }
 }
 
 export function resetPublications() {

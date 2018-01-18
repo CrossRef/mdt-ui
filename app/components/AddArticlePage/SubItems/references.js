@@ -72,14 +72,14 @@ export default class References extends React.Component {
         </div>
 
         <div className="getReferencesButton" onClick={this.getReferences}>
-          Match Reference {this.state.loading && <div className="referencesLoader"/>}
+          Match References {this.state.loading && <div className="referencesLoader"/>}
         </div>
 
         {this.props.references.length > 0 &&
           <div className="resultsContainer">
 
             <div className="removeAllReferences">
-              <span onClick={()=> this.props.setReferences({references: []})}>Remove All</span>
+              <span onClick={()=> this.props.setReferences({references: []})}>Remove All References</span>
             </div>
 
             {this.props.references.map((item, i) =>

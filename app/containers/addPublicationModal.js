@@ -18,11 +18,18 @@ import { routes } from '../routing'
 
 
 
-const mapStateToProps = (state, props) => ({
-  crossmarkPrefixes: state.login['crossmark-prefixes'],
-  prefixes: state.login.prefixes,
-  publicationXML: props.doi ? (state.publications[props.doi] || state.publications[props.doi.toLowerCase()]).message.content  : null
-})
+const mapStateToProps = (state, props) => {
+  const publicationJSON = props.doi ?
+    (state.publications[props.doi] || state.publications[props.doi.toLowerCase()]).message
+  : {}
+
+  return {
+    crossmarkPrefixes: state.login['crossmark-prefixes'],
+    prefixes: state.login.prefixes,
+    publicationXML: publicationJSON.content,
+    depositTimestamp: publicationJSON['deposit-timestamp']
+  }
+}
 
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
@@ -42,6 +49,7 @@ export default class AddPublicationModal extends Component {
     doi: is.string,
     title: is.string,
     publicationXML: is.string,
+    depositTimestamp: is.string,
 
     Journal: is.shape({
       journal_metadata: is.object.isRequired
@@ -175,7 +183,8 @@ export default class AddPublicationModal extends Component {
           electISSN: do { try { issn.find( item => item['-media_type'] === 'electronic')['#text'] } catch(e){}} || '',
           url: do { try { data.doi_data.resource } catch(e){}} || '',
           language: data['-language'] || '',
-          archivelocation: do { try { data.archive_locations.archive['-name'] } catch(e){}} || this.state.archivelocation
+          archivelocation: do { try { data.archive_locations.archive['-name'] } catch(e){}} || this.state.archivelocation,
+          depositTimestamp: nextProps.depositTimestamp
         })
 
       } catch (e) {
@@ -242,6 +251,7 @@ export default class AddPublicationModal extends Component {
           'title': {'title': this.state.title},
           'doi': this.state.DOI,
           'date': new Date(),
+          'deposit-timestamp': this.state.depositTimestamp || null,
           'owner-prefix': this.state.DOI.split('/')[0],
           'type': 'Publication',
           'mdt-version': this.state['mdt-version'],
