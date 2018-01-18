@@ -1116,6 +1116,7 @@ input.height64, textarea.height64, select.height64 {
 
   .getReferencesButton {
     @extend ._subItemAddNewButton;
+    width: 140px
   }
 
   .removeAllReferences {
