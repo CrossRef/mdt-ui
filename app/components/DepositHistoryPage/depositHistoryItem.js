@@ -29,6 +29,7 @@ export default class DepositHistoryItem extends Component {
     }
 
     const failedDeposit = this.props.history.status === 'Failed'
+    const depositUpdate = this.props.history.depositTimestamp
 
     return (
         <tr>
@@ -37,18 +38,21 @@ export default class DepositHistoryItem extends Component {
           <td><Moment format="MMM DD">{this.props.history.date}</Moment></td>
           <td>Article</td>
           <td>{this.props.history.status}</td>
+
           <td className="errorCell">
             {failedDeposit &&
               <img
                 className="errorButton"
-                src={`${routes.images}/Deposit/Asset_Icons_Red_Caution.png`}
+                src={`${routes.images}/${depositUpdate ? 'AddArticle/Asset_Icons_Black_Caution.svg' : 'Deposit/Asset_Icons_Red_Caution.png'}`}
                 onClick={()=>this.props.errorMessageHandler(this.props.name)}/>}
+
             {this.props.name === this.props.activeErrorMessage &&
               <ErrorMessage errorMessage={this.props.history.errorMessage} errorMessageHandler={this.props.errorMessageHandler}/>}
           </td>
+
           <td>
-            <a className={`doiLink ${failedDeposit ? 'failedDeposit' : ''}`}
-               href={failedDeposit ? null : `https://doi.org/${this.props.history.doi}`}
+            <a className={`doiLink ${failedDeposit && !depositUpdate ? 'failedDeposit' : ''}`}
+               href={failedDeposit && !depositUpdate ? null : `https://doi.org/${this.props.history.doi}`}
             >
                 https://doi.org/{this.props.history.doi}
             </a>
