@@ -8,7 +8,7 @@ import parseXMLArticle from '../../../utilities/parseXMLArticle'
 
 
 
-export default async function () {
+export default async function loadArticle () {
 
   const { pubDoi } = this.props.routeParams;
   const getItems = []
@@ -51,7 +51,7 @@ export default async function () {
       : fullHierarchy.message.contains[0].contains[0]
 
     publicationXml = article.content.substring(
-      article.content.indexOf('<journal_metadata>'),
+      article.content.indexOf('<journal_metadata'),
       article.content.indexOf('</journal_metadata>') + 19
     )
   }
@@ -111,7 +111,9 @@ export default async function () {
       setStatePayload.issueTitle = fullHierarchy.message.contains[0].title
     }
 
-    const parsedArticle = parseXMLArticle(articleUnderPub.message.contains[0].content)
+    const article = articleUnderPub.message.contains[0]
+    const parsedArticle = parseXMLArticle(article.content)
+    const savedArticleState = article.state || {}
 
     let reduxForm
     if(parsedArticle.crossmark) {
@@ -132,6 +134,7 @@ export default async function () {
     setStatePayload = {
       ...setStatePayload,
       publication: articleUnderPub,
+      depositTimestamp: article['deposit-timestamp'],
       issue,
       publicationMetaData,
       publicationXml,
@@ -142,9 +145,19 @@ export default async function () {
       contributors: parsedArticle.contributors,
       funding: parsedArticle.funding,
       license: parsedArticle.license,
+      references: parsedArticle.references,
       relatedItems: parsedArticle.relatedItems,
       openItems: parsedArticle.openItems,
       ...validatedPayload
+    }
+
+    if(savedArticleState.archiveLocation) {
+      setStatePayload.addInfo.archiveLocation = savedArticleState.archiveLocation
+      setStatePayload.openItems.addInfo = true
+    }
+    if(savedArticleState.freetolicense) {
+      setStatePayload.article.freetolicense = savedArticleState.freetolicense
+      setStatePayload.openItems.Licenses = true
     }
 
     this.setState(setStatePayload)

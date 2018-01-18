@@ -1,3 +1,6 @@
+@import 'common';
+
+
 .height16 {
   height: 16px;
 }
@@ -227,6 +230,7 @@ input.height64, textarea.height64, select.height64 {
           .calendarIcon {
             display: inline-block;
             width: 27px;
+            height: 27px;
           }
         }
       }
@@ -238,12 +242,36 @@ input.height64, textarea.height64, select.height64 {
 
 .addArticles {
   margin: 40px 0;
-  width: 100%;
+
   .addarticlecard {
-    margin: 0 auto;
     width: 960px;
+    display: inline-block;
+
     .addArticleForm {
       width: 100%;
+    }
+  }
+
+  .rightBar {
+    display: inline-block;
+
+    .scrollToTopButton {
+      position: fixed;
+      top: 65%;
+      height: 48px;
+      width: 48px;
+      background: #4f5858;
+      color: white;
+      padding-top: 8px;
+      cursor: pointer;
+      z-index: 9999999999;
+      margin-left: 10px;
+
+      img {
+        width: 32px;
+        height: 32px;
+        transform: rotate(180deg);
+      }
     }
   }
 }
@@ -333,24 +361,19 @@ input.height64, textarea.height64, select.height64 {
 
     .addholder {
       margin-top:20px;
-      padding: 0 0 0 0;
+      padding: 0 50px;
       height: 100px;
       width: 100%;
       display: inline-flex;
       justify-content: flex-start;
       align-content: center;
       flex-direction: column;
-      hr {width: 90%}
+      hr{width: 100%}
+
       .addNewButton {
+        @extend ._subItemAddNewButton;
         top: 24px;
-        left: 78px;
-        width: 120px;
-        border: 1px solid black;
-        background: #F9F9F9;
-        color: #646464;
-        cursor: pointer;
-        display: block;
-        padding: 4px 20px;
+        left: 28px;
         position: relative;
       }
     }
@@ -577,7 +600,6 @@ input.height64, textarea.height64, select.height64 {
                 width: 100%
               }
               textarea {
-                border: 1px solid #EDEFF1;
                 margin: 0;
                 padding: 5px 16px;
                 resize: none;
@@ -891,10 +913,7 @@ input.height64, textarea.height64, select.height64 {
   margin-bottom: 7px;
   clear: both;
   height: 25px;
-
-  p {
-    color: white
-  }
+  color: white;
 }
 
 .saveSuccess {
@@ -985,7 +1004,7 @@ input.height64, textarea.height64, select.height64 {
 
 .infoFlagTextArea {
   position: absolute;
-  right: 1px;
+  right: 0;
   top: -29px;
   width: 38px;
 }
@@ -1039,6 +1058,110 @@ input.height64, textarea.height64, select.height64 {
       position: relative;
 
 
+    }
+  }
+}
+
+
+.abstract {
+  height: 256px !important;
+}
+
+
+.references {
+  padding: 48px 78px 40px 78px;
+  text-align: left;
+
+  .topText {
+    margin-left: 15px;
+  }
+
+  .referencesLoader {
+    @extend ._loader;
+    position: relative;
+    left: 120px;
+    bottom: 19px;
+  }
+
+  .textBox {
+    height: 240px;
+    width: 100%;
+    overflow: scroll;
+    resize: none;
+    margin-bottom: 32px;
+  }
+
+  $referencePlaceHolderPadding: 105px;
+  $referencePlaceHolderColor: #a7a7a7;
+  .textBox:-moz-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+  .textBox::-moz-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+  .textBox:-ms-input-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+  .textBox::-webkit-input-placeholder {
+    text-align: center;
+    padding-top: $referencePlaceHolderPadding;
+    color: $referencePlaceHolderColor;
+  }
+
+  .getReferencesButton {
+    @extend ._subItemAddNewButton;
+  }
+
+  .removeAllReferences {
+    margin-bottom: 32px;
+    text-align: right;
+
+    span {cursor: pointer;}
+  }
+
+  .resultsContainer {
+    margin-top: 16px;
+    .result {
+      margin-top: 16px;
+      text-align: left;
+      min-height: 36px;
+      .referenceText {
+        width: 580px;
+        display: inline-block;
+        font-size: 14px;
+      }
+      .referenceReview {
+        display: inline-block;
+        font-size: 14px;
+        margin: 1px 10px 1px 20px;
+        vertical-align:top
+      }
+      .referenceReview:link {
+        color: #3eb1c8
+      }
+      .noMatch {
+        color: #acacad
+      }
+      .referenceRemove {
+        display: inline-block;
+        font-size: 14px;
+        margin: 1px 0 1px 46px;
+        cursor: pointer;
+        vertical-align:top
+      }
+      .clearReference {
+        clear: both;
+      }
+    }
+    p, a {
+      font-size: 14px;
+      margin: 1px
     }
   }
 }

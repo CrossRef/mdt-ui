@@ -1,4 +1,3 @@
-/* eslint-disable no-multiple-empty-lines,padded-blocks */
 import React from 'react'
 import { Route, IndexRoute } from 'react-router'
 
@@ -9,6 +8,7 @@ import PublicationsPage from './containers/publicationsPage'
 import PublicationPage from './containers/publicationPage'
 import DepositCartPage from './containers/depositCartPage'
 import DepositHistoryPage from './containers/depositHistoryPage'
+import { controlModal } from './actions/application'
 
 
 
@@ -29,7 +29,14 @@ export const routes = {
   depositHistory: base + 'deposit-history'
 };
 
-export default ({resetPage}) => {
+
+
+export default (store) => {
+
+  const resetPage = () => {
+    store.dispatch(controlModal({ showModal: false }))
+    window.scrollTo(0, 0)
+  }
 
   return (
     <Route path={routes.base} component={App}>

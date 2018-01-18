@@ -9,6 +9,7 @@ import {routes} from '../../routing'
 export default class HistoryDate extends React.Component {
 
   static propTypes = {
+    title: is.string.isRequired,
     name: is.string.isRequired,
     changeHandler: is.func.isRequired,
     fullDate: is.object,
@@ -25,7 +26,7 @@ export default class HistoryDate extends React.Component {
       <div className='datepickerholder'>
         <div className='dateselectholder'>
           <div>&nbsp;</div>
-          <div className='labelHolder'>Date From</div>
+          <div className='labelHolder'>{this.props.title}</div>
         </div>
         <div className='dateselectholder'>
           <div>Year</div>
@@ -40,7 +41,7 @@ export default class HistoryDate extends React.Component {
         <div className='dateselectholder'>
           <div>Day</div>
           <div>
-            <DateSelect handler={this.props.changeHandler} name={`${this.props.name}Day`} type="d" value={this.props.dayValue}/>
+            <DateSelect handler={this.props.changeHandler} name={`${this.props.name}Date`} type="d" value={this.props.dayValue}/>
           </div>
         </div>
 

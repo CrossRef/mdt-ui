@@ -7,7 +7,7 @@ import { connect } from 'react-redux'
 
 import {routes} from '../../routing'
 import {xmldoc} from '../../utilities/helpers'
-import { controlModal, submitPublication, cartUpdate } from '../../actions/application'
+import { controlModal, submitPublication, cartUpdate, getPublications } from '../../actions/application'
 import AddPublicationModal from '../../containers/addPublicationModal'
 
 
@@ -20,7 +20,8 @@ const mapStateToProps = (state, props) => ({
 const mapDispatchToProps = dispatch => bindActionCreators({
   reduxControlModal: controlModal,
   reduxCartUpdate: cartUpdate,
-  asyncSubmitPublication: submitPublication
+  asyncSubmitPublication: submitPublication,
+  asyncGetPublications: getPublications
 }, dispatch)
 
 
@@ -31,6 +32,7 @@ export default class PublicationCardContainer extends Component {
     reduxControlModal: is.func.isRequired,
     reduxCartUpdate: is.func.isRequired,
     asyncSubmitPublication: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object,
     crossmarkPrefixes: is.array.isRequired
@@ -48,15 +50,20 @@ export default class PublicationCardContainer extends Component {
     this.state = { mouseOver: false, overEdit: false, background }
   }
 
+
   openEditPublicationModal = () => {
     const publication = this.props.publication
     if(!publication) {
       return console.error(`${this.props.doi} is not fetching from server`)
     }
-    const parsedXMLContent = xmldoc(publication.message.content)
+
+    const parsedXMLContent = publication.message.content ? xmldoc(publication.message.content) : {}
+
     const savedMetaData = {
-      ...parsedXMLContent, 'mdt-version': publication.message['mdt-version']
-    };
+      ...parsedXMLContent,
+      'mdt-version': publication.message['mdt-version'],
+      state: publication.message.state || {}
+    }
 
     this.props.reduxControlModal({
       showModal:true,
@@ -64,6 +71,8 @@ export default class PublicationCardContainer extends Component {
       Component: AddPublicationModal,
       props:{
         mode: 'edit',
+        doi: this.props.doi,
+        title: do { try { this.props.publication.message.title.title } catch(e){}} || '',
         ...savedMetaData
       }
     })

@@ -64,6 +64,7 @@ export default class AddIssueModal extends Component {
       }
       Publication = await api.getItem(id)
       Issue = Publication.message.contains[0]
+      const savedIssueState = Issue.state || {}
 
       const version = Issue['mdt-version']
 
@@ -92,7 +93,12 @@ export default class AddIssueModal extends Component {
         optionalIssueInfo: optionalIssueInfo,
         showSection: showSection,
         titleId: JSON.stringify({issue: issue.issue, volume: issue.volume, title: issue.issueTitle}),
+        depositTimestamp: Issue['deposit-timestamp'],
         ...validatedPayload
+      }
+
+      if(savedIssueState.archiveLocation) {
+        setStatePayload.issue.archiveLocation = savedIssueState.archiveLocation
       }
 
       this.setState(setStatePayload, ()=> this.state.validating = false)
@@ -187,6 +193,7 @@ export default class AddIssueModal extends Component {
       const newRecord = {
         'title': {issue: escapeString(issue), volume: escapeString(volume), title: escapeString(title)},
         'date': new Date(),
+        'deposit-timestamp': this.state.depositTimestamp || null,
         'doi': issueDoi,
         'owner-prefix': this.state.ownerPrefix,
         'type': 'issue',
@@ -195,8 +202,18 @@ export default class AddIssueModal extends Component {
         'content': new XMLSerializer().serializeToString(issueXML)
       }
 
+      let state = {}
+      let hasState = false
+      if(this.state.issue.archiveLocation) {
+        state.archiveLocation = this.state.issue.archiveLocation
+        hasState = true
+      }
+
+      if(hasState) {
+        newRecord.state = state
+      }
+
       const submissionPayload = {
-        ...publication,
         message: {
           ...publication.message,
           contains: [newRecord]

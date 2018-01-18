@@ -73,7 +73,9 @@ export function getItem (id, forced) {
   })
     .then(response => {
       if(response.status !== 200) {
-        throw `${response.status}: ${response.statusText}`
+        const error = new Error(`${response.status}: ${response.statusText}`)
+        error.status = response.status
+        throw error
       }
       return response.json()
     })
@@ -153,3 +155,20 @@ export function getDepositHistory (params) {
   })
     .then(depositHistory => depositHistory.json())
 }
+
+
+
+
+export function getReference (referencesArray) {
+  return Promise.all(referencesArray.map( referenceText =>
+    new Promise ((resolve, reject) =>
+      authorizedFetch(`${apiBaseUrl}/search/references?q=${encodeURIComponent(referenceText)}`, {
+        method: 'get',
+        headers: {Authorization: localStorage.getItem('auth')}
+      })
+        .then( result => result.json()).then( result => resolve(result))
+        .catch( e => resolve({ message: [{reference: referenceText, DOI: '', matchValuation: 0}]}))
+    )
+  ))
+}
+

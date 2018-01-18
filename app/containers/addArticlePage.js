@@ -4,6 +4,7 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import {browserHistory} from 'react-router'
+import $ from 'jquery'
 
 import defaultState from '../components/AddArticlePage/defaultState'
 import { controlModal, getPublications, editForm, deleteCard, clearForm, cartUpdate } from '../actions/application'
@@ -15,7 +16,7 @@ import {asyncValidateArticle} from '../utilities/validation'
 import {getSubItems} from '../utilities/getSubItems'
 import ReviewArticle from '../components/AddArticlePage/reviewArticleModal'
 import { XMLSerializer, DOMParser } from 'xmldom'
-import componentDidMount from '../components/AddArticlePage/methods/componentDidMount'
+import loadArticle from '../components/AddArticlePage/methods/loadArticle'
 import save from '../components/AddArticlePage/methods/save'
 
 
@@ -95,13 +96,18 @@ export default class AddArticlePage extends Component {
       version: '1',
       errorMessages: [],
       focusedInput: '',
-      activeCalendar: ''
+      activeCalendar: '',
+      scrollToTopButton: false,
+      scrollTimeout: null
     }
     this.state.article.doi = ownerPrefix + '/'
   }
 
 
-  componentDidMount = componentDidMount.bind(this)
+  componentDidMount () {
+    document.addEventListener('scroll', this.scrollHandler, false)
+    loadArticle.call(this)
+  }
 
   save = save.bind(this)
 
@@ -116,7 +122,14 @@ export default class AddArticlePage extends Component {
 
 
   validation = async (data = this.state, reduxForm = this.props.reduxForm, doiDisabled = this.state.doiDisabled) => {
-    const { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
+    const {
+      criticalErrors,
+      warnings,
+      licenses,
+      contributors,
+      relatedItems,
+      newReduxForm,
+    } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
 
     const validatedPayload = {
       validating: true,
@@ -130,9 +143,10 @@ export default class AddArticlePage extends Component {
       openItems: {
         Contributors: !!contributors.length,
         Funding: !!getSubItems(data.funding).length,
-        Licenses: !!licenses.length,
+        Licenses: !!licenses.length || !!data.article.freetolicense,
         relatedItems: !!relatedItems.length,
-        addInfo: !!getSubItems(data.addInfo).length
+        addInfo: !!getSubItems(data.addInfo).length,
+        references: !!data.references.length
       }
     }
     let valid = true
@@ -431,7 +445,9 @@ export default class AddArticlePage extends Component {
 
 
   componentWillUnmount () {
+    document.removeEventListener('scroll', this.scrollHandler, false)
     this.props.reduxClearForm();
+    clearTimeout(this.state.scrollTimer)
   }
 
 
@@ -467,6 +483,29 @@ export default class AddArticlePage extends Component {
   }
 
 
+  scrollHandler = () => {
+    if(this.state.scrollTimer) {
+      clearTimeout(this.state.scrollTimer)
+    }
+    this.state.scrollTimer = setTimeout(() => {
+      if(window.pageYOffset > 240 && !this.state.scrollToTopButton) {
+        this.setState({scrollToTopButton: true})
+      }
+
+      if(window.pageYOffset < 240 && this.state.scrollToTopButton) {
+        this.setState({scrollToTopButton: false})
+      }
+    }, 80)
+  }
+
+
+  scrollToTop = () => {
+    $('html, body').animate({
+      scrollTop: 0
+    }, 1000);
+  }
+
+
   render () {
     this.errorUtility.errorIndicators = []  //Saving refs of any errorIndicators rendered so need to clear it before each render
     this.errorUtility.openingSubItem = false
@@ -492,6 +531,13 @@ export default class AddArticlePage extends Component {
           calendarHandler={this.calendarHandler}
           {...this.state}
         />
+
+        <div className="rightBar">
+          {this.state.scrollToTopButton &&
+            <div className="scrollToTopButton" onClick={this.scrollToTop}>
+              <img className="scrollToTopChevron" src={`${routes.images}/AddArticle/Asset_Icons_White_Chevron.svg`}/>
+            </div>}
+        </div>
       </div>
     )
   }
