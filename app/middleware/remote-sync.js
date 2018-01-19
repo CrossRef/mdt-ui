@@ -10,6 +10,7 @@ var blacklistActions = [
   'GET_CART',
   'GET_ITEM',
   'REDUXFORM_ADD',
+  'REDUXFORM_DELETE',
   'REDUXFORM_CLEAR',
   'SEARCH_RESULT',
   'SEARCH_STATUS',
