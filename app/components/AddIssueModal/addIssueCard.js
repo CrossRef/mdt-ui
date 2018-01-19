@@ -298,6 +298,14 @@ export default function AddIssueCard (props) {
                     onBlur={props.validate}
                     required={volumeSectionRequired}/>
                 </div>
+
+                <ErrorIndicator
+                  issue
+                  indicatorErrors={['volumedoi', 'dupevolumedoi', 'invalidvolumedoi', 'dupeDois', 'invalidVolumeDoiPrefix', 'volumeUrl', 'invalidvolumeurl']}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  tooltipUtility={props.tooltipUtility}
+                  allErrors={props.errors}/>
               </div>
             </div>
 

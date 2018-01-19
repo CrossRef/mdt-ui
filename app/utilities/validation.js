@@ -394,7 +394,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
     warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== ownerPrefix
     warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && await asyncCheckDupeDoi(volumeDoi)
-    warnings.volumeUrl = !volumeDoiEntered
+    warnings.volumeUrl = !volumeUrlEntered
     warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
   }
 
