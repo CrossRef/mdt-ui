@@ -175,11 +175,17 @@
             }
 
             td {
-                max-width: 250px;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                padding-top: 32px;
+              max-width: 250px;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              padding-top: 32px;
+              .failedDeposit {
+                color: red !important
+              }
+              .doiLink {
+                color: inherit
+              }
             }            
             .first {
                 border-left: 1px solid #DEE1E5;

@@ -29,7 +29,7 @@ const issueReviewGenerator = function (publication, issue) {
                         <div className='innerBorder'></div>
                     </div>
                         <div className='reviewContent'>
-                        <p>Issue: {(reviewData.issue.issue ? reviewData.issue.issue : '')}</p>
+                        {reviewData.issue.issue ? <p>Issue: {(reviewData.issue.issue ? reviewData.issue.issue : '')}</p> : ''}
                         {reviewData.issue.volume ? <p>Volume: {(reviewData.issue.volume ? reviewData.issue.volume : '')}</p> : ''}
                         {reviewData.issue.issueDoi ? <p>Issue DOI: {(reviewData.issue.issueDoi ? reviewData.issue.issueDoi : '')}</p> : ''}
                         {

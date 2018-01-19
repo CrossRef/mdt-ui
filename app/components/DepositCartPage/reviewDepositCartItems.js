@@ -5,6 +5,7 @@ import { browserHistory } from 'react-router'
 import articleReviewGenerator from '../Common/articleReviewGenerator'
 import issueReviewGenerator from  './issueReviewGenerator'
 import {routes} from '../../routing'
+import {recordTitle} from '../../utilities/helpers'
 
 
 export default class DepositCartItemsReview extends Component {
@@ -83,7 +84,7 @@ export default class DepositCartItemsReview extends Component {
                 <span className={'arrowHolder' + (this.state.showInfoSection ? ' openArrowHolder' : '')}>
                     <img src={`${routes.images}/AddArticle/Triangle.svg`} />
                 </span>
-                <span>{item.title.title || `Issue ${item.title.issue || 'NA'}, Volume ${item.title.volume || 'NA'}`}</span>
+                <span>{recordTitle(item.type, item.title)}</span>
               </div>
                 <div className='addholder'>
                     <a onClick={()=>{this.gotoPage()}}>Edit</a>
