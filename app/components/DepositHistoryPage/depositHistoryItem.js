@@ -43,7 +43,7 @@ export default class DepositHistoryItem extends Component {
             {failedDeposit &&
               <img
                 className="errorButton"
-                src={`${routes.images}/${depositUpdate ? 'AddArticle/Asset_Icons_Black_Caution.svg' : 'Deposit/Asset_Icons_Red_Caution.png'}`}
+                src={`${routes.images}/Deposit/${depositUpdate ? 'Asset_Icons_Yellow_Caution.svg' : 'Asset_Icons_Red_Caution.png'}`}
                 onClick={()=>this.props.errorMessageHandler(this.props.name)}/>}
 
             {this.props.name === this.props.activeErrorMessage &&
