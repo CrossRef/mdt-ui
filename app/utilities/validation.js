@@ -233,7 +233,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
       for (var i in entries){
         const attributes = entries[i]
         
-        const doi = attributes.get('DOI')
+        const doi = attributes.get('doi')
         const doiInvalid = !!doi && !isDOI(doi)
         const doiNotExist = !!doi && !doiInvalid && !await asyncCheckDupeDoi(doi)
 
@@ -246,7 +246,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
           [`${update} doi`]: !doi,
           [`${update} doiInvalid`]: doiInvalid,
           [`${update} doiNotExist`]: doiNotExist,
-          [`${update} Date`]: yearError || monthError || dayError,
+          [`${update} date`]: yearError || monthError || dayError,
           year: yearError,
           month: monthError,
           day: dayError

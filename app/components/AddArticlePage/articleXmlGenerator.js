@@ -278,13 +278,13 @@ export default function (state, reduxForm) {
   function appendCrossmarkXml(rootElem) {
     const JSform = reduxForm.toJS()
     const crossmarkForm = {}
-    if (JSform[pubHist]) crossmarkForm[pubHist] = JSform[pubHist]
-    if (JSform[peer]) crossmarkForm[peer] = JSform[peer]
-    if (JSform[copyright]) crossmarkForm[copyright] = JSform[copyright]
-    if (JSform[supp]) crossmarkForm[supp] = JSform[supp]
-    if (JSform[other]) crossmarkForm[other] = JSform[other]
-    if (JSform[clinical]) crossmarkForm[clinical] = JSform[clinical]
-    if (JSform[update]) crossmarkForm[update] = JSform[update]
+    if (getSubItems(JSform[pubHist]).length) crossmarkForm[pubHist] = getSubItems(JSform[pubHist])
+    if (getSubItems(JSform[peer]).length) crossmarkForm[peer] = getSubItems(JSform[peer])
+    if (getSubItems(JSform[copyright]).length) crossmarkForm[copyright] = getSubItems(JSform[copyright])
+    if (getSubItems(JSform[supp]).length) crossmarkForm[supp] = getSubItems(JSform[supp])
+    if (getSubItems(JSform[other]).length) crossmarkForm[other] = getSubItems(JSform[other])
+    if (getSubItems(JSform[clinical]).length) crossmarkForm[clinical] = getSubItems(JSform[clinical])
+    if (getSubItems(JSform[update]).length) crossmarkForm[update] = getSubItems(JSform[update])
 
     const size = Object.keys(crossmarkForm).length
 
@@ -328,9 +328,9 @@ export default function (state, reduxForm) {
     var elm = el.ownerDocument.createElement("updates")
     el.appendChild(elm)
     for (let number in card) {
-      const { type, DOI, day, month, year } = card[number]
+      const { type, doi, day, month, year } = card[number]
       var el2 =  elm.ownerDocument.createElement("update")
-      if(DOI) el2.textContent = DOI
+      if(doi) el2.textContent = doi
       if(type) appendAttribute("type",type.toLowerCase().replace(/\s+/g, '_'),el2)
       if(year || month || day){
         appendAttribute("date", `${year || ''}-${month || ''}-${day || ''}` ,el2)
