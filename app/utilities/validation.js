@@ -27,9 +27,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 
-  if (freetolicense === 'yes'){
-    criticalErrors.freetolicense = true
-  }
+  criticalErrors.freetolicense = freetolicense === 'yes'
+
 
   const hasDate = !!(printDateYear || onlineDateYear)
   let warnings = {
@@ -142,11 +141,12 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     return {...license, errors}
   })
 
-  if(criticalErrors.freetolicense) {
-    if(!licenses.length) {
-      licenses[0] = defaultArticleState.license[0]
-      licenses[0].errors.freetolicense = true
-    }
+  if(criticalErrors.freetolicense && !licenses.length) {
+    licenses[0] = defaultArticleState.license[0]
+    licenses[0].errors.freetolicense = true
+  } else if (!criticalErrors.freetolicense && !licenses.length) {
+    licenses[0] = defaultArticleState.license[0]
+    licenses[0].errors.freetolicense = false
   }
 
 
