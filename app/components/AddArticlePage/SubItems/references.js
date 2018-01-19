@@ -79,7 +79,7 @@ export default class References extends React.Component {
           <div className="resultsContainer">
 
             <div className="removeAllReferences">
-              <span onClick={()=> this.props.setReferences({references: []})}>Remove All References</span>
+              <span onClick={()=> this.props.setReferences({references: []})}>Remove all references</span>
             </div>
 
             {this.props.references.map((item, i) =>
