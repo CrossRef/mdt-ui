@@ -14,7 +14,8 @@ export default class DepositCartItemsReview extends Component {
     item: is.object.isRequired,
     publication: is.object.isRequired,
     index: is.number.isRequired,
-    reduxControlModal: is.func.isRequired
+    reduxControlModal: is.func.isRequired,
+    parentIssue: is.object
   }
 
   constructor (props) {
@@ -87,7 +88,7 @@ export default class DepositCartItemsReview extends Component {
                 <span>{recordTitle(item.type, item.title)}</span>
               </div>
                 <div className='addholder'>
-                    <a onClick={()=>{this.gotoPage()}}>Edit</a>
+                    <a onClick={() => this.gotoPage()}>Edit</a>
                 </div>
             </div>
             <div className={'itemInfo' + (this.state.showInfoSection ? ' showItemInfo' : ' hideItemInfo')}>
