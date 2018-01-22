@@ -58,7 +58,6 @@ export default async function loadArticle () {
 
   const publicationMetaData = xmldoc(publicationXml)
 
-
   //In case of duplicate, copy updated publicationData info into the fullHierarchy object which will be used to submit
   if(isDuplicate) {
     delete fullHierarchy.message.content
@@ -71,9 +70,9 @@ export default async function loadArticle () {
 
   //Assign Publication object with Article as child. If article has issue parent, need to re-structure it (remove issue and place article under publication, saving issue separately)
   let articleUnderPub = fullHierarchy
-  let issue
+  let issue = (!isNewArticle && fullHierarchy.message.contains[0].type === 'issue') ? fullHierarchy.message.contains[0] : undefined
 
-  if (this.state.issueDoi || this.state.issueTitle) {
+  if (issue || this.state.issueDoi || this.state.issueTitle) {
 
     if(isNewArticle) {
       //New article means publicationData includes all records and need to locate the correct issue
