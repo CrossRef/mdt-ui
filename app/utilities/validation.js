@@ -141,12 +141,9 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     return {...license, errors}
   })
 
-  if(criticalErrors.freetolicense && !licenses.length) {
+  if(!licenses.length) {
     licenses[0] = defaultArticleState.license[0]
-    licenses[0].errors.freetolicense = true
-  } else if (!criticalErrors.freetolicense && !licenses.length) {
-    licenses[0] = defaultArticleState.license[0]
-    licenses[0].errors.freetolicense = false
+    licenses[0].errors.freetolicense = criticalErrors.freetolicense
   }
 
 
