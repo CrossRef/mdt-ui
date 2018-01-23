@@ -5,6 +5,7 @@
 .ReactModal__Overlay--after-open {
     background-color: rgba(0, 0, 0, 0.5) !important;
     overflow-y: scroll;
+    z-index: 2;
 
     .ReactModal__Content--after-open {
         position: relative;
