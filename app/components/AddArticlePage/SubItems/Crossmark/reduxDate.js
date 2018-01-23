@@ -87,6 +87,8 @@ export default class ReduxDate extends Component {
         tooltipUtility={this.props.tooltipUtility}
         activeCalendar={this.props.activeCalendar}
         calendarHandler={this.reduxCalendarHandler}
+        calendarIconStyle={{backgroundColor: 'transparent'}}
+        tooltipInfoFlagStyle={{right: -1}}
         fields={{
           year: {
             value: this.props.yearValue,
