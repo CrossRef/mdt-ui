@@ -47,6 +47,10 @@
     width: 100%;
     .firstBorder, .secondBorder, .reviewContent {
         display: table-cell;
+
+        .abstractReview {
+            word-break: break-word;
+        }
     }
     .firstBorder, .secondBorder {
 
