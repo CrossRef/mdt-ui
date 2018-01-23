@@ -73,7 +73,9 @@ export function getItem (id, forced) {
   })
     .then(response => {
       if(response.status !== 200) {
-        throw `${response.status}: ${response.statusText}`
+        const error = new Error(`${response.status}: ${response.statusText}`)
+        error.status = response.status
+        throw error
       }
       return response.json()
     })

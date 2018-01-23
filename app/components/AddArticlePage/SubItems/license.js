@@ -134,7 +134,7 @@ export default class License extends Component {
                   error={errors.freetolicense || errors.licenseUrl || errors.licenseUrlInvalid}
                   value={ urlEntered(licenseurl) ? licenseurl : 'http://'}
                   changeHandler={this.handleLicense}
-                  indicatorErrors={['licenseUrl', 'licenseUrlInvalid']}
+                  indicatorErrors={['licenseUrl', 'licenseUrlInvalid', 'freetolicense']}
                   allErrors={errors}
                   subItemIndex={String(this.props.index)}
                   errorUtility={this.props.errorUtility}
@@ -156,7 +156,7 @@ export default class License extends Component {
               </div>
 
               <ErrorIndicator
-                indicatorErrors={['licenseUrl', 'licenseUrlInvalid']}
+                indicatorErrors={['licenseUrl', 'licenseUrlInvalid', 'freetolicense']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}

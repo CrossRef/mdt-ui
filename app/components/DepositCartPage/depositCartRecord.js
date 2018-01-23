@@ -128,7 +128,7 @@ export default class DepositCartRecord extends Component {
     }
     const cartItem = this.props.cartItem
     const cartType = cartItem.type
-    const title = cartType === 'issue' ? `${cartItem.title.volume && `Volume ${cartItem.title.volume}, `}Issue ${cartItem.title.issue}` : cartItem.title.title
+    const title = recordTitle(cartType, cartItem.title)
 
     const height = underIssue ? ' short' : ' tall'
     return (

@@ -27,9 +27,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 
-  if (freetolicense === 'yes'){
-    criticalErrors.freetolicense = true
-  }
+  criticalErrors.freetolicense = freetolicense === 'yes'
+
 
   const hasDate = !!(printDateYear || onlineDateYear)
   let warnings = {
@@ -142,11 +141,9 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     return {...license, errors}
   })
 
-  if(criticalErrors.freetolicense) {
-    if(!licenses.length) {
-      licenses[0] = defaultArticleState.license[0]
-      licenses[0].errors.freetolicense = true
-    }
+  if(!licenses.length) {
+    licenses[0] = defaultArticleState.license[0]
+    licenses[0].errors.freetolicense = criticalErrors.freetolicense
   }
 
 
@@ -233,7 +230,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
       for (var i in entries){
         const attributes = entries[i]
         
-        const doi = attributes.get('DOI')
+        const doi = attributes.get('doi')
         const doiInvalid = !!doi && !isDOI(doi)
         const doiNotExist = !!doi && !doiInvalid && !await asyncCheckDupeDoi(doi)
 
@@ -246,7 +243,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
           [`${update} doi`]: !doi,
           [`${update} doiInvalid`]: doiInvalid,
           [`${update} doiNotExist`]: doiNotExist,
-          [`${update} Date`]: yearError || monthError || dayError,
+          [`${update} date`]: yearError || monthError || dayError,
           year: yearError,
           month: monthError,
           day: dayError
@@ -394,7 +391,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
     warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== ownerPrefix
     warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && await asyncCheckDupeDoi(volumeDoi)
-    warnings.volumeUrl = !volumeDoiEntered
+    warnings.volumeUrl = !volumeUrlEntered
     warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
   }
 

@@ -3,13 +3,14 @@ import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import verifyIssn from 'issn-verify'
+import { XMLSerializer, DOMParser } from 'xmldom'
 
 import * as api from '../actions/api'
+import {getPublications} from '../actions/application'
 import { submitPublication } from '../actions/application'
 import {appendElm,appendAttribute} from '../utilities/helpers'
-import { XMLSerializer, DOMParser } from 'xmldom'
-import {isDOI, isURL, asyncCheckDupeDoi, xmldoc} from '../utilities/helpers'
-const languages = require('../utilities/lists/language.json')
+import {isDOI, isURL, asyncCheckDupeDoi, xmldoc, errorHandler} from '../utilities/helpers'
+import LanguageSelector from '../utilities/lists/language'
 import { ArchiveLocations } from '../utilities/lists/archiveLocations'
 import { routes } from '../routing'
 
@@ -17,14 +18,23 @@ import { routes } from '../routing'
 
 
 
-const mapStateToProps = (state) => ({
-  crossmarkPrefixes: state.login['crossmark-prefixes'],
-  prefixes: state.login.prefixes
-})
+const mapStateToProps = (state, props) => {
+  const publicationJSON = props.doi ?
+    (state.publications[props.doi] || state.publications[props.doi.toLowerCase()]).message
+  : {}
+
+  return {
+    crossmarkPrefixes: state.login['crossmark-prefixes'],
+    prefixes: state.login.prefixes,
+    publicationXML: publicationJSON.content,
+    depositTimestamp: publicationJSON['deposit-timestamp']
+  }
+}
 
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   asyncSubmitPublication: submitPublication,
+  asyncGetPublications: getPublications
 }, dispatch)
 
 
@@ -36,6 +46,10 @@ export default class AddPublicationModal extends Component {
     prefixes: is.array.isRequired,
     crossmarkPrefixes: is.array.isRequired,
     multipleDOIs: is.bool,
+    doi: is.string,
+    title: is.string,
+    publicationXML: is.string,
+    depositTimestamp: is.string,
 
     Journal: is.shape({
       journal_metadata: is.object.isRequired
@@ -52,6 +66,7 @@ export default class AddPublicationModal extends Component {
     }),
 
     asyncSubmitPublication: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
     close: is.func.isRequired //close function and reduxControlModal provided by modal container parent
   }
 
@@ -89,25 +104,31 @@ export default class AddPublicationModal extends Component {
     }
 
     if(props.mode === 'edit') {
-      const data = props.Journal.journal_metadata
-      const archive = data.archive_locations ? data.archive_locations.archive || {} : {}
       let version = props['mdt-version'] ? String(Number(props['mdt-version'])+1) : '0'
-      const doi_data = data.doi_data || {}
-      const issn = Array.isArray(data.issn) ? data.issn : [data.issn || {}]
+
       this.state = {
         ...defaultState,
-        'mdt-version': version.toString(),
-        title: data.full_title,
-        abbreviation: data.abbrev_title,
-        printISSN: (issn.find( item => item['-media_type'] === 'print') || {})['#text'] || '',
-        electISSN: (issn.find( item => item['-media_type'] === 'electronic') || {})['#text'] || '',
-        url: doi_data.resource,
-        DOI: doi_data.doi,
-        language: data['-language'],
-        archivelocation: archive['-name'] || props.state.archivelocation || '',
+        title: props.title,
+        DOI: props.doi,
+        'mdt-version': version,
         crossmarkDoi: '',
+        archivelocation: props.state ? props.state.archivelocation : ''
       }
+
+      try {
+        const data = props.Journal.journal_metadata
+        const issn = Array.isArray(data.issn) ? data.issn : [data.issn || {}]
+
+        this.state.abbreviation = data.abbrev_title || ''
+        this.state.printISSN = do { try { issn.find( item => item['-media_type'] === 'print')['#text'] } catch(e){}} || ''
+        this.state.electISSN = do { try { issn.find( item => item['-media_type'] === 'electronic')['#text'] } catch(e){}} || ''
+        this.state.url = do { try { data.doi_data.resource } catch(e){}} || ''
+        this.state.language =  data['-language'] || ''
+        this.state.archivelocation =  do { try { data.archive_locations.archive['-name'] } catch(e){}} || this.state.archivelocation
+
+      } catch (e) {}
     }
+
     else if (props.mode === 'search') {
       const result = props.searchResult
       let pissn = '', eissn = ''
@@ -138,24 +159,44 @@ export default class AddPublicationModal extends Component {
   }
 
 
-  getLanguages () {
-    var lgOpt = [
-      <option key='-1' />,
-      ...languages.map((language, i) => (<option key={i} value={language.value}>{language.name}</option>))
-    ]
+  componentDidMount () {
+    if(this.props.doi) {
+      this.props.asyncGetPublications(this.props.doi)
+        .catch( e => {
+          const overideModal = true
+          errorHandler(`Error retrieving or reading publication (${this.props.doi}): ${e.toString()}`, e, overideModal)
+        })
+    }
+  }
 
-    return (
-      <select name='language' onChange={this.inputHandler} value={this.state.language}>
-        {lgOpt}
-      </select>
-    )
+
+  componentWillReceiveProps (nextProps) {
+    if(nextProps.publicationXML !== this.props.publicationXML) {
+      try {
+        const parsedPublicationXml = xmldoc(nextProps.publicationXML)
+        const data = parsedPublicationXml.Journal.journal_metadata
+        const issn = Array.isArray(data.issn) ? data.issn : [data.issn || {}]
+
+        this.setState({
+          abbreviation: data.abbrev_title || '',
+          printISSN: do { try { issn.find( item => item['-media_type'] === 'print')['#text'] } catch(e){}} || '',
+          electISSN: do { try { issn.find( item => item['-media_type'] === 'electronic')['#text'] } catch(e){}} || '',
+          url: do { try { data.doi_data.resource } catch(e){}} || '',
+          language: data['-language'] || '',
+          archivelocation: do { try { data.archive_locations.archive['-name'] } catch(e){}} || this.state.archivelocation,
+          depositTimestamp: nextProps.depositTimestamp
+        })
+
+      } catch (e) {
+        console.warn(`Error reading publicationXML in ${this.props.doi}, ${this.props.title}`, {publicationXML: nextProps.pubicationXML}, e)
+      }
+    }
   }
 
 
   validatePrefix () {
     return this.props.prefixes.indexOf(this.state.ownerPrefix || this.state.DOI.split('/')[0]) !== -1
   }
-
 
 
   validation = async () => {
@@ -210,11 +251,12 @@ export default class AddPublicationModal extends Component {
           'title': {'title': this.state.title},
           'doi': this.state.DOI,
           'date': new Date(),
+          'deposit-timestamp': this.state.depositTimestamp || null,
           'owner-prefix': this.state.DOI.split('/')[0],
           'type': 'Publication',
           'mdt-version': this.state['mdt-version'],
           'status': 'draft',
-          'content': this.publicationXml(this.state),
+          'content': this.publicationXMLGenerator(this.state),
           'contains': []
         }
 
@@ -254,7 +296,7 @@ export default class AddPublicationModal extends Component {
   }
 
 
-  publicationXml = (form = this.state) => {
+  publicationXMLGenerator = (form = this.state) => {
     const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>','text/xml')
     const pubElm = doc.createElement("journal_metadata")
     doc.documentElement.appendChild(pubElm)
@@ -505,7 +547,7 @@ export default class AddPublicationModal extends Component {
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className='notrequired' />
-                  {this.getLanguages()}
+                  <LanguageSelector value={this.state.language} inputHandler={this.inputHandler} />
                 </div>
               </div>
             </div>

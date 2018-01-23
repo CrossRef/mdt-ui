@@ -12,8 +12,7 @@
       margin: 0 auto;
 
       &.large {
-        margin-top: 63px;
-        border-top: 1px solid black;
+        border-bottom: 1px solid black;
 
         //Header contents for login page
         .header-contents {
@@ -21,7 +20,7 @@
           height: 63px;
 
           img {
-            height: 54px;
+            height: 42px;
           }
 
           .header-logo-name {
@@ -63,7 +62,7 @@
 
       .header-contents {
         width: 960px;
-        margin: 0 auto;
+        margin: 1px auto;
         min-height: 63px;
         height: 63px;
 

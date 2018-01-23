@@ -163,13 +163,8 @@ export default class DepositHistoryPage extends Component {
     return this.state.depositHistory.map((historyItem, i) => {
       const historyInfo = xmldoc(historyItem.eventInfo)
       const depositId = objectSearch(historyInfo, 'submission_id')
-      const depositDate = historyItem.eventTime
-      const mdtVersion = historyItem.MDTVersion
-      const status = historyItem.evenStatus
       const doi = historyItem.doi
-      const pubDoi = historyItem.pubDoi
-      const titleObj = JSON.parse(historyItem.title)
-      const title = titleObj.title
+      const title = JSON.parse(historyItem.title).title
       const errorMessage = objectSearch(historyInfo, 'msg')
 
       const uniqueId = `${i}-${doi}-${title}-${depositId}`
@@ -181,13 +176,14 @@ export default class DepositHistoryPage extends Component {
           activeErrorMessage={this.state.activeErrorMessage}
           errorMessageHandler={this.errorMessageHandler}
           history={{
-            version: mdtVersion,
+            version: historyItem.MDTVersion,
             id: depositId,
-            date: depositDate,
+            date: historyItem.eventTime,
+            depositTimestamp: historyItem['deposit-timestamp'],
             doi: doi,
             title: title,
-            pubDoi: pubDoi,
-            status: status === 'OK' ? 'Accepted' : 'Failed',
+            pubDoi: historyItem.pubDoi,
+            status: historyItem.evenStatus === 'OK' ? 'Accepted' : 'Failed',
             errorMessage
           }}/>
       )

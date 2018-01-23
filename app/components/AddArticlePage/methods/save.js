@@ -33,6 +33,7 @@ export default async function (addToCart) {
     const newRecord = {
       'title': {title: escapeString(title)},
       'date': new Date(),
+      'deposit-timestamp': this.state.depositTimestamp || null,
       'doi': this.state.article.doi,
       'owner-prefix': this.state.ownerPrefix,
       'type': 'article',

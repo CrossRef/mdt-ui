@@ -51,13 +51,12 @@ export default async function loadArticle () {
       : fullHierarchy.message.contains[0].contains[0]
 
     publicationXml = article.content.substring(
-      article.content.indexOf('<journal_metadata>'),
+      article.content.indexOf('<journal_metadata'),
       article.content.indexOf('</journal_metadata>') + 19
     )
   }
 
   const publicationMetaData = xmldoc(publicationXml)
-
 
   //In case of duplicate, copy updated publicationData info into the fullHierarchy object which will be used to submit
   if(isDuplicate) {
@@ -71,9 +70,9 @@ export default async function loadArticle () {
 
   //Assign Publication object with Article as child. If article has issue parent, need to re-structure it (remove issue and place article under publication, saving issue separately)
   let articleUnderPub = fullHierarchy
-  let issue
+  let issue = (!isNewArticle && fullHierarchy.message.contains[0].type === 'issue') ? fullHierarchy.message.contains[0] : undefined
 
-  if (this.state.issueDoi || this.state.issueTitle) {
+  if (issue || this.state.issueDoi || this.state.issueTitle) {
 
     if(isNewArticle) {
       //New article means publicationData includes all records and need to locate the correct issue
@@ -111,8 +110,9 @@ export default async function loadArticle () {
       setStatePayload.issueTitle = fullHierarchy.message.contains[0].title
     }
 
-    const parsedArticle = parseXMLArticle(articleUnderPub.message.contains[0].content)
-    const savedArticleState = articleUnderPub.message.contains[0].state || {}
+    const article = articleUnderPub.message.contains[0]
+    const parsedArticle = parseXMLArticle(article.content)
+    const savedArticleState = article.state || {}
 
     let reduxForm
     if(parsedArticle.crossmark) {
@@ -133,6 +133,7 @@ export default async function loadArticle () {
     setStatePayload = {
       ...setStatePayload,
       publication: articleUnderPub,
+      depositTimestamp: article['deposit-timestamp'],
       issue,
       publicationMetaData,
       publicationXml,

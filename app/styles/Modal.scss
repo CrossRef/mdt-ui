@@ -5,6 +5,7 @@
 .ReactModal__Overlay--after-open {
     background-color: rgba(0, 0, 0, 0.5) !important;
     overflow-y: scroll;
+    z-index: 2;
 
     .ReactModal__Content--after-open {
         position: relative;
@@ -103,6 +104,10 @@
         .modal {
             .titlebar {
                 background: #ff4f52;
+                .titlebarinner {
+                    top: 0;
+                    padding: 20px 0 15px 0
+                }
             }
             .modalbody{
                 display: none;

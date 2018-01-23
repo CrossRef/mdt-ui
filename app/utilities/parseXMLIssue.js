@@ -71,7 +71,7 @@ const parseXMLIssue = function (xml, ownerPrefix = '') {
   const setIssue = {
     issue: issue,
     issueTitle: issueTitle,
-    issueDoi: issueDoi || `${ownerPrefix}/`,
+    issueDoi: issueDoi || `${ownerPrefix ? `${ownerPrefix}/` : ''}`,
     issueUrl: issueUrl || 'http://',
     printDateYear: printDateYear,
     printDateMonth: printDateMonth,

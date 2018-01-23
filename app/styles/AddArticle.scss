@@ -241,13 +241,11 @@ input.height64, textarea.height64, select.height64 {
 
 
 .addArticles {
-  width: 100%;
   margin: 40px 0;
-  display: flex;
-  justify-content: center;
 
   .addarticlecard {
     width: 960px;
+    display: inline-block;
 
     .addArticleForm {
       width: 100%;
@@ -255,6 +253,8 @@ input.height64, textarea.height64, select.height64 {
   }
 
   .rightBar {
+    display: inline-block;
+
     .scrollToTopButton {
       position: fixed;
       top: 65%;
@@ -913,10 +913,7 @@ input.height64, textarea.height64, select.height64 {
   margin-bottom: 7px;
   clear: both;
   height: 25px;
-
-  p {
-    color: white
-  }
+  color: white;
 }
 
 .saveSuccess {
@@ -1072,7 +1069,7 @@ input.height64, textarea.height64, select.height64 {
 
 
 .references {
-  padding: 20px 78px 40px 78px;
+  padding: 48px 78px 40px 78px;
   text-align: left;
 
   .topText {
@@ -1087,14 +1084,14 @@ input.height64, textarea.height64, select.height64 {
   }
 
   .textBox {
-    height: 150px;
+    height: 240px;
     width: 100%;
     overflow: scroll;
     resize: none;
-    margin-bottom: 25px;
+    margin-bottom: 32px;
   }
 
-  $referencePlaceHolderPadding: 65px;
+  $referencePlaceHolderPadding: 105px;
   $referencePlaceHolderColor: #a7a7a7;
   .textBox:-moz-placeholder {
     text-align: center;
@@ -1119,23 +1116,45 @@ input.height64, textarea.height64, select.height64 {
 
   .getReferencesButton {
     @extend ._subItemAddNewButton;
+    width: 140px
+  }
+
+  .removeAllReferences {
+    margin-bottom: 32px;
+    text-align: right;
+
+    span {cursor: pointer;}
   }
 
   .resultsContainer {
-    margin-top: 30px;
-    padding-left: 10px;
+    margin-top: 16px;
     .result {
-      margin-top: 20px;
+      margin-top: 16px;
+      text-align: left;
+      min-height: 36px;
       .referenceText {
-        width: 650px;
-        float: left;
+        width: 580px;
+        display: inline-block;
         font-size: 14px;
       }
-      .referenceRemove {
-        float: right;
+      .referenceReview {
+        display: inline-block;
         font-size: 14px;
-        margin: 1px 10px;
+        margin: 1px 10px 1px 20px;
+        vertical-align:top
+      }
+      .referenceReview:link {
+        color: #3eb1c8
+      }
+      .noMatch {
+        color: #acacad
+      }
+      .referenceRemove {
+        display: inline-block;
+        font-size: 14px;
+        margin: 1px 0 1px 46px;
         cursor: pointer;
+        vertical-align:top
       }
       .clearReference {
         clear: both;

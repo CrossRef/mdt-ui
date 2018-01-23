@@ -4,46 +4,57 @@ import {SearchableRecords} from '../utilities/helpers'
 
 export default function publicationsReducer (state = new SearchableRecords(), action) {
   switch (action.type) {
-    case 'PUBLICATIONS':
+    case 'STOREPUBLICATIONS':
 
-    function normalize (publications) {  //Redux likes normalized state: store items in an object, with the IDs of the items as keys and the items themselves as the values.
-      let normalizedData = {}
+      function normalize (publications) {  //Redux likes normalized state: store items in an object, with the IDs of the items as keys and the items themselves as the values.
+        if(!Array.isArray(publications)) {
+          publications = [publications]
+        }
 
-      if(Array.isArray(publications)) {
-        publications.forEach( thisPublication => {
-          if(!thisPublication || !thisPublication.message || !thisPublication.message.doi) {
-            return console.warn(`Had trouble retrieving data for a Publication`, thisPublication || publications)
+        return publications.reduce( (normalizedData, thisPublication) => {
+
+          try {
+            if(thisPublication.doi) {
+              normalizedData[thisPublication.doi] = {message: thisPublication}
+              return normalizedData
+            }
+
+            const normalizedRecords = new SearchableRecords()
+
+            const contains = thisPublication.message.contains
+            if(contains && contains.length) {
+              contains.forEach( thisRecord => {
+                if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
+                  return console.warn(`Had trouble retrieving data for a Record`, thisRecord || contains)
+                }
+                normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
+              })
+            }
+
+            normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
+
+            return normalizedData
+
+          } catch (e) {
+            console.warn(`Had trouble retrieving data for a Publication`, thisPublication, e)
+            return normalizedData
           }
-          const normalizedRecords = new SearchableRecords()
 
-          if((thisPublication.message.contains || []).length) {
-            thisPublication.message.contains.forEach( thisRecord => {
-              if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
-                return console.warn(`Had trouble retrieving data for a Record`, thisRecord || thisPublication.message.contains)
-              }
-              normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
-            })
-          }
-          normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
-        })
+        }, {})
+      }
 
-      } else if((publications.message.contains || []).length) {
-        const normalizedRecords = new SearchableRecords()
+      const normalizedPublications = normalize(action.publications)
 
-        publications.message.contains.forEach(thisRecord => {
-          if(!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
-            return console.warn(`Had trouble retrieving data for a Record`, thisRecord || publications.message.contains)
-          }
-          normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
-        })
-        normalizedData[publications.message.doi] = {...publications, normalizedRecords}
+      //If user's initial load is a publication page, the api.getItem for that publication might come back before the
+      //getDraftWorks. In which case we dont want the getDraftworks to overwrite the already loaded publication
+      const newState = action.getDraftWorks ?
+        {...normalizedPublications, ...state}
+      : {...state, ...normalizedPublications}
 
-      } else normalizedData[publications.message.doi] = publications
+      return new SearchableRecords(newState)
 
-      return normalizedData
-    }
-
-      return new SearchableRecords({...state, ...normalize(action.publications)})
+    case 'RESETPUBLICATIONS':
+      return new SearchableRecords()
     default:
       return state
   }
