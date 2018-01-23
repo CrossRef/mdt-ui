@@ -344,6 +344,7 @@ export function getTooltipPosition () {
   }
 
   if(isDate) bubblePosition -= 35
+  if(bubblePosition < 0) bubblePosition = false
 
   return bubblePosition
 }
