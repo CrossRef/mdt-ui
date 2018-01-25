@@ -135,6 +135,8 @@ export default async function loadArticle () {
       publication: articleUnderPub,
       depositTimestamp: article['deposit-timestamp'],
       issue,
+      issueDoi: issue ? issue.doi : undefined,
+      issueTitle: issue ? issue.title : undefined,
       publicationMetaData,
       publicationXml,
       doiDisabled,

@@ -32,7 +32,7 @@ export default function _getCRState (type, currentLocation, error = (reason) => 
         }
 
         getDraftWorks().then((response)=>{
-          const draftWorksArray = response.message.map( publication => ({message: publication}))
+          const draftWorksArray = response.message
           const getDraftWorks = true
           dispatch(storePublications(normalize(draftWorksArray), getDraftWorks))
         })

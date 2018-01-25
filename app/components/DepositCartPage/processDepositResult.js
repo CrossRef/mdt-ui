@@ -35,7 +35,7 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
   let depositId = new Set
   const used = {}
 
-  await resultArray.forEach( async (result, index)=>{
+  await Promise.all(resultArray.map(async (result) => {
     let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
     let error = {}
     let contains1 = {}
@@ -51,24 +51,25 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
 
     resultType = resultInfo.type
 
+    if(resultType === 'article') {
+      pubDoi = resultInfo.pubDoi
 
-    const normalizedRecords = publications[resultInfo.pubDoi].normalizedRecords ?
-      publications[resultInfo.pubDoi].normalizedRecords
-    :
-      (await asyncGetPublications(resultInfo.pubDoi)).normalizedRecords
-
-    console.log('THIS IS WAT I WANT', normalizedRecords)
+      const normalizedRecords = publications[pubDoi].normalizedRecords ?
+        publications[pubDoi].normalizedRecords
+        : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
 
 
-    //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
-    if(resultType === 'article' && !normalizedRecords[resultDoi]) {
-      normalizedRecords.find( record => {
-        if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
-          parentIssue = record
-          return true
-        }
-      })
+      //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
+      if(!normalizedRecords[resultDoi]) {
+        normalizedRecords.find( record => {
+          if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
+            parentIssue = record
+            return true
+          }
+        })
+      }
     }
+
 
     //Assign data to variables
     pubDoi = resultType === 'Publication' ? resultDoi : resultInfo.pubDoi
@@ -288,8 +289,8 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
 
       }
 
-    //Result is a publication so write it to resultData. Publication may have already been created by previous deposit
-    // but we dont need to merge because only contains would be different in new deposit and contains already merged above
+      //Result is a publication so write it to resultData. Publication may have already been created by previous deposit
+      // but we dont need to merge because only contains would be different in new deposit and contains already merged above
     } else {
       resultData[pubTitle] = {
         title: pubTitle,
@@ -301,7 +302,8 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
         ...error
       }
     }
-  })
+  }))
+
 
   depositId = Array.from(depositId)
   depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
