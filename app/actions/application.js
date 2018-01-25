@@ -1,4 +1,4 @@
-import {recordTitle} from '../utilities/helpers'
+import {recordTitle, normalize} from '../utilities/helpers'
 import _getCRState from './getCRState'
 import * as api from './api'
 
@@ -153,8 +153,9 @@ export function getPublications (DOIs) {
       }))
     )
       .then((publications) => {
-        dispatch(storePublications(publications))
-        return publications
+        const normalized = normalize(publications)
+        dispatch(storePublications(normalized))
+        return normalized
       })
       .catch( e => {
         console.error('ERROR in getPublications', e)

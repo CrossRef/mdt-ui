@@ -1,6 +1,7 @@
 import {firstLogin, storePublications} from './application'
 import {getCRState, getDraftWorks} from './api'
 import {routes} from '../routing'
+import {normalize} from '../utilities/helpers'
 
 
 export default function _getCRState (type, currentLocation, error = (reason) => console.error('ERROR in getCRState', reason)) {
@@ -31,9 +32,9 @@ export default function _getCRState (type, currentLocation, error = (reason) => 
         }
 
         getDraftWorks().then((response)=>{
-          const draftWorksArray = response.message
+          const draftWorksArray = response.message.map( publication => ({message: publication}))
           const getDraftWorks = true
-          dispatch(storePublications(draftWorksArray, getDraftWorks))
+          dispatch(storePublications(normalize(draftWorksArray), getDraftWorks))
         })
 
         let scrubbedState = {...state} //Scrubbed state is used to clear unnecessary or bad data from remote state.

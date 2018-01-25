@@ -2,7 +2,7 @@ import * as helpers from '../../utilities/helpers'
 const {xmldoc, compareDois} = helpers
 
 
-export default (rawResult, publications, cart) => {
+export default async (rawResult, publications, cart, asyncGetPublications) => {
 
   let resultArray = rawResult.message
   resultArray = resultArray.map((item) => {
@@ -35,7 +35,7 @@ export default (rawResult, publications, cart) => {
   let depositId = new Set
   const used = {}
 
-  resultArray.forEach((result, index)=>{
+  await resultArray.forEach( async (result, index)=>{
     let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
     let error = {}
     let contains1 = {}
@@ -44,16 +44,25 @@ export default (rawResult, publications, cart) => {
     resultInfo = cart.find( cartItem => compareDois(cartItem.doi, resultDoi) )
 
     if(!resultInfo) {
-      resultInfo = publications.find( record => compareDois(record.doi, resultDoi) )
+      resultInfo = publications.find( record => compareDois(record.doi, resultDoi))
     } else {
       resultInCart = true
     }
 
     resultType = resultInfo.type
 
+
+    const normalizedRecords = publications[resultInfo.pubDoi].normalizedRecords ?
+      publications[resultInfo.pubDoi].normalizedRecords
+    :
+      (await asyncGetPublications(resultInfo.pubDoi)).normalizedRecords
+
+    console.log('THIS IS WAT I WANT', normalizedRecords)
+
+
     //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
-    if( resultType === 'article' && !publications[resultInfo.pubDoi].normalizedRecords[resultDoi] ) {
-      publications[resultInfo.pubDoi].normalizedRecords.find( record => {
+    if(resultType === 'article' && !normalizedRecords[resultDoi]) {
+      normalizedRecords.find( record => {
         if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
           parentIssue = record
           return true

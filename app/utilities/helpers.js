@@ -205,6 +205,9 @@ export function objectSearch (object, search, returnVal) {
 export function objectFind (object, finder) {
   let result = undefined
   for (let key in object) {
+    if(!object[key]) {
+      continue
+    }
     try {
       if(finder(object[key])) {
         return object[key]
@@ -282,6 +285,47 @@ export class SearchableRecords {
 
 
 
+export function normalize (publications) {  //Redux likes normalized state: store items in an object, with the IDs of the items as keys and the items themselves as the values.
+  if(!Array.isArray(publications)) {
+    publications = [publications]
+  }
+
+  return publications.reduce( (normalizedData, thisPublication) => {
+
+    try {
+      if(thisPublication.doi) {
+        normalizedData[thisPublication.doi] = {message: thisPublication}
+        return normalizedData
+      }
+
+      const normalizedRecords = new SearchableRecords()
+
+      const contains = thisPublication.message.contains
+      if(contains && contains.length) {
+        contains.forEach( thisRecord => {
+          if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
+            return console.warn(`Had trouble retrieving data for a Record`, thisRecord || contains)
+          }
+          normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
+        })
+      }
+
+      normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
+
+      return normalizedData
+
+    } catch (e) {
+      console.warn(`Had trouble retrieving data for a Publication`, thisPublication, e)
+      return normalizedData
+    }
+
+  }, {})
+}
+
+
+
+
+
 export function removeDuplicates(a) {
   var seen = {}
   var out = []
@@ -303,7 +347,7 @@ export function removeDuplicates(a) {
 
 
 export const errorHandler = (errorString, error, overideModal) => {
-  if(error.status === 401 || errorString.status === 401) {
+  if((error && error.status === 401) || (errorString && errorString.status === 401)) {
     return console.error('Error Handler: 401 error detected, canceling error handling. Fetch should bounce user back to login page')
   }
 
