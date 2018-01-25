@@ -9,7 +9,6 @@ import parseXMLArticle from '../../../utilities/parseXMLArticle'
 
 
 export default async function loadArticle () {
-
   const { pubDoi } = this.props.routeParams;
   const getItems = []
 
@@ -29,7 +28,6 @@ export default async function loadArticle () {
 
   //Data returns as 1 or 2 publications (2 publications in case of duplicate)
   const publications = await Promise.all(getItems)
-
   //If returned 2 publications, publication content is in the 2nd item
   const publicationData = publications[1] || publications[0]
 
