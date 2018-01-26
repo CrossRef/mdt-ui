@@ -23,8 +23,9 @@ export default function (state, reduxForm) {
   var el = doc.createElement("titles")
   appendElm("title",article.title,el)
   appendElm("subtitle",article.subtitle,el)
-  appendElm("subtitle",article.subtitle,el)
-  appendElm("original_language_title",article.originallanguagetitlesubtitle,el)
+
+  appendElm("original_language_title",article.originallanguagetitle,el)
+  appendElm("subtitle",article.originallanguagetitlesubtitle,el)
   doc.documentElement.appendChild(el)
 
   appendContributorElm(doc.documentElement)
@@ -332,8 +333,9 @@ export default function (state, reduxForm) {
       var el2 =  elm.ownerDocument.createElement("update")
       if(doi) el2.textContent = doi
       if(type) appendAttribute("type",type.toLowerCase().replace(/\s+/g, '_'),el2)
+      
       if(year || month || day){
-        appendAttribute("date", `${year || ''}-${month || ''}-${day || ''}` ,el2)
+        appendAttribute("date", `${year || ''}-${month?month.length < 2 ? `0${month}` : month: ''}-${day?day.length < 2 ? `0${day}` : day: ''}` ,el2)
       }
       elm.appendChild(el2)
     }

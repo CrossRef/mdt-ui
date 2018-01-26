@@ -84,7 +84,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   warnings.firstPage = !!lastPage && !firstPage
   warnings.firstPageLimit = firstPage.length > 32
   warnings.lastPageLimit = lastPage.length > 32
-  warnings.lastPageLessFirst = lastPage && firstPage ? lastPage < firstPage : false
+  warnings.lastPageLessFirst = lastPage && firstPage ? Number(lastPage) < Number(firstPage) : false
   warnings.locationIdLimit = locationId.length > 32
   warnings.simCheckUrlInvalid = urlEntered(data.addInfo.similarityCheckURL) && !isURL(data.addInfo.similarityCheckURL)
 
