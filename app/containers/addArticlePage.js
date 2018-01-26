@@ -543,6 +543,7 @@ export class AddArticlePage extends Component {
   }
 }
 
+
 export default connect(mapStateToProps, mapDispatchToProps)(AddArticlePage)
 
 
