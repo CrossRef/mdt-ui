@@ -2,7 +2,7 @@ import * as helpers from '../../utilities/helpers'
 const {xmldoc, compareDois} = helpers
 
 
-export default (rawResult, publications, cart) => {
+export default async (rawResult, publications, cart, asyncGetPublications) => {
 
   let resultArray = rawResult.message
   resultArray = resultArray.map((item) => {
@@ -35,7 +35,7 @@ export default (rawResult, publications, cart) => {
   let depositId = new Set
   const used = {}
 
-  resultArray.forEach((result, index)=>{
+  await Promise.all(resultArray.map(async (result) => {
     let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
     let error = {}
     let contains1 = {}
@@ -44,22 +44,32 @@ export default (rawResult, publications, cart) => {
     resultInfo = cart.find( cartItem => compareDois(cartItem.doi, resultDoi) )
 
     if(!resultInfo) {
-      resultInfo = publications.find( record => compareDois(record.doi, resultDoi) )
+      resultInfo = publications.find( record => compareDois(record.doi, resultDoi))
     } else {
       resultInCart = true
     }
 
     resultType = resultInfo.type
 
-    //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
-    if( resultType === 'article' && !publications[resultInfo.pubDoi].normalizedRecords[resultDoi] ) {
-      publications[resultInfo.pubDoi].normalizedRecords.find( record => {
-        if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
-          parentIssue = record
-          return true
-        }
-      })
+    if(resultType === 'article') {
+      pubDoi = resultInfo.pubDoi
+
+      const normalizedRecords = publications[pubDoi].normalizedRecords ?
+        publications[pubDoi].normalizedRecords
+        : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
+
+
+      //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
+      if(!normalizedRecords[resultDoi]) {
+        normalizedRecords.find( record => {
+          if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
+            parentIssue = record
+            return true
+          }
+        })
+      }
     }
+
 
     //Assign data to variables
     pubDoi = resultType === 'Publication' ? resultDoi : resultInfo.pubDoi
@@ -279,8 +289,8 @@ export default (rawResult, publications, cart) => {
 
       }
 
-    //Result is a publication so write it to resultData. Publication may have already been created by previous deposit
-    // but we dont need to merge because only contains would be different in new deposit and contains already merged above
+      //Result is a publication so write it to resultData. Publication may have already been created by previous deposit
+      // but we dont need to merge because only contains would be different in new deposit and contains already merged above
     } else {
       resultData[pubTitle] = {
         title: pubTitle,
@@ -292,7 +302,8 @@ export default (rawResult, publications, cart) => {
         ...error
       }
     }
-  })
+  }))
+
 
   depositId = Array.from(depositId)
   depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]
