@@ -172,6 +172,7 @@ export default class AddIssueModal extends Component {
     const newTitleId = JSON.stringify({issue, volume, title})
     const oldTitleId = this.state.titleId
     const titleIdChanged = oldTitleId !== newTitleId
+    const issueDoiDisabled = this.state.issueDoiDisabled
 
     const {valid, validatedPayload, criticalErrors, issueDoiEntered} =
       await this.validation(titleIdChanged)
@@ -222,13 +223,16 @@ export default class AddIssueModal extends Component {
 
       validatedPayload.titleId = newTitleId
 
-      //check if new titleId, if so, do rename
-      if(!issueDoiEntered && oldTitleId && titleIdChanged) {
+      //check if new titleId or doi, if so, do rename
+      if(
+        (!issueDoiEntered && oldTitleId && titleIdChanged) ||
+        (oldTitleId && !issueDoiDisabled && issueDoiEntered)
+      ) {
         const issueInfo = mode === 'edit' ?
           publication.normalizedRecords.find( record =>
             JSON.stringify(record.title) === oldTitleId
           )
-          : undefined
+        : undefined
 
         //get article content
         let articles = []
@@ -242,7 +246,7 @@ export default class AddIssueModal extends Component {
         }
 
         //delete old issue
-        await api.deleteItem({doi: issueDoi, title: oldTitleId, pubDoi: publication.message.doi})
+        await api.deleteItem({title: oldTitleId, pubDoi: publication.message.doi})
 
         //save new issue
         await api.submitItem(submissionPayload)
