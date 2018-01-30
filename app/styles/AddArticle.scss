@@ -1079,7 +1079,7 @@ input.height64, textarea.height64, select.height64 {
   .referencesLoader {
     @extend ._loader;
     position: relative;
-    left: 120px;
+    left: 150px;
     bottom: 19px;
   }
 
@@ -1160,7 +1160,10 @@ input.height64, textarea.height64, select.height64 {
           background-color: #4f5858;
           z-index: 99999;
           color: white;
-          padding: 15px 15px
+          padding: 20px 17px 30px 17px;
+          font-size: 14px;
+          font-family: "Helvetica Neue";
+          line-height: 19px;
         }
 
         .referenceTooltip:after {

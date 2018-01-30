@@ -19,7 +19,8 @@ export default class References extends React.Component {
 
   state = {
     referenceText: '',
-    loading: false
+    loading: false,
+    tooltipText: ''
   }
 
 
@@ -50,6 +51,14 @@ export default class References extends React.Component {
   onFocus = () => {
     const dummyTooltip = "Depositing DOIs for each of your references will ensure precise citations. Paste article references into the text box and click 'Match reference'. The system will return any DOI matches found. Review the accuracy of a reference, by clicking on 'Review Match'. If the match is incorrect, click Reject to drop the match. All references pasted will be deposited. You can remove them by clicking 'Remove all references'."
     this.props.tooltipUtility.assignFocus('referencesTooltip', dummyTooltip)
+  }
+
+
+  referenceMouseover = (doi) => {
+    this.setState({tooltipText: 'Loading...'})
+    api.getFormattedReference(doi).then(response=>{
+      this.setState({tooltipText: response.message[0]['formatted-citation']})
+    })
   }
 
 
@@ -88,11 +97,14 @@ export default class References extends React.Component {
                 <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference}`}</p>
 
                 <div className={`referenceDiv ${item.DOI ? 'referenceTooltipHover' : ''}`}>
-                  <div className="referenceTooltip">{item['formatted-citation']}</div>
+                  <div className="referenceTooltip">{item['formatted-citation'] || this.state.tooltipText}</div>
 
                 {item.DOI ?
-                  <a className="referenceReview" target="_blank" href={`https://doi.org/${item.DOI}`}>
-                    Review match
+                  <a className="referenceReview"
+                    onMouseOver={item['formatted-citation'] ? null : () => this.referenceMouseover(item.DOI)}
+                    target="_blank"
+                    href={`https://doi.org/${item.DOI}`}>
+                      Review match
                   </a>
                 :
                   <p className="referenceReview noMatch">No match</p>}
