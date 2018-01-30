@@ -68,6 +68,7 @@
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "issn-verify": "^1.0.0",
+    "jest-cli": "^22.1.4",
     "jquery": "^3.2.1",
     "json-brunch": "^1.5.4",
     "keymirror": "^0.1.1",

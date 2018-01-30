@@ -8,7 +8,7 @@ import sinon from 'sinon'
 
 import {AddArticlePage} from '../../containers/addArticlePage'
 import defaultArticle from '../../testUtils/dummyRecords/defaultArticle'
-
+import fullFormArticle from '../../testUtils/dummyRecords/fullFormArticle'
 
 
 jest.mock("../../actions/api")
@@ -32,92 +32,55 @@ const commonProps = {
 }
 
 
-
-describe('edit article tests', () => {
-
+function testArticle ({pubDoi, editArticleDoi, duplicateArticleDoi}) {
   let component
-  const editArticleProps = {
+  const articleProps = {
     ...commonProps,
-    routeParams: {pubDoi: defaultArticle.publicationDoi, articleDoi: defaultArticle.articleDoi},
+    routeParams: {pubDoi: pubDoi},
     location: {}
   }
+  if(editArticleDoi) {
+    articleProps.routeParams.articleDoi = editArticleDoi
+  }
 
-
-
+  if(duplicateArticleDoi) {
+    articleProps.location = {state: {duplicateFrom: duplicateArticleDoi}}
+  }
 
   beforeEach(() => {
     didMount.reset()
     didUpdate.reset()
 
     component = mount(
-      <AddArticlePage {...editArticleProps}/>
+      <AddArticlePage {...articleProps}/>
     )
   })
 
-  it('edit article loads', () => {
+  it('article loads', () => {
     expect(didMount.callCount).toBe(1)
-    const editUpdateCount = didUpdate.callCount
     expect(didUpdate.called).toBe(true)
     expect(toJson(component)).toMatchSnapshot()
   })
-})
+
+}
 
 
 
-describe('duplicate article tests', () => {
 
 
-  const duplicateArticleProps = {
-    ...commonProps,
-    routeParams: {pubDoi: defaultArticle.publicationDoi},
-    location: {state: {duplicateFrom: defaultArticle.articleDoi}}
-  }
-
-
-  const component = mount(
-    <AddArticlePage {...duplicateArticleProps}/>
-  )
-
-
-  it('duplicate article loads', () => {
-    didMount.reset()
-    didUpdate.reset()
-    expect(didMount.callCount).toBe(1)
-    expect(didUpdate.called).toBe(true)
-    const duplicateUpdateCount = didUpdate.callCount
-    expect(toJson(component)).toMatchSnapshot()
-    debugger
-  })
-
-})
+describe('edit defaultArticle', ()=>testArticle({pubDoi: defaultArticle.publicationDoi, editArticleDoi: defaultArticle.articleDoi}))
 
 
 
-describe('new article tests', () => {
-
-  const duplicateArticleProps = {
-    ...commonProps,
-    routeParams: {pubDoi: defaultArticle.publicationDoi},
-    location: {}
-  }
+describe('edit fullFormArticle', ()=>testArticle({pubDoi: fullFormArticle.publicationDoi, editArticleDoi: fullFormArticle.articleDoi}))
 
 
-  const component = mount(
-    <AddArticlePage {...duplicateArticleProps}/>
-  )
+
+describe('duplicate article tests', ()=>testArticle({pubDoi: defaultArticle.publicationDoi, duplicateArticleDoi: defaultArticle.articleDoi}))
 
 
-  it('new article loads', () => {
-    didMount.reset()
-    didUpdate.reset()
-    expect(didMount.callCount).toBe(1)
-    const newUpdateCount = didUpdate.callCount
-    expect(didUpdate.called).toBe(true)
-    expect(toJson(component)).toMatchSnapshot()
-    debugger
-  })
 
-})
+describe('new article tests', ()=>testArticle({pubDoi: defaultArticle.publicationDoi}))
 
 
 
