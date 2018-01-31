@@ -56,7 +56,7 @@ export default class Article extends Component {
       title = title.substring(0, 35) + '...'
     }
    const showUrl=this.state.showUrl
-    const url = showUrl?(doi && doi.length > 25) ? `https://doi.org/${doi.substr(0,25)}...` : (doi ? `https://doi.org/${doi}` : ''):''
+    const url = showUrl?(doi && doi.length > 22) ? `https://doi.org/${doi.substr(0,22)}...` : (doi ? `https://doi.org/${doi}` : ''):''
 
     
     const checked = !this.props.selections.length ? {checked:false} : {}

@@ -54,10 +54,12 @@ export default class References extends React.Component {
   }
 
 
-  referenceMouseover = (doi) => {
+  referenceMouseover = (doi, i) => {
     this.setState({tooltipText: 'Loading...'})
     api.getFormattedReference(doi).then(response=>{
-      this.setState({tooltipText: response.message[0]['formatted-citation']})
+      const newReferences = [...this.props.references]
+      newReferences[i]['formatted-citation'] = response.message[0]['formatted-citation']
+      this.props.setReferences({references: newReferences})
     })
   }
 
@@ -101,7 +103,7 @@ export default class References extends React.Component {
 
                 {item.DOI ?
                   <a className="referenceReview"
-                    onMouseOver={item['formatted-citation'] ? null : () => this.referenceMouseover(item.DOI)}
+                    onMouseOver={item['formatted-citation'] ? null : () => this.referenceMouseover(item.DOI, i)}
                     target="_blank"
                     href={`https://doi.org/${item.DOI}`}>
                       Review match
