@@ -19,7 +19,8 @@ export default class References extends React.Component {
 
   state = {
     referenceText: '',
-    loading: false
+    loading: false,
+    tooltipText: ''
   }
 
 
@@ -53,6 +54,16 @@ export default class References extends React.Component {
   }
 
 
+  referenceMouseover = (doi, i) => {
+    this.setState({tooltipText: 'Loading...'})
+    api.getFormattedReference(doi).then(response=>{
+      const newReferences = [...this.props.references]
+      newReferences[i]['formatted-citation'] = response.message[0]['formatted-citation']
+      this.props.setReferences({references: newReferences})
+    })
+  }
+
+
   render () {
     const isFocus = this.props.tooltipUtility.getFocusedInput() === 'referencesTooltip'
 
@@ -63,6 +74,7 @@ export default class References extends React.Component {
 
         <div style={{position:'relative', width: '80.5%'}}>
           {isFocus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+
           <textarea
             className={`textBox ${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
             value={this.state.referenceText}
@@ -86,9 +98,19 @@ export default class References extends React.Component {
               <div key={`${i}_${item.reference}`} className="result">
                 <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference}`}</p>
 
+                <div className={`referenceDiv ${item.DOI ? 'referenceTooltipHover' : ''}`}>
+                  <div className="referenceTooltip">{item['formatted-citation'] || this.state.tooltipText}</div>
+
                 {item.DOI ?
-                  <a className="referenceReview" target="_blank" href={`https://doi.org/${item.DOI}`}>Review match</a>
-                  : <p className="referenceReview noMatch">No match</p>}
+                  <a className="referenceReview"
+                    onMouseOver={item['formatted-citation'] ? null : () => this.referenceMouseover(item.DOI, i)}
+                    target="_blank"
+                    href={`https://doi.org/${item.DOI}`}>
+                      Review match
+                  </a>
+                :
+                  <p className="referenceReview noMatch">No match</p>}
+                </div>
 
                 {item.DOI && <p className="referenceRemove" onClick={() => this.rejectReference(i, item.reference)}>Reject</p>}
 
