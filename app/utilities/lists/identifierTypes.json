@@ -1,15 +1,15 @@
 [
-    {'name': 'doi', 'value': 'DOI'},
-    {'name': 'issn', 'value': 'ISSN'},
-    {'name': 'isbn', 'value': 'ISBN'},
-    {'name': 'uri', 'value': 'URI'},
-    {'name': 'pmid', 'value': 'PMID'},
-    {'name': 'pmcid', 'value': 'PMCID'},
-    {'name': 'purl', 'value': 'PURL'},
-    {'name': 'arxiv', 'value': 'ARXIV'},
-    {'name': 'ark', 'value': 'ARK'},
-    {'name': 'handle', 'value': 'Handle'},
-    {'name': 'uuid', 'value': 'UUID'},
-    {'name': 'ecli', 'value': 'ECLI'},
-    {'name': 'other', 'value': 'Other'}
+    {'name': 'doi', 'value': 'doi'},
+    {'name': 'issn', 'value': 'issn'},
+    {'name': 'isbn', 'value': 'isbn'},
+    {'name': 'uri', 'value': 'uri'},
+    {'name': 'pmid', 'value': 'pmid'},
+    {'name': 'pmcid', 'value': 'pmcid'},
+    {'name': 'purl', 'value': 'purl'},
+    {'name': 'arxiv', 'value': 'arxiv'},
+    {'name': 'ark', 'value': 'ark'},
+    {'name': 'handle', 'value': 'handle'},
+    {'name': 'uuid', 'value': 'uuid'},
+    {'name': 'ecli', 'value': 'ecli'},
+    {'name': 'other', 'value': 'other'}
 ]
