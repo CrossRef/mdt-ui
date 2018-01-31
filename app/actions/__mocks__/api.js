@@ -1,7 +1,7 @@
 // import withQuery from 'with-query'
 
 
-import recordRegistry from '../../testUtils/dummyRecords/recordRegistry'
+import recordRegistry from '../../__testUtils/dummyRecords/recordRegistry'
 
 
 

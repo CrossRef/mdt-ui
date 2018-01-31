@@ -7,8 +7,8 @@ import sinon from 'sinon'
 
 
 import {AddArticlePage} from '../../containers/addArticlePage'
-import defaultArticle from '../../testUtils/dummyRecords/defaultArticle'
-import fullFormArticle from '../../testUtils/dummyRecords/fullFormArticle'
+import defaultArticle from '../../__testUtils/dummyRecords/defaultArticle'
+import fullFormArticle from '../../__testUtils/dummyRecords/fullFormArticle'
 
 
 jest.mock("../../actions/api")
@@ -51,7 +51,7 @@ function testArticle ({pubDoi, editArticleDoi, duplicateArticleDoi}) {
     didMount.reset()
     didUpdate.reset()
 
-    component = mount(
+    component = shallow(
       <AddArticlePage {...articleProps}/>
     )
   })
@@ -81,6 +81,36 @@ describe('duplicate article tests', ()=>testArticle({pubDoi: defaultArticle.publ
 
 
 describe('new article tests', ()=>testArticle({pubDoi: defaultArticle.publicationDoi}))
+
+
+
+describe('save defaultArticle', () => {
+  let component
+  const articleProps = {
+    ...commonProps,
+    routeParams: {pubDoi: defaultArticle.publicationDoi, articleDoi: defaultArticle.articleDoi},
+    location: {}
+  }
+
+  beforeEach(() => {
+    didMount.reset()
+    didUpdate.reset()
+
+    component = shallow(
+      <AddArticlePage {...articleProps}/>
+    )
+
+    component.setState({})
+  })
+
+  it('save', () => {
+    expect(didMount.callCount).toBe(1)
+    expect(didUpdate.called).toBe(true)
+    expect(toJson(component)).toMatchSnapshot()
+  })
+
+
+})
 
 
 
