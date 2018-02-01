@@ -1,11 +1,11 @@
-
+import {fromJS} from 'immutable'
 
 export default {
   publicationDoi: "10.5555/defaultPub",
   articleDoi: "10.5555/defaultArticle",
 
 
-  publicationJson: {
+  publicationJson: fromJS({
     "status": "ok",
     "message-type": "get",
     "message-version": "1.0.0",
@@ -98,10 +98,10 @@ export default {
         }
       ]
     }
-  },
+  }),
 
 
-  articleJson: {
+  articleJson: fromJS({
     "status": "ok",
     "message-type": "get",
     "message-version": "1.0.0",
@@ -133,5 +133,5 @@ export default {
         }
       ]
     }
-  }
+  })
 }

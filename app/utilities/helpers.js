@@ -352,29 +352,28 @@ export function getTooltipPosition () {
 
 
 
-
-if(Array.prototype.equals)
-  console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
-
-Object.defineProperty(Array.prototype, "equals", {
-  enumerable: false,
-  value: function (array) {
-    if (!array)
-      return false;
-
-    // compare lengths - can save a lot of time
-    if (this.length !== array.length)
-      return false;
-
-    for (let i in this) {
-      if (this[i] !== array[i]) {
+if(Array.prototype.arrayEquals) {
+  console.warn("Overriding existing Array.prototype.arrayEquals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
+} else {
+  Object.defineProperty(Array.prototype, "arrayEquals", {
+    enumerable: false,
+    value: function (array) {
+      if (!array)
         return false;
-      }
-    }
-    return true;
-  }
-});
 
+      // compare lengths - can save a lot of time
+      if (this.length !== array.length)
+        return false;
+
+      for (let i in this) {
+        if (this[i] !== array[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+  });
+}
 
 
 
