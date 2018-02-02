@@ -2,7 +2,7 @@ import * as helpers from '../../utilities/helpers'
 const {xmldoc, compareDois} = helpers
 
 
-export default (rawResult, publications, cart) => {
+export default async (rawResult, publications, cart, asyncGetPublications) => {
 
   let resultArray = rawResult.message
   resultArray = resultArray.map((item) => {
@@ -35,50 +35,73 @@ export default (rawResult, publications, cart) => {
   let depositId = new Set
   const used = {}
 
-  resultArray.forEach((result, index)=>{
+
+  //START ITERATING OVER RESUSULT ARRAY
+  await Promise.all(resultArray.map(async (result) => {
+
+    //START PROCESSING RESULT
     let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
-    let error = {}
+    let resultError = {}
     let contains1 = {}
     const resultDoi = result['DOI:']
+    resultType = result.type
 
-    resultInfo = cart.find( cartItem => compareDois(cartItem.doi, resultDoi) )
 
-    if(!resultInfo) {
-      resultInfo = publications.find( record => compareDois(record.doi, resultDoi) )
-    } else {
+    if(resultType === 'issue') {
+      pubDoi = cart.find( cartItem => compareDois(cartItem.issueDoi, resultDoi) ).pubDoi
+
+      const normalizedRecords = publications[pubDoi].normalizedRecords ?
+        publications[pubDoi].normalizedRecords
+        : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
+
+      resultInfo = normalizedRecords.find( record => compareDois(record.doi, resultDoi))
+    }
+
+
+    if(resultType === 'article') {
       resultInCart = true
+      resultInfo = cart.find( cartItem => compareDois(cartItem.doi, resultDoi) )
+
+      pubDoi = resultInfo.pubDoi
+
+      const normalizedRecords = publications[pubDoi].normalizedRecords ?
+        publications[pubDoi].normalizedRecords
+        : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
+
+
+      //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
+      if(!normalizedRecords[resultDoi]) {
+        normalizedRecords.find( record => {
+          if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
+            parentIssue = record
+            return true
+          }
+        })
+      }
     }
 
-    resultType = resultInfo.type
-
-    //If result is an article not directly under a publication, it must be under an issue. Get parentIssue
-    if( resultType === 'article' && !publications[resultInfo.pubDoi].normalizedRecords[resultDoi] ) {
-      publications[resultInfo.pubDoi].normalizedRecords.find( record => {
-        if(record.type === 'issue' && record.contains.find( article => compareDois(article.doi, resultDoi))) {
-          parentIssue = record
-          return true
-        }
-      })
+    if(resultType === 'Publication') {
+      pubDoi = resultDoi
+      resultInfo = publications[pubDoi].message
     }
+
 
     //Assign data to variables
-    pubDoi = resultType === 'Publication' ? resultDoi : resultInfo.pubDoi
     pubTitle = (publications[pubDoi] || publications[pubDoi.toLowerCase()]).message.title.title
     resultTitle = helpers.recordTitle(resultType, resultInfo.title)
 
-
     if(typeof result.result === 'string') {
       resultStatus = 'Failure'
-      error.errorMessage = result.result
+      resultError.errorMessage = result.result
     } else if (typeof result.result === 'object' && result.result.record_diagnostic) {
       const recordDiagnostic = result.result.record_diagnostic
       resultStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
       if(resultStatus === 'Failure') {
-        error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+        resultError.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
       }
     } else {
       resultStatus = 'Failure'
-      error.errorMessage = 'Unknown Error'
+      resultError.errorMessage = 'Unknown Error'
     }
 
     if(resultStatus === 'Failure') {
@@ -90,41 +113,67 @@ export default (rawResult, publications, cart) => {
       used[resultInfo.doi] = true
     }
 
+    let thisResult = {
+      title: resultTitle,
+      status:resultStatus,
+      type:resultType,
+      doi: resultDoi,
+      pubDoi: pubDoi,
+      submissionId: result.submissionid,
+      contains: {},
+      ...resultError
+    }
 
-
+    //START PROCESSING RECORD UNDER RESULT
     //Check contains for records and assign data
     if(result.contains && result.contains.length) {
-      result.contains.forEach((record, index)=>{
+      await Promise.all(result.contains.map( async (record) => {
         let recordTitle, recordStatus, recordType, recordInfo, recordInCart
-        let error = {}
+        let recordError = {}
         let contains2 = {}
+        let issueId = resultType === 'issue' ? resultDoi : undefined
         const recordDoi = record['DOI:']
+        recordType = record.type
 
-        //Check cart for record, if not found, must be an issue, get data from stored publications
-        recordInfo = cart.find( cartItem => compareDois(cartItem.doi, recordDoi) )
+        if(recordType === 'article') {
+          recordInfo = cart.find( cartItem => compareDois(cartItem.doi, recordDoi) )
 
-        if(!recordInfo) {
-          recordInfo = (publications[pubDoi] || publications[pubDoi.toLowerCase()]).normalizedRecords[recordDoi.toLowerCase()]
-        } else {
+          if(!issueId && recordInfo.issueTitle) {
+            issueId = JSON.stringify(recordInfo.issueTitle)
+            const normalizedRecords = publications[pubDoi].normalizedRecords ?
+              publications[pubDoi].normalizedRecords
+              : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
+
+            parentIssue = normalizedRecords[issueId]
+          }
+
           recordInCart = true
         }
 
+        if(recordType === 'issue') {
+          const normalizedRecords = publications[pubDoi].normalizedRecords ?
+            publications[pubDoi].normalizedRecords
+            : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
+
+          recordInfo = normalizedRecords[recordDoi.toLowerCase()]
+        }
+
+
         //Assign data to vars
-        recordType = recordInfo.type
         recordTitle = helpers.recordTitle(recordType, recordInfo.title)
 
         if(typeof record.result === 'string') {
           recordStatus = 'Failure'
-          error.errorMessage = record.result
+          recordError.errorMessage = record.result
         } else if (typeof record.result === 'object' && record.result.record_diagnostic) {
           const recordDiagnostic = record.result.record_diagnostic
           recordStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
           if(recordStatus === 'Failure') {
-            error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+            recordError.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
           }
         } else {
           recordStatus = 'Failure'
-          error.errorMessage = 'Unknown Error'
+          recordError.errorMessage = 'Unknown Error'
         }
 
         if(recordStatus === 'Failure') {
@@ -137,12 +186,14 @@ export default (rawResult, publications, cart) => {
         }
 
 
+
+        //START PROCESSING ARTICLEUNDERISSUE
         //Check record for contains, if found, must be articlesUnderIssue, assign data to vars
         if(record.contains && record.contains.length) {
           const issueDoi = recordDoi
           record.contains.forEach((article, index)=>{
             let articleTitle, articleStatus, articleInfo
-            let error = {}
+            let articleError = {}
             const articleDoi = article['DOI:']
             articleInfo = cart.find( cartItem => compareDois(cartItem.doi, articleDoi) )
 
@@ -150,16 +201,16 @@ export default (rawResult, publications, cart) => {
 
             if(typeof article.result === 'string') {
               articleStatus = 'Failure'
-              error.errorMessage = result.result
+              articleError.errorMessage = result.result
             } else if (typeof article.result === 'object' && article.result.record_diagnostic) {
               const recordDiagnostic = article.result.record_diagnostic
               articleStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
               if(articleStatus === 'Failure') {
-                error.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+                articleError.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
               }
             } else {
               articleStatus = 'Failure'
-              error.errorMessage = 'Unknown Error'
+              articleError.errorMessage = 'Unknown Error'
             }
 
             if(articleStatus === 'Failure') {
@@ -178,20 +229,14 @@ export default (rawResult, publications, cart) => {
               issueDoi: issueDoi,
               pubDoi: pubDoi,
               submissionId: article.submissionid,
-              ...error
+              ...articleError
             }
 
-            //Check if article's parentIssue already exists in resultData, if so, merge contains2 with parentIssue contains
-            if(resultData[pubTitle] && resultData[pubTitle].contains[issueDoi]) {
-              contains2 = {
-                ...resultData[pubTitle].contains[issueDoi].contains,
-                [articleDoi]: articleResult
-              }
-            } else {
-              contains2[articleDoi] = articleResult
-            }
+            contains2[articleDoi] = articleResult
+
           })
-        } //Finished processing articleUnderIssue
+        }
+        //FINISHED PROCESSING ARTICLEUNDERISSUE
 
 
         //Continue processing record
@@ -205,20 +250,27 @@ export default (rawResult, publications, cart) => {
           pubDoi: pubDoi,
           submissionId: record.submissionid,
           contains: contains2,
-          ...error
+          ...recordError
         }
 
-        //Check if parent Publication exists in resultData, if so merge contains1 with parent publication contains
-        if(resultData[pubTitle]) {
-          contains1 = {
-            ...resultData[pubTitle].contains,
-            [recordDoi]: recordResult
-          }
+        if(issueId) {
+          contains1[issueId] = resultType === 'issue' ?
+            {...thisResult, contains: {[recordDoi]: recordResult}}
+          :
+            {
+              title: helpers.recordTitle('issue', parentIssue.title),
+              status: 'Undeposited',
+              type: 'issue',
+              pubDoi,
+              contains: {[recordDoi]: recordResult}
+            }
         } else {
           contains1[recordDoi] = recordResult
         }
-      })
-    } //Finished processing records
+      }))
+    }
+    //FINISHED PROCESSING RECORD UNDER RESULT
+
 
 
     //Continue processing result
@@ -226,23 +278,14 @@ export default (rawResult, publications, cart) => {
 
 
 
-
-    //If result is a record, the parents didn't get deposited, so have to create a representation of the undeposited parents in resultData
-    if (resultType !== 'Publication') {
-      let thisResult = {
-        title: resultTitle,
-        status:resultStatus,
-        type:resultType,
-        doi: resultDoi,
-        pubDoi: pubDoi,
-        submissionId: result.submissionid,
-        contains:[],
-        ...error
-      }
+    //BUILD UNDEPOSITED PARENTS FOR ARTICLE
+    //If result is an article, the parents didn't get deposited, so have to create a representation of the undeposited parents in resultData
+    if (resultType === 'article') {
+      const issueId = parentIssue ? (parentIssue.doi || JSON.stringify(parentIssue.title)) : undefined
 
       let newContains = parentIssue ? {
-        [parentIssue.doi]: {
-          title: `${parentIssue.title.volume && `Volume ${parentIssue.title.volume}, `}Issue ${parentIssue.title.issue}`,
+        [issueId]: {
+          title: helpers.recordTitle('issue', parentIssue.title),
           status: 'Undeposited',
           type: 'issue',
           doi: parentIssue.doi,
@@ -265,34 +308,54 @@ export default (rawResult, publications, cart) => {
         }
       } else {
         if(parentIssue) {
-          if(resultData[pubTitle].contains[parentIssue.doi]) {
-            resultData[pubTitle].contains[parentIssue.doi].contains = {
-              ...resultData[pubTitle].contains[parentIssue.doi].contains,
+          if(resultData[pubTitle].contains[issueId]) {
+            resultData[pubTitle].contains[issueId].contains = {
+              ...resultData[pubTitle].contains[issueId].contains,
               [resultDoi]: thisResult
             }
           } else {
-            resultData[pubTitle].contains[parentIssue.doi] = newContains[parentIssue.doi]
+            resultData[pubTitle].contains[issueId] = newContains[issueId]
           }
         } else {
           resultData[pubTitle].contains[resultDoi] = thisResult
         }
-
       }
+    //END BUILDING UNDEPOSITED PARENTS
 
-    //Result is a publication so write it to resultData. Publication may have already been created by previous deposit
-    // but we dont need to merge because only contains would be different in new deposit and contains already merged above
+
+
+    //Result is a publication or issue
     } else {
-      resultData[pubTitle] = {
-        title: pubTitle,
-        status: resultStatus,
-        type: 'Publication',
-        doi: pubDoi,
-        pubDoi: pubDoi,
-        contains: contains1,
-        ...error
+
+      if(resultData[pubTitle]) {
+        const savedContains = resultData[pubTitle].contains
+
+        for(let record in contains1) {
+          if(savedContains[record]) {
+            savedContains[record].contains = {...savedContains[record].contains, ...contains1[record].contains}
+
+          } else {
+            savedContains[record] = contains1[record]
+          }
+        }
+
+      } else {
+        resultData[pubTitle] = {
+          title: pubTitle,
+          status: resultType === 'Publication' ? resultStatus : 'Undeposited',
+          type: 'Publication',
+          doi: pubDoi,
+          pubDoi: pubDoi,
+          contains: contains1,
+          ...(resultType === 'Publication' ? resultError : {})
+        }
       }
     }
-  })
+    //FINISHED PROCESSING RESULT
+
+
+  }))
+  //FINISHED ITERATING OVER RESULT ARRAY
 
   depositId = Array.from(depositId)
   depositId = depositId.length > 1 ? `${depositId[0]} - ${depositId.pop()}` : depositId[0]

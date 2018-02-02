@@ -204,6 +204,7 @@ input.height64, textarea.height64, select.height64 {
       margin: 0 0 0 -11.5px;
 
       .iconHolder {
+        cursor: pointer;
         background: #FFF;
         display: inline-block;
         margin: 0;
@@ -1079,7 +1080,7 @@ input.height64, textarea.height64, select.height64 {
   .referencesLoader {
     @extend ._loader;
     position: relative;
-    left: 120px;
+    left: 150px;
     bottom: 19px;
   }
 
@@ -1137,17 +1138,60 @@ input.height64, textarea.height64, select.height64 {
         display: inline-block;
         font-size: 14px;
       }
-      .referenceReview {
+      .referenceDiv {
         display: inline-block;
-        font-size: 14px;
-        margin: 1px 10px 1px 20px;
-        vertical-align:top
+        margin: 1px 8px 1px 20px;
+        vertical-align:top;
+        position: relative;
+
+        .referenceReview {
+          font-size: 14px;
+        }
+        .referenceReview:link {
+          color: #3eb1c8
+        }
+
+        .referenceTooltip {
+          visibility: hidden;
+          position: absolute;
+          left: -150px;
+          bottom: 30px;
+          width: 400px;
+          height: auto;
+          background-color: #4f5858;
+          z-index: 99999;
+          color: white;
+          padding: 20px 17px 30px 17px;
+          font-size: 14px;
+          font-family: "Helvetica Neue";
+          line-height: 19px;
+        }
+
+        .referenceTooltip:after {
+          content: '';
+          position: absolute;
+          top: 100%;
+          left: 48%;
+          width: 0;
+          height: 0;
+          border-bottom: 8px solid #4f5858;
+          border-right: 8px solid transparent;
+          border-left: 8px solid transparent;
+          -ms-transform: rotate(180deg); /* IE 9 */
+          -webkit-transform: rotate(180deg); /* Chrome, Safari, Opera */
+          transform: rotate(180deg);
+        }
       }
-      .referenceReview:link {
-        color: #3eb1c8
+
+      .referenceTooltipHover:hover {
+        .referenceTooltip {
+          visibility: visible
+        }
       }
+
       .noMatch {
-        color: #acacad
+        color: #acacad;
+        display: inline-block;
       }
       .referenceRemove {
         display: inline-block;

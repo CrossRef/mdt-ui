@@ -235,7 +235,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                         ''
                     }
                     {
-                        (reviewData.article.abstract.length > 0) ? <p>Abstract<br />{reviewData.article.abstract}</p> : ''
+                        (reviewData.article.abstract.length > 0) ? <p className='abstractReview'>Abstract<br />{reviewData.article.abstract}</p> : ''
                     }
                     {(getFunding().length > 0) ?
                     <p>

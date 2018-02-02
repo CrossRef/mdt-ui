@@ -22,7 +22,10 @@ export default class License extends Component {
 
 
   componentWillReceiveProps (nextProps) {
-    if(nextProps.openSubItems || nextProps.freetolicense === 'yes') {
+    if(
+      nextProps.openSubItems ||
+      (nextProps.freetolicense === 'yes' && this.props.freetolicense !== 'yes' && !this.state.showSubItem)
+    ) {
       this.setState({showSubItem: true})
     }
   }

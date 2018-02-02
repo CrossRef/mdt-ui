@@ -167,8 +167,17 @@ export function getReference (referencesArray) {
         headers: {Authorization: localStorage.getItem('auth')}
       })
         .then( result => result.json()).then( result => resolve(result))
-        .catch( e => resolve({ message: [{reference: referenceText, DOI: '', matchValuation: 0}]}))
+        .catch( e => resolve({ message: [{reference: referenceText}]}))
     )
   ))
 }
 
+
+
+export function getFormattedReference (doi) {
+    return authorizedFetch(`${apiBaseUrl}/search/references?q=${encodeURIComponent(doi)}`, {
+      method: 'get',
+      headers: {Authorization: localStorage.getItem('auth')}
+    })
+      .then( result => result.json())
+}

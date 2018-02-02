@@ -1,5 +1,8 @@
 import _ from 'lodash'
 
+
+
+//Checks to see if there are any values in subItems that need to be used for validation or xml generation
 export const getSubItems = (items) => {
     return _.filter(items, (item) => {
         for(var key in item) { // checking all the properties of errors to see if there is a true

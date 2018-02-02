@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import _ from 'lodash'
 
-import { controlModal, cartUpdate, removeFromCart, clearCart } from '../actions/application'
+import { controlModal, cartUpdate, removeFromCart, clearCart, getPublications } from '../actions/application'
 import DepositCart from '../components/DepositCartPage/depositCart'
 import {TopOfPage, EmptyCart, WaitMessage} from '../components/DepositCartPage/depositCartComponents'
 import reviewDepositCart from '../components/DepositCartPage/reviewDepositCartModal'
@@ -28,6 +28,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxCartUpdate: cartUpdate,
   reduxRemoveFromCart: removeFromCart,
   reduxClearCart: clearCart,
+  asyncGetPublications: getPublications
 }, dispatch)
 
 @connect(mapStateToProps, mapDispatchToProps)
@@ -38,6 +39,7 @@ export default class DepositCartPage extends Component {
     reduxCartUpdate: is.func.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
     reduxClearCart: is.func.isRequired,
+    asyncGetPublications: is.func.isRequired,
     cart: is.array.isRequired,
     publications: is.object.isRequired
   }
@@ -200,8 +202,8 @@ export default class DepositCartPage extends Component {
 
     this.setState({status:`processing`})
 
-    api.deposit(toDeposit).then( result => {
-      this.setState({status:'result', result: processDepositResult(result, this.props.publications, this.props.cart)})
+    api.deposit(toDeposit).then( async result => {
+      this.setState({status:'result', result: await processDepositResult(result, this.props.publications, this.props.cart, this.props.asyncGetPublications)})
       this.props.reduxClearCart()
     })
       .catch(reason => errorHandler(reason).then(()=>this.setState({status: 'cart'})))

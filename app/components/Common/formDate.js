@@ -29,6 +29,8 @@ export default class FormDate extends React.Component {
     tooltipUtility: is.object.isRequired,
     activeCalendar: is.string.isRequired,
     calendarHandler: is.func.isRequired,
+    calendarIconStyle: is.object,
+    tooltipInfoFlagStyle: is.object,
     fields: is.shape({
       year: is.shape({
         value: is.string.isRequired,
@@ -123,7 +125,11 @@ export default class FormDate extends React.Component {
           </div>
           <div className='field' onBlur={this.onBlur} ref={(node)=>this.node=node} onFocus={this.onFocus}>
 
-            {isFocus && this.props.tooltip && <img className='infoFlagDate' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+            {isFocus && this.props.tooltip &&
+              <img
+                style={this.props.tooltipInfoFlagStyle}
+                className='infoFlagDate'
+                src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`}/>}
 
             <div className={this.props.issue ? 'issuedatepickerholder' : 'datepickerholder'}>
               <div className='dateselectholder'>
@@ -168,19 +174,21 @@ export default class FormDate extends React.Component {
               </div>
               <div className='dateicon'>
                 <div>&nbsp;</div>
-                <div className={`iconHolder ${isFocus && this.props.tooltip ? 'infoFlag infoFlagIconHolder' : ''}`}>
-                  {this.props.activeCalendar === generatedId &&
-                    <Calendar
-                      calendarHandler={this.props.calendarHandler}
-                      activeCalendar={this.props.activeCalendar}
-                      date={fullDate}
-                      subItem={this.props.subItem}
-                      subItemIndex={this.props.subItemIndex}/>}
+                <div
+                  className={`iconHolder ${isFocus && this.props.tooltip ? 'infoFlag infoFlagIconHolder' : ''}`}
+                  style={this.props.calendarIconStyle}>
+                    {this.props.activeCalendar === generatedId &&
+                      <Calendar
+                        calendarHandler={this.props.calendarHandler}
+                        activeCalendar={this.props.activeCalendar}
+                        date={fullDate}
+                        subItem={this.props.subItem}
+                        subItemIndex={this.props.subItemIndex}/>}
 
-                  <a className="calendarButton"
-                    onClick={()=>{this.props.calendarHandler(this.props.activeCalendar === generatedId ? '' : generatedId)}}>
-                      <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
-                  </a>
+                    <a className="calendarButton"
+                      onClick={()=>{this.props.calendarHandler(this.props.activeCalendar === generatedId ? '' : generatedId)}}>
+                        <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                    </a>
                 </div>
               </div>
             </div>
