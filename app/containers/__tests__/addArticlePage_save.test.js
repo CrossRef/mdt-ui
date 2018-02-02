@@ -89,8 +89,6 @@ function testSave (testName, {pubDoi, editArticleDoi, duplicateArticleDoi}) {
 }
 
 
-
-
 describe('save', ()=>testSave('new article', {pubDoi: defaultArticle.publicationDoi}))
 
 describe('save', ()=>testSave('duplicate defaultArticle', {pubDoi: defaultArticle.publicationDoi, duplicateArticleDoi: defaultArticle.articleDoi}))

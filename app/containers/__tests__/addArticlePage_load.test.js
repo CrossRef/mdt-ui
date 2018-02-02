@@ -73,8 +73,6 @@ function testLoad (testName, {pubDoi, editArticleDoi, duplicateArticleDoi}) {
 }
 
 
-
-
 describe('load', ()=>testLoad('edit defaultArticle', {pubDoi: defaultArticle.publicationDoi, editArticleDoi: defaultArticle.articleDoi}))
 
 describe('load', ()=>testLoad('edit fullFormArticle', {pubDoi: fullFormArticle.publicationDoi, editArticleDoi: fullFormArticle.articleDoi}))
