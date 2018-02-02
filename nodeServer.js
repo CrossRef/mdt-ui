@@ -1,3 +1,7 @@
+//A simple node server with a catch all that lets you refresh from any page
+//Just run node nodeServer.js
+
+
 var deployConfig = require('./deployConfig')
 
 const express = require('express')
