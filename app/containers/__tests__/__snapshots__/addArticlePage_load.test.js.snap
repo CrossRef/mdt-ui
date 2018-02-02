@@ -248,7 +248,6 @@ exports[`load duplicate defaultArticle 1`] = `
             "acceptedDateYear": "",
             "appliesto": "",
             "errors": Object {
-              "freetolicense": false,
               "licenseDateIncomplete": false,
               "licenseDateInvalid": false,
               "licenseUrl": false,
@@ -7946,6 +7945,7 @@ exports[`load duplicate defaultArticle 1`] = `
                         "licenseUrlInvalid",
                         "licenseDateInvalid",
                         "licenseDateIncomplete",
+                        "freetolicense",
                       ]
                     }
                     openSubItem={[Function]}
@@ -8591,7 +8591,6 @@ exports[`load duplicate fullFormArticle 1`] = `
             "acceptedDateYear": "",
             "appliesto": "",
             "errors": Object {
-              "freetolicense": false,
               "licenseDateIncomplete": false,
               "licenseDateInvalid": false,
               "licenseUrl": false,
@@ -15497,6 +15496,7 @@ exports[`load duplicate fullFormArticle 1`] = `
                         "licenseUrlInvalid",
                         "licenseDateInvalid",
                         "licenseDateIncomplete",
+                        "freetolicense",
                       ]
                     }
                     openSubItem={[Function]}
@@ -16089,7 +16089,6 @@ exports[`load edit defaultArticle 1`] = `
             "acceptedDateYear": "",
             "appliesto": "",
             "errors": Object {
-              "freetolicense": false,
               "licenseDateIncomplete": false,
               "licenseDateInvalid": false,
               "licenseUrl": false,
@@ -23523,6 +23522,7 @@ exports[`load edit defaultArticle 1`] = `
                         "licenseUrlInvalid",
                         "licenseDateInvalid",
                         "licenseDateIncomplete",
+                        "freetolicense",
                       ]
                     }
                     openSubItem={[Function]}
@@ -24090,7 +24090,6 @@ exports[`load edit fullFormArticle 1`] = `
             "acceptedDateYear": "",
             "appliesto": "",
             "errors": Object {
-              "freetolicense": false,
               "licenseDateIncomplete": false,
               "licenseDateInvalid": false,
               "licenseUrl": false,
@@ -29918,6 +29917,7 @@ exports[`load edit fullFormArticle 1`] = `
                         "licenseUrlInvalid",
                         "licenseDateInvalid",
                         "licenseDateIncomplete",
+                        "freetolicense",
                       ]
                     }
                     openSubItem={[Function]}
@@ -30337,7 +30337,6 @@ exports[`load new article 1`] = `
             "acceptedDateYear": "",
             "appliesto": "",
             "errors": Object {
-              "freetolicense": false,
               "licenseDateIncomplete": false,
               "licenseDateInvalid": false,
               "licenseUrl": false,
@@ -36165,6 +36164,7 @@ exports[`load new article 1`] = `
                         "licenseUrlInvalid",
                         "licenseDateInvalid",
                         "licenseDateIncomplete",
+                        "freetolicense",
                       ]
                     }
                     openSubItem={[Function]}
