@@ -260,8 +260,7 @@ const parseXMLArticle = function (articleXML) {
         const doi = typeof citation.doi === 'object' ? citation.doi['#text'] : citation.doi
         parsedReferences.push({
           reference: citation.article_title || citation.unstructured_citation,
-          DOI: doi,
-          matchValuation: citation.doi ? 61 : 30
+          DOI: doi
         })
       })
     }
