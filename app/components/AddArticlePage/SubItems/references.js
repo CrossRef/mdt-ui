@@ -59,8 +59,8 @@ export default class References extends React.Component {
     api.getFormattedReference(doi).then(response=>{
       const newReferences = [...this.props.references]
       let formatedCitation = response.message[0]['formatted-citation']
-      const doiIndex = formatedCitation.indexOf('doi:') + 4
-      const splicedDoi = formatedCitation.substring(doiIndex)
+      const doiIndex = formatedCitation.indexOf('doi:')
+      const splicedDoi = formatedCitation.substring(doiIndex  + 4)
       formatedCitation = formatedCitation.substring(0, doiIndex)
       formatedCitation = formatedCitation + 'https://doi.org/' + splicedDoi
 
@@ -103,8 +103,8 @@ export default class References extends React.Component {
             {this.props.references.map((item, i) => {
               if(item['formatted-citation']) {
                 let formatedCitation = item['formatted-citation']
-                const doiIndex = formatedCitation.indexOf('doi:') + 4
-                const splicedDoi = formatedCitation.substring(doiIndex)
+                const doiIndex = formatedCitation.indexOf('doi:')
+                const splicedDoi = formatedCitation.substring(doiIndex  + 4)
                 if(!splicedDoi.startsWith('https://doi.org/')) {
                   formatedCitation = formatedCitation.substring(0, doiIndex)
                   item['formatted-citation'] = formatedCitation + 'https://doi.org/' + splicedDoi
@@ -124,7 +124,7 @@ export default class References extends React.Component {
                        href={`https://doi.org/${item.DOI}`}>
                       Review match
                     </a>
-                    :
+                  :
                     <p className="referenceReview noMatch">No match</p>}
                   </div>
 
