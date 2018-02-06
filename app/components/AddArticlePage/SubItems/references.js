@@ -58,7 +58,13 @@ export default class References extends React.Component {
     this.setState({tooltipText: 'Loading...'})
     api.getFormattedReference(doi).then(response=>{
       const newReferences = [...this.props.references]
-      newReferences[i]['formatted-citation'] = response.message[0]['formatted-citation']
+      let formatedCitation = response.message[0]['formatted-citation']
+      const doiIndex = formatedCitation.indexOf('doi:') + 4
+      const splicedDoi = formatedCitation.substring(doiIndex)
+      formatedCitation = formatedCitation.substring(0, doiIndex)
+      formatedCitation = formatedCitation + 'https://doi.org/' + splicedDoi
+
+        newReferences[i]['formatted-citation'] = formatedCitation
       this.props.setReferences({references: newReferences})
     })
   }
@@ -94,27 +100,38 @@ export default class References extends React.Component {
               <span onClick={()=> this.props.setReferences({references: []})}>Remove all references</span>
             </div>
 
-            {this.props.references.map((item, i) =>
-              <div key={`${i}_${item.reference}`} className="result">
-                <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference}`}</p>
+            {this.props.references.map((item, i) => {
+              if(item['formatted-citation']) {
+                let formatedCitation = item['formatted-citation']
+                const doiIndex = formatedCitation.indexOf('doi:') + 4
+                const splicedDoi = formatedCitation.substring(doiIndex)
+                if(!splicedDoi.startsWith('https://doi.org/')) {
+                  formatedCitation = formatedCitation.substring(0, doiIndex)
+                  item['formatted-citation'] = formatedCitation + 'https://doi.org/' + splicedDoi
+                }
+              }
+
+              return <div key={`${i}_${item.reference || item.DOI}`} className="result">
+                <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference || (item.DOI ? `http://doi.org/${item.DOI}` : undefined)}`}</p>
 
                 <div className={`referenceDiv ${item.DOI ? 'referenceTooltipHover' : ''}`}>
                   <div className="referenceTooltip">{item['formatted-citation'] || this.state.tooltipText}</div>
 
-                {item.DOI ?
-                  <a className="referenceReview"
-                    onMouseOver={item['formatted-citation'] ? null : () => this.referenceMouseover(item.DOI, i)}
-                    target="_blank"
-                    href={`https://doi.org/${item.DOI}`}>
+                  {item.DOI ?
+                    <a className="referenceReview"
+                       onMouseOver={item['formatted-citation'] ? null : () => this.referenceMouseover(item.DOI, i)}
+                       target="_blank"
+                       href={`https://doi.org/${item.DOI}`}>
                       Review match
-                  </a>
-                :
-                  <p className="referenceReview noMatch">No match</p>}
+                    </a>
+                    :
+                    <p className="referenceReview noMatch">No match</p>}
+                  </div>
+
+                  {item.DOI && <p className="referenceRemove" onClick={() => this.rejectReference(i, item.reference)}>Reject</p>}
+
                 </div>
-
-                {item.DOI && <p className="referenceRemove" onClick={() => this.rejectReference(i, item.reference)}>Reject</p>}
-
-              </div>
+              }
             )}
           </div>}
 
