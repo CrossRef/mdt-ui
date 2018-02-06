@@ -100,6 +100,7 @@ export default class AddArticlePage extends Component {
       scrollToTopButton: false,
       scrollTimeout: null
     }
+
     this.state.article.doi = ownerPrefix + '/'
   }
 
@@ -128,6 +129,7 @@ export default class AddArticlePage extends Component {
       licenses,
       contributors,
       relatedItems,
+      openSubItems,
       newReduxForm,
     } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
 
@@ -137,14 +139,14 @@ export default class AddArticlePage extends Component {
       error: false,
       errors: {...criticalErrors, ...warnings},
       criticalErrors: criticalErrors,
-      license: licenses.length ? licenses : defaultState.license,
-      contributors: contributors.length ? contributors : defaultState.contributors,
-      relatedItems: relatedItems.length ? relatedItems : defaultState.relatedItems,
+      license: licenses,
+      contributors: contributors,
+      relatedItems: relatedItems,
       openItems: {
-        Contributors: !!contributors.length,
+        Contributors: openSubItems.contributors,
         Funding: !!getSubItems(data.funding).length,
-        Licenses: !!licenses.length || !!data.article.freetolicense,
-        relatedItems: !!relatedItems.length,
+        Licenses: openSubItems.licenses || !!data.article.freetolicense,
+        relatedItems: openSubItems.relatedItems,
         addInfo: !!getSubItems(data.addInfo).length,
         references: !!data.references.length
       }

@@ -4,7 +4,7 @@ import {routes} from '../routing'
 import {normalize} from '../utilities/helpers'
 
 
-export default function _getCRState (type, currentLocation, error = (reason) => console.error('ERROR in getCRState', reason)) {
+export default function _getCRState (type, currentLocation) {
   return function(dispatch) {
     getCRState().then((textResponse)=>{
         let state
@@ -52,19 +52,9 @@ export default function _getCRState (type, currentLocation, error = (reason) => 
 
         const pathname = scrubbedState.routing.locationBeforeTransitions.pathname
         const base = routes.base
-        let match = true
-
-        // uncomment this checkRoutes function in case the base url has changed to deal with the transition between remote state with old base url to new url
-        // match = (function checkRoutes () {
-        //   const matchLength = routes.base.length + 4 // check if saved history matches current base. Only match base + 4 characters because some routes may be dynamic but the smallest static route is 4 characters long
-        //   for (var route in routes) {
-        //     if(pathname.substring(0, matchLength) === routes[route].substring(0, matchLength)) return true
-        //   }
-        //   return false
-        // })()
 
 
-        if(!match || pathname === base) {   // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
+        if(pathname === base) {   // redirect if it is a new base or if the base route somehow got saved to CRState. The base route is the login page so it should never save to CRState
           scrubbedState.routing.locationBeforeTransitions.pathname = routes.publications
         }
 
@@ -78,6 +68,6 @@ export default function _getCRState (type, currentLocation, error = (reason) => 
           payload: scrubbedState
         })
       })
-      .catch(reason => error(reason))
+      .catch(reason => console.error('ERROR in getCRState', reason))
   }
 }

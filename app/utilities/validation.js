@@ -89,6 +89,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   warnings.simCheckUrlInvalid = urlEntered(data.addInfo.similarityCheckURL) && !isURL(data.addInfo.similarityCheckURL)
 
 
+  const openSubItems = {}
+
   //validate License subItems
   const licenses = getSubItems(data.license).map((license, i) => {
     const {acceptedDateYear, acceptedDateMonth, acceptedDateDay, appliesto, licenseurl} = license
@@ -142,8 +144,12 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   })
 
   if(!licenses.length) {
-    licenses[0] = defaultArticleState.license[0]
+    const defaultData = defaultArticleState.license[0]
+    openSubItems.licenses = false
+    licenses[0] = {...defaultData, errors: {...defaultData.errors}}
     licenses[0].errors.freetolicense = criticalErrors.freetolicense
+  } else {
+    openSubItems.licenses = true
   }
 
 
@@ -166,6 +172,15 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     return {...contributor, errors}
   })
 
+  if(!contributors.length) {
+    const defaultData = defaultArticleState.contributors[0]
+    openSubItems.contributors = false
+    contributors[0] = {...defaultData, errors: {...defaultData.errors}}
+  } else {
+    openSubItems.contributors = true
+  }
+
+
   //validate relatedItem subItems
   const relatedItems = getSubItems(data.relatedItems).map( item => {
     const errors = {
@@ -179,6 +194,15 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
     return {...item, errors}
   })
+
+  if(!relatedItems.length) {
+    const defaultData = defaultArticleState.relatedItems[0]
+    openSubItems.relatedItems = false
+    relatedItems[0] = {...defaultData, errors: {...defaultData.errors}}
+  } else {
+    openSubItems.relatedItems = true
+  }
+
 
   // crossmark validation
   let newReduxForm
@@ -309,7 +333,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     })
   }
 
-  return { criticalErrors, warnings, licenses, contributors, relatedItems, newReduxForm }
+  return { criticalErrors, warnings, licenses, contributors, relatedItems, openSubItems, newReduxForm }
 }
 
 

@@ -339,7 +339,7 @@ export default function AddArticleView (props) {
             showSection={props.openItems.Licenses}
             addHandler={props.addSection.bind(null, 'license')}>
               <ErrorIndicator
-                indicatorErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete']}
+                indicatorErrors={['licenseUrl', 'licenseUrlInvalid', 'licenseDateInvalid', 'licenseDateIncomplete', 'freetolicense']}
                 errorUtility={props.errorUtility}
                 tooltipUtility={props.tooltipUtility}
                 allErrors={props.errors}/>
