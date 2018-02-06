@@ -41,9 +41,9 @@ export default class References extends React.Component {
   }
 
 
-  rejectReference = (index, reference) => {
+  rejectReference = (index, item) => {
     const newArray = [...this.props.references]
-    newArray.splice(index, 1, {reference})
+    newArray.splice(index, 1, {reference: item.reference || `https://doi.org/${item.DOI}`})
     this.props.setReferences({references: newArray})
   }
 
@@ -112,7 +112,7 @@ export default class References extends React.Component {
               }
 
               return <div key={`${i}_${item.reference || item.DOI}`} className="result">
-                <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference || (item.DOI ? `http://doi.org/${item.DOI}` : undefined)}`}</p>
+                <p className="referenceText"><span>{`${i+1}. `}</span>{`${item.reference || (item.DOI ? `https://doi.org/${item.DOI}` : undefined)}`}</p>
 
                 <div className={`referenceDiv ${item.DOI ? 'referenceTooltipHover' : ''}`}>
                   <div className="referenceTooltip">{item['formatted-citation'] || this.state.tooltipText}</div>
@@ -128,7 +128,7 @@ export default class References extends React.Component {
                     <p className="referenceReview noMatch">No match</p>}
                   </div>
 
-                  {item.DOI && <p className="referenceRemove" onClick={() => this.rejectReference(i, item.reference)}>Reject</p>}
+                  {item.DOI && <p className="referenceRemove" onClick={() => this.rejectReference(i, item)}>Reject</p>}
 
                 </div>
               }
