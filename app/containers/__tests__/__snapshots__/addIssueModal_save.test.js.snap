@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`save edit fullFormIssue 1`] = `
+Object {
+  "message": Object {
+    "contains": Array [
+      Object {
+        "content": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><crossref xmlns=\\"http://www.crossref.org/xschema/1.1\\"><journal_issue><contributors><person_name sequence=\\"first\\" contributor_role=\\"editor\\"><given_name>Bob</given_name><surname>Sagat</surname><suffix>Jr.</suffix><affiliation>Full House</affiliation><ORCID>https://orcid.org/0000-0002-3843-3472</ORCID><alt-name>Jimmy</alt-name></person_name><person_name sequence=\\"additional\\" contributor_role=\\"author\\"><given_name>Billy</given_name><surname>Bob</surname><suffix>Sr.</suffix><affiliation>Alabama</affiliation><ORCID>https://orcid.org/0000-0002-3843-3472</ORCID><alt-name>Joe</alt-name></person_name></contributors><titles><title>full form issue</title></titles><publication_date media_type=\\"online\\"><month>5</month><day>4</day><year>2015</year></publication_date><publication_date media_type=\\"print\\"><month>3</month><day>5</day><year>2016</year></publication_date><journal_volume><volume>2</volume><doi_data><doi>10.5555/fullissueformvolume</doi><resource>http://fullissueformvolumeurl.com</resource></doi_data></journal_volume><issue>1</issue><special_numbering>124</special_numbering><archive_locations><archive name=\\"Internet Archive\\"/></archive_locations><doi_data><doi>10.5555/fullformissue</doi><resource>http://fullformissue.com</resource></doi_data></journal_issue></crossref>",
+        "deposit-timestamp": null,
+        "doi": "10.5555/fullformissue",
+        "mdt-version": "2",
+        "owner-prefix": "10.5555",
+        "state": Object {
+          "archiveLocation": "Internet Archive",
+        },
+        "status": "draft",
+        "title": Object {
+          "issue": "1",
+          "title": "full form issue",
+          "volume": "2",
+        },
+        "type": "issue",
+      },
+    ],
+    "content": "<Journal xmlns=\\"http://www.crossref.org/xschema/1.1\\"><journal_metadata><full_title>Test dummy data</full_title><doi_data><doi>10.5555/dummypublication</doi><resource>http://dummyurl.com</resource></doi_data></journal_metadata></Journal>",
+    "deposit-timestamp": "20180131104528685",
+    "doi": "10.5555/dummypublication",
+    "mdt-version": "0",
+    "owner-prefix": "10.5555",
+    "state": Object {},
+    "status": "accepted",
+    "title": Object {
+      "title": "Test dummy data",
+    },
+    "type": "Publication",
+  },
+}
+`;

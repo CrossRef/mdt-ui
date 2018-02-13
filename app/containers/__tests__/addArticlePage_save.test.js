@@ -83,7 +83,12 @@ function testSave (testName, {pubDoi, editArticleDoi, duplicateArticleDoi}) {
     await instance.save()
 
     const savedJson = api.submitItem.args[0][0]
+    delete savedJson.message.date
     delete savedJson.message.contains[0].date
+    try {
+      delete savedJson.message.contains[0].contains[0].date
+    } catch (e){}
+
     expect(savedJson).toMatchSnapshot()
   })
 }

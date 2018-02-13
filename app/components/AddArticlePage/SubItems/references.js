@@ -49,8 +49,8 @@ export default class References extends React.Component {
 
 
   onFocus = () => {
-    const dummyTooltip = "Depositing DOIs for each of your references will ensure precise citations. Paste article references into the text box and click 'Match reference'. The system will return any DOI matches found. Review the accuracy of a reference, by clicking on 'Review Match'. If the match is incorrect, click Reject to drop the match. All references pasted will be deposited. You can remove them by clicking 'Remove all references'."
-    this.props.tooltipUtility.assignFocus('referencesTooltip', dummyTooltip)
+    const tooltip = "Depositing DOIs for each of your references will ensure precise citations. Paste article references into the text box and click 'Match reference'. The system will return any DOI matches found. Review the accuracy of a reference, by clicking on 'Review Match'. If the match is incorrect, click Reject to drop the match. All references pasted will be deposited. You can remove them by clicking 'Remove all references'."
+    this.props.tooltipUtility.assignFocus('referencesTooltip', tooltip)
   }
 
 

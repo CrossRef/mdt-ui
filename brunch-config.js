@@ -40,7 +40,8 @@ exports.plugins = {
   sass: {
     mode: 'native'
   },
-  babel: config.babelConfig
+  babel: config.babelConfig,
+  autoReload: {enabled: true}
 }
 
 exports.server = {

@@ -25,10 +25,11 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch)
 
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class AddIssueModal extends Component {
+
+export class AddIssueModal extends Component {
 
   static propTypes = {
+    mode: is.string,
     pubDoi: is.string.isRequired,
     asyncGetPublications: is.func.isRequired,
     publication: is.object.isRequired,
@@ -41,9 +42,7 @@ export default class AddIssueModal extends Component {
     this.state = {...defaultState};
     this.state.mode = props.mode || 'add'
     this.state.ownerPrefix = props.pubDoi.split('/')[0]
-    if(props.preFilledData) {
-      this.state.issue = {...this.state.issue, ...props.preFilledData}
-    }
+
     this.state.issue.issueDoi = this.state.ownerPrefix + '/'
     this.state.issue.volumeDoi = this.state.ownerPrefix + '/'
 
@@ -58,7 +57,7 @@ export default class AddIssueModal extends Component {
       let id, Publication, Issue, issueDoiDisabled = false, volumeDoiDisabled = false;
 
       id = {
-        doi: this.props.issue.issueDoi,
+        doi: this.props.issue.doi,
         title: this.props.issue.title,
         pubDoi: this.props.publication.message.doi
       }
@@ -540,4 +539,7 @@ export default class AddIssueModal extends Component {
 
   }
 }
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddIssueModal)
 

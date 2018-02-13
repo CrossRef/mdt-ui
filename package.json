@@ -104,10 +104,17 @@
   "scripts": {
     "start": "brunch watch --server",
     "build": "brunch build -p",
-    "test": "jest",
-    "testupdate": "jest -u"
+    "test": "jest --no-cache",
+    "testupdate": "jest -u --no-cache",
+    "debugtest": "node --inspect-brk node_modules/.bin/jest --runInBand --no-cache"
   },
   "eslintConfig": {
     "extends": "react-app"
+  },
+  "jest": {
+    "verbose": true,
+    "transform": {
+      "^.+\\.js$": "<rootDir>/jest.transform.js"
+    }
   }
 }
