@@ -26,8 +26,6 @@ export default class ActionBar extends Component {
     timeOut: ''
   }
 
-  componentDidMount(){}
-
   toggleMenu = () => {
     this.setState({menuOpen: !this.state.menuOpen})
   }
