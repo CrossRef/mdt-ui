@@ -80,15 +80,18 @@ export default function (state, reduxForm) {
       el2 = doc.createElement("citation")
       el2.setAttribute("key", `ref${i}`)
       let el3
-      if(reference.matchValuation > 60 && reference.DOI) {
+      if(reference.DOI) {
         el3 = doc.createElement("doi")
         el3.textContent = reference.DOI
         el2.appendChild(el3)
       }
 
-      el3 = doc.createElement("unstructured_citation")
-      el3.textContent = reference.reference
-      el2.appendChild(el3)
+      if(reference.reference) {
+        el3 = doc.createElement("unstructured_citation")
+        el3.textContent = reference.reference
+        el2.appendChild(el3)
+      }
+
       el.appendChild(el2)
       doc.documentElement.appendChild(el)
     })
