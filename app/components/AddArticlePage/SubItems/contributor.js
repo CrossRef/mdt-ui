@@ -104,7 +104,7 @@ export default class Contributor extends Component {
 
                 <FormInput
                   label="Last Name"
-                  required={!!firstName}
+                  required={true}
                   error={errors.contributorLastName}
                   name="lastName"
                   value={lastName}
@@ -177,6 +177,9 @@ export default class Contributor extends Component {
                 <FormInput
                   label="ORCID"
                   name="orcid"
+                  error={errors.contributorOrcid}
+                  indicatorErrors={['contributorOrcid']}
+                  allErrors={errors}
                   value={orcid}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
@@ -206,7 +209,7 @@ export default class Contributor extends Component {
               </div>
 
               <ErrorIndicator
-                indicatorErrors={['contributorRole']}
+                indicatorErrors={['contributorRole', 'contributorOrcid']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}

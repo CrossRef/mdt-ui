@@ -85,7 +85,8 @@ export default {
         contributorLastName: false,
         contributorRole: false,
         contributorGroupName: false,
-        contributorGroupRole: false
+        contributorGroupRole: false,
+        contributorOrcid: false
       }
     }
   ],
