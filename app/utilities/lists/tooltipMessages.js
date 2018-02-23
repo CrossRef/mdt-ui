@@ -53,8 +53,8 @@ export const articleTooltips = {
 
 
 export const issueTooltips = {
-  issueTitle: <p>Title of issue (if any) that accompanies issue number</p>,
-  issueNumber: <p>Issue number</p>,
+  issueTitle: <p>Used for a special issue title</p>,
+  issueNumber: <p>Can be a number or a descriptor (Spring, Fall) for issue</p>,
   printDate: <p>Date the issue was published (print)</p>,
   onlineDate: <p>Date the issue was published online</p>,
   specialNumber: <p>For supplements or special issues. Text defining the type of special issue (e.g. "suppl") may be included in this element along with the number.</p>,
