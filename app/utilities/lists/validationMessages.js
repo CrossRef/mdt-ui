@@ -164,17 +164,20 @@ export const IssueMessages = {
     bold: 'Required',
     message: 'Please provide contributor last name.'
   },
-
   contributorSuffixLimit: {
     type: 'invalid',
     bold: 'Invalid Contributor Suffix',
     message: 'Character limit of 10 exceeded..'
   },
-
   contributorRole: {
     type: 'required',
     bold: 'Required',
     message: 'Please provide contributor role.'
+  },
+  contributorOrcid: {
+    type: 'invalid',
+    bold: 'Invalid ORCID id',
+    message: 'Please check your contributor ORCID id.'
   },
 }
 

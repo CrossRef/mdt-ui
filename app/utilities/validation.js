@@ -163,7 +163,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
       contributorRole: !!((lastName || firstName || suffix || affiliation || orcid) && !role),
       contributorGroupName: !!(groupAuthorRole && !groupAuthorName),
       contributorGroupRole: !!(groupAuthorName && !groupAuthorRole),
-      contributorOrcid: !validOrcid(orcid)
+      contributorOrcid: orcid ? !validOrcid(orcid) : false
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
     if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
@@ -433,7 +433,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
       contributorLastName: !!((firstName || suffix || affiliation || orcid || alternativeName || role) && !lastName),
       contributorSuffixLimit: suffix.length > 10,
       contributorRole: (lastName || firstName || suffix || affiliation || alternativeName || orcid) && !role,
-      contributorOrcid: !!validOrcid(orcid)
+      contributorOrcid: orcid ? !validOrcid(orcid) : false
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
     if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
