@@ -106,7 +106,7 @@ export default class ActionBar extends Component {
           </button>
 
           <div onClick={this.toggleMenu} className={'addPublication saveButton articleTooltip'}>
-            Action
+            Continue
             {this.state.menuOpen && <div className='actionBarDropDown'>
               <p onClick={this.props.addToCart}>Add to Cart</p>
               <p onClick={()=>this.props.save()}>Save</p>
