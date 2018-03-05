@@ -42,8 +42,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 }, dispatch)
 
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class AddArticlePage extends Component {
+
+export class AddArticlePage extends Component {
 
   static propTypes = {
     reduxControlModal: is.func.isRequired,
@@ -536,12 +536,16 @@ export default class AddArticlePage extends Component {
 
         <div className="rightBar">
           {this.state.scrollToTopButton &&
-            <div className="scrollToTopButton" onClick={this.scrollToTop}>
-              <img className="scrollToTopChevron" src={`${routes.images}/AddArticle/Asset_Icons_White_Chevron.svg`}/>
-            </div>}
+          <div className="scrollToTopButton" onClick={this.scrollToTop}>
+            <img className="scrollToTopChevron" src={`${routes.images}/AddArticle/Asset_Icons_White_Chevron.svg`}/>
+          </div>}
         </div>
       </div>
     )
   }
 }
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(AddArticlePage)
+
 

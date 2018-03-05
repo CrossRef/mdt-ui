@@ -1,5 +1,5 @@
 [
-    {'value':'vor', 'name':'Version of record'},
-    {'value':'am', 'name':'Accepted Manuscript'},
-    {'value':'tdm', 'name':'Text and Data Mining'}
+    {"value":"vor", "name":"Version of record"},
+    {"value":"am", "name":"Accepted Manuscript"},
+    {"value":"tdm", "name":"Text and Data Mining"}
 ]
