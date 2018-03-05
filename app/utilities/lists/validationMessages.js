@@ -162,19 +162,22 @@ export const IssueMessages = {
   contributorLastName: {
     type: 'required',
     bold: 'Required',
-    message: 'Please provide contributor last name with first name.'
+    message: 'Please provide contributor last name.'
   },
-
   contributorSuffixLimit: {
     type: 'invalid',
     bold: 'Invalid Contributor Suffix',
     message: 'Character limit of 10 exceeded..'
   },
-
   contributorRole: {
     type: 'required',
     bold: 'Required',
     message: 'Please provide contributor role.'
+  },
+  contributorOrcid: {
+    type: 'invalid',
+    bold: 'Invalid ORCID id',
+    message: 'Please check your contributor ORCID id.'
   },
 }
 
@@ -284,7 +287,7 @@ export const ArticleMessages = {
   contributorLastName: {
     type: 'required',
     bold: 'Required',
-    message: 'Please provide contributor last name with first name.'
+    message: 'Please provide contributor last name.'
   },
   contributorSuffixLimit: {
     type: 'invalid',
@@ -295,6 +298,11 @@ export const ArticleMessages = {
     type: 'required',
     bold: 'Required',
     message: 'Please provide contributor role.'
+  },
+  contributorOrcid: {
+    type: 'invalid',
+    bold: 'Invalid ORCID id',
+    message: 'Please check your contributor ORCID id.'
   },
   contributorGroupRole: {
     type: 'required',

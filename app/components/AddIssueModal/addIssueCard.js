@@ -317,7 +317,7 @@ export default function AddIssueCard (props) {
               boundSetState={props.boundSetState}
               showSection={props.showSection}>
                 <ErrorIndicator
-                  indicatorErrors={['contributorLastName', 'contributorRole', 'contributorSuffixLimit']}
+                  indicatorErrors={['contributorLastName', 'contributorRole', 'contributorSuffixLimit', 'contributorOrcid']}
                   errorMessages={[]}
                   errorUtility={props.errorUtility}
                   tooltipUtility={props.tooltipUtility}

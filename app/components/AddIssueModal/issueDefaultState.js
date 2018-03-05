@@ -57,7 +57,8 @@ export default {
     role: '',
     errors: {
       contributorLastName: false,
-      contributorRole: false
+      contributorRole: false,
+      contributorOrcid: false
     }
   }]
 }

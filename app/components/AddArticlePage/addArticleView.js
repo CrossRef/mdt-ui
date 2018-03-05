@@ -286,7 +286,7 @@ export default function AddArticleView (props) {
             showSection={props.openItems.Contributors}
             addHandler={props.addSection.bind(null, 'contributors')}>
               <ErrorIndicator
-                indicatorErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole', 'contributorSuffixLimit']}
+                indicatorErrors={['contributorLastName', 'contributorRole', 'contributorGroupName', 'contributorGroupRole', 'contributorSuffixLimit', 'contributorOrcid']}
                 errorUtility={props.errorUtility}
                 tooltipUtility={props.tooltipUtility}
                 allErrors={props.errors}/>

@@ -124,6 +124,8 @@ export default class OptionalIssueInformation extends Component {
                 <FormInput
                   label="ORCID"
                   name="orcid"
+                  error={errors.contributorOrcid}
+                  indicatorErrors={['contributorOrcid']}
                   value={this.props.optionalIssueInfo.orcid}
                   tooltip={this.props.tooltip && tooltips.contributorOrcid}
                   tooltipUtility={this.props.tooltipUtility}
@@ -143,6 +145,15 @@ export default class OptionalIssueInformation extends Component {
                   onBlur={this.props.validate}
                   changeHandler={this.handler}/>
               </div>
+
+              <ErrorIndicator
+                style="shiftLeft"
+                indicatorErrors={['contributorOrcid']}
+                errorMessages={this.props.errorMessages}
+                errorUtility={this.props.errorUtility}
+                tooltipUtility={this.props.tooltipUtility}
+                subItemIndex={String(this.props.index)}
+                allErrors={errors}/>
             </div>
 
 
