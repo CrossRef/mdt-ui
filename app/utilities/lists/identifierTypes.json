@@ -1,15 +1,15 @@
 [
-    {"name": "doi", "value": "DOI"},
-    {"name": "issn", "value": "ISSN"},
-    {"name": "isbn", "value": "ISBN"},
-    {"name": "uri", "value": "URI"},
-    {"name": "pmid", "value": "PMID"},
-    {"name": "pmcid", "value": "PMCID"},
-    {"name": "purl", "value": "PURL"},
-    {"name": "arxiv", "value": "ARXIV"},
-    {"name": "ark", "value": "ARK"},
-    {"name": "handle", "value": "Handle"},
-    {"name": "uuid", "value": "UUID"},
-    {"name": "ecli", "value": "ECLI"},
-    {"name": "other", "value": "Other"}
+    {"value": "doi", "name": "DOI"},
+    {"value": "issn", "name": "ISSN"},
+    {"value": "isbn", "name": "ISBN"},
+    {"value": "uri", "name": "URI"},
+    {"value": "pmid", "name": "PMID"},
+    {"value": "pmcid", "name": "PMCID"},
+    {"value": "purl", "name": "PURL"},
+    {"value": "arxiv", "name": "ARXIV"},
+    {"value": "ark", "name": "ARK"},
+    {"value": "handle", "name": "Handle"},
+    {"value": "uuid", "name": "UUID"},
+    {"value": "ecli", "name": "ECLI"},
+    {"value": "other", "name": "Other"}
 ]
