@@ -69,7 +69,7 @@ export default class PublicationPage extends Component {
   constructor (props) {
     super ()
     this.state = {
-      doi: props.routeParams.pubDoi,
+      doi: props.routeParams.pubDoi.toLowerCase(),
       ownerPrefix: props.routeParams.pubDoi.split('/')[0],
       serverError: null,
       filterBy: 'all',
@@ -117,7 +117,7 @@ export default class PublicationPage extends Component {
         return
       }
     }
-    item.pubDoi = this.props.publication.message.doi
+    item.pubDoi = this.state.doi
     newSelections.push(item);
     this.setState({selections: newSelections})
   }
@@ -195,7 +195,7 @@ export default class PublicationPage extends Component {
       } : {}
 
       browserHistory.push({
-        pathname: `${routes.publications}/${encodeURIComponent(this.props.publication.message.doi)}/addarticle`,
+        pathname: `${routes.publications}/${encodeURIComponent(this.state.doi)}/addarticle`,
         state: {
           duplicateFrom: this.state.selections[0].doi,
           ...parentIssue

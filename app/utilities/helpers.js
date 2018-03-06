@@ -294,7 +294,7 @@ export function normalize (publications) {  //Redux likes normalized state: stor
 
     try {
       if(thisPublication.doi) {
-        normalizedData[thisPublication.doi] = {message: thisPublication}
+        normalizedData[thisPublication.doi.toLowerCase()] = {message: thisPublication}
         return normalizedData
       }
 
@@ -306,11 +306,11 @@ export function normalize (publications) {  //Redux likes normalized state: stor
           if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
             return console.warn(`Had trouble retrieving data for a Record`, thisRecord || contains)
           }
-          normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
+          normalizedRecords[thisRecord.doi.toLowerCase() || JSON.stringify(thisRecord.title)] = thisRecord
         })
       }
 
-      normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
+      normalizedData[thisPublication.message.doi.toLowerCase()] = {...thisPublication, normalizedRecords}
 
       return normalizedData
 
