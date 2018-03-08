@@ -382,13 +382,12 @@ export function getTooltipPosition () {
   try {
     bubblePosition =
       ((infoFlag.offset().top + (infoFlag.position().top - (infoFlag.position().top * .9))
-      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15)))
+      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 25)))
   } catch (e) {
     bubblePosition = false
   }
 
   if(isDate) bubblePosition -= 35
-  if(bubblePosition < 0) bubblePosition = false
 
   return bubblePosition
 }
