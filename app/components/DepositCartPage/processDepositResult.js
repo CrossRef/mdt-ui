@@ -36,14 +36,14 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
   const used = {}
 
 
-  //START ITERATING OVER RESUSULT ARRAY
+  //START ITERATING OVER RESULT ARRAY
   await Promise.all(resultArray.map(async (result) => {
 
     //START PROCESSING RESULT
     let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
     let resultError = {}
     let contains1 = {}
-    const resultDoi = result['DOI:']
+    const resultDoi = result['DOI:'] ? result['DOI:'].toLowerCase() : undefined
     resultType = result.type
 
 

@@ -136,28 +136,28 @@ export default class Listing extends Component {
               <a name='title' className={`cursor ${by === 'title' && 'sorted'}`} onClick={this.sortHandler}>Title</a>
               <img name='title'
                 onClick={this.sortHandler}
-                className={`orderBy ${(by==='title' && asc) && 'ordered'}`}
+                className={`orderBy publicationSortArrow ${(by==='title' && asc) && 'ordered'}`}
                 src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </td>
             <td className='date'>
               <a name='date' className={`cursor ${by === 'date' && 'sorted'}`} onClick={this.sortHandler}>Date</a>
               <img name='date'
                    onClick={this.sortHandler}
-                   className={`orderBy ${(by==='date' && asc) && 'ordered'}`}
+                   className={`orderBy publicationSortArrow ${(by==='date' && asc) && 'ordered'}`}
                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </td>
             <td className='type'>
               <a name='type' className={`cursor ${by === 'type' && 'sorted'}`} onClick={this.sortHandler}>Type</a>
               <img name='type'
                    onClick={this.sortHandler}
-                   className={`orderBy ${(by==='type' && asc) && 'ordered'}`}
+                   className={`orderBy publicationSortArrow ${(by==='type' && asc) && 'ordered'}`}
                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </td>
             <td className='status'>
               <a name='status' className={`cursor ${by === 'status' && 'sorted'}`} onClick={this.sortHandler}>Status</a>
               <img name='status'
                    onClick={this.sortHandler}
-                   className={`orderBy ${(by==='status' && asc) && 'ordered'}`}
+                   className={`orderBy publicationSortArrow ${(by==='status' && asc) && 'ordered'}`}
                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </td>
             <td className='url' />

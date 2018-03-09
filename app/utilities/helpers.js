@@ -294,7 +294,7 @@ export function normalize (publications) {  //Redux likes normalized state: stor
 
     try {
       if(thisPublication.doi) {
-        normalizedData[thisPublication.doi] = {message: thisPublication}
+        normalizedData[thisPublication.doi.toLowerCase()] = {message: thisPublication}
         return normalizedData
       }
 
@@ -306,11 +306,11 @@ export function normalize (publications) {  //Redux likes normalized state: stor
           if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
             return console.warn(`Had trouble retrieving data for a Record`, thisRecord || contains)
           }
-          normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
+          normalizedRecords[thisRecord.doi.toLowerCase() || JSON.stringify(thisRecord.title)] = thisRecord
         })
       }
 
-      normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
+      normalizedData[thisPublication.message.doi.toLowerCase()] = {...thisPublication, normalizedRecords}
 
       return normalizedData
 
@@ -382,13 +382,12 @@ export function getTooltipPosition () {
   try {
     bubblePosition =
       ((infoFlag.offset().top + (infoFlag.position().top - (infoFlag.position().top * .9))
-      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15)))
+      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 25)))
   } catch (e) {
     bubblePosition = false
   }
 
   if(isDate) bubblePosition -= 35
-  if(bubblePosition < 0) bubblePosition = false
 
   return bubblePosition
 }
@@ -445,3 +444,9 @@ export function validDate ( yearfield, monthfield, dayfield ){
   return true;
 }
 
+
+
+export function validOrcid (s) {
+  const re = /https?:\/\/orcid.org\/[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[X0-9]{1}/g
+  return re.test(s)
+}
