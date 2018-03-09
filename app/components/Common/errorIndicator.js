@@ -74,7 +74,7 @@ export default class ErrorIndicator extends React.Component {
     if(
       this.state.render === 'errorBubble' &&
       newRender === 'errorBubble' &&
-      !newActiveErrors.equals(this.state.activeErrors)
+      !newActiveErrors.arrayEquals(this.state.activeErrors)
     ){
       this.props.errorUtility.setErrorMessages(newActiveErrors)
     }

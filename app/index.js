@@ -10,9 +10,6 @@ import Routing, { routes } from './routing'
 import { getCRState, controlModal } from './actions/application'
 
 
-window.version = version()
-
-
 const store = configureStore()
 const history = syncHistoryWithStore(browserHistory, store)
 
@@ -31,36 +28,3 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   </Provider>, document.querySelector('#root'))
 })
-
-
-
-
-function version () {
-  const mergedBranches =
-`
-Merged branches / tickets in this build
-
-MM-239
-MM-238
-MM-83
-MM-231
-MM-235
-MM-234
-MM-216
-MM-225
-MM-223
-MM-222
-MM-117
-MM-215
-MM-219
-MM-212
-MM-220
-MM-214
-MM-217
-MM-181
-MM-151
-
-`
-  console.log(mergedBranches)
-  return mergedBranches
-}

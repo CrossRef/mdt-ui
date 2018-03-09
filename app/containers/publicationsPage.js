@@ -29,7 +29,6 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 export default class PublicationsPage extends Component {
 
   static propTypes = {
-    DOIs: is.array.isRequired,
     searchResults: is.array,
     publications: is.object.isRequired,
     reduxControlModal: is.func.isRequired,

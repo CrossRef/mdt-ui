@@ -20,9 +20,14 @@ app.set('views', __dirname + '/metadatamanager')
 app.use(deployConfig.baseUrl, express.static(__dirname + '/metadatamanager'));
 
 app.get('*', (req, res, next) => {
-  console.log('catchAll');
   res.render('index.html');
 })
 
-app.listen(9005);
-console.log('Server listening on 9005')
+module.exports = (config, callback) => {
+  app.listen(config.port, function () {
+    console.log(`========== Server listening on localhost:${config.port}${deployConfig.baseUrl} ==========`)
+    callback()
+  });
+
+  return app
+}

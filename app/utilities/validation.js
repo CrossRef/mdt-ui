@@ -2,7 +2,7 @@ import {Map, fromJS} from 'immutable'
 
 import { getSubItems } from './getSubItems'
 import {cardNames} from './crossmarkHelpers'
-import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered, validDate} from './helpers'
+import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered, validDate, validOrcid} from './helpers'
 import defaultArticleState from '../components/AddArticlePage/defaultState'
 
 
@@ -42,6 +42,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     contributorRole: false,
     contributorGroupName: false,
     contributorGroupRole: false,
+    contributorOrcid: false,
 
     relatedItemIdType: false,
     relatedItemRelType: false,
@@ -157,17 +158,19 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   const contributors = getSubItems(data.contributors).map( contributor => {
     const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = contributor
     const errors = {
-      contributorLastName: !!(firstName && !lastName),
+      contributorLastName: !!((firstName || suffix || affiliation || orcid || role) && !lastName),
       contributorSuffixLimit: suffix.length > 10,
       contributorRole: !!((lastName || firstName || suffix || affiliation || orcid) && !role),
       contributorGroupName: !!(groupAuthorRole && !groupAuthorName),
-      contributorGroupRole: !!(groupAuthorName && !groupAuthorRole)
+      contributorGroupRole: !!(groupAuthorName && !groupAuthorRole),
+      contributorOrcid: orcid ? !validOrcid(orcid) : false
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
     if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
     if(errors.contributorRole) warnings.contributorRole = true
     if(errors.contributorGroupName) warnings.contributorGroupName = true
     if(errors.contributorGroupRole) warnings.contributorGroupRole = true
+    if(errors.contributorOrcid) warnings.contributorOrcid = true
 
     return {...contributor, errors}
   })
@@ -399,7 +402,8 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
 
     contributorLastName: false,
     contributorSuffixLimit: false,
-    contributorRole: false
+    contributorRole: false,
+    contributorOrcid: false
   }
 
   warnings.invalidissueurl = issueUrlEntered && !isURL(issueUrl)
@@ -426,13 +430,15 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
   const contributors = getSubItems(optionalIssueInfo).map( contributor => {
     const {firstName, lastName, suffix, affiliation, orcid, alternativeName, role} = contributor
     const errors = {
-      contributorLastName: !!(firstName && !lastName),
+      contributorLastName: !!((firstName || suffix || affiliation || orcid || alternativeName || role) && !lastName),
       contributorSuffixLimit: suffix.length > 10,
       contributorRole: (lastName || firstName || suffix || affiliation || alternativeName || orcid) && !role,
+      contributorOrcid: orcid ? !validOrcid(orcid) : false
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
     if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
     if(errors.contributorRole) warnings.contributorRole = true
+    if(errors.contributorOrcid) warnings.contributorOrcid = true
 
     return {...contributor, errors}
   })

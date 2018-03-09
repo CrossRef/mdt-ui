@@ -1,0 +1,200 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`save duplicate defaultArticle 1`] = `
+Object {
+  "message": Object {
+    "contains": Array [
+      Object {
+        "content": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><crossref xmlns=\\"http://www.crossref.org/xschema/1.1\\"><journal><journal_metadata language=\\"af\\"><full_title>test new system 2</full_title><abbrev_title>arhaerh</abbrev_title><archive_locations><archive name=\\"LOCKSS\\"/></archive_locations><doi_data><doi>10.5555/13g14g14h12h2h24h2</doi><resource>http://afhaehaerhaerh.com</resource></doi_data></journal_metadata><journal_article><titles><title>test save</title></titles><doi_data><doi>10.5555/jesttestsave</doi><resource>http://</resource></doi_data></journal_article></journal></crossref>",
+        "deposit-timestamp": null,
+        "doi": "10.5555/jesttestsave",
+        "mdt-version": "2",
+        "owner-prefix": "10.5555",
+        "status": "draft",
+        "title": Object {
+          "title": "test save",
+        },
+        "type": "article",
+      },
+    ],
+    "deposit-timestamp": "20180117154727430",
+    "doi": "10.5555/defaultPub",
+    "mdt-version": "0",
+    "owner-prefix": "10.5555",
+    "state": Object {},
+    "status": "accepted",
+    "title": Object {
+      "title": "test new system 2",
+    },
+    "type": "Publication",
+  },
+}
+`;
+
+exports[`save duplicate fullFormArticle 1`] = `
+Object {
+  "message": Object {
+    "contains": Array [
+      Object {
+        "contains": Array [
+          Object {
+            "content": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><crossref xmlns=\\"http://www.crossref.org/xschema/1.1\\"><journal><journal_metadata><full_title>Test dummy data</full_title><doi_data><doi>10.5555/dummypublication</doi><resource>http://dummyurl.com</resource></doi_data></journal_metadata><journal_article language=\\"ab\\"><titles><title>test save</title></titles><contributors><person_name sequence=\\"first\\" contributor_role=\\"chair\\"><given_name>Bob</given_name><surname>Sagat</surname><suffix>Jr.</suffix><affiliation>Full House</affiliation><ORCID>https://orcid.org/0000-0002-3843-3472</ORCID></person_name><organization sequence=\\"additional\\" contributor_role=\\"editor\\">Awesome Group</organization></contributors><jats:abstract xmlns:jats=\\"http://www.ncbi.nlm.nih.gov/JATS1\\"><jats:p>Lorem ipsum
+
+Donec hendrerit.</jats:p></jats:abstract><publication_date media_type=\\"online\\"><month>12</month><day>21</day><year>2016</year></publication_date><publication_date media_type=\\"print\\"><month>1</month><day>5</day><year>2017</year></publication_date><pages><first_page>1</first_page><last_page>5</last_page></pages><publisher_item><item_number item_number_type=\\"article_number\\">3D9324F1-16B1-11D7- 8645000102C</item_number></publisher_item><fr:program xmlns:fr=\\"http://www.crossref.org/fundref.xsd\\"><fr:assertion name=\\"fundgroup\\"><fr:assertion name=\\"funder_name\\">Southern California Clinical and Translational Science Institute<fr:assertion name=\\"funder_identifier\\">http://dx.doi.org/10.13039/100009410</fr:assertion></fr:assertion><fr:assertion name=\\"award_number\\">12</fr:assertion><fr:assertion name=\\"award_number\\">5</fr:assertion></fr:assertion><fr:assertion name=\\"fundgroup\\"><fr:assertion name=\\"funder_name\\">University of Worcester<fr:assertion name=\\"funder_identifier\\">http://dx.doi.org/10.13039/100010022</fr:assertion></fr:assertion><fr:assertion name=\\"award_number\\">4</fr:assertion></fr:assertion></fr:program><ai:program name=\\"AccessIndicators\\" xmlns:ai=\\"http://www.crossref.org/AccessIndicators.xsd\\"><ai:free_to_read start_date=\\"2016-02-20\\"/><ai:license_ref applies_to=\\"tdm\\" start_date=\\"2016-02-20\\">http://adfhaerhaerh.com</ai:license_ref><ai:license_ref applies_to=\\"vor\\" start_date=\\"2016-11-27\\">http://aeraerhaerhaerh.com</ai:license_ref></ai:program><program name=\\"relations\\" xmlns=\\"http://www.crossref.org/relations.xsd\\"><related_item><description>aehraerh</description><inter_work_relation relationship-type=\\"isCommentOn\\" identifier-type=\\"isbn\\">awerh</inter_work_relation></related_item><related_item><description>afhaerh</description><inter_work_relation relationship-type=\\"isReviewOf\\" identifier-type=\\"issn\\">vadfbadfb</inter_work_relation></related_item></program><archive_locations><archive name=\\"LOCKSS\\"/></archive_locations><doi_data><doi>10.5555/jesttestsave</doi><resource>http://aarwhaerh.com</resource><collection property=\\"crawler-based\\"><item crawler=\\"iParadigms\\"><resource>http://ararhareha.com</resource></item></collection></doi_data><citation_list><citation key=\\"ref0\\"><doi>10.1038/nrd2518</doi><unstructured_citation>Lagerstrom MC, Schioth HB. Structural diversity of G protein-coupled receptors and significance for drug discovery. Nat Rev Drug Discov. 2008;7(4):339–57. Epub 2008/04/03. pmid:18382464</unstructured_citation></citation><citation key=\\"ref1\\"><doi>10.1124/mol.63.6.1256</doi><unstructured_citation>Fredriksson R, Lagerstrom MC, Lundin LG, Schioth HB. The G-protein-coupled receptors in the human genome form five main families. Phylogenetic analysis, paralogon groups, and fingerprints. Mol Pharmacol. 2003;63(6):1256–72. pmid:12761335</unstructured_citation></citation><citation key=\\"ref2\\"><doi>10.1016/j.pharmthera.2013.11.004</doi><unstructured_citation>Foster SR, Roura E, Thomas WG. Extrasensory perception: odorant and taste receptors beyond the nose and mouth. Pharmacol Ther. 2014;142(1):41–61. pmid:24280065</unstructured_citation></citation><citation key=\\"ref3\\"><unstructured_citation>Thomas JH, Robertson HM. The Caenorhabditis chemoreceptor gene families. BMC Biol. 2008;6:42. pmid:18837995</unstructured_citation></citation><citation key=\\"ref4\\"><unstructured_citation>The-C.elegans-Sequencing-Consortium. Genome sequence of the nematode C. elegans: a platform for investigating biology. Science. 1998;282(5396):2012–8. pmid:9851916</unstructured_citation></citation></citation_list></journal_article></journal></crossref>",
+            "deposit-timestamp": "20180131104528685",
+            "doi": "10.5555/jesttestsave",
+            "mdt-version": "1",
+            "owner-prefix": "10.5555",
+            "state": Object {
+              "archiveLocation": "LOCKSS",
+              "freetolicense": "yes",
+            },
+            "status": "draft",
+            "title": Object {
+              "title": "test save",
+            },
+            "type": "article",
+          },
+        ],
+        "deposit-timestamp": "",
+        "doi": "",
+        "mdt-version": "2",
+        "owner-prefix": "10.5555",
+        "state": Object {},
+        "status": "draft",
+        "title": Object {
+          "issue": "5",
+          "title": "",
+          "volume": "",
+        },
+        "type": "issue",
+      },
+    ],
+    "deposit-timestamp": "20180131104528685",
+    "doi": "10.5555/dummypublication",
+    "mdt-version": "0",
+    "owner-prefix": "10.5555",
+    "state": Object {},
+    "status": "accepted",
+    "title": Object {
+      "title": "Test dummy data",
+    },
+    "type": "Publication",
+  },
+}
+`;
+
+exports[`save edit defaultArticle 1`] = `
+Object {
+  "message": Object {
+    "contains": Array [
+      Object {
+        "content": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><crossref xmlns=\\"http://www.crossref.org/xschema/1.1\\"><journal><journal_metadata language=\\"af\\"><full_title>test new system 2</full_title><abbrev_title>arhaerh</abbrev_title><archive_locations><archive name=\\"LOCKSS\\"/></archive_locations><doi_data><doi>10.5555/13g14g14h12h2h24h2</doi><resource>http://afhaehaerhaerh.com</resource></doi_data></journal_metadata><journal_article><titles><title>afhaerharhtaer</title></titles><doi_data><doi>10.5555/aefbtabangagnanatn</doi><resource>http://</resource></doi_data></journal_article></journal></crossref>",
+        "deposit-timestamp": null,
+        "doi": "10.5555/aefbtabangagnanatn",
+        "mdt-version": "2",
+        "owner-prefix": "10.5555",
+        "status": "draft",
+        "title": Object {
+          "title": "afhaerharhtaer",
+        },
+        "type": "article",
+      },
+    ],
+    "deposit-timestamp": "20180117154727430",
+    "doi": "10.5555/defaultPub",
+    "mdt-version": "0",
+    "owner-prefix": "10.5555",
+    "state": Object {},
+    "status": "accepted",
+    "title": Object {
+      "title": "test new system 2",
+    },
+    "type": "Publication",
+  },
+}
+`;
+
+exports[`save edit fullFormArticle 1`] = `
+Object {
+  "message": Object {
+    "contains": Array [
+      Object {
+        "contains": Array [
+          Object {
+            "content": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><crossref xmlns=\\"http://www.crossref.org/xschema/1.1\\"><journal><journal_metadata><full_title>Test dummy data</full_title><doi_data><doi>10.5555/dummypublication</doi><resource>http://dummyurl.com</resource></doi_data></journal_metadata><journal_article language=\\"ab\\"><titles><title>Article Under Issue Dummy Data</title></titles><contributors><person_name sequence=\\"first\\" contributor_role=\\"chair\\"><given_name>Bob</given_name><surname>Sagat</surname><suffix>Jr.</suffix><affiliation>Full House</affiliation><ORCID>https://orcid.org/0000-0002-3843-3472</ORCID></person_name><organization sequence=\\"additional\\" contributor_role=\\"editor\\">Awesome Group</organization></contributors><jats:abstract xmlns:jats=\\"http://www.ncbi.nlm.nih.gov/JATS1\\"><jats:p>Lorem ipsum
+
+Donec hendrerit.</jats:p></jats:abstract><publication_date media_type=\\"online\\"><month>12</month><day>21</day><year>2016</year></publication_date><publication_date media_type=\\"print\\"><month>1</month><day>5</day><year>2017</year></publication_date><pages><first_page>1</first_page><last_page>5</last_page></pages><publisher_item><item_number item_number_type=\\"article_number\\">3D9324F1-16B1-11D7- 8645000102C</item_number></publisher_item><fr:program xmlns:fr=\\"http://www.crossref.org/fundref.xsd\\"><fr:assertion name=\\"fundgroup\\"><fr:assertion name=\\"funder_name\\">Southern California Clinical and Translational Science Institute<fr:assertion name=\\"funder_identifier\\">http://dx.doi.org/10.13039/100009410</fr:assertion></fr:assertion><fr:assertion name=\\"award_number\\">12</fr:assertion><fr:assertion name=\\"award_number\\">5</fr:assertion></fr:assertion><fr:assertion name=\\"fundgroup\\"><fr:assertion name=\\"funder_name\\">University of Worcester<fr:assertion name=\\"funder_identifier\\">http://dx.doi.org/10.13039/100010022</fr:assertion></fr:assertion><fr:assertion name=\\"award_number\\">4</fr:assertion></fr:assertion></fr:program><ai:program name=\\"AccessIndicators\\" xmlns:ai=\\"http://www.crossref.org/AccessIndicators.xsd\\"><ai:free_to_read start_date=\\"2016-02-20\\"/><ai:license_ref applies_to=\\"tdm\\" start_date=\\"2016-02-20\\">http://adfhaerhaerh.com</ai:license_ref><ai:license_ref applies_to=\\"vor\\" start_date=\\"2016-11-27\\">http://aeraerhaerhaerh.com</ai:license_ref></ai:program><program name=\\"relations\\" xmlns=\\"http://www.crossref.org/relations.xsd\\"><related_item><description>aehraerh</description><inter_work_relation relationship-type=\\"isCommentOn\\" identifier-type=\\"isbn\\">awerh</inter_work_relation></related_item><related_item><description>afhaerh</description><inter_work_relation relationship-type=\\"isReviewOf\\" identifier-type=\\"issn\\">vadfbadfb</inter_work_relation></related_item></program><archive_locations><archive name=\\"LOCKSS\\"/></archive_locations><doi_data><doi>10.5555/artundissdummydata</doi><resource>http://aarwhaerh.com</resource><collection property=\\"crawler-based\\"><item crawler=\\"iParadigms\\"><resource>http://ararhareha.com</resource></item></collection></doi_data><citation_list><citation key=\\"ref0\\"><doi>10.1038/nrd2518</doi><unstructured_citation>Lagerstrom MC, Schioth HB. Structural diversity of G protein-coupled receptors and significance for drug discovery. Nat Rev Drug Discov. 2008;7(4):339–57. Epub 2008/04/03. pmid:18382464</unstructured_citation></citation><citation key=\\"ref1\\"><doi>10.1124/mol.63.6.1256</doi><unstructured_citation>Fredriksson R, Lagerstrom MC, Lundin LG, Schioth HB. The G-protein-coupled receptors in the human genome form five main families. Phylogenetic analysis, paralogon groups, and fingerprints. Mol Pharmacol. 2003;63(6):1256–72. pmid:12761335</unstructured_citation></citation><citation key=\\"ref2\\"><doi>10.1016/j.pharmthera.2013.11.004</doi><unstructured_citation>Foster SR, Roura E, Thomas WG. Extrasensory perception: odorant and taste receptors beyond the nose and mouth. Pharmacol Ther. 2014;142(1):41–61. pmid:24280065</unstructured_citation></citation><citation key=\\"ref3\\"><unstructured_citation>Thomas JH, Robertson HM. The Caenorhabditis chemoreceptor gene families. BMC Biol. 2008;6:42. pmid:18837995</unstructured_citation></citation><citation key=\\"ref4\\"><unstructured_citation>The-C.elegans-Sequencing-Consortium. Genome sequence of the nematode C. elegans: a platform for investigating biology. Science. 1998;282(5396):2012–8. pmid:9851916</unstructured_citation></citation></citation_list></journal_article></journal></crossref>",
+            "deposit-timestamp": "20180131104528685",
+            "doi": "10.5555/artundissdummydata",
+            "mdt-version": "1",
+            "owner-prefix": "10.5555",
+            "state": Object {
+              "archiveLocation": "LOCKSS",
+              "freetolicense": "yes",
+            },
+            "status": "draft",
+            "title": Object {
+              "title": "Article Under Issue Dummy Data",
+            },
+            "type": "article",
+          },
+        ],
+        "deposit-timestamp": "",
+        "doi": "",
+        "mdt-version": "2",
+        "owner-prefix": "10.5555",
+        "state": Object {},
+        "status": "draft",
+        "title": Object {
+          "issue": "5",
+          "title": "",
+          "volume": "",
+        },
+        "type": "issue",
+      },
+    ],
+    "deposit-timestamp": "20180131104528685",
+    "doi": "10.5555/dummypublication",
+    "mdt-version": "0",
+    "owner-prefix": "10.5555",
+    "state": Object {},
+    "status": "accepted",
+    "title": Object {
+      "title": "Test dummy data",
+    },
+    "type": "Publication",
+  },
+}
+`;
+
+exports[`save new article 1`] = `
+Object {
+  "message": Object {
+    "contains": Array [
+      Object {
+        "content": "<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?><crossref xmlns=\\"http://www.crossref.org/xschema/1.1\\"><journal><journal_metadata language=\\"af\\"><full_title>test new system 2</full_title><abbrev_title>arhaerh</abbrev_title><archive_locations><archive name=\\"LOCKSS\\"/></archive_locations><doi_data><doi>10.5555/13g14g14h12h2h24h2</doi><resource>http://afhaehaerhaerh.com</resource></doi_data></journal_metadata><journal_article><titles><title>test save</title></titles><doi_data><doi>10.5555/jesttestsave</doi><resource>http://</resource></doi_data></journal_article></journal></crossref>",
+        "deposit-timestamp": null,
+        "doi": "10.5555/jesttestsave",
+        "mdt-version": "1",
+        "owner-prefix": "10.5555",
+        "status": "draft",
+        "title": Object {
+          "title": "test save",
+        },
+        "type": "article",
+      },
+    ],
+    "deposit-timestamp": "20180117154727430",
+    "doi": "10.5555/defaultPub",
+    "mdt-version": "0",
+    "owner-prefix": "10.5555",
+    "state": Object {},
+    "status": "accepted",
+    "title": Object {
+      "title": "test new system 2",
+    },
+    "type": "Publication",
+  },
+}
+`;

@@ -294,7 +294,7 @@ export function normalize (publications) {  //Redux likes normalized state: stor
 
     try {
       if(thisPublication.doi) {
-        normalizedData[thisPublication.doi] = {message: thisPublication}
+        normalizedData[thisPublication.doi.toLowerCase()] = {message: thisPublication}
         return normalizedData
       }
 
@@ -306,11 +306,11 @@ export function normalize (publications) {  //Redux likes normalized state: stor
           if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
             return console.warn(`Had trouble retrieving data for a Record`, thisRecord || contains)
           }
-          normalizedRecords[thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
+          normalizedRecords[thisRecord.doi.toLowerCase() || JSON.stringify(thisRecord.title)] = thisRecord
         })
       }
 
-      normalizedData[thisPublication.message.doi] = {...thisPublication, normalizedRecords}
+      normalizedData[thisPublication.message.doi.toLowerCase()] = {...thisPublication, normalizedRecords}
 
       return normalizedData
 
@@ -382,13 +382,12 @@ export function getTooltipPosition () {
   try {
     bubblePosition =
       ((infoFlag.offset().top + (infoFlag.position().top - (infoFlag.position().top * .9))
-      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 15)))
+      - (switchLicense.position().top + 15) - (switchLicense.offset().top + 25)))
   } catch (e) {
     bubblePosition = false
   }
 
   if(isDate) bubblePosition -= 35
-  if(bubblePosition < 0) bubblePosition = false
 
   return bubblePosition
 }
@@ -397,29 +396,28 @@ export function getTooltipPosition () {
 
 
 
-
-if(Array.prototype.equals)
-  console.warn("Overriding existing Array.prototype.equals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
-
-Object.defineProperty(Array.prototype, "equals", {
-  enumerable: false,
-  value: function (array) {
-    if (!array)
-      return false;
-
-    // compare lengths - can save a lot of time
-    if (this.length !== array.length)
-      return false;
-
-    for (let i in this) {
-      if (this[i] !== array[i]) {
+if(Array.prototype.arrayEquals) {
+  console.warn("Overriding existing Array.prototype.arrayEquals. Possible causes: New API defines the method, there's a framework conflict or you've got double inclusions in your code.")
+} else {
+  Object.defineProperty(Array.prototype, "arrayEquals", {
+    enumerable: false,
+    value: function (array) {
+      if (!array)
         return false;
-      }
-    }
-    return true;
-  }
-});
 
+      // compare lengths - can save a lot of time
+      if (this.length !== array.length)
+        return false;
+
+      for (let i in this) {
+        if (this[i] !== array[i]) {
+          return false;
+        }
+      }
+      return true;
+    }
+  });
+}
 
 
 
@@ -446,3 +444,9 @@ export function validDate ( yearfield, monthfield, dayfield ){
   return true;
 }
 
+
+
+export function validOrcid (s) {
+  const re = /https?:\/\/orcid.org\/[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[X0-9]{1}/g
+  return re.test(s)
+}
