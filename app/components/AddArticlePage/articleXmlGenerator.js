@@ -5,6 +5,7 @@ import { XMLSerializer, DOMParser } from 'xmldom'
 import { getSubItems } from '../../utilities/getSubItems'
 import { cardNames, registryDois } from '../../utilities/crossmarkHelpers'
 import {appendElm,appendAttribute, lowerCaseFirst} from '../../utilities/helpers'
+import RelationTypes from '../../utilities/lists/relationTypes'
 const { pubHist, peer, copyright, supp, clinical, other, update } = cardNames
 
 
@@ -231,17 +232,21 @@ export default function (state, reduxForm) {
     appendAttribute("name","relations",relProgramElm)
     for (var item of relatedItems) {
       const { description, relationType, identifierType, relatedItemIdentifier } = item
-      var interRelElm
+      var workRelElm
       const relItemElm = root.ownerDocument.createElement("related_item")
       appendElm("description", description, relItemElm)
       relProgramElm.appendChild(relItemElm)
 
       if (relationType || identifierType || relatedItemIdentifier) {
-        interRelElm = root.ownerDocument.createElement("inter_work_relation")
-        appendAttribute("relationship-type", relationType, interRelElm)
-        appendAttribute("identifier-type", identifierType, interRelElm)
-        interRelElm.textContent = relatedItemIdentifier
-        relItemElm.appendChild(interRelElm)
+        let interOrIntra
+        if(relationType) {
+          interOrIntra = RelationTypes.find( item => item.name === relationType).type
+        }
+        workRelElm = root.ownerDocument.createElement(interOrIntra === 'inter' ? "inter_work_relation" : "intra_work_relation")
+        appendAttribute("relationship-type", relationType, workRelElm)
+        appendAttribute("identifier-type", identifierType, workRelElm)
+        workRelElm.textContent = relatedItemIdentifier
+        relItemElm.appendChild(workRelElm)
       }
     }
     root.appendChild(relProgramElm)

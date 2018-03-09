@@ -274,21 +274,21 @@ const parseXMLArticle = function (articleXML) {
     var relItem = []
     if (relatedItems) {
         if (!Array.isArray(relatedItems)) {
-          const inter_work_relation = objectSearch(relatedItems, 'inter_work_relation') || {}
+          const work_relation = objectSearch(relatedItems, 'inter_work_relation') || objectSearch(relatedItems, 'intra_work_relation') || {}
           relItem.push({
               description: relatedItems['description'] || '',
-              identifierType: inter_work_relation['-identifier-type'] || '',
-              relatedItemIdentifier: (typeof inter_work_relation === 'string') ? inter_work_relation : inter_work_relation['#text'] || '',
-              relationType: inter_work_relation['-relationship-type'] || ''
+              identifierType: work_relation['-identifier-type'] || '',
+              relatedItemIdentifier: (typeof work_relation === 'string') ? work_relation : work_relation['#text'] || '',
+              relationType: work_relation['-relationship-type'] || ''
           })
         } else {
           for(var i = 0; i < relatedItems.length; i++) {
-            const inter_work_relation = objectSearch(relatedItems[i], 'inter_work_relation') || {}
+            const work_relation = objectSearch(relatedItems[i], 'inter_work_relation') || objectSearch(relatedItems[i], 'intra_work_relation') || {}
             relItem.push({
               description: relatedItems[i]['description'] || '',
-              identifierType: inter_work_relation['-identifier-type'] || '',
-              relatedItemIdentifier: (typeof inter_work_relation === 'string') ? inter_work_relation : inter_work_relation['#text'] || '',
-              relationType: inter_work_relation['-relationship-type'] || ''
+              identifierType: work_relation['-identifier-type'] || '',
+              relatedItemIdentifier: (typeof work_relation === 'string') ? work_relation : work_relation['#text'] || '',
+              relationType: work_relation['-relationship-type'] || ''
             })
           }
         }
