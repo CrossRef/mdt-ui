@@ -38,7 +38,7 @@ export default class AdditionalInformation extends Component {
           <div className='row'>
             <div className='fieldHolder'>
               <FormInput
-                label="Similarity Check URL"
+                label="Similarity check URL"
                 name="similarityCheckURL"
                 value={ urlEntered(this.props.addInfo.similarityCheckURL) ? this.props.addInfo.similarityCheckURL : 'http://'}
                 error={this.props.simCheckError}
@@ -50,7 +50,7 @@ export default class AdditionalInformation extends Component {
                 tooltip={this.props.tooltip && tooltips.similarityCheckURL}/>
 
               <FormSelect
-                label="Archive Location"
+                label="Archive location"
                 name="archiveLocation"
                 value={this.props.addInfo.archiveLocation}
                 options={ArchiveLocations}

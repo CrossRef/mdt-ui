@@ -113,14 +113,14 @@ export default class DepositResult extends Component{
             <div className="leftIndicator">
               <img className='leftImage' src={`${routes.images}/Deposit/Asset_Icons_Deposit_Deposit Accepted.svg`} />
               <div className="leftMessage">
-                <h3>Accepted Deposits</h3>
+                <h3>Accepted deposits</h3>
                 <h3>{resultCount.Success}</h3>
               </div>
             </div>
             <div className="rightIndicator">
               <img className='rightImage' src={`${routes.images}/Deposit/Asset_Icons_Deposit_Deposit Failed.svg`} />
               <div className="rightMessage">
-                <h3>Failed Deposits</h3>
+                <h3>Failed deposits</h3>
                 <h3>{resultCount.Failed}</h3>
               </div>
             </div>

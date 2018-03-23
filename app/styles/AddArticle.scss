@@ -279,11 +279,11 @@ input.height64, textarea.height64, select.height64 {
 
 .articleInnerForm{
   float: left;
-  background: #EAEAEA;
-  border: 1px solid #EAEAEA;
+  background: #d9d9d9;
+  border: 1px solid #d9d9d9;
   width: 100%;
   .topbar {
-    background: #616B6B;
+    background: #4f5858;
     color: #FFFFFF;
     min-height: 67px;
     padding: 10px 0 0;
@@ -396,7 +396,7 @@ input.height64, textarea.height64, select.height64 {
         }
         .arrowHolder {
           img {
-            fill: #616B6B;
+            fill: #4f5858;
             margin: 0 20px 0 0;
             transform: rotate(90deg);
             width: 20px;
@@ -491,8 +491,8 @@ input.height64, textarea.height64, select.height64 {
                   &.on {
                     background: #616161;
                     .switch-toggle {
-                      background: #3AAFC6;
-                      border: 1px solid #3AAFC6;
+                      background: #3eb1c8;
+                      border: 1px solid #3eb1c8;
                       left: 36px;
                     }
                   }
@@ -516,8 +516,8 @@ input.height64, textarea.height64, select.height64 {
               float: left;
               width: 100%;
               .requiredholder {
-                background: #3AAFC6;
-                border: 1px solid #3AAFC6;
+                background: #3eb1c8;
+                border: 1px solid #3eb1c8;
                 float: left;
                 width: 30px;
                 .required {
@@ -640,8 +640,8 @@ input.height64, textarea.height64, select.height64 {
                       &.on {
                         background: #444444;
                         .switch-toggle {
-                          background: #3AAFC6;
-                          border: 1px solid #3AAFC6;
+                          background: #3eb1c8;
+                          border: 1px solid #3eb1c8;
                           left: 36px;
                         }
                       }
@@ -778,8 +778,8 @@ input.height64, textarea.height64, select.height64 {
                 &.on {
                   background: #444444;
                   .switch-toggle {
-                    background: #3AAFC6;
-                    border: 1px solid #3AAFC6;
+                    background: #3eb1c8;
+                    border: 1px solid #3eb1c8;
                     left: 36px;
                   }
                 }
@@ -830,7 +830,7 @@ input.height64, textarea.height64, select.height64 {
     }
   }
   .saveButtonHolder {
-    background: #616B6B;
+    background: #4f5858;
     display: block;
     float: left;
     padding: 20px 60px 20px 0;
@@ -870,7 +870,7 @@ input.height64, textarea.height64, select.height64 {
       position: absolute;
       width: 174px;
       color: #FFFFFF;
-      background: #616B6B;
+      background: #4f5858;
       line-height: 30px;
       text-align: left;
       border-radius: 0px;
@@ -889,7 +889,7 @@ input.height64, textarea.height64, select.height64 {
         margin: 0;
       }
       p:hover {
-        background: #3AAFC6;
+        background: #3eb1c8;
       }
     }
     div:after {
@@ -899,7 +899,7 @@ input.height64, textarea.height64, select.height64 {
       left: 46%;
       width: 0;
       height: 0;
-      border-bottom: 8px solid #616B6B;
+      border-bottom: 8px solid #4f5858;
       border-right: 8px solid transparent;
       border-left: 8px solid transparent;
     }
@@ -918,7 +918,7 @@ input.height64, textarea.height64, select.height64 {
 }
 
 .saveSuccess {
-  background-color: #3AAFC6;
+  background-color: #3eb1c8;
 }
 
 .saveFailed {
@@ -1199,7 +1199,7 @@ input.height64, textarea.height64, select.height64 {
         margin: 1px 0 1px 46px;
         cursor: pointer;
         vertical-align:top;
-        color: #3AAFC6;
+        color: #3eb1c8;
       }
       .clearReference {
         clear: both;

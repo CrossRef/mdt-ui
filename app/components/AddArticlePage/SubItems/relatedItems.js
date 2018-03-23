@@ -84,7 +84,7 @@ export default class RelatedItems extends Component {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormInput
-                  label="Related Item Identifier"
+                  label="Related item identifier"
                   name="relatedItemIdentifier"
                   error={relatedItemDoiInvalid}
                   value={relatedItemIdentifier}
@@ -98,7 +98,7 @@ export default class RelatedItems extends Component {
                   onBlur={this.props.validate}/>
 
                 <FormSelect
-                  label="Identifier Type"
+                  label="Identifier type"
                   name="identifierType"
                   required={activeElement}
                   error={this.props.relateditem.errors.relatedItemIdType}
@@ -138,7 +138,7 @@ export default class RelatedItems extends Component {
                   onBlur={this.props.validate}/>
 
                 <FormSelect
-                  label="Relation Type"
+                  label="Relation type"
                   name="relationType"
                   required={activeElement}
                   error={this.props.relateditem.errors.relatedItemRelType}

@@ -67,7 +67,7 @@ export default class PublicationCardContainer extends Component {
 
     this.props.reduxControlModal({
       showModal:true,
-      title:'Edit Journal Record',
+      title:'Edit journal record',
       Component: AddPublicationModal,
       props:{
         mode: 'edit',

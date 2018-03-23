@@ -180,7 +180,7 @@ export default class DepositCartPage extends Component {
               <img src={`${routes.images}/ReviewArticle/Asset_Icons_White_Review.svg`} />
             </div>
             <div className='innerTitleHolderText'>
-              Review All
+              Review all
             </div>
           </div>,
         style: 'defaultModal reviewModal',

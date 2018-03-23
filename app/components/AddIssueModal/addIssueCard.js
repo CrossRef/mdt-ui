@@ -47,7 +47,7 @@ export default function AddIssueCard (props) {
                   <div className='switchOuterHolder'>
                     <div className='switchInnerHolder'>
                       <div className='switchLicense'>
-                        <div className='switchLabel'><span>Show Help</span></div>
+                        <div className='switchLabel'><span>Show help</span></div>
                         <Switch
                           onClick={props.helperSwitch}
                           on={props.showHelper}
@@ -62,7 +62,7 @@ export default function AddIssueCard (props) {
               <div className='row'>
                 <div className='fieldHolder'>
                   <FormInput
-                    label="Issue Number"
+                    label="Issue number"
                     name="issue"
                     value={props.issue.issue}
                     changeHandler={props.handler}
@@ -75,7 +75,7 @@ export default function AddIssueCard (props) {
                     required={!props.issue.volume}/>
 
                   <FormInput
-                    label="Issue Title"
+                    label="Issue title"
                     name="issueTitle"
                     value={props.issue.issueTitle}
                     changeHandler={props.handler}
@@ -140,7 +140,7 @@ export default function AddIssueCard (props) {
               <div className='row'>
                 <div className='fieldHolder'>
                   <FormDate issue
-                    label="Print Date"
+                    label="Print date"
                     name="printDate"
                     required={!props.issue.onlineDateYear || errors.printDateIncomplete}
                     changeHandler={props.handler}
@@ -167,7 +167,7 @@ export default function AddIssueCard (props) {
                     }}/>
 
                   <FormDate issue
-                    label="Online Date"
+                    label="Online date"
                     name="onlineDate"
                     required={!props.issue.printDateYear || errors.onlineDateIncomplete}
                     changeHandler={props.handler}
@@ -208,7 +208,7 @@ export default function AddIssueCard (props) {
               <div className='row'>
                 <div className='fieldHolder'>
                   <FormSelect
-                    label="Archive Location"
+                    label="Archive location"
                     name="archiveLocation"
                     value={props.issue.archiveLocation}
                     options={ArchiveLocations}
@@ -219,7 +219,7 @@ export default function AddIssueCard (props) {
                     onSelect={props.validate}/>
 
                   <FormInput
-                    label="Special Issue Number"
+                    label="Special issue number"
                     name="specialIssueNumber"
                     value={props.issue.specialIssueNumber}
                     error={errors.specialNumberLimit}
@@ -246,7 +246,7 @@ export default function AddIssueCard (props) {
               <div className='row'>
                 <div className='fieldHolder'>
                   <FormInput
-                    label="Volume Number"
+                    label="Volume number"
                     name="volume"
                     value={props.issue.volume}
                     changeHandler={props.handler}
@@ -311,7 +311,7 @@ export default function AddIssueCard (props) {
 
 
             <SubItem
-              title={'Optional Issue Information (Contributorship)'}
+              title={'Optional issue information (Contributorship)'}
               arrowType={'dark'}
               addHandler={props.addSubItem}
               boundSetState={props.boundSetState}

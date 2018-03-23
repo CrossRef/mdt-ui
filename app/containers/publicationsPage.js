@@ -40,7 +40,7 @@ export default class PublicationsPage extends Component {
 
   openAddPublicationModal = () => this.props.reduxControlModal({
     showModal:true,
-    title:'Create Journal Record',
+    title:'Create journal record',
     Component: AddPublicationModal,
     props:{
       mode: 'add',
@@ -65,7 +65,7 @@ export default class PublicationsPage extends Component {
           <button
             className='addPublication'
             onClick={this.openAddPublicationModal}
-            >New Publication
+            >New publication
           </button>
         </div>
 

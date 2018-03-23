@@ -1,10 +1,10 @@
 export const cardNames = {
-  pubHist: 'Publication History',
-  peer: 'Peer Review',
-  clinical: 'Linked Clinical Trials',
-  update: 'Status Update',
-  copyright: 'Copyright & Licensing',
-  supp: 'Supplementary Material',
+  pubHist: 'Publication history',
+  peer: 'Peer review',
+  clinical: 'Linked clinical trials',
+  update: 'Status update',
+  copyright: 'Copyright & licensing',
+  supp: 'Supplementary material',
   other: 'Other'
 }
 

@@ -23,7 +23,7 @@ export class OptionalTitleData extends Component {
             <span className={'arrowHolder' + (this.props.show ? ' openArrowHolder' : '')}>
               <img src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
             </span>
-          <span>Optional Title Data</span>
+          <span>Optional title data</span>
         </div>
         <div className={'hiddenFields' + (this.props.show ? 'showOptionalTitle':'')}>
           <div className='fieldHolder first'>
@@ -77,7 +77,7 @@ export class DatesRow extends Component {
       <div className='row'>
         <div className='fieldHolder'>
           <FormDate
-            label="Print Date"
+            label="Print date"
             name="printDate"
             changeHandler={this.props.handleChange}
             onSelect={this.props.validate}
@@ -105,7 +105,7 @@ export class DatesRow extends Component {
             }}/>
 
           <FormDate
-            label="Online Date"
+            label="Online date"
             name="onlineDate"
             changeHandler={this.props.handleChange}
             onSelect={this.props.validate}

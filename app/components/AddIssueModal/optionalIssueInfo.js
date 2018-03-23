@@ -45,7 +45,7 @@ export default class OptionalIssueInformation extends Component {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormInput
-                  label="First Name"
+                  label="First name"
                   name="firstName"
                   value={this.props.optionalIssueInfo.firstName}
                   tooltip={this.props.tooltip && tooltips.contributorFirstName}
@@ -56,7 +56,7 @@ export default class OptionalIssueInformation extends Component {
                   changeHandler={this.handler}/>
 
                 <FormInput
-                  label="Last Name"
+                  label="Last name"
                   name="lastName"
                   value={this.props.optionalIssueInfo.lastName}
                   error={errors.contributorLastName}
@@ -135,7 +135,7 @@ export default class OptionalIssueInformation extends Component {
                   changeHandler={this.handler}/>
 
                 <FormInput
-                  label="Alternative Name"
+                  label="Alternative name"
                   name="alternativeName"
                   value={this.props.optionalIssueInfo.alternativeName}
                   tooltip={this.props.tooltip && tooltips.contributerAlternativeName}

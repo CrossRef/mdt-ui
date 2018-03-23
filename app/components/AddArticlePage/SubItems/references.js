@@ -90,7 +90,7 @@ export default class References extends React.Component {
         </div>
 
         <div className="getReferencesButton" onClick={this.getReferences}>
-          Match References {this.state.loading && <div className="referencesLoader"/>}
+          Match references {this.state.loading && <div className="referencesLoader"/>}
         </div>
 
         {this.props.references.length > 0 &&

@@ -38,7 +38,7 @@
     display: table;
     width: 100%;
     .required {
-        background: #3AAFC6;
+        background: #3eb1c8;
         color: #FFFFFF;
         font: {
             size: 20px;
@@ -90,7 +90,7 @@
                       position: absolute;
                       top: 40px;
                       width: 336px;
-                      background: #616B6B;
+                      background: #4f5858;
                       padding-top: 22px;
                       padding-bottom: 18px;
                       z-index: 2;
@@ -123,7 +123,7 @@
                         }
                       }
                       .doiOptionContainer:hover {
-                        background: #3AAFC6
+                        background: #3eb1c8
                       }
                     }
                     .doiDropdown:after {
@@ -133,7 +133,7 @@
                       left: 46%;
                       width: 0;
                       height: 0;
-                      border-bottom: 8px solid #616B6B;
+                      border-bottom: 8px solid #4f5858;
                       border-right: 8px solid transparent;
                       border-left: 8px solid transparent;
                     }
@@ -148,9 +148,9 @@
                 height: 40px;
             }
             .button-white-cancel {
-                background: #e5e5e5;
-                border: 1px solid #434343;
-                color: #434343;
+                background: #d9d9d9;
+                border: 1px solid #4f5858;
+                color: #4f5858;
                 float: left;
                 padding: 8px;
                 text: {
@@ -199,9 +199,9 @@
       height: 30px;
     }
     .cancel {
-      background: #e5e5e5;
-      border: 1px solid #434343;
-      color: #434343;
+      background: #d9d9d9;
+      border: 1px solid #4f5858;
+      color: #4f5858;
     }
     .ok {
       background: #3eb1c8;

@@ -446,7 +446,7 @@ export default class AddPublicationModal extends Component {
         <form className='addPublications'>
           <div className='fieldRowHolder'>
             <div className={(errors.showTitleEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
-              <div className='left-indent-36'>Journal Title (Required)</div>
+              <div className='left-indent-36'>Journal title (Required)</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className='required'><span>*</span></div>
@@ -477,7 +477,7 @@ export default class AddPublicationModal extends Component {
           </div>
           <div className='fieldRowHolder'>
             <div className='fieldinput'>
-              <div className='left-indent-36'>Journal Abbreviation</div>
+              <div className='left-indent-36'>Journal abbreviation</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className='notrequired' />
@@ -552,7 +552,7 @@ export default class AddPublicationModal extends Component {
               </div>
             </div>
             <div className='fieldinput'>
-              <div className='left-indent-36'>Archive Locations</div>
+              <div className='left-indent-36'>Archive locations</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className='notrequired' />

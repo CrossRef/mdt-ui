@@ -173,7 +173,7 @@
         position: absolute;
         width: 160px;
         color: #FFFFFF;
-        background: #616B6B;
+        background: #4f5858;
         line-height: 30px;
         text-align: left;
         border-radius: 0px;
@@ -201,7 +201,7 @@
         left: 46%;
         width: 0;
         height: 0;
-        border-bottom: 8px solid #616B6B;
+        border-bottom: 8px solid #4f5858;
         border-right: 8px solid transparent;
         border-left: 8px solid transparent;
       }
@@ -399,8 +399,8 @@
           float: right;
           cursor: pointer;
           background: white;
-          border: 1px solid #434343;
-          color: #434343;
+          border: 1px solid #4f5858;
+          color: #4f5858;
           width: 145px;
           height: 38px;
           margin-right: 35px;
@@ -426,8 +426,8 @@
       cursor: pointer;
       float:right;
       background: white;
-      border: 1px solid #434343;
-      color: #434343;
+      border: 1px solid #4f5858;
+      color: #4f5858;
       width: 130px;
       height: 31px;
     }
@@ -480,8 +480,8 @@
     .leftButton {
       cursor: pointer;
       background: white;
-      border: 1px solid #434343;
-      color: #434343;
+      border: 1px solid #4f5858;
+      color: #4f5858;
       width: 140px;
       height: 40px;
       font-size: 1.1em;
@@ -499,8 +499,8 @@
     .inactive {
       background: white;
       cursor: not-allowed;
-      color: #434343;
-      border: 1px solid #434343;
+      color: #4f5858;
+      border: 1px solid #4f5858;
     }
   }
 }

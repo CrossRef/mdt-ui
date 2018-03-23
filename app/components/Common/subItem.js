@@ -53,7 +53,7 @@ export default class SubItem extends Component {
               this.setState({showSection: true})
             }
             this.props.addHandler()
-          }}>Add New</a>
+          }}>Add new</a>
         </div>
       )
     }

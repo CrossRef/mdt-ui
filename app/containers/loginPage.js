@@ -79,7 +79,7 @@ export default class LoginPage extends Component {
             <input
               type='submit'
               className='button-anchor loginButton'
-              value='Log In' />
+              value='Log in' />
             {error && <div className='invalid-credentials'>Please enter a correct username and password.</div>}
             <div className='forgot-password'>
               <a href='#'>Forgot password?</a>

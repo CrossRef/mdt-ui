@@ -168,7 +168,7 @@ export default class PublicationPage extends Component {
   deleteSelections = () => {
     this.props.reduxControlModal({
       showModal: true,
-      title: 'Remove Record',
+      title: 'Remove record',
       style: 'warningModal',
       Component: DeleteConfirmModal,
       props: {
@@ -208,7 +208,7 @@ export default class PublicationPage extends Component {
   moveSelection = () => {
     this.props.reduxControlModal({
       showModal: true,
-      title: 'Move to Issue',
+      title: 'Move to issue',
       style: 'defaultModal',
       Component: MoveSelectionModal,
       props: {

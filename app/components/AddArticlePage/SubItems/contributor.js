@@ -92,7 +92,7 @@ export default class Contributor extends Component {
               <div className='fieldHolder'>
 
                 <FormInput
-                  label="First Name"
+                  label="First name"
                   name="firstName"
                   value={firstName}
                   changeHandler={this.handleContributor}
@@ -103,7 +103,7 @@ export default class Contributor extends Component {
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
-                  label="Last Name"
+                  label="Last name"
                   required={true}
                   error={errors.contributorLastName}
                   name="lastName"
@@ -226,7 +226,7 @@ export default class Contributor extends Component {
               <div className='fieldHolder'>
 
                 <FormInput
-                  label="Group Author Name"
+                  label="Group author name"
                   required={!!groupAuthorRole}
                   error={errors.contributorGroupName}
                   name="groupAuthorName"
@@ -242,7 +242,7 @@ export default class Contributor extends Component {
                   disabled={this.state.groupDisabled}/>
 
                 <FormSelect
-                  label="Group Author Role"
+                  label="Group author role"
                   required={!!groupAuthorName}
                   error={errors.contributorGroupRole}
                   name="groupAuthorRole"

@@ -88,7 +88,7 @@ export default class License extends Component {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormDate
-                  label="Start Date"
+                  label="Start date"
                   name="acceptedDate"
                   changeHandler={this.handleLicense}
                   onSelect={this.props.validate}

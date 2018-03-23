@@ -53,7 +53,7 @@ export default class ActionBar extends Component {
   openAddIssueModal = () => {
     this.props.reduxControlModal({
       showModal: true,
-      title: 'Create New Issue/Volume',
+      title: 'Create new issue/volume',
       style: 'addIssueModal',
       Component: AddIssueModal,
       props: {
@@ -79,10 +79,10 @@ export default class ActionBar extends Component {
     const { pubDoi, handleAddCart, deleteSelections, duplicateSelection, moveSelection } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
-        Add Record
+        Add record
         {this.state.addRecordMenuOpen && <div className='actionBarDropDown'>
-          <p onClick={()=>browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/addarticle`)}>New Article</p>
-          <p onClick={this.openAddIssueModal}>New Volume/Issue</p>
+          <p onClick={()=>browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/addarticle`)}>New article</p>
+          <p onClick={this.openAddIssueModal}>New volume/issue</p>
         </div>}
       </div>
       <div className='pull-right'>
@@ -91,7 +91,7 @@ export default class ActionBar extends Component {
         >
           Action
           {this.state.actionMenuOpen && <div className='actionBarDropDown'>
-            {!onlyIssue ? <p onClick={handleAddCart}>Add to Cart</p> : <p className="grayedOut">Add to Cart</p>}
+            {!onlyIssue ? <p onClick={handleAddCart}>Add to deposit</p> : <p className="grayedOut">Add to deposit</p>}
             {!onlyIssue ? <p onClick={moveSelection}>Move to</p> : <p className="grayedOut">Move to</p>}
             {this.props.selections.length === 1 && !onlyIssue ? <p onClick={duplicateSelection}>Duplicate</p> : <p className="grayedOut">Duplicate</p>}
             <p onClick={deleteSelections}>Remove</p>

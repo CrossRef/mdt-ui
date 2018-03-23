@@ -4,19 +4,19 @@ import {routes} from '../../routing'
 
 
 
-export const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {
+export function TopOfPage ({status, cart, showDeposit, deposit, review}) {
   return (
     <div>
       {status !== 'result' &&
       <div className='pageTitle'>
-        Deposit Cart
+        To deposit
       </div>
       }
 
       <div className='buttonHolder'>
         <div className='buttonInnerHolder'>
           <div className='ReviewButtonHolder'>
-            {status !== 'result' ? (cart.length > 0 ? <a onClick={review}>Review All</a> : '') : <div className='pageTitle'>Deposit Result</div>}
+            {status !== 'result' ? (cart.length > 0 ? <a onClick={review}>Review all</a> : '') : <div className='pageTitle'>Deposit result</div>}
           </div>
           <div className={`DepositButtonHolder ${status === 'result' ? 'result' : ''}`}>
             <a
@@ -31,11 +31,11 @@ export const TopOfPage = ({status, cart, showDeposit, deposit, review}) => {
   )
 }
 
-export const EmptyCart = () => {
+export function EmptyCart () {
   return (
     <div className='EmptyHolder'>
       <div className='emptyTitle'>
-        Deposit Cart is Empty
+        No items awaiting deposit
       </div>
       <div className='emptyBoxHolder'>
         <img src={`${routes.images}/Deposit/Asset_Empty_Box_Empty Box Yellow.svg`} />
@@ -44,7 +44,7 @@ export const EmptyCart = () => {
   )
 }
 
-export const WaitMessage = () => {
+export function WaitMessage () {
   return (
     <div className="waitMessage">
       <div>Just a moment...</div>

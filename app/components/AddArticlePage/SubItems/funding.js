@@ -194,7 +194,7 @@ export default class Funding extends Component {
                                 <div className='labelholder'>
                                     <div></div>
                                     <div className='labelinnerholder'>
-                                        <div className='label'>Funder Name {this.props.index + 1}</div>
+                                        <div className='label'>Funder name {this.props.index + 1}</div>
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
@@ -265,7 +265,7 @@ export default class Funding extends Component {
                               </div>
                             </div>
                             <div className='field'>
-                              <a className='AddNewGrantNumberButton' onClick={this.addGrant}>Add New Award Number</a>
+                              <a className='AddNewGrantNumberButton' onClick={this.addGrant}>Add new award number</a>
                             </div>
                           </div>
                         </div>
@@ -302,7 +302,7 @@ class GrantField extends React.Component {
 
     return (
       <div className='grantSection' key={this.props.index} >
-        <div className='grantTitle'>Grant Number {this.props.index + 1}</div>
+        <div className='grantTitle'>Grant number {this.props.index + 1}</div>
         <div className="grantRow">
           {this.props.tooltip && grantIsFocused && <img className='infoFlag infoFlagGrant' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
           <input

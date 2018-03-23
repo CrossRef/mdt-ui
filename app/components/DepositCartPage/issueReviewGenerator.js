@@ -34,12 +34,12 @@ const issueReviewGenerator = function (publication, issue) {
                         {reviewData.issue.issueDoi ? <p>Issue DOI: {(reviewData.issue.issueDoi ? reviewData.issue.issueDoi : '')}</p> : ''}
                         {
                             getdate([reviewData.issue.printDateYear, reviewData.issue.printDateMonth, reviewData.issue.printDateDay]).length > 0 ?
-                            <p>Publication Print Date: {getdate([reviewData.issue.printDateYear, reviewData.issue.printDateMonth, reviewData.issue.printDateDay])}</p> :
+                            <p>Publication print date: {getdate([reviewData.issue.printDateYear, reviewData.issue.printDateMonth, reviewData.issue.printDateDay])}</p> :
                             ''
                         }
                         {
                             getdate([reviewData.issue.onlineDateYear, reviewData.issue.onlineDateMonth, reviewData.issue.onlineDateDay]).length > 0 ?
-                            <p>Publication Online Date: {getdate([reviewData.issue.onlineDateYear, reviewData.issue.onlineDateMonth, reviewData.issue.onlineDateDay])}</p> :
+                            <p>Publication online date: {getdate([reviewData.issue.onlineDateYear, reviewData.issue.onlineDateMonth, reviewData.issue.onlineDateDay])}</p> :
                             ''
                         }
                     </div>
