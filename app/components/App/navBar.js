@@ -80,7 +80,7 @@ export default class NavBar extends Component {
       <div className='publications-nav'>
         <div className='publications-nav-contents'>
           <div className='links'>
-            <Link to={routes.publications}>Publications</Link>
+            <Link to={routes.publications}>Home</Link>
             <Link to={routes.depositHistory}>Deposit history</Link>
             <Link className='depositCartHolder' to={routes.depositCart}>
               To deposit
