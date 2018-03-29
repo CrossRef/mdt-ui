@@ -58,7 +58,7 @@ export default class HistoryDate extends React.Component {
               onClick={()=>{
                 this.props.calendarHandler(this.props.activeCalendar === this.props.name ? '' : this.props.name)
               }}>
-                <img className='calendarIcon' src={`${routes.images}/DepositHistory/Asset_Icons_Black_Calandar.svg`} />
+                <img className='calendarIcon' src={`${routes.images}/common/Asset_Icons_Grey_Calandar.svg`} />
             </a>
           </div>
         </div>

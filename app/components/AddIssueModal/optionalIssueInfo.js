@@ -122,7 +122,7 @@ export default class OptionalIssueInformation extends Component {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormInput
-                  label="ORCID"
+                  label="ORCID iD"
                   name="orcid"
                   error={errors.contributorOrcid}
                   indicatorErrors={['contributorOrcid']}

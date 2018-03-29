@@ -121,7 +121,7 @@ export default class FormSelect extends React.Component {
           </div>
           <div className='field'>
 
-            {isFocus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+            {isFocus && this.props.tooltip && <img className='infoFlag infoFlagInput' src={`${routes.images}/common/Asset_Icons_GY_HelpFlag.svg`} />}
 
             {this.options()}
           </div>

@@ -61,7 +61,7 @@ input.height64, textarea.height64, select.height64 {
   position: absolute;
   width: 200px;
   color: #FFFFFF;
-  background: #EE6068;
+  background: #f25c66;
   text-align: center;
   padding: 4px 5px 10px 8px;
   border-radius: 5px;
@@ -118,7 +118,7 @@ input.height64, textarea.height64, select.height64 {
   align-items: center;
   color: white;
   position: fixed;
-  background-color: #EE6068;
+  background-color: #f25c66;
   width: 200px;
   height: 50px;
   border-radius: 6px;
@@ -141,7 +141,7 @@ input.height64, textarea.height64, select.height64 {
 .toolmsgholder {
   right: -27.5px;
   color: #646464;
-  background: #ffcc66;
+  background: #ffd86b;
   position: absolute;
   width: 200px;
   text-align: center;
@@ -174,7 +174,7 @@ input.height64, textarea.height64, select.height64 {
 
 .fieldError {
   background: #FFE9E8;
-  border: 1px solid #EE6068 !important;
+  border: 1px solid #f25c66 !important;
 }
 
 
@@ -209,9 +209,9 @@ input.height64, textarea.height64, select.height64 {
         display: inline-block;
         margin: 0;
         width: 37px;
-        border-top: 1px solid black;
-        border-right: 1px solid black;
-        border-bottom: 1px solid black;
+        border-top: 1px solid #4F5858;
+        border-right: 1px solid #4F5858;
+        border-bottom: 1px solid #4F5858;
 
         .react-datepicker-popper[data-placement^="top"] {
           margin-left: -45px;
@@ -922,7 +922,7 @@ input.height64, textarea.height64, select.height64 {
 }
 
 .saveFailed {
-  background-color: #EE6068;
+  background-color: #f25c66;
 }
 
 .backbutton, .reviewbutton {
@@ -1000,39 +1000,39 @@ input.height64, textarea.height64, select.height64 {
   position: absolute;
   right: 0px;
   top: -30px;
-  width: 38px;
+  width: 35px;
 }
 
 .infoFlagTextArea {
   position: absolute;
   right: 0;
   top: -29px;
-  width: 38px;
+  width: 35px;
 }
 
 .infoFlagDate {
   position: absolute;
   right: -0.5px;
   top: -13px;
-  width: 38px;
+  width: 35px;
   height: auto;
 }
 
 .infoFlagBorder {
-  outline: 1px solid #ffcc66;
+  outline: 1px solid #ffd86b;
 }
 
 .infoFlagCalendarBorder {
-  border-top: 1px solid #ffcc66 !important;
-  border-right: 1px solid #ffcc66 !important;
-  border-bottom: 1px solid #ffcc66 !important;
+  border-top: 1px solid #ffd86b !important;
+  border-right: 1px solid #ffd86b !important;
+  border-bottom: 1px solid #ffd86b !important;
 }
 
 
 .infoFlagIconHolder {
-  border-top: 1px solid #ffcc66 !important;
-  border-right: 1px solid #ffcc66 !important;
-  border-bottom: 1px solid #ffcc66 !important;
+  border-top: 1px solid #ffd86b !important;
+  border-right: 1px solid #ffd86b !important;
+  border-bottom: 1px solid #ffd86b !important;
 }
 
 

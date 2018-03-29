@@ -188,7 +188,7 @@ export const ArticleMessages = {
   title: {
     type: 'required',
     bold: 'Required',
-    message: 'Please provide article title.'
+    message: 'Please provide Article title.'
   },
 
   doi: {
@@ -214,12 +214,12 @@ export const ArticleMessages = {
   url: {
     type: 'required',
     bold: 'Required',
-    message: 'Please provide article URL.'
+    message: 'Please provide Article URL.'
   },
   invalidurl: {
     type: 'invalid',
     bold: 'Invalid Article URL',
-    message: 'Please check your article URL.'
+    message: 'Please check your Article URL.'
   },
 
   printDateYear: {
@@ -257,7 +257,7 @@ export const ArticleMessages = {
   firstPage: {
     type: 'required',
     bold: 'Required',
-    message: 'Please provide article first page with last page.'
+    message: 'Please provide Article first page with last page.'
   },
 
   firstPageLimit: {

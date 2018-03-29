@@ -17,6 +17,10 @@
         position: relative;
       }
 
+      input::placeholder {
+        color: #a6a6a6
+      }
+
       .publication-search-results {
         position: absolute;
         top: 31px;

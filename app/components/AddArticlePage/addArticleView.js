@@ -109,7 +109,7 @@ export default function AddArticleView (props) {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormTextArea
-                  label="Article title (Required)"
+                  label="Article title (required)"
                   name="title"
                   value={props.article.title}
                   required
@@ -157,7 +157,7 @@ export default function AddArticleView (props) {
             <div className='row'>
               <div className="fieldHolder">
                 <FormInput
-                  label="Article DOI (Required)"
+                  label="Article DOI (required)"
                   name="doi"
                   value={props.article.doi}
                   required
@@ -171,7 +171,7 @@ export default function AddArticleView (props) {
                   onBlur={props.validate}/>
 
                 <FormInput
-                  label="Article URL (Required)"
+                  label="Article URL (required)"
                   name="url"
                   value={ urlEntered(props.article.url) ? props.article.url : 'http://' }
                   required

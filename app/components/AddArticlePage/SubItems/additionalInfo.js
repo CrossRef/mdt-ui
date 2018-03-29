@@ -38,7 +38,7 @@ export default class AdditionalInformation extends Component {
           <div className='row'>
             <div className='fieldHolder'>
               <FormInput
-                label="Similarity check URL"
+                label="Similarity Check URL"
                 name="similarityCheckURL"
                 value={ urlEntered(this.props.addInfo.similarityCheckURL) ? this.props.addInfo.similarityCheckURL : 'http://'}
                 error={this.props.simCheckError}
