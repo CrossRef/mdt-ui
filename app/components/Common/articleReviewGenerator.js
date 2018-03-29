@@ -244,10 +244,20 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                     </p>
                     : ''
                     }
-                    {(getLicense().length > 0) ?
-                    <p>
+                    {(getLicense().length > 0) ? <p>
                         <h4>License</h4>
                         {getLicense()}
+                    </p>
+                    : ''
+                    }
+                    {reviewData.references && reviewData.references.length ?
+                    <p>
+                      <h4>References</h4>
+                      <ls>
+                        {reviewData.references.map( r => {
+                          return <li key={`${r.reference}${r.DOI}`}>{r.reference || r.DOI}</li>
+                        })}
+                      </ls>
                     </p>
                     : ''
                     }
