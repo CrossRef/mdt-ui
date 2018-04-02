@@ -253,11 +253,11 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                     {reviewData.references && reviewData.references.length ?
                     <p>
                       <h4>References</h4>
-                      <ls>
+                      <ul>
                         {reviewData.references.map( r => {
-                          return <li key={`${r.reference}${r.DOI}`}>{r.reference || r.DOI}</li>
+                          return <li key={`${r.reference}${r.DOI}`}><p>{r.reference || r.DOI}</p></li>
                         })}
-                      </ls>
+                      </ul>
                     </p>
                     : ''
                     }
