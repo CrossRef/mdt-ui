@@ -17,7 +17,7 @@ import { XMLSerializer, DOMParser } from 'xmldom'
 
 
 const mapStateToProps = (state, props) => ({
-  publication: state.publications[props.pubDoi]
+  publication: state.publications[props.pubDoi.toLowerCase()]
 })
 
 const mapDispatchToProps = dispatch => bindActionCreators({
