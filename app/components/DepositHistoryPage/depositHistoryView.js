@@ -37,12 +37,12 @@ export default class DepositHistoryView extends Component {
     return (
       <div className='depositHistory'>
         <div className='pageTitle'>
-          Deposit History
+          Deposit history
         </div>
         <div className='dateSearchHolder'>
           <div className='start'>
             <HistoryDate
-              title="Date From"
+              title="Date from"
               name="start"
               changeHandler={this.props.handleChange}
               fullDate={this.props.startFullDate}
@@ -55,7 +55,7 @@ export default class DepositHistoryView extends Component {
           </div>
           <div className='end'>
             <HistoryDate
-              title="Date To"
+              title="Date to"
               name="end"
               changeHandler={this.props.handleChange}
               fullDate={this.props.endFullDate}

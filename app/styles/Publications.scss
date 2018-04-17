@@ -17,6 +17,10 @@
         position: relative;
       }
 
+      input::placeholder {
+        color: #a6a6a6
+      }
+
       .publication-search-results {
         position: absolute;
         top: 31px;
@@ -66,6 +70,11 @@
         .publication-name {
           font-size: 14px;
           font-family: "HelveticaNeueETW01-65Md";
+          color: #4f5858
+        }
+
+        .publication-type {
+          color: #4f5858
         }
 
         .publication-edit {

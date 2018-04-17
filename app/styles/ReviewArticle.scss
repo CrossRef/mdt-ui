@@ -61,7 +61,7 @@
         width: 18px;
         vertical-align: bottom;
         .innerBorder {
-            background: #EAEAEA;
+            background: #d9d9d9;
             height: 97%;
             width: 6px;
         }
@@ -72,7 +72,7 @@
         width: 14px;
         vertical-align: bottom;
         .innerBorder {
-            background: #EAEAEA;
+            background: #d9d9d9;
             height: 80%;
             width: 4px;
         }
@@ -84,6 +84,28 @@
         h4 {
             margin: 0 0 16px 0;
         }
+
+        ul {
+            counter-reset: foo;
+            display: table;
+            padding-left: 0;
+
+            li {
+                counter-increment: foo;
+                display: table-row;
+
+                p {
+                    margin: 5px 0;
+                }
+            }
+
+            li::before {
+                content: counter(foo) ".";
+                display: table-cell;
+                text-align: right;
+                padding-right: 10px;
+            }
+        }
     }
 }
 
@@ -93,7 +115,7 @@
     width: 160px;
     height: 32px;
     color: #FFFFFF;
-    background: #3AAFC6;
+    background: #3eb1c8;
     border: 0px;
     margin: 0 32px 0 0;
 }

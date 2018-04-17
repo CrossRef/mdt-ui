@@ -40,7 +40,7 @@ export default class PublicationsPage extends Component {
 
   openAddPublicationModal = () => this.props.reduxControlModal({
     showModal:true,
-    title:'Create Journal Record',
+    title:'Create journal record',
     Component: AddPublicationModal,
     props:{
       mode: 'add',
@@ -51,6 +51,7 @@ export default class PublicationsPage extends Component {
   render () {
     const { searchResults, publications, asyncSearch, loading, DOIs, reduxControlModal , asyncSubmitPublication} = this.props;
     const doiArray = Object.keys(publications) || []
+    let buttonCount = 0
 
     return (
       <div className='publications'>
@@ -65,7 +66,7 @@ export default class PublicationsPage extends Component {
           <button
             className='addPublication'
             onClick={this.openAddPublicationModal}
-            >New Publication
+            >New publication
           </button>
         </div>
 
@@ -73,7 +74,14 @@ export default class PublicationsPage extends Component {
           <div className='content'>
             <div className='tools' />
             <div className='cards'>
-              {doiArray.reverse().map((doi, i) => <PublicationCard doi={doi} key={doi} />)}
+              {doiArray.reverse().map((doi, i) => {
+                if(buttonCount === 4) {
+                  buttonCount = 1
+                } else {
+                  buttonCount = buttonCount + 1
+                }
+                return <PublicationCard doi={doi} key={doi} buttonCount={buttonCount}/>
+              })}
             </div>
           </div>
         : <div className='empty-message'>No publications, please create one!</div>}

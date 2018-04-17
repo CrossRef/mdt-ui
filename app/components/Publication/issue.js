@@ -46,7 +46,7 @@ export default class Issue extends Component {
     if(e && e.preventDefault) e.preventDefault();
     this.props.reduxControlModal({
       showModal: true,
-      title: 'Edit Issue/Volume',
+      title: 'Edit issue/volume',
       style: 'addIssueModal',
       Component: AddIssueModal,
       props: {
@@ -91,7 +91,7 @@ export default class Issue extends Component {
         <Link
           className='issueDoiAddNew'
           to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(doi || JSON.stringify(title))}/addarticle`}>
-          <span>Add Article</span>
+          <span>Add article</span>
         </Link>
       </td>
     </tr>)

@@ -259,7 +259,7 @@ const parseXMLArticle = function (articleXML) {
       references.forEach( citation => {
         const doi = typeof citation.doi === 'object' ? citation.doi['#text'] : citation.doi
         parsedReferences.push({
-          reference: citation.article_title || citation.unstructured_citation,
+          reference: citation.article_title || citation.volume_title || citation.unstructured_citation,
           DOI: doi
         })
       })

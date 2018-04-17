@@ -58,7 +58,7 @@ export default class Contributor extends Component {
   render () {
     const errors = this.props.contributor.errors || {};
     const {firstName, lastName, suffix, affiliation, orcid, role, groupAuthorName, groupAuthorRole} = this.props.contributor;
-    const roleRequired = !!(firstName || lastName || suffix || affiliation || orcid)
+    const required = !!(firstName || lastName || suffix || affiliation || orcid || role)
 
     const subItemErrorIndicator = React.cloneElement(
       this.props.ErrorIndicator,
@@ -92,7 +92,7 @@ export default class Contributor extends Component {
               <div className='fieldHolder'>
 
                 <FormInput
-                  label="First Name"
+                  label="First name"
                   name="firstName"
                   value={firstName}
                   changeHandler={this.handleContributor}
@@ -103,8 +103,8 @@ export default class Contributor extends Component {
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
-                  label="Last Name"
-                  required={true}
+                  label="Last name"
+                  required={required}
                   error={errors.contributorLastName}
                   name="lastName"
                   value={lastName}
@@ -175,7 +175,7 @@ export default class Contributor extends Component {
               <div className='fieldHolder'>
 
                 <FormInput
-                  label="ORCID"
+                  label="ORCID iD"
                   name="orcid"
                   error={errors.contributorOrcid}
                   indicatorErrors={['contributorOrcid']}
@@ -191,7 +191,7 @@ export default class Contributor extends Component {
 
                 <FormSelect
                   label="Role"
-                  required={roleRequired}
+                  required={required}
                   error={errors.contributorRole}
                   name="role"
                   value={role}
@@ -226,7 +226,7 @@ export default class Contributor extends Component {
               <div className='fieldHolder'>
 
                 <FormInput
-                  label="Group Author Name"
+                  label="Group author name"
                   required={!!groupAuthorRole}
                   error={errors.contributorGroupName}
                   name="groupAuthorName"
@@ -242,7 +242,7 @@ export default class Contributor extends Component {
                   disabled={this.state.groupDisabled}/>
 
                 <FormSelect
-                  label="Group Author Role"
+                  label="Group author role"
                   required={!!groupAuthorName}
                   error={errors.contributorGroupRole}
                   name="groupAuthorRole"

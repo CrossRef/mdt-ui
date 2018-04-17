@@ -82,7 +82,7 @@ export default function AddArticleView (props) {
                 <div className="fieldinnerholder fulllength">
                   <div className="labelholder">
                     <div className="labelinnerholder">
-                      <div className='label'>* Indicates Required fields</div>
+                      <div className='label'>* Indicates required fields</div>
                     </div>
                   </div>
                 </div>
@@ -92,7 +92,7 @@ export default function AddArticleView (props) {
                 <div className="switchOuterHolder">
                   <div className="switchInnerHolder">
                     <div className="switchLicense">
-                      <div className='switchLabel'><span>Show Help</span></div>
+                      <div className='switchLabel'><span>Show help</span></div>
                       <Switch
                         onClick={() => props.boundSetState({
                           showHelper: !props.showHelper,
@@ -109,7 +109,7 @@ export default function AddArticleView (props) {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormTextArea
-                  label="Article Title (Required)"
+                  label="Article title (required)"
                   name="title"
                   value={props.article.title}
                   required
@@ -157,7 +157,7 @@ export default function AddArticleView (props) {
             <div className='row'>
               <div className="fieldHolder">
                 <FormInput
-                  label="Article DOI (Required)"
+                  label="Article DOI (required)"
                   name="doi"
                   value={props.article.doi}
                   required
@@ -171,7 +171,7 @@ export default function AddArticleView (props) {
                   onBlur={props.validate}/>
 
                 <FormInput
-                  label="Article URL (Required)"
+                  label="Article URL (required)"
                   name="url"
                   value={ urlEntered(props.article.url) ? props.article.url : 'http://' }
                   required
@@ -208,7 +208,7 @@ export default function AddArticleView (props) {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormInput
-                  label="First Page"
+                  label="First page"
                   name="firstPage"
                   value={props.article.firstPage}
                   required={!!props.article.lastPage}
@@ -220,7 +220,7 @@ export default function AddArticleView (props) {
                   onBlur={props.validate}/>
 
                 <FormInput
-                  label="Last Page"
+                  label="Last page"
                   name="lastPage"
                   value={props.article.lastPage}
                   error={props.errors.lastPageLimit || props.errors.lastPageLessFirst}
@@ -242,7 +242,7 @@ export default function AddArticleView (props) {
             <div className='row'>
               <div className='fieldHolder'>
                 <FormInput
-                  label="Article / Electronic Location ID"
+                  label="Article / electronic location ID"
                   name="locationId"
                   value={props.article.locationId}
                   error={props.errors.locationIdLimit}
@@ -348,7 +348,7 @@ export default function AddArticleView (props) {
                 <div className='row'>
                   <div className='fieldHolder'>
                     <FormSelect
-                      label="Free to License"
+                      label="Free to license"
                       name="freetolicense"
                       value={props.article.freetolicense}
                       options={[
@@ -402,7 +402,7 @@ export default function AddArticleView (props) {
 
 
           <SubItem
-            title={'Related Items'}
+            title={'Related items'}
             boundSetState={props.boundSetState}
             openSubItems={props.openSubItems}
             showSection={props.openItems.relatedItems}
@@ -433,7 +433,7 @@ export default function AddArticleView (props) {
 
 
           <SubItem
-            title={'Additional Information'}
+            title={'Additional information'}
             boundSetState={props.boundSetState}
             openSubItems={props.openSubItems}
             showSection={props.openItems.addInfo}>

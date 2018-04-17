@@ -40,9 +40,9 @@ export default class NavBar extends Component {
   addAlert({title, recordType, updateType}) {
     this.setState({type: updateType !== 'removeFromCart' ? 'add' : 'remove'})
     const messages = {
-      addToCart: 'Added to Deposit Cart',
-      removeFromCart: 'Removed From Deposit Cart',
-      updateCart: 'Updated in Deposit Cart'
+      addToCart: 'added for deposit',
+      removeFromCart: 'removed from deposit',
+      updateCart: 'updated for deposit'
     }
     this.refs.container.success(
       <div className='toastMessage'>
@@ -80,10 +80,10 @@ export default class NavBar extends Component {
       <div className='publications-nav'>
         <div className='publications-nav-contents'>
           <div className='links'>
-            <Link to={routes.publications}>Publications</Link>
-            <Link to={routes.depositHistory}>Deposit History</Link>
+            <Link to={routes.publications}>Home</Link>
+            <Link to={routes.depositHistory}>Deposit history</Link>
             <Link className='depositCartHolder' to={routes.depositCart}>
-              Deposit Cart
+              To deposit
               {!!this.props.cart.length && <span className='cartItemCount'>{this.props.cart.length}</span>}
               <ToastContainer
                 toastMessageFactory={ToastMessageFactory}

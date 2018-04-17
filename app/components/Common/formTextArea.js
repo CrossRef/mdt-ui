@@ -77,7 +77,7 @@ export default class FormTextArea extends React.Component {
             <div className='required height64'>{this.props.required && <span>*</span>}</div>
           </div>
           <div className='field'>
-            {isFocus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
+            {isFocus && this.props.tooltip && <img className='infoFlag infoFlagTextArea' src={`${routes.images}/common/Asset_Icons_GY_HelpFlag.svg`} />}
             <textarea
               className={`height64 ${this.props.style ? this.props.style : ''} ${this.props.error ? 'fieldError' : ''} ${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
               type='text'

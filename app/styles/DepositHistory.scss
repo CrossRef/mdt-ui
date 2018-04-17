@@ -23,11 +23,11 @@
             padding: 22px 32px;
         }
         .start{
-            background: #EAEAEA;
+            background: #d9d9d9;
             float: left;
         }
         .end{
-            background: #EAEAEA;
+            background: #d9d9d9;
             float: right;
         }
 
@@ -55,9 +55,9 @@
               display: inline-block;
               width: 37px;
               height: 34px;
-              border-top: 1px solid black;
-              border-right: 1px solid black;
-              border-bottom: 1px solid black;
+              border-top: 1px solid #4F5858;
+              border-right: 1px solid #4F5858;
+              border-bottom: 1px solid #4F5858;
 
               .calendarButton {
                 display: inline-block;

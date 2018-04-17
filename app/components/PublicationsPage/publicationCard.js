@@ -35,18 +35,14 @@ export default class PublicationCardContainer extends Component {
     asyncGetPublications: is.func.isRequired,
     doi: is.string.isRequired,
     publication: is.object,
-    crossmarkPrefixes: is.array.isRequired
+    crossmarkPrefixes: is.array.isRequired,
+    buttonCount: is.number.isRequired
   }
 
-  constructor() {
+  constructor(props) {
     super();
-    const backgrounds = [
-      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 1.svg`,
-      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 2.svg`,
-      `${routes.images}/Publications/PublicationButtonArtLarge_Publication Art 3.svg`
-    ]
-    const backgroundIndex = (Math.floor(Math.random() * backgrounds.length) % backgrounds.length)
-    const background = backgrounds[backgroundIndex]
+
+    const background = `${routes.images}/Publications/Journal-Button-1_Journal Button - ${props.buttonCount}.svg`
     this.state = { mouseOver: false, overEdit: false, background }
   }
 
@@ -67,7 +63,7 @@ export default class PublicationCardContainer extends Component {
 
     this.props.reduxControlModal({
       showModal:true,
-      title:'Edit Journal Record',
+      title:'Edit journal record',
       Component: AddPublicationModal,
       props:{
         mode: 'edit',

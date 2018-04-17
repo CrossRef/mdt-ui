@@ -30,8 +30,8 @@
       }
 
       .publications-nav {
-        border-top: 1px solid black;
-        border-bottom: 1px solid black;
+        border-top: 1px solid #4f5858;
+        border-bottom: 1px solid #4f5858;
 
         .publications-nav-contents {
           display: flex;
@@ -50,11 +50,11 @@
               color: black;
               min-width: 158px;
               display: block;
-              border-left: 1px solid black;
+              border-left: 1px solid #4f5858;
             }
 
             a:last-child {
-              border-right: 1px solid black;
+              border-right: 1px solid #4f5858;
             }
           }
         }
@@ -72,9 +72,8 @@
 
         img {
           float: left;
-          min-height: 52px;
           height: 42px;
-          margin: 10px 10px -16px 16px;
+          margin: 10px 0 -16px 16px;
         }
 
         .header-logo-name {

@@ -50,7 +50,7 @@ export default class AdditionalInformation extends Component {
                 tooltip={this.props.tooltip && tooltips.similarityCheckURL}/>
 
               <FormSelect
-                label="Archive Location"
+                label="Archive location"
                 name="archiveLocation"
                 value={this.props.addInfo.archiveLocation}
                 options={ArchiveLocations}
