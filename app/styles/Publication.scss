@@ -1,3 +1,5 @@
+@import 'common';
+
 .publication {
   h1 {
     font-size: 26px;
@@ -157,7 +159,7 @@
 
     .actions {
       width: 192px;
-      border: 1px solid black;
+      border: 1px solid $dark-grey;
       line-height: 46px;
       font-size: 16px;
     }
@@ -259,11 +261,11 @@
     // Backgrounds for status
 
     tr.issue:not(.failed) > td {
-      background-color: #f5f5f5;
+      background-color: $light-grey;
     }
 
     tr.failed > td {
-      background-color: #fff2f2;
+      background-color: $light-red;
 
       &.status {
         color: #ef3340;
@@ -358,7 +360,7 @@
   position: absolute;
   top:12px;
   right: 16px;
-  border: 1px solid #000;
+  border: 1px solid $dark-grey;
   color: #000 !important;
   display: inline-table;
   height: 24px;
