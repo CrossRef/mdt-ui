@@ -58,7 +58,7 @@ export default class ActionBar extends Component {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
-      message: 'Save Complete'
+      message: 'Saved'
     }
 
     const criticalErrorMsg = {

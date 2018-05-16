@@ -76,7 +76,9 @@ export default async function (addToCart) {
       console.error('Error in save article: ', e)
     }
 
-    const inCart = this.state.mode === 'edit' ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi)) : false
+    const inCart = this.state.mode === 'edit'
+      ? !!this.props.reduxCart.find( cartItem => compareDois(cartItem.doi, newRecord.doi))
+      : false
 
     if(addToCart || inCart) {
       newRecord.doi = newRecord.doi.toLowerCase()
