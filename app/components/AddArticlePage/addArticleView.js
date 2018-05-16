@@ -348,7 +348,7 @@ export default function AddArticleView (props) {
                 <div className='row'>
                   <div className='fieldHolder'>
                     <FormSelect
-                      label="Free to license"
+                      label="Free read to license"
                       name="freetolicense"
                       value={props.article.freetolicense}
                       options={[
