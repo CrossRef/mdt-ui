@@ -319,7 +319,11 @@ class GrantField extends React.Component {
             }}
           />
           {this.props.index > 0 &&
-          <div className='grantRemove'><a onClick={() => this.props.removeGrant(this.props.index)}>Remove</a></div>
+          <div className='grantRemove'>
+            <a style={{cursor: 'pointer'}} onClick={() => this.props.removeGrant(this.props.index)}>
+              Remove
+            </a>
+          </div>
           }
         </div>
       </div>

@@ -20,7 +20,7 @@ export const articleTooltips = {
   groupAuthorName : <p>Organization name contributing to article</p>,
   groupAuthorRole : <p>Organization role contributing to article</p>,
 
-  funderId : <p>Funder name taken from <a target="_blank" href="https://www.crossref.org/services/funder-registry/">Open Funder Registry</a></p>,
+  funderId : <p>Funder name taken from <a target="_blank" href="https://www.crossref.org/services/funder-registry/">Crossref Funder Registry</a></p>,
   grantNumber : <p>Grant or other award number</p>,
 
   freeToLicense: <p>Status of whether article is licensed to be <a target="_blank" href="https://support.crossref.org/hc/en-us/articles/214572423-License-metadata-Access-Indicators-">free to read</a></p>,

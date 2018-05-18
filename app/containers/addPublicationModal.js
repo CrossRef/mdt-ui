@@ -346,7 +346,7 @@ export default class AddPublicationModal extends Component {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
-      message: 'Save Complete'
+      message: 'Saved'
     }
 
     const errorMessageSet = new Set(['Required to save: '])
