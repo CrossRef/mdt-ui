@@ -1,3 +1,6 @@
+@import 'common';
+
+
 .depositHistory {
     margin: 0 auto;
     text-align: left;
@@ -95,7 +98,7 @@
         width: 100%;
         tr {
             th {
-                border: 1px solid #DEE1E5;
+                border: 1px solid $light-grey;
                 border-left: 0px;
                 border-right: 0px;
                 padding: 8px 0;
@@ -181,19 +184,19 @@
               overflow: hidden;
               padding-top: 32px;
               .failedDeposit {
-                color: red !important
+                color: $red !important
               }
               .doiLink {
                 color: inherit
               }
             }            
             .first {
-                border-left: 1px solid #DEE1E5;
+                border-left: 1px solid $light-grey;
                 padding: 8px 0 8px 32px;
                 width: 140px;
             }
             .last {
-                border-right: 1px solid #DEE1E5;
+                border-right: 1px solid $light-grey;
             }
             .firstTd {
 
