@@ -446,7 +446,7 @@ export default class AddPublicationModal extends Component {
         <form className='addPublications'>
           <div className='fieldRowHolder'>
             <div className={(errors.showTitleEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
-              <div className='left-indent-36'>Journal title (required)</div>
+              <div className='left-indent-36'>Journal title *</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className='required'><span>*</span></div>
@@ -460,7 +460,7 @@ export default class AddPublicationModal extends Component {
               </div>
             </div>
             <div className={(errors.showURLError || errors.showURLEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
-              <div className='left-indent-36'>Journal URL (required)</div>
+              <div className='left-indent-36'>Journal URL *</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className='required'><span>*</span></div>
@@ -490,7 +490,7 @@ export default class AddPublicationModal extends Component {
               </div>
             </div>
             <div className={(errors.showDOIError || errors.showDOIInvalidError || errors.showDOIEmptyError ? 'fieldinput invalid' : 'fieldinput')}>
-              <div className='left-indent-36'>{`Journal DOI${ isEdit ? '' : ' (Required)'}`}</div>
+              <div className='left-indent-36'>{`Journal DOI${ isEdit ? '' : ' *'}`}</div>
               <div className='inputholder'>
                 <div className='inputinnerholder'>
                   <div className={ isEdit ? 'notrequired' : 'required'}>{!isEdit && <span>*</span>}</div>

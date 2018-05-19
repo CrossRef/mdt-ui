@@ -103,7 +103,7 @@ export default class Contributor extends Component {
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
-                  label="Last name"
+                  label={`Last name ${required ? ' *' : ''}`}
                   required={required}
                   error={errors.contributorLastName}
                   name="lastName"
@@ -190,7 +190,7 @@ export default class Contributor extends Component {
                   disabled={this.state.personDisabled}/>
 
                 <FormSelect
-                  label="Role"
+                  label={`Role ${required ? ' *' : ''}`}
                   required={required}
                   error={errors.contributorRole}
                   name="role"
