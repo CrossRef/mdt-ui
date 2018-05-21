@@ -323,9 +323,9 @@ export default function (state, reduxForm) {
       appendPeer(el, crossmarkForm[peer])
       appendSupp(el, crossmarkForm[supp])
       appendCopyright(el, crossmarkForm[copyright])
-      appendClinical(el, crossmarkForm[clinical])
       appendFunder(el)
       appendLicenseElm(el)
+      appendClinical(el, crossmarkForm[clinical])
       crossmarkElm.appendChild(el)
     }
   }
@@ -426,7 +426,8 @@ export default function (state, reduxForm) {
   }
 
   function appendClinical(el, card) {
-    const elm = el.ownerDocument.createElementNS("http://www.crossref.org/clinicaltrials.xsd", "program")
+    if(!card || !card.length) return
+    const elm = el.ownerDocument.createElementNS("http://www.crossref.org/clinicaltrials.xsd", "ct:program")
     el.appendChild(elm)
     for (let number in card) {
       const { registry, trialNumber, type } = card[number]
