@@ -144,7 +144,16 @@ export const languages =[
   {'value':'za','name': 'Zhuang'},
   {'value':'zh','name': 'Chinese'},
   {'value':'zu','name': 'Zulu'}
-]
+].sort(function (a, b) {
+  let aName = a.name, bName = b.name
+  if(a.name === '(Afan) Oromo') aName = 'Oromo'
+  if(b.name === '(Afan) Oromo') bName = 'Oromo'
+  if(a.name.indexOf('former') !== -1) aName = a.name.split(' ').slice(1).join(' ')
+  if(b.name.indexOf('former') !== -1) bName = b.name.split(' ').slice(1).join(' ')
+  if(aName.toLowerCase() < bName.toLowerCase()) return -1
+  if(aName.toLowerCase() > bName.toLowerCase()) return 1
+  return 0
+})
 
 
 export default function languageSelector ({inputHandler, value}) {
