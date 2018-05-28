@@ -103,7 +103,7 @@ export default class Contributor extends Component {
                   disabled={this.state.personDisabled}/>
 
                 <FormInput
-                  label={`Last name ${required ? ' *' : ''}`}
+                  label="Last name"
                   required={required}
                   error={errors.contributorLastName}
                   name="lastName"
@@ -190,7 +190,7 @@ export default class Contributor extends Component {
                   disabled={this.state.personDisabled}/>
 
                 <FormSelect
-                  label={`Role ${required ? ' *' : ''}`}
+                  label="Role"
                   required={required}
                   error={errors.contributorRole}
                   name="role"
@@ -227,7 +227,7 @@ export default class Contributor extends Component {
 
                 <FormInput
                   label="Group author name"
-                  required={!!groupAuthorRole}
+                  required={!!(groupAuthorRole || groupAuthorName)}
                   error={errors.contributorGroupName}
                   name="groupAuthorName"
                   value={groupAuthorName}
@@ -243,7 +243,7 @@ export default class Contributor extends Component {
 
                 <FormSelect
                   label="Group author role"
-                  required={!!groupAuthorName}
+                  required={!!(groupAuthorRole || groupAuthorName)}
                   error={errors.contributorGroupRole}
                   name="groupAuthorRole"
                   value={groupAuthorRole}

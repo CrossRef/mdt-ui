@@ -329,7 +329,7 @@ function StatusUpdateCard (props) {
       <div className='row'>
         <div className='fieldHolder'>
           <ReduxSelector
-            label='Update Type *'
+            label='Update Type'
             onSelect={props.validate}
             keyPath={[update, props.i, 'type']}
             indicatorErrors={[`${update} type`]}
@@ -365,7 +365,7 @@ function StatusUpdateCard (props) {
       <div className='row'>
         <div className='fieldHolder'>
           <ReduxTextInput
-            label='DOI for Update *'
+            label='DOI for Update'
             onBlur={props.validate}
             keyPath={[update, props.i, 'doi']}
             indicatorErrors={[`${update} doi`, `${update} doiInvalid`, `${update} doiNotExist`]}
@@ -394,7 +394,7 @@ function ClinicalTrialsCards (props) {
       <div className='row'>
         <div className='fieldHolder'>
           <ReduxSelector
-            label='Clinical trial registry *'
+            label='Clinical trial registry'
             onSelect={props.validate}
             keyPath={[clinical, props.i, 'registry']}
             indicatorErrors={[`${clinical} registry`]}
@@ -405,7 +405,7 @@ function ClinicalTrialsCards (props) {
             options={Object.keys(registryDois)}/>
 
           <ReduxTextInput
-            label="Registered trial number *"
+            label="Registered trial number"
             onBlur={props.validate}
             keyPath={[clinical, props.i, 'trialNumber']}
             indicatorErrors={[`${clinical} trialNumber`]}

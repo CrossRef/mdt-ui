@@ -98,7 +98,7 @@ export default class RelatedItems extends Component {
                   onBlur={this.props.validate}/>
 
                 <FormSelect
-                  label={`"Identifier type ${activeElement ? '*' : ''}`}
+                  label="Identifier type"
                   name="identifierType"
                   required={activeElement}
                   error={this.props.relateditem.errors.relatedItemIdType}
@@ -138,7 +138,7 @@ export default class RelatedItems extends Component {
                   onBlur={this.props.validate}/>
 
                 <FormSelect
-                  label={`Relation type ${activeElement ? '*' : ''}`}
+                  label="Relation type"
                   name="relationType"
                   required={activeElement}
                   error={this.props.relateditem.errors.relatedItemRelType}
