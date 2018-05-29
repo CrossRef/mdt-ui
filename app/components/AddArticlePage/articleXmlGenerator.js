@@ -431,7 +431,7 @@ export default function (state, reduxForm) {
     el.appendChild(elm)
     for (let number in card) {
       const { registry, trialNumber, type } = card[number]
-      var el2 = elm.ownerDocument.createElement("clinical-trial-number")
+      var el2 = elm.ownerDocument.createElement("ct:clinical-trial-number")
       if(trialNumber) el2.textContent = trialNumber
       if(registry) el2.setAttribute("registry", registryDois[registry])
       if(type) appendAttribute("type", lowerCaseFirst(type).replace(/-/g, ''),el2)
