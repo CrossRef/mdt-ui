@@ -48,7 +48,6 @@ export function WaitMessage () {
   return (
     <div className="waitMessage">
       <div>Just a moment...</div>
-      <div>Please wait while we process your deposit</div>
       <img src={`${routes.images}/Deposit/Asset_Load_Throbber_Load Throbber Grey.svg`} />
     </div>
   )

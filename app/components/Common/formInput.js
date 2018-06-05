@@ -71,7 +71,7 @@ export default class FormInput extends React.Component {
       <div className='fieldinnerholder halflength'>
         <div className='labelholder'>
           <div className='labelinnerholder'>
-            <div className='label'>{this.props.label}</div>
+            <div className='label'>{this.props.label}{this.props.required ? ' *' : ''}</div>
           </div>
         </div>
         <div className='requrefieldholder'>

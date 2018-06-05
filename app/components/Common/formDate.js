@@ -133,7 +133,7 @@ export default class FormDate extends React.Component {
 
             <div className={this.props.issue ? 'issuedatepickerholder' : 'datepickerholder'}>
               <div className='dateselectholder'>
-                <div>Year {this.props.fields.year.required ? '(*)' : ''}</div>
+                <div>Year {this.props.fields.year.required ? '*' : ''}</div>
                 <div>
                   <DateSelect
                     handler={this.onSelect}

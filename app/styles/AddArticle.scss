@@ -372,7 +372,7 @@ input.height64, textarea.height64, select.height64 {
       hr{width: 100%}
 
       .addNewButton {
-        @extend ._subItemAddNewButton;
+        @extend %subItemAddNewButton;
         top: 24px;
         left: 28px;
         position: relative;
@@ -1078,7 +1078,7 @@ input.height64, textarea.height64, select.height64 {
   }
 
   .referencesLoader {
-    @extend ._loader;
+    @extend %loader;
     position: relative;
     left: 150px;
     bottom: 19px;
@@ -1116,7 +1116,7 @@ input.height64, textarea.height64, select.height64 {
   }
 
   .getReferencesButton {
-    @extend ._subItemAddNewButton;
+    @extend %subItemAddNewButton;
     width: 140px
   }
 

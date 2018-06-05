@@ -85,10 +85,12 @@ export default class PublicationCardContainer extends Component {
     const publicationContents = publication.message
     const type = publicationContents.type
     const title = publicationContents.title.title
-    const style = this.state.mouseOver ? { backgroundColor: '#3f4746' } : {
-      background: `url('${this.state.background}') no-repeat center center`,
-      backgroundSize: 'contain'
-    }
+    const style = this.state.mouseOver
+      ? { backgroundColor: '#4f5858' }
+      : {
+          background: `url('${this.state.background}') no-repeat center center`,
+          backgroundSize: 'contain'
+        }
     const whiteText = this.state.mouseOver ? { color: 'white' } : null
     return (
       <Link to={this.state.overEdit ? null : `${routes.publications}/${encodeURIComponent(this.props.doi)}`} className='publication-card'>

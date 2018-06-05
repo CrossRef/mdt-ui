@@ -285,7 +285,7 @@ export class AddIssueModal extends Component {
     clearTimeout(this.state.timeOut)
     const confirmationPayload = {
       status: 'saveSuccess',
-      message: 'Save Complete'
+      message: 'Saved'
     }
 
     const errorMessageArray = ['Required to save:']
