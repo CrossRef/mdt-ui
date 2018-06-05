@@ -112,13 +112,17 @@ export function parseCrossmark (data) {
     })
   }
 
-  if(data.custom_metadata && data.custom_metadata.program && data.custom_metadata.program['clinical-trial-number']) {
-    if(!Array.isArray(data.custom_metadata.program['clinical-trial-number'])) data.custom_metadata.program['clinical-trial-number'] = [data.custom_metadata.program['clinical-trial-number']];
+  if(data.custom_metadata && data.custom_metadata['ct:program'] && data.custom_metadata['ct:program']['ct:clinical-trial-number']) {
+    let ctn = data.custom_metadata['ct:program']['ct:clinical-trial-number']
 
-    showCards[clinical] = parseInt(data.custom_metadata.program['clinical-trial-number'].length);
+    if(!Array.isArray(ctn)) {
+      ctn = [ctn];
+    }
+
+    showCards[clinical] = parseInt(ctn.length);
     reduxForm[clinical] = {};
 
-    data.custom_metadata.program['clinical-trial-number'].forEach((eachClinical, i)=>{
+    ctn.forEach((eachClinical, i)=>{
       reduxForm[clinical][i] = {};
       for (let key in eachClinical) {
         const slicedKey = key.slice(1);
