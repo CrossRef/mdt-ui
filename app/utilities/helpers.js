@@ -450,3 +450,9 @@ export function validOrcid (s) {
   const re = /https?:\/\/orcid.org\/[0-9]{4}-[0-9]{4}-[0-9]{4}-[0-9]{3}[X0-9]{1}/g
   return re.test(s)
 }
+
+
+
+export function getPrefix (doi) {
+  return doi.split('/')[0]
+}

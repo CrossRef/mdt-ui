@@ -1,6 +1,8 @@
 import {recordTitle, normalize} from '../utilities/helpers'
 import _getCRState from './getCRState'
 import * as api from './api'
+import {routes} from '../routing';
+import {browserHistory} from 'react-router';
 
 
 
@@ -238,6 +240,18 @@ export function moveArticles (selections, issue, pubDoi) {
     await Promise.all(promises)
 
     dispatch(getPublications(pubDoi))
+  }
+}
+
+
+
+
+
+export function deletePublication (doi) {
+  return async function(dispatch) {
+    const result = await api.deleteItem(doi)
+    dispatch({type: 'DELETEPUBLICATION', doi: doi})
+    browserHistory.push(routes.publications)
   }
 }
 

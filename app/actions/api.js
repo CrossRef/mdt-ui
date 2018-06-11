@@ -181,3 +181,19 @@ export function getFormattedReference (doi) {
     })
       .then( result => result.json())
 }
+
+
+
+export function getPublishers () {
+  //This is how the request would look
+  /*return authorizedFetch(`${apiBaseUrl}/.....`)
+      .then(result => result.json())*/
+
+  //This is dummy data in the meantime
+  return Promise.resolve([
+    {prefix: 10.12454, publishers: ['publisher title 1', 'publisher title 2', 'publisher title 3', 'publisher title 4', 'publisher title 5', 'publisher title 6', 'publisher title 7', 'publisher title 8']},
+    {prefix: 10.23451, publishers: ['publisher title 5', 'publisher title 6', 'publisher title 7', 'publisher title 8']},
+    {prefix: 10.52245, publishers: ['publisher title 9', 'publisher title 10', 'publisher title 11', 'publisher title 12']},
+    {prefix: 10.11255, publishers: ['publisher title 13', 'publisher title 14', 'publisher title 15', 'publisher title 16']},
+  ])
+}
