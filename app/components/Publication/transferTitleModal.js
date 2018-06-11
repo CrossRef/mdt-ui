@@ -30,8 +30,8 @@ export default class TransferTitleModal extends React.Component {
     prefixes: [],
     prefixSelection: '',
     publishers: [],
-    publicationSelection: '',
-    publicationSearchFocus: false,
+    publisherSelection: '',
+    publisherSearchFocus: false,
     prefixSelectionFocus: false
   }
 
@@ -50,19 +50,20 @@ export default class TransferTitleModal extends React.Component {
   renderPublicationsList = () => {
     if(
         !this.state.prefixes.length ||
-        !this.state.publicationSelection ||
-        !this.state.publicationSearchFocus
+        !this.state.publisherSearchFocus
     ) {
       return null
     }
-    const results = this.state.publishers.filter( publisher => publisher.indexOf(this.state.publicationSelection) !== -1 )
+    const results = this.state.publisherSelection
+        ? this.state.publishers.filter( publisher => publisher.indexOf(this.state.publisherSelection) !== -1 )
+        : this.state.publishers
     return results.length
       ? <div className="list publicationsList">
           {results.map( result =>
             <div
               key={result}
               className="listItem"
-              onClick={()=>this.setState({publicationSelection: result, publicationSearchFocus: false})}
+              onClick={()=>this.setState({publisherSelection: result, publisherSearchFocus: false})}
             >
               {result}
             </div>
@@ -84,6 +85,7 @@ export default class TransferTitleModal extends React.Component {
                 this.setState({
                   prefixSelection: result.prefix,
                   prefixSelectionFocus: false,
+                  publisherSelection: '',
                   publishers: this.state.prefixes.find( item => item.prefix === result.prefix).publishers
                 })
               }}
@@ -96,11 +98,40 @@ export default class TransferTitleModal extends React.Component {
   }
 
 
-  transfer = () => {
-    //need an api request to transfer publication
+  transferConfirmModal = () => {
+    const confirmTransfer = () => {
+      //need an api request to transfer publication
 
-    this.props.reduxDeletePublication(this.props.pubDoi)
-    this.props.close()
+      this.props.reduxDeletePublication(this.props.pubDoi)
+    }
+
+    this.props.reduxControlModal({
+      title: "Confirm title transfer",
+      style: "warningModal",
+      Component: ({publicationTitle, publisherSelection, close, confirm}) =>
+          <div className="transferWarningContainer">
+            <div className="warningContent">
+              <p>Are you sure you want to transfer ownership for the journal {publicationTitle}</p>
+              <p>This action will permanently release the title and DOI ownership from you to the acquiring publisher and cannot be undone.</p>
+              <p className="toPublisherHeader">Selected title for transfer</p>
+              <div className="toPublisher">{publisherSelection}</div>
+            </div>
+            <div className="buttons">
+              <div
+                  className="transferWarning"
+                  onClick={confirm}
+              >
+                Transfer
+              </div>
+              <div className="cancelWarning" onClick={close}>Cancel</div>
+            </div>
+          </div>,
+      props: {
+        publicationTitle: this.props.publicationTitle,
+        publisherSelection: this.state.publisherSelection,
+        confirm: confirmTransfer
+      }
+    })
   }
 
 
@@ -137,7 +168,7 @@ export default class TransferTitleModal extends React.Component {
               <div className="toInput publisherSearch" tabIndex="0"
                 onBlur={ e => {
                   if(!e.relatedTarget || !e.relatedTarget.classList.contains('publisherSearch')) {
-                    this.setState({publicationSearchFocus: false})
+                    this.setState({publisherSearchFocus: false})
                   }
                 }}
               >
@@ -145,10 +176,10 @@ export default class TransferTitleModal extends React.Component {
                 <input
                   className="toPublisherSearch"
                   onChange={(e) => {
-                    this.setState({publicationSelection: e.target.value})
+                    this.setState({publisherSelection: e.target.value})
                   }}
-                  onFocus={() => this.setState({publicationSearchFocus: true})}
-                  value={this.state.publicationSelection}/>
+                  onFocus={() => this.setState({publisherSearchFocus: true})}
+                  value={this.state.publisherSelection}/>
                 {this.renderPublicationsList()}
               </div>
 
@@ -177,7 +208,7 @@ export default class TransferTitleModal extends React.Component {
           <div className="buttons">
             <div
               className={`transfer ${!transferReady ? 'transferNotReady' : ''}`}
-              onClick={transferReady ? this.transfer : null}
+              onClick={transferReady ? this.transferConfirmModal : null}
             >
               Transfer
             </div>
