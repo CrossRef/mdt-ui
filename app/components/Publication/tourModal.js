@@ -14,7 +14,7 @@ export default class TourModal extends React.Component {
   state = {slide: 1}
 
   nextSlide = () => {
-    if(this.state.slide === 5) {
+    if(this.state.slide === 6) {
       return this.props.close()
     } else {
       this.setState({slide: this.state.slide + 1})
