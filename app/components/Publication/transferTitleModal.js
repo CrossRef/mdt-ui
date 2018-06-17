@@ -112,7 +112,7 @@ export default class TransferTitleModal extends React.Component {
               <p>Are you sure you want to transfer ownership for the journal {publicationTitle}</p>
               <p>This action will permanently release the title and DOI ownership from you to the acquiring publisher and cannot be undone.</p>
               <p className="toPublisherHeader">Selected title for transfer</p>
-              <div className="toPublisher">{publisherSelection}</div>
+              <div className="toPublisher">{publicationTitle}</div>
             </div>
             <div className="buttons">
               <div
