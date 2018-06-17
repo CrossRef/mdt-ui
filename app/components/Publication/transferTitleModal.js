@@ -98,7 +98,7 @@ export default class TransferTitleModal extends React.Component {
 
   transferConfirmModal = () => {
     const confirmTransfer = () => {
-      //need an api request to transfer publication
+      //TODO: need an api request to transfer publication
 
       this.props.reduxDeletePublication(this.props.pubDoi)
     }
