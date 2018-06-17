@@ -32,65 +32,63 @@ export default class TransferTitleModal extends React.Component {
     publishers: [],
     publisherSelection: '',
     publisherSearchFocus: false,
-    prefixSelectionFocus: false
+    prefixSelectionFocus: false,
+    showHelp: false
   }
 
 
   componentDidMount () {
     api.getPublishers().then( response => {
       this.setState({
-        prefixes: response,
-        prefixSelection: response[0].prefix,
-        publishers: response[0].publishers
+        publishers: response.message
       })
     })
   }
 
 
   renderPublicationsList = () => {
-    if(
-        !this.state.prefixes.length ||
-        !this.state.publisherSearchFocus
-    ) {
-      return null
-    }
     const results = this.state.publisherSelection
-        ? this.state.publishers.filter( publisher => publisher.indexOf(this.state.publisherSelection) !== -1 )
-        : this.state.publishers
-    return results.length
+      ? this.state.publishers.filter( item => item.publisher.indexOf(this.state.publisherSelection) !== -1)
+      : this.state.publishers
+
+    return this.state.publisherSearchFocus && results.length
       ? <div className="list publicationsList">
           {results.map( result =>
-            <div
-              key={result}
-              className="listItem"
-              onClick={()=>this.setState({publisherSelection: result, publisherSearchFocus: false})}
-            >
-              {result}
-            </div>
+              <div
+                  key={result.publisher}
+                  className="listItem"
+                  onClick={()=>{
+                    this.setState({
+                      publisherSelection: result.publisher,
+                      publisherSearchFocus: false,
+                      prefixSelection: '',
+                      prefixes: result.prefixes
+                    })
+                  }}
+              >
+                {result.publisher}
+              </div>
           )}
         </div>
-
       : null
   }
 
 
   renderPrefixList = () => {
-    return this.state.prefixSelectionFocus
+    return this.state.prefixSelectionFocus && this.state.prefixes.length
       ? <div className="list prefixesList">
-          {this.state.prefixes.map( result =>
+          {this.state.prefixes.map( prefix =>
             <div
-              key={result.prefix}
+              key={prefix}
               className="listItem"
               onClick={()=>{
                 this.setState({
-                  prefixSelection: result.prefix,
-                  prefixSelectionFocus: false,
-                  publisherSelection: '',
-                  publishers: this.state.prefixes.find( item => item.prefix === result.prefix).publishers
+                  prefixSelection: prefix,
+                  prefixSelectionFocus: false
                 })
               }}
             >
-              {result.prefix}
+              {prefix}
             </div>
           )}
         </div>
@@ -136,7 +134,7 @@ export default class TransferTitleModal extends React.Component {
 
 
   render () {
-    const transferReady = this.state.publishers.find(publisher => publisher === this.state.publicationSelection)
+    const transferReady = !!this.state.prefixSelection
 
     return (
         <div className="transferTitleContainer">
@@ -160,6 +158,20 @@ export default class TransferTitleModal extends React.Component {
             </div>
 
             <div className="toContainer">
+              <div className="helpArea"
+                onMouseLeave={()=>this.setState({showHelp: false})}
+              >
+                <img
+                  onMouseEnter={()=>this.setState({showHelp: true})}
+                  className="helpIcon"
+                  src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`}/>
+                {this.state.showHelp &&
+                  <div className="helpBubble">
+                    <p>Transfering title to a new owner</p>
+                    <a href="http://www.google.com" target="_blank" >View transfer support page for more help</a>
+                  </div>}
+              </div>
+
               <div className="emptyTitle"/>
 
               <p className="sectionTitle">Destination</p>
@@ -199,7 +211,9 @@ export default class TransferTitleModal extends React.Component {
                   tabIndex="0"
                   onFocus={() => this.setState({prefixSelectionFocus: true})}
                 >
-                  {this.state.prefixSelection}</div>
+                  {this.state.prefixSelection}
+                  <img className="selectCarrot" src={`${routes.images}/Publications/select_carrot.svg`} />
+                </div>
                 {this.renderPrefixList()}
               </div>
             </div>

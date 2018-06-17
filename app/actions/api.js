@@ -190,10 +190,15 @@ export function getPublishers () {
       .then(result => result.json())*/
 
   //This is dummy data in the meantime
-  return Promise.resolve([
-    {prefix: 10.12454, publishers: ['publisher title 1', 'publisher title 2', 'publisher title 3', 'publisher title 4', 'publisher title 5', 'publisher title 6', 'publisher title 7', 'publisher title 8']},
-    {prefix: 10.23451, publishers: ['publisher title 5', 'publisher title 6', 'publisher title 7', 'publisher title 8']},
-    {prefix: 10.52245, publishers: ['publisher title 9', 'publisher title 10', 'publisher title 11', 'publisher title 12']},
-    {prefix: 10.11255, publishers: ['publisher title 13', 'publisher title 14', 'publisher title 15', 'publisher title 16']},
-  ])
+  return Promise.resolve({
+    message: [
+      {publisher: 'publisher 1', prefixes: ['10.1221', '10.2345', '10.1512']},
+      {publisher: 'publisher 2', prefixes: ['10.1361', '10.2456', '10.3473']},
+      {publisher: 'publisher 3', prefixes: ['10.2362', '10.5656', '10.3512']},
+      {publisher: 'publisher 4', prefixes: ['10.4564', '10.5453', '10.3236']},
+      {publisher: 'publisher 5', prefixes: ['10.2346', '10.3467', '10.1266']},
+      {publisher: 'publisher 6', prefixes: ['10.2345', '10.4678', '10.2355']},
+      {publisher: 'publisher 7', prefixes: ['10.1236', '10.2252', '10.1512']},
+    ]
+  })
 }
