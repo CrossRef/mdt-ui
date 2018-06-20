@@ -10,7 +10,9 @@ export default class Header extends Component {
   static propTypes = {
     cart : is.array.isRequired,
     toast: is.object.isRequired,
-    reduxClearToast: is.func.isRequired
+    reduxClearToast: is.func.isRequired,
+    reduxControlModal: is.func.isRequired,
+    firstLogin: is.bool
   }
 
   render () {
@@ -30,7 +32,13 @@ export default class Header extends Component {
           <img className='second-logo-img' src={`${routes.images}/App/crossref-depositor-logo-200-BETA.svg`} />
 
         </div>
-        { (showNavBar) && <NavBar cart={this.props.cart} toast={this.props.toast} reduxClearToast={this.props.reduxClearToast}/> }
+        { (showNavBar) &&
+          <NavBar
+            cart={this.props.cart}
+            toast={this.props.toast}
+            firstLogin={this.props.firstLogin}
+            reduxControlModal={this.props.reduxControlModal}
+            reduxClearToast={this.props.reduxClearToast}/> }
       </div>
     )
   }

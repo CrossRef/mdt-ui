@@ -13,7 +13,8 @@ const mapStateToProps = (state) => {
   return {
     cart: state.cart,
     toast: state.toast,
-    modalState: state.modal
+    modalState: state.modal,
+    firstLogin: state.login.firstLogin
   }
 }
 
@@ -37,7 +38,12 @@ export default class App extends Component {
     return (
       <div className='app'>
         <div className='app-contents'>
-          <Header cart={this.props.cart} toast={this.props.toast} reduxClearToast={this.props.reduxClearToast}/>
+          <Header
+            cart={this.props.cart}
+            toast={this.props.toast}
+            firstLogin={this.props.firstLogin}
+            reduxControlModal={this.props.reduxControlModal}
+            reduxClearToast={this.props.reduxClearToast}/>
           <div className='page-contents'>
             {this.props.children}
           </div>
