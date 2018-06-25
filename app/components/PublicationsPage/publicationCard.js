@@ -67,7 +67,8 @@ export default class PublicationCardContainer extends Component {
       Component: AddPublicationModal,
       props:{
         mode: 'edit',
-        doi: this.props.publication.message.doi,
+        doi: this.props.publication.message.doi,        
+        crossmarkDoi:publication.message['crossmark-policy-doi'],
         title: do { try { this.props.publication.message.title.title } catch(e){}} || '',
         ...savedMetaData
       }
