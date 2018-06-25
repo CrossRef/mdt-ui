@@ -255,7 +255,7 @@ export default class AddPublicationModal extends Component {
           'deposit-timestamp': this.state.depositTimestamp || null,
           'owner-prefix': this.state.DOI.split('/')[0],
           'type': 'Publication',
-          'crossmark-policy-doi':this.state.crossmarkDoi||'',
+          'titlemodifiers': {'crossmark-policy-doi':this.state.crossmarkDoi||''},
           'mdt-version': this.state['mdt-version'],
           'status': 'draft',
           'content': this.publicationXMLGenerator(this.state),
