@@ -111,7 +111,7 @@ export default class AddPublicationModal extends Component {
         title: props.title,
         DOI: props.doi,
         'mdt-version': version,
-        crossmarkDoi: '',
+        crossmarkDoi: props.crossmarkDoi,
         archivelocation: props.state ? props.state.archivelocation : ''
       }
 
@@ -183,6 +183,7 @@ export default class AddPublicationModal extends Component {
           electISSN: do { try { issn.find( item => item['-media_type'] === 'electronic')['#text'] } catch(e){}} || '',
           url: do { try { data.doi_data.resource } catch(e){}} || '',
           language: data['-language'] || '',
+          crossmarkDoi:nextProps.crossmarkDoi||'',
           archivelocation: do { try { data.archive_locations.archive['-name'] } catch(e){}} || this.state.archivelocation,
           depositTimestamp: nextProps.depositTimestamp
         })
@@ -254,6 +255,7 @@ export default class AddPublicationModal extends Component {
           'deposit-timestamp': this.state.depositTimestamp || null,
           'owner-prefix': this.state.DOI.split('/')[0],
           'type': 'Publication',
+          'crossmark-policy-doi':this.state.crossmarkDoi||'',
           'mdt-version': this.state['mdt-version'],
           'status': 'draft',
           'content': this.publicationXMLGenerator(this.state),

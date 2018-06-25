@@ -6,6 +6,7 @@ import { ToastContainer, ToastMessageAnimated } from "react-toastr"
 
 import {pascaleCase} from '../../utilities/helpers'
 import { routes } from '../../routing'
+import TourModal from '../Publication/tourModal';
 
 const ToastMessageFactory = React.createFactory(ToastMessageAnimated)
 
@@ -14,7 +15,9 @@ export default class NavBar extends Component {
   static propTypes = {
     cart: is.array.isRequired,
     toast: is.object.isRequired,
-    reduxClearToast: is.func.isRequired
+    reduxClearToast: is.func.isRequired,
+    reduxControlModal: is.func.isRequired,
+    firstLogin: is.bool
   }
 
   constructor (props) {
@@ -75,6 +78,16 @@ export default class NavBar extends Component {
   }
 
 
+  showTour = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: '',
+      style: 'tourModal',
+      Component: TourModal
+    })
+  }
+
+
   render () {
     return (
       <div className='publications-nav'>
@@ -105,6 +118,7 @@ export default class NavBar extends Component {
               </div>
               {this.state.profileMenu &&
                 <div className='profileMenu'>
+                  {this.props.firstLogin === false && <p onMouseDown={this.showTour}>Tutorial</p>}
                   <p onMouseDown={this.logout}>Logout</p>
                 </div>}
             </div>
