@@ -72,7 +72,7 @@ export default class PublicationPage extends Component {
     super ()
     this.state = {
       doi: props.routeParams.pubDoi.toLowerCase(),
-      ownerPrefix: props.routeParams.pubDoi.split('/')[0],
+      ownerPrefix:props.publication.message?props.publication.message['owner-prefix'] :props.routeParams.pubDoi.split('/')[0],
       serverError: null,
       filterBy: 'all',
       selections: []
