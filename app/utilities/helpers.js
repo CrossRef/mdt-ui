@@ -452,7 +452,3 @@ export function validOrcid (s) {
 }
 
 
-
-export function getPrefix (doi) {
-  return doi.split('/')[0]
-}

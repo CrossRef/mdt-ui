@@ -183,22 +183,33 @@ export function getFormattedReference (doi) {
 }
 
 
+export function transferTitle (transferTitleState) {
 
-export function getPublishers () {
-  //This is how the request would look
-  /*return authorizedFetch(`${apiBaseUrl}/.....`)
-      .then(result => result.json())*/
-
-  //This is dummy data in the meantime
-  return Promise.resolve({
-    message: [
-      {publisher: 'publisher 1', prefixes: ['10.1221', '10.2345', '10.1512']},
-      {publisher: 'publisher 2', prefixes: ['10.1361', '10.2456', '10.3473']},
-      {publisher: 'publisher 3', prefixes: ['10.2362', '10.5656', '10.3512']},
-      {publisher: 'publisher 4', prefixes: ['10.4564', '10.5453', '10.3236']},
-      {publisher: 'publisher 5', prefixes: ['10.2346', '10.3467', '10.1266']},
-      {publisher: 'publisher 6', prefixes: ['10.2345', '10.4678', '10.2355']},
-      {publisher: 'publisher 7', prefixes: ['10.1236', '10.2252', '10.1512']},
-    ]
+  return authorizedFetch(`${apiBaseUrl}/transferTitle`, {
+    method:'post',
+    headers: {Authorization: localStorage.getItem('auth')},
+    body: JSON.stringify({
+      message:transferTitleState
+    })
   })
+  .then(result => {
+    if(result.status > 202) throw `Server Error ${result.status}: ${result.statusText}`
+    return result.json()
+  })
+}
+
+export function getPublisherName (prefix) {
+  return authorizedFetch(`${apiBaseUrl}/transferTitle?prefix=${prefix}`, {
+    method: 'get',
+    headers: {Authorization: localStorage.getItem('auth')}
+  })
+      .then(result => result.json())
+}
+export function getPublishers (work) {
+  return authorizedFetch(`${apiBaseUrl}/transferTitle`, {
+    method: 'get',
+    headers: {Authorization: localStorage.getItem('auth')}
+  })
+      .then(result => result.json())
+
 }

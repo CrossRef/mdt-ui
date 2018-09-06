@@ -254,7 +254,8 @@ export default class PublicationPage extends Component {
       Component: TransferTitleModal,
       props: {
         publicationTitle: this.props.publication.message.title.title,
-        pubDoi: this.state.doi
+        pubDoi: this.state.doi,
+        ownerPrefix: this.state.ownerPrefix
       }
     })
   }
