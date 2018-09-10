@@ -46,7 +46,7 @@ export default class PublicationPage extends Component {
 
   static propTypes = {
     search: is.object.isRequired,
-    publication: is.object,
+    publication: is.object.isRequired,
     routeParams: is.shape({
       pubDoi: is.string.isRequired,
       issueId: is.string
@@ -72,7 +72,6 @@ export default class PublicationPage extends Component {
     super ()
     this.state = {
       doi: props.routeParams.pubDoi.toLowerCase(),
-      ownerPrefix:props.publication.message?props.publication.message['owner-prefix'] :props.routeParams.pubDoi.split('/')[0],
       serverError: null,
       filterBy: 'all',
       selections: []
@@ -85,6 +84,10 @@ export default class PublicationPage extends Component {
       .catch( e => {
         errorHandler(`Error retrieving or reading publication (${this.props.routeParams.pubDoi}): ${e.toString()}`, e)
         this.setState({serverError: e.toString()})
+      }).then(() =>  {
+        this.setState({
+          ownerPrefix: this.props.publication.message['owner-prefix']
+        })
       })
 
     if(this.props.firstLogin) {

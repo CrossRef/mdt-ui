@@ -1,19 +1,26 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
 import Moment from 'react-moment'
+import { connect } from 'react-redux'
 
 import { Link } from 'react-router'
 import {routes} from '../../routing'
 import ErrorMessage from './errorMessage'
 
+const mapStateToProps = (state, props) => {
+  return {
+    prefixes: state.login.prefixes
+  }
+}
 
-
+@connect(mapStateToProps)
 export default class DepositHistoryItem extends Component {
   static propTypes = {
     history: is.object.isRequired,
     name: is.string.isRequired,
     activeErrorMessage: is.string.isRequired,
-    errorMessageHandler: is.func.isRequired
+    errorMessageHandler: is.func.isRequired,
+    prefixes: is.array.isRequired
   };
 
   constructor (props) {
@@ -30,11 +37,18 @@ export default class DepositHistoryItem extends Component {
 
     const failedDeposit = this.props.history.status === 'Failed'
     const depositUpdate = this.props.history.depositTimestamp
+    let doiDisplay;
+    if(this.props.prefixes.indexOf(this.props.history.owner) !==-1 && this.props.history.pubDoi){
+    doiDisplay= <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(this.props.history.pubDoi)}/addarticle/${encodeURIComponent(this.props.history.doi)}`}>{title}</Link>;
+    }else{
+      doiDisplay=title
+    }
 
     return (
         <tr>
           <td className='firstTd'>{this.props.history.id}</td>
-          <td><Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(this.props.history.pubDoi)}/addarticle/${encodeURIComponent(this.props.history.doi)}`}>{title}</Link></td>
+          <td>{doiDisplay}
+         </td>
           <td><Moment format="MMM DD">{this.props.history.date}</Moment></td>
           <td>Article</td>
           <td>{this.props.history.status}</td>
