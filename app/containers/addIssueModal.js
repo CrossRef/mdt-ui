@@ -5,7 +5,7 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 
 import { controlModal, getPublications } from '../actions/application'
-import AddIssueCard from '../components/AddIssueModal/addIssueCard'
+import AddIssueView from '../components/AddIssueModal/addIssueView'
 import defaultState from '../components/AddIssueModal/issueDefaultState'
 import {finishUpdate, doiEntered, escapeString} from '../utilities/helpers'
 import getIssueXml from '../components/AddIssueModal/issueXmlGenerator'
@@ -521,7 +521,7 @@ export class AddIssueModal extends Component {
     this.errorUtility.errorIndicators = []  //Saving refs of any errorIndicators rendered so need to clear it before each render
     this.errorUtility.openingSubItem = false
     return (
-      <AddIssueCard
+      <AddIssueView
         save={this.save}
         handler={this.handler}
         addSubItem={this.addSubItem}

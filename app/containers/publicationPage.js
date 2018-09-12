@@ -12,8 +12,10 @@ import TitleBar from '../components/Publication/titleBar'
 import TourModal from '../components/Publication/tourModal'
 import DeleteConfirmModal from '../components/Publication/deleteConfirmModal'
 import MoveSelectionModal from '../components/Publication/moveSelectionModal'
+import TransferTitleModal from '../components/Publication/transferTitleModal'
 import {routes} from  '../routing'
 import {compareDois, errorHandler} from '../utilities/helpers'
+import AddIssueModal from './addIssueModal';
 
 
 
@@ -44,7 +46,7 @@ export default class PublicationPage extends Component {
 
   static propTypes = {
     search: is.object.isRequired,
-    publication: is.object,
+    publication: is.object.isRequired,
     routeParams: is.shape({
       pubDoi: is.string.isRequired,
       issueId: is.string
@@ -70,7 +72,6 @@ export default class PublicationPage extends Component {
     super ()
     this.state = {
       doi: props.routeParams.pubDoi.toLowerCase(),
-      ownerPrefix: props.routeParams.pubDoi.split('/')[0],
       serverError: null,
       filterBy: 'all',
       selections: []
@@ -83,6 +84,10 @@ export default class PublicationPage extends Component {
       .catch( e => {
         errorHandler(`Error retrieving or reading publication (${this.props.routeParams.pubDoi}): ${e.toString()}`, e)
         this.setState({serverError: e.toString()})
+      }).then(() =>  {
+        this.setState({
+          ownerPrefix: this.props.publication.message['owner-prefix']
+        })
       })
 
     if(this.props.firstLogin) {
@@ -227,6 +232,38 @@ export default class PublicationPage extends Component {
   }
 
 
+  addIssue = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: 'Create new issue/volume',
+      style: 'addIssueModal',
+      Component: AddIssueModal,
+      props: {
+        pubDoi: this.state.doi
+      }
+    })
+  }
+
+
+  newArticle = () =>
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(this.state.doi)}/addarticle`)
+
+
+  transferTitle = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: 'Transfer title',
+      style: 'transferTitleModal',
+      Component: TransferTitleModal,
+      props: {
+        publicationTitle: this.props.publication.message.title.title,
+        pubDoi: this.state.doi,
+        ownerPrefix: this.state.ownerPrefix
+      }
+    })
+  }
+
+
   handleFilter = (type) => {
     this.setState({
       filterBy: type
@@ -236,67 +273,61 @@ export default class PublicationPage extends Component {
 
   render () {
 
-    const { publication, reduxControlModal } = this.props
+    const { publication } = this.props
     const contains = (publication && publication.message && publication.message.contains) || []
     const {doi, ownerPrefix} = this.state
 
     return (
       <div>
-        {this.props.publication && !this.state.serverError ?
-          <div className='publication'>
-            <Filter
-              handleFilter={this.handleFilter.bind(this)}
-            />
+        {this.props.publication && !this.state.serverError
+          ? <div className='publication'>
+              <Filter
+                handleFilter={this.handleFilter}
+              />
 
-            <TitleBar
-              publication={publication}
-              search={this.props.search}
-              ownerPrefix={ownerPrefix}
-              cart={this.props.cart}
+              <TitleBar
+                publication={publication}
+                search={this.props.search}
+                ownerPrefix={ownerPrefix}
+                cart={this.props.cart}
+                reduxControlModal={this.props.reduxControlModal}
+                reduxCartUpdate={this.props.reduxCartUpdate}
+                asyncSearchRecords={this.props.asyncSearchRecords}/>
 
-              reduxControlModal={this.props.reduxControlModal}
-              reduxCartUpdate={this.props.reduxCartUpdate}
+              <ActionBar
+                selections={this.state.selections}
+                newArticle={this.newArticle}
+                addIssue={this.addIssue}
+                transferTitle={this.transferTitle}
+                handleAddCart={this.handleAddCart}
+                deleteSelections={this.deleteSelections}
+                duplicateSelection={this.duplicateSelection}
+                moveSelection={this.moveSelection}/>
 
-              asyncSearchRecords={this.props.asyncSearchRecords}/>
+              <div className='publication-children'>
+                {contains.length
+                  ? <Listing
+                      filterBy={this.state.filterBy}
+                      publication={publication}
+                      triggerModal={this.props.location.query && this.props.location.query.modal}
+                      selections={this.state.selections}
+                      cart={this.props.cart}
+                      handleRemoveFromList={this.handleRemoveFromList}
+                      handleAddToList={this.handleAddToList}
+                      reduxControlModal={this.props.reduxControlModal}
+                      reduxCartUpdate={this.props.reduxCartUpdate}/>
 
-            <ActionBar
-              pubDoi={doi}
-              selections={this.state.selections}
-
-              handleAddCart={this.handleAddCart}
-              deleteSelections={this.deleteSelections}
-              duplicateSelection={this.duplicateSelection}
-              moveSelection={this.moveSelection}
-
-              reduxControlModal={reduxControlModal}
-              reduxCartUpdate={this.props.reduxCartUpdate}/>
-
-            <div className='publication-children'>
-              {contains.length ?
-                <Listing
-                  filterBy={this.state.filterBy}
-                  publication={publication}
-                  triggerModal={this.props.location.query && this.props.location.query.modal}
-                  selections={this.state.selections}
-                  cart={this.props.cart}
-
-                  handleRemoveFromList={this.handleRemoveFromList}
-                  handleAddToList={this.handleAddToList}
-
-                  reduxControlModal={this.props.reduxControlModal}
-                  reduxCartUpdate={this.props.reduxCartUpdate}/>
-
-                : <div className='empty-message'>No articles, please create one!</div>}
+                  : <div className='empty-message'>No articles, please create one!</div>}
+              </div>
             </div>
-          </div>
-        :
-          <div>
-            <br/><br/><br/> {/*TEMPORARY STYLING, SHOULD USE CSS*/}
-            {this.state.serverError ?
-              <div>Sorry, this DOI ({doi}) is not retrieving valid Publication data. <br/><br/> Error: {this.state.serverError} </div>
-              : <div>Loading...</div>
-            }
-          </div>
+
+          : <div>
+              <br/><br/><br/> {/*TEMPORARY STYLING, SHOULD USE CSS*/}
+              {this.state.serverError
+                ? <div>Sorry, this DOI ({doi}) is not retrieving valid Publication data. <br/><br/> Error: {this.state.serverError} </div>
+                : <div>Loading...</div>
+              }
+            </div>
         }
       </div>
     )

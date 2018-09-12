@@ -181,3 +181,35 @@ export function getFormattedReference (doi) {
     })
       .then( result => result.json())
 }
+
+
+export function transferTitle (transferTitleState) {
+
+  return authorizedFetch(`${apiBaseUrl}/transferTitle`, {
+    method:'post',
+    headers: {Authorization: localStorage.getItem('auth')},
+    body: JSON.stringify({
+      message:transferTitleState
+    })
+  })
+  .then(result => {
+    if(result.status > 202) throw `Server Error ${result.status}: ${result.statusText}`
+    return result.json()
+  })
+}
+
+export function getPublisherName (prefix) {
+  return authorizedFetch(`${apiBaseUrl}/transferTitle?prefix=${prefix}`, {
+    method: 'get',
+    headers: {Authorization: localStorage.getItem('auth')}
+  })
+      .then(result => result.json())
+}
+export function getPublishers (work) {
+  return authorizedFetch(`${apiBaseUrl}/transferTitle`, {
+    method: 'get',
+    headers: {Authorization: localStorage.getItem('auth')}
+  })
+      .then(result => result.json())
+
+}

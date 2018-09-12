@@ -16,7 +16,7 @@ import {issueTooltips as tooltips} from '../../utilities/lists/tooltipMessages'
 
 
 
-AddIssueCard.propTypes = {
+AddIssueView.propTypes = {
   save: is.func.isRequired,
   handler: is.func.isRequired,
   closeModal: is.func.isRequired,
@@ -28,7 +28,7 @@ AddIssueCard.propTypes = {
 }
 
 
-export default function AddIssueCard (props) {
+export default function AddIssueView (props) {
 
   const { errors } = props;
   const volumeSectionRequired =  !!(doiEntered(props.issue.volumeDoi, props.ownerPrefix) || urlEntered(props.issue.volumeUrl));
