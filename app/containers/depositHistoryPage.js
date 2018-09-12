@@ -68,7 +68,7 @@ export default class DepositHistoryPage extends Component {
 
 
   handlePageClick = (current, pageSize) => {
-    var selected = current
+    var selected = current-1
     let offset = Math.ceil(selected * this.state.query.count)
     this.setState({
       query: update(this.state.query, {offset: {$set: offset}})
@@ -183,6 +183,7 @@ export default class DepositHistoryPage extends Component {
             doi: doi,
             title: title,
             pubDoi: historyItem.pubDoi,
+            owner:historyItem.owner,
             status: historyItem.evenStatus === 'OK' ? 'Accepted' : 'Failed',
             errorMessage
           }}/>
