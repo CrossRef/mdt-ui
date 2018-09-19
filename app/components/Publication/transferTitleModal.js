@@ -119,11 +119,12 @@ export default class TransferTitleModal extends React.Component {
         toPublisher: this.state.prefixSelection,
         email: this.state.publisherSelection.email,
         ownerPrefix: this.props.ownerPrefix,
-        doi: this.props.pubDoi}).catch(e=>{
-            this.close()
+        doi: this.props.pubDoi}).then(()=>{
+          this.props.reduxDeletePublication(this.props.pubDoi)}
+          ).catch(e=>{
+            this.props.close()
           return errorHandler(`Error transfering title  ${e.toString()}`, e)
       })
-      this.props.reduxDeletePublication(this.props.pubDoi)
     }
 
     this.props.reduxControlModal({

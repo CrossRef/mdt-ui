@@ -25,7 +25,12 @@ var presets = {
 
   staging: {
     baseUrl: '/mmstaging/',
-    apiBaseUrl: 'https://apps.crossref.org/mdt-staging',
+    apiBaseUrl: 'https://apps-staging.crossref.org/mdt',
+    babelConfig: babelDev
+  },
+  develop: {
+    baseUrl: '/mmstaging/',
+    apiBaseUrl: 'http://localhost:8080/mdt-staging',
     babelConfig: babelDev
   }
 }
