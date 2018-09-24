@@ -74,7 +74,8 @@ export default class PublicationPage extends Component {
       doi: props.routeParams.pubDoi.toLowerCase(),
       serverError: null,
       filterBy: 'all',
-      selections: []
+      selections: [],
+      allNotInCart:false
     }
   }
 
@@ -122,9 +123,12 @@ export default class PublicationPage extends Component {
         return
       }
     }
+    var itemInCart = this.props.cart.find( cartItem => compareDois(cartItem.doi, item.doi)) 
     item.pubDoi = this.state.doi
     newSelections.push(item);
-    this.setState({selections: newSelections})
+    // adding an item should not turn off deposit option, but only turns on if it's not already in the cart
+    this.setState({selections: newSelections,
+    allNotInCart: !itemInCart||this.state.allNotInCart})
   }
 
 
@@ -133,9 +137,17 @@ export default class PublicationPage extends Component {
     const filteredSelections = selections.filter((selection)=>{
       return !compareDois(item.doi, selection.doi) || JSON.stringify(item.title) !== JSON.stringify(selection.title)
     })
+    var itemInCart
+    // check the selection list if it has at least 1 item not in the cart
+    for(let i in filteredSelections){
+      itemInCart = this.props.cart.find( cartItem => compareDois(cartItem.doi, filteredSelections[i].doi))
+      if(!itemInCart){break}
+     }
+    
     this.setState({
-      selections: filteredSelections
-    })
+      selections: filteredSelections,      
+      allNotInCart: !itemInCart})
+    
   }
 
 
@@ -163,7 +175,8 @@ export default class PublicationPage extends Component {
           asyncLoop(nextIndex)
         })
       } else {
-        this.setState({selections:[]})
+        this.setState({selections:[],
+          allNotInCart:false})
       }
     }
     asyncLoop(0)
@@ -182,7 +195,8 @@ export default class PublicationPage extends Component {
             this.props.asyncDeleteRecord(this.state.selections[i])
           }
           this.props.reduxControlModal({showModal:false})
-          this.setState({selections:[]})
+          this.setState({selections:[],
+            allNotInCart:false})
         },
         selections: this.state.selections
       }
@@ -223,7 +237,8 @@ export default class PublicationPage extends Component {
           await this.props.asyncMoveArticles(this.state.selections, issue, this.props.routeParams.pubDoi)
 
           this.props.reduxControlModal({showModal:false})
-          this.setState({selections:[]})
+          this.setState({selections:[],
+            allNotInCart:false})
         },
 
         issues: this.props.publication.normalizedRecords.findAll( record => record.type === 'issue' )
@@ -302,7 +317,8 @@ export default class PublicationPage extends Component {
                 handleAddCart={this.handleAddCart}
                 deleteSelections={this.deleteSelections}
                 duplicateSelection={this.duplicateSelection}
-                moveSelection={this.moveSelection}/>
+                moveSelection={this.moveSelection}
+                newToCart={this.state.allNotInCart}/>
 
               <div className='publication-children'>
                 {contains.length

@@ -17,7 +17,8 @@ export default class ActionBar extends Component {
     handleAddCart: is.func.isRequired,
     deleteSelections: is.func.isRequired,
     duplicateSelection: is.func.isRequired,
-    selections: is.array.isRequired
+    selections: is.array.isRequired,
+    newToCart: is.array.isRequired
   }
 
 
@@ -69,7 +70,7 @@ export default class ActionBar extends Component {
 
   render () {
     const onlyIssue = this.onlyIssueSelected()
-    const { handleAddCart, deleteSelections, duplicateSelection, moveSelection, addIssue, newArticle, transferTitle } = this.props
+    const { handleAddCart, deleteSelections, duplicateSelection, moveSelection, addIssue, newArticle, transferTitle, newToCart } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add record
@@ -84,7 +85,7 @@ export default class ActionBar extends Component {
         >
           Action
           {this.state.actionMenuOpen && <div className='actionBarDropDown'>
-            {this.props.selections.length && !onlyIssue ? <p onClick={handleAddCart}>Add to deposit</p> : <p className="grayedOut">Add to deposit</p>}
+            {this.props.selections.length && !onlyIssue && newToCart ? <p onClick={handleAddCart}>Add to deposit</p> : <p className="grayedOut">Add to deposit</p>}
             {this.props.selections.length && !onlyIssue ? <p onClick={moveSelection}>Move to</p> : <p className="grayedOut">Move to</p>}
             {this.props.selections.length && !onlyIssue ? <p onClick={duplicateSelection}>Duplicate</p> : <p className="grayedOut">Duplicate</p>}
             {this.props.selections.length ? <p onClick={deleteSelections}>Remove</p> : <p className="grayedOut">Remove</p>}
