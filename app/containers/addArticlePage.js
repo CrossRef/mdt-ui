@@ -531,6 +531,7 @@ export class AddArticlePage extends Component {
           crossmarkUtility={this.crossmarkUtility}
           tooltipUtility={this.tooltipUtility}
           calendarHandler={this.calendarHandler}
+          cart={this.props.reduxCart}
           {...this.state}
         />
 

@@ -22,7 +22,7 @@ import StickyError from '../Common/stickyError'
 import {urlEntered} from '../../utilities/helpers'
 import {crossmarkErrors} from '../../utilities/crossmarkHelpers'
 import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
-
+import {compareDois, errorHandler} from '../../utilities/helpers'
 
 
 
@@ -57,6 +57,7 @@ export default function AddArticleView (props) {
           openReviewArticleModal={props.openReviewArticleModal}
           saving={props.saving}
           inCart={props.inCart}
+          alreadyInCart={props.cart.find( cartItem => compareDois(cartItem.doi, props.article.doi)) }
           criticalErrors={props.criticalErrors}/>
 
         <div className='articleInnerForm'>
