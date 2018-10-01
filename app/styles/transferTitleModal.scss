@@ -291,7 +291,7 @@
 
       .cancelWarning {
         background: white;
-        border: 1px solid $dark-grey;
+        border: 2px solid $dark-grey;
         color: $dark-grey;
         float: right;
         display: flex;
@@ -301,6 +301,7 @@
         height: 40px;
         margin-right: 30px;
         cursor: pointer;
+        border-radius: 3px;
       }
       .transferWarning {
         float: right;
@@ -314,6 +315,7 @@
         justify-content: center;
         align-items: center;
         cursor: pointer;
+        border-radius: 3px;
       }
     }
   }
