@@ -35,7 +35,7 @@ const mapStateToProps = (state, props) => {
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   asyncSubmitPublication: submitPublication,
   asyncGetPublications: getPublications,
-  reduxDeletePublication: deletePublication,
+  reduxDeletePublication: deletePublication
 }, dispatch)
 
 
