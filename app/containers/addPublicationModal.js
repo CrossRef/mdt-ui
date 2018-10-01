@@ -4,7 +4,6 @@ import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import verifyIssn from 'issn-verify'
 import { XMLSerializer, DOMParser } from 'xmldom'
-
 import * as api from '../actions/api'
 import {getPublications} from '../actions/application'
 import { submitPublication } from '../actions/application'
@@ -13,6 +12,7 @@ import {isDOI, isURL, asyncCheckDupeDoi, xmldoc, errorHandler} from '../utilitie
 import LanguageSelector from '../utilities/lists/language'
 import { ArchiveLocations } from '../utilities/lists/archiveLocations'
 import { routes } from '../routing'
+import {deletePublication} from '../actions/application'
 
 
 
@@ -21,7 +21,7 @@ import { routes } from '../routing'
 const mapStateToProps = (state, props) => {
   const publicationJSON = props.doi ?
     (state.publications[props.doi] || state.publications[props.doi.toLowerCase()]).message
-  : {}
+    : {}
 
   return {
     crossmarkPrefixes: state.login['crossmark-prefixes'],
@@ -34,7 +34,8 @@ const mapStateToProps = (state, props) => {
 
 const mapDispatchToProps = (dispatch) => bindActionCreators({
   asyncSubmitPublication: submitPublication,
-  asyncGetPublications: getPublications
+  asyncGetPublications: getPublications,
+  reduxDeletePublication: deletePublication,
 }, dispatch)
 
 
@@ -67,6 +68,7 @@ export default class AddPublicationModal extends Component {
 
     asyncSubmitPublication: is.func.isRequired,
     asyncGetPublications: is.func.isRequired,
+    reduxDeletePublication: is.func.isRequired,
     close: is.func.isRequired //close function and reduxControlModal provided by modal container parent
   }
 
@@ -273,17 +275,16 @@ export default class AddPublicationModal extends Component {
           publication.state = state
         }
 
-        this.props.asyncSubmitPublication(publication)
-          .then(() => {
-            const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
-            this.setState({
-              mode: 'edit',
-              'mdt-version': String( Number(this.state['mdt-version']) + 1),
-              errors: errorStates,
-              confirmationPayload,
-              timeOut
-            })
+        this.props.asyncSubmitPublication(publication).then(() => {
+          const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
+          this.setState({
+            mode: 'edit',
+            'mdt-version': String( Number(this.state['mdt-version']) + 1),
+            errors: errorStates,
+            confirmationPayload,
+            timeOut
           })
+        })
 
       } else if (!valid) {
         const { confirmationPayload, timeOut } = this.confirmSave(criticalErrors)
@@ -296,7 +297,6 @@ export default class AddPublicationModal extends Component {
       }
     })
   }
-
 
   publicationXMLGenerator = (form = this.state) => {
     const doc = new DOMParser().parseFromString('<Journal xmlns="http://www.crossref.org/xschema/1.1"></Journal>','text/xml')
@@ -391,7 +391,7 @@ export default class AddPublicationModal extends Component {
     const doiList = this.props.searchResult.doi.map( doi =>
       <div key={doi} className="doiOptionContainer" onMouseDown={()=>this.selectDoi(doi)}>
         {this.state.DOI === doi &&
-          <img className='checkmark' src={`${routes.images}/Publications/Asset_Icons_White_Check 2.svg`}/>}
+        <img className='checkmark' src={`${routes.images}/Publications/Asset_Icons_White_Check 2.svg`}/>}
         <p className='doiOption'>{doi}</p>
       </div>
     )
@@ -408,10 +408,10 @@ export default class AddPublicationModal extends Component {
         />
 
         {this.state.doiDropdown &&
-          <div className="doiDropdown">
-            <div className="instruction">Please select one DOI</div>
-            {doiList}
-          </div>}
+        <div className="doiDropdown">
+          <div className="instruction">Please select one DOI</div>
+          {doiList}
+        </div>}
       </div>
     )
   }
@@ -434,10 +434,42 @@ export default class AddPublicationModal extends Component {
   }
 
 
+  confirmRemovalModal = () => {
+    const confirmDelete = () => {
+      this.props.reduxDeletePublication(this.props.doi)
+      this.props.close()
+    }
+
+    this.props.reduxControlModal({
+      title: "Remove Journal Record",
+      style: "warningModal",
+      Component: ({doi, title, close, confirm}) =>
+        <div className="transferWarningContainer">
+          <div className="warningContent">
+            <p><b>Do you want to remove the selected journal? If there are no articles associated with this journal in the system, this record will be permanently deleted.</b></p>
+            <p>{"- " + title}</p>
+          </div>
+          <div className="buttons">
+            <div
+              className="transferWarning" onClick={confirm}>Remove</div>
+            <div className="cancelWarning" onClick={close}>Cancel</div>
+          </div>
+        </div>,
+      props: {
+        title: this.props.title,
+        doi: this.props.doi,
+        confirm: confirmDelete
+      }
+    })
+
+  }
+
+
   render () {
 
     const isEdit = this.state.mode === 'edit'
     const disabledInput = isEdit ? {disabled: true, className: 'disabledDoi'} : {}
+    const toggleHidden = this.state.mode === 'add' || this.props.doi == undefined ? { visibility: 'hidden' } : {visibility: 'visible'}
 
     const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
     const errors = this.state.errors
@@ -559,11 +591,11 @@ export default class AddPublicationModal extends Component {
                 <div className='inputinnerholder'>
                   <div className='notrequired' />
                   <select name='archivelocation' value={this.state.archivelocation}
-                    onChange={this.inputHandler}>
-                      <option value='' />
-                      {ArchiveLocations.map((location)=>
-                        <option key={location.value} value={location.value}>{location.name}</option>
-                      )}
+                          onChange={this.inputHandler}>
+                    <option value='' />
+                    {ArchiveLocations.map((location)=>
+                      <option key={location.value} value={location.value}>{location.name}</option>
+                    )}
                   </select>
                 </div>
               </div>
@@ -571,27 +603,26 @@ export default class AddPublicationModal extends Component {
           </div>
           <div className='fieldRowHolder'>
             {crossmark &&
-              <div className='fieldinput'>
-                <div className='left-indent-36'>Crossmark Policy Page DOI</div>
-                <div className='inputholder'>
-                  <div className='inputinnerholder'>
-                    <div className='notrequired' />
-                    <input
-                      type='text'
-                      name='crossmarkDoi'
-                      value={this.state.crossmarkDoi}
-                      onChange={this.inputHandler}/>
-                  </div>
+            <div className='fieldinput'>
+              <div className='left-indent-36'>Crossmark Policy Page DOI</div>
+              <div className='inputholder'>
+                <div className='inputinnerholder'>
+                  <div className='notrequired' />
+                  <input
+                    type='text'
+                    name='crossmarkDoi'
+                    value={this.state.crossmarkDoi}
+                    onChange={this.inputHandler}/>
                 </div>
-              </div>}
+              </div>
+            </div>}
           </div>
           <div className='fieldRowHolder buttonholder'>
-            <div className='fieldinput' />
             <div className='fieldinput'>
-              <div
-                onClick={this.props.close}
-                className='button-anchor button-white-cancel'
-              >Close</div>
+              <div style={toggleHidden} onClick={this.confirmRemovalModal} className='button-anchor button-red-removal'>Remove Draft Journal</div>
+            </div>
+            <div className='fieldinput'>
+              <div onClick={this.props.close} className='button-anchor button-white-cancel'>Close</div>
               <div onClick={this.save} className='button-anchor actionTooltip'>
                 Save
               </div>

@@ -55,7 +55,7 @@ export default class NavBar extends Component {
         <div className='message'>{pascaleCase(recordType)} {messages[updateType]} ({title})</div>
       </div>,
       <div className='toastTitle'><div className='arrow'/></div>,
-      )
+    )
   }
 
 
@@ -87,6 +87,11 @@ export default class NavBar extends Component {
     })
   }
 
+  externalHelpURL = () => {
+    const helpURl = 'https://www.crossref.org/help/metadata-manager/'
+    window.open (helpURl);
+  }
+
 
   render () {
     return (
@@ -102,7 +107,7 @@ export default class NavBar extends Component {
                 toastMessageFactory={ToastMessageFactory}
                 ref="container"
                 className={'toast-top-right topnav' + (this.state.type !== 'add' ? ' remove-message' : '')} />
-              </Link>
+            </Link>
           </div>
           <div className='user'>
             <div className='userProfileMenuHolder' >
@@ -111,16 +116,17 @@ export default class NavBar extends Component {
                 tabIndex="0"
                 onBlur={this.closeProfileMenu}
                 onClick={this.toggleProfileMenu}>
-                  {localStorage.user}
-                  <img
-                    className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')}
-                    src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
+                {localStorage.user}
+                <img
+                  className={'profileActions' + ((this.state.profileMenu) ? ' menuOpen':'')}
+                  src={`${routes.images}/AddArticle/DarkTriangle.svg`} />
               </div>
               {this.state.profileMenu &&
-                <div className='profileMenu'>
-                  {this.props.firstLogin === false && <p onMouseDown={this.showTour}>Tutorial</p>}
-                  <p onMouseDown={this.logout}>Logout</p>
-                </div>}
+              <div className='profileMenu'>
+                {this.props.firstLogin === false && <p onMouseDown={this.showTour}>Tutorial</p>}
+                <p onMouseDown={this.externalHelpURL}>Help</p>
+                <p onMouseDown={this.logout}>Logout</p>
+              </div>}
             </div>
           </div>
         </div>
