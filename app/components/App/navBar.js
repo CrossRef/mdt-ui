@@ -89,7 +89,7 @@ export default class NavBar extends Component {
 
   externalHelpURL = () => {
     const helpURl = 'https://www.crossref.org/help/metadata-manager/'
-    window.open (helpURl);
+    window.open (helpURl)
   }
 
 
