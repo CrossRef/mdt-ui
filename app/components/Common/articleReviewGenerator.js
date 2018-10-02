@@ -195,9 +195,6 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                     <div className='firstBorder'>
                     <div className='innerBorder'></div>
                     </div>
-                    <div className='secondBorder'>
-                    <div className='innerBorder'></div>
-                    </div>
                     <div className='reviewContent'>
                     <h4>General</h4>
                     <p>{generalHeading}</p>
