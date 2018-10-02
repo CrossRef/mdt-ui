@@ -1,4 +1,5 @@
 .reviewModal {
+    box-shadow: 0 0 2px rgba(0,0,0,.5);
     .modal {
         .titlebar {
             .titlebarinner {
@@ -15,10 +16,20 @@
                                 height: 32px;
                                 position: relative;
                                 top: 0px;
+                                left: -12px;
                             }
                         }
                         .innerTitleHolderText {
                             width: 100%;
+                            margin-top: 2px;
+                            font-size: 18px;
+                        }
+                    }
+                }
+                .titleclose {
+                    a {
+                        img {
+                            margin-right:-12px;
                         }
                     }
                 }
@@ -80,7 +91,7 @@
     .reviewContent {
         padding: 0 32px 0 16px;
         vertical-align: top;
-        width: 95%;
+        width: 100%;
         h4 {
             margin: 0 0 16px 0;
         }
@@ -112,10 +123,11 @@
 
 .addToCart {
     float: right;
-    width: 160px;
-    height: 32px;
+    width: 144px;
+    height: 24px;
     color: #FFFFFF;
     background: #3eb1c8;
     border: 0px;
     margin: 0 32px 0 0;
+    border-radius: 3px;
 }
