@@ -54,6 +54,7 @@
   .fieldRowHolder {
     display: table-row;
     width: 100%;
+    font-family: Helvetica Neue, Medium;
     .fieldinput {
       display: table-cell;
       padding: 0 0 20px 0;
@@ -69,7 +70,9 @@
           width: 100%;
           .required, .notrequired, input, select {
             display: table-cell;
+            font-size: 14px;
             vertical-align: middle;
+            border-radius: 3px 0 0 3px;
           }
           .required, .notrequired {
             width: 5%;
@@ -77,7 +80,18 @@
           input, select {
             height: 32px;
             width: 336px;
+            outline: 0px solid #4F5858;
+            border: 1px solid #4F5858;
+
           }
+
+          input, text, textarea {
+            outline: 0px solid #4F5858;
+            border: 1px solid #4F5858;
+            border-radius: 3px 3px 3px 3px;
+          }
+
+
           .invalid {
             border: 1px solid #ef3340;
             background-color: #ef3340;
@@ -151,7 +165,7 @@
       }
       .button-white-cancel {
         background: #ffffff;
-        border: 2pxpx solid #4f5858;
+        border: 2px solid #4F5858;
         color: #4f5858;
         float: left;
         padding: 8px;
@@ -191,7 +205,7 @@
     height: 110px;
     .fieldinput {
       vertical-align: bottom;
-      padding-right: 20px;
+      padding-right: 65px;
       padding-left: 20px;
     }
   }

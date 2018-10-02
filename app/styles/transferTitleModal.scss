@@ -262,10 +262,12 @@
   .transferWarningContainer {
     width: 100%;
     height: auto;
-    padding: 30px 20px 30px 30px;
+    padding: 20px 20px 30px 30px;
+    font-family: Helvetica Neue, Medium;
+    font-size: 16px;
 
     p {
-      color: $dark-grey;
+      color: #000000;
       margin-right: 80px;
     }
 
@@ -308,7 +310,7 @@
         width: $buttonWidth;
         height: 40px;
         line-height: 18px;
-        background: $red;
+        background: #F25C66;
         color: #FFFFFF;
         position: relative;
         display: flex;
