@@ -14,7 +14,7 @@
 .addPublicationCard {
   position:relative;
   width: 95%;
-  left: 30px;
+  left: 27px;
 
   .publicationConfirmation {
     margin-top: 7px;
@@ -60,7 +60,7 @@
       padding: 0 0 20px 0;
       width: 50%;
       .left-indent-36 {
-        padding: 15px 0 15px 36px;
+        padding: 15px 0 15px 39px;
       }
       .inputholder {
         width: 100%;
@@ -72,7 +72,7 @@
             display: table-cell;
             font-size: 14px;
             vertical-align: middle;
-            border-radius: 3px 0 0 3px;
+            border-radius: 3px 3px 3px 3px;
           }
           .required, .notrequired {
             width: 4%;
@@ -82,7 +82,7 @@
             width: 336px;
             outline: 0px solid #4F5858;
             border: 1px solid #4F5858;
-
+            margin-left:3px;
           }
 
           input, text, textarea {
@@ -206,7 +206,7 @@
     .fieldinput {
       vertical-align: bottom;
       padding-right: 65px;
-      padding-left: 20px;
+      padding-left: 23px;
     }
   }
 }
