@@ -1,185 +1,214 @@
 .addPublicationModal {
-    .modal {
-        .titlebar {
-            .titlebarinner {
-                .title {}
-            }
-        }
-        .modalbody {
-            .modalboddyinner {}
-        }
+  .modal {
+    .titlebar {
+      .titlebarinner {
+        .title {}
+      }
     }
+    .modalbody {
+      .modalboddyinner {}
+    }
+  }
 }
 
 .addPublicationCard {
-    position:relative;
-    width: 95%;
-    left: 30px;
+  position:relative;
+  width: 95%;
+  left: 27px;
 
-    .publicationConfirmation {
-        margin-top: 7px;
-        margin-left: -30px;
-        width: 860px;
-    }
+  .publicationConfirmation {
+    margin-top: 7px;
+    margin-left: -30px;
+    width: 860px;
+  }
 }
 .addPublication {
-    cursor: pointer;
-    background: #3eb1c8;
-    border:1px solid #3eb1c8;
-    color: #FFFFFF;
-    font-size: 16px;
+  cursor: pointer;
+  background: #3eb1c8;
+  border:1px solid #3eb1c8;
+  color: #FFFFFF;
+  font-size: 16px;
 
-    width: 176px;
-    height: 40px;
+  width: 176px;
+  height: 40px;
 
 }
 
 .addPublications {
-    display: table;
+  display: table;
+  width: 100%;
+  .required {
+    background: #3eb1c8;
+    color: #FFFFFF;
+    font: {
+      size: 20px;
+    }
+    text-align: center;
+    span {
+      vertical-align: sub;
+    }
+  }
+  input, select {
+    padding: 6px 16px;
+  }
+  .fieldRowHolder {
+    display: table-row;
     width: 100%;
-    .required {
-        background: #3eb1c8;
-        color: #FFFFFF;
-        font: {
-            size: 20px;
-        }
-        text-align: center;
-        span {
-            vertical-align: sub;
-        }
-    }
-    input, select {
-        padding: 6px 16px;
-    }
-    .fieldRowHolder {
-        display: table-row;
+    font-family: Helvetica Neue, Medium;
+    .fieldinput {
+      display: table-cell;
+      padding: 0 0 20px 0;
+      width: 50%;
+      .left-indent-36 {
+        padding: 15px 0 15px 39px;
+      }
+      .inputholder {
         width: 100%;
-        .fieldinput {
+        .inputinnerholder {
+          position: relative;
+          display: inline-table;
+          width: 100%;
+          .required, .notrequired, input, select {
             display: table-cell;
-            padding: 0 0 20px 0;
-            width: 50%;
-            .left-indent-36 {
-                padding: 15px 0 15px 36px;
+            font-size: 14px;
+            vertical-align: middle;
+            border-radius: 3px 3px 3px 3px;
+          }
+          .required, .notrequired {
+            width: 4%;
+          }
+          input, select {
+            height: 32px;
+            width: 336px;
+            outline: 0px solid #4F5858;
+            border: 1px solid #4F5858;
+            margin-left:3px;
+          }
+
+          input, text, textarea {
+            outline: 0px solid #4F5858;
+            border: 1px solid #4F5858;
+            border-radius: 3px 3px 3px 3px;
+          }
+
+
+          .invalid {
+            border: 1px solid #ef3340;
+            background-color: #ef3340;
+            color: #ffe3e3;
+            margin: 0 0 0 5%;
+            padding: 10px;
+            width: 336px;
+            font-size: 13px;
+          }
+          .doiDropdown {
+            position: absolute;
+            top: 40px;
+            width: 336px;
+            background: #4f5858;
+            padding-top: 22px;
+            padding-bottom: 18px;
+            z-index: 2;
+            .instruction {
+              color: white;
+              margin-bottom: 15px;
+              padding-left: 15px;
             }
-            .inputholder {
-                width: 100%;
-                .inputinnerholder {
-                    position: relative;
-                    display: inline-table;
-                    width: 100%;
-                    .required, .notrequired, input, select {
-                        display: table-cell;
-                        vertical-align: middle;
-                    }
-                    .required, .notrequired {
-                        width: 5%;
-                    }
-                    input, select {
-                        height: 32px;
-                        width: 336px;
-                    }
-                    .invalid {
-                        border: 1px solid #ef3340;
-                        background-color: #ef3340;
-                        color: #ffe3e3;
-                        margin: 0 0 0 5%;
-                        padding: 10px;
-                        width: 336px;
-                        font-size: 13px;
-                    }
-                    .doiDropdown {
-                      position: absolute;
-                      top: 40px;
-                      width: 336px;
-                      background: #4f5858;
-                      padding-top: 22px;
-                      padding-bottom: 18px;
-                      z-index: 2;
-                      .instruction {
-                        color: white;
-                        margin-bottom: 15px;
-                        padding-left: 15px;
-                      }
-                      .doiOptionContainer {
-                        cursor: pointer;
-                        position: relative;
-                        height: 30px;
-                        display: flex;
-                        flex-direction: row;
-                        align-items: center;
-                        .checkmark {
-                          width: 30px;
-                          height: 30px;
-                          left: 7px;
-                          top: 0px;
-                          position: absolute;
-                        }
-                        .doiOption {
-                          margin-top: 0px;
-                          margin-bottom: 0px;
-                          margin-left: 40px;
-                          color: white;
-                          font-size: 1em;
-                          font-family: system-ui;
-                        }
-                      }
-                      .doiOptionContainer:hover {
-                        background: #3eb1c8
-                      }
-                    }
-                    .doiDropdown:after {
-                      content: '';
-                      position: absolute;
-                      bottom: 100%;
-                      left: 46%;
-                      width: 0;
-                      height: 0;
-                      border-bottom: 8px solid #4f5858;
-                      border-right: 8px solid transparent;
-                      border-left: 8px solid transparent;
-                    }
-                }
+            .doiOptionContainer {
+              cursor: pointer;
+              position: relative;
+              height: 30px;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              .checkmark {
+                width: 30px;
+                height: 30px;
+                left: 7px;
+                top: 0px;
+                position: absolute;
+              }
+              .doiOption {
+                margin-top: 0px;
+                margin-bottom: 0px;
+                margin-left: 40px;
+                color: white;
+                font-size: 1em;
+                font-family: system-ui;
+              }
             }
-            .button-anchor {
-                border:1px solid #3eb1c8;
-                float: right;
-                padding: 8px;
-                font-size: 16px;
-                width: 176px;
-                height: 40px;
+            .doiOptionContainer:hover {
+              background: #3eb1c8
             }
-            .button-white-cancel {
-                background: #d9d9d9;
-                border: 1px solid #4f5858;
-                color: #4f5858;
-                float: left;
-                padding: 8px;
-                text: {
-                    align: center;
-                }
-            }
-            &.invalid {
-                input:not([type=button]):not([type=submit]) {
-                    background-color: #ffe3e3!important;
-                }
-                .invalid {
-                    border: 1px solid #ef3340;
-                    background-color: #ef3340;
-                    color: #ffe3e3;
-                    margin: 0 0 0 5%;
-                    padding: 10px;
-                    width: 90%;
-                }
-            }
+          }
+          .doiDropdown:after {
+            content: '';
+            position: absolute;
+            bottom: 100%;
+            left: 46%;
+            width: 0;
+            height: 0;
+            border-bottom: 8px solid #4f5858;
+            border-right: 8px solid transparent;
+            border-left: 8px solid transparent;
+          }
         }
-    }
-    .buttonholder {
-        height: 110px;
-        .fieldinput {
-            vertical-align: bottom;
-            padding-right: 20px;
+      }
+      .button-anchor {
+        border:2px solid #3eb1c8;
+        float: right;
+        padding: 8px;
+        font-size: 16px;
+        width: 144px;
+        height: 40px;
+        border-radius: 3px;
+      }
+      .button-white-cancel {
+        background: #ffffff;
+        border: 2px solid #4F5858;
+        color: #4f5858;
+        float: left;
+        padding: 8px;
+        text: {
+          align: center;
         }
+      }
+
+      .button-red-removal {
+        background: #ffffff;
+        border: 2px solid #F25C66;
+        color: #F25C66;
+        float: left;
+        padding: 8px;
+        width: 208px;
+        text: {
+          align: center;
+        }
+      }
+
+      &.invalid {
+        input:not([type=button]):not([type=submit]) {
+          background-color: #ffe3e3!important;
+        }
+        .invalid {
+          border: 1px solid #ef3340;
+          background-color: #ef3340;
+          color: #ffe3e3;
+          margin: 0 0 0 5%;
+          padding: 10px;
+          width: 90%;
+        }
+      }
     }
+  }
+  .buttonholder {
+    height: 110px;
+    .fieldinput {
+      vertical-align: bottom;
+      padding-right: 65px;
+      padding-left: 23px;
+    }
+  }
 }
 
 .resolveWarning {

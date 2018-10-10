@@ -4,7 +4,7 @@ import update from 'immutability-helper'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
 import _ from 'lodash'
-
+import {recordTitle} from '../utilities/helpers'
 import { controlModal, cartUpdate, removeFromCart, clearCart, getPublications } from '../actions/application'
 import DepositCart from '../components/DepositCartPage/depositCart'
 import {TopOfPage, EmptyCart, WaitMessage} from '../components/DepositCartPage/depositCartComponents'
@@ -70,13 +70,18 @@ export default class DepositCartPage extends Component {
     const _this = this
     if(cart.length > 0) {
       _.each(cart, (item) => {
-        promises.push(api.getItem(item.doi).then( data => data))
+        promises.push(api.getItem(item.doi).then( data => data,(reason)=>{
+          const title = recordTitle(item.type, item.title)
+          this.props.reduxRemoveFromCart(item.doi, title, item.type)
+          console.log("Error getting item for cart:" +reason)}))
       })
 
       Promise.all(promises).then((fullData) => {
         let mergedCart = []
         for(let i in fullData){
-
+          if (!fullData[i]){
+            continue
+          }
           //update mdt-version
           if(fullData[i].message.contains[0].type === 'article') {
             cart[i]['mdt-version'] = fullData[i].message.contains[0]['mdt-version']

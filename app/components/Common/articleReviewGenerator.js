@@ -146,7 +146,7 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
         }
         }).join(', ')
 
-        contributors = contributors.length > 0 ? contributors + ', et al.' : ''
+        contributors = contributors.length > 0 ? contributors  : ''
 
         const onlineDate = reviewData.article.onlineDateYear.length > 0 ? ' (' + reviewData.article.onlineDateYear + '), ' : ''
         const title = reviewData.article.title.length > 0 ? reviewData.article.title + '.' : ''
@@ -187,15 +187,12 @@ const articleReviewGenerator = (publication, article, parentIssue, parsedAlready
                 {
                     (func) ?
                     <div>
-                        <button className='addToCart' onClick={func} >Add To Cart</button>
+                        <button className='addToCart' onClick={func} >Add to deposit</button>
                     </div>
                     : ''
                 }
                 <div className='reviewArticle'>
                     <div className='firstBorder'>
-                    <div className='innerBorder'></div>
-                    </div>
-                    <div className='secondBorder'>
                     <div className='innerBorder'></div>
                     </div>
                     <div className='reviewContent'>

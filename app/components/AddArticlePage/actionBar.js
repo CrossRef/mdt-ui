@@ -14,6 +14,7 @@ export default class ActionBar extends Component {
     openReviewArticleModal: is.func.isRequired,
     saving: is.bool.isRequired,
     inCart: is.bool,
+    alreadyInCart:is.bool,
     criticalErrors: is.object.isRequired
   }
 
@@ -108,7 +109,7 @@ export default class ActionBar extends Component {
           <div onClick={this.toggleMenu} className={'addPublication saveButton articleTooltip'}>
             Continue
             {this.state.menuOpen && <div className='actionBarDropDown'>
-              <p onClick={this.props.addToCart}>Add to deposit</p>
+            {!this.props.alreadyInCart? <p onClick={this.props.addToCart}>Add to deposit</p>: <p className="grayedOut">Add to deposit</p>}
               <p onClick={()=>this.props.save()}>Save</p>
               <p onClick={this.props.openReviewArticleModal}>Review</p>
             </div>}

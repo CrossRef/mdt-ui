@@ -22,7 +22,7 @@ import StickyError from '../Common/stickyError'
 import {urlEntered} from '../../utilities/helpers'
 import {crossmarkErrors} from '../../utilities/crossmarkHelpers'
 import {articleTooltips as tooltip} from '../../utilities/lists/tooltipMessages'
-
+import {compareDois, errorHandler} from '../../utilities/helpers'
 
 
 
@@ -57,6 +57,7 @@ export default function AddArticleView (props) {
           openReviewArticleModal={props.openReviewArticleModal}
           saving={props.saving}
           inCart={props.inCart}
+          alreadyInCart={props.cart.find( cartItem => compareDois(cartItem.doi, props.article.doi)) }
           criticalErrors={props.criticalErrors}/>
 
         <div className='articleInnerForm'>
@@ -316,6 +317,12 @@ export default function AddArticleView (props) {
             openSubItems={props.openSubItems}
             showSection={props.openItems.Funding}
             addHandler={props.addSection.bind(null, 'funding')}>
+            <ErrorIndicator
+              indicatorErrors={['fundingName']}
+              errorUtility={props.errorUtility}
+              tooltipUtility={props.tooltipUtility}
+              allErrors={props.errors}/>
+
               {props.funding.map((data, i)=>
                 <Funding
                   openSubItems={props.openSubItems}
@@ -327,6 +334,9 @@ export default function AddArticleView (props) {
                   data={props.funding}
                   tooltipUtility={props.tooltipUtility}
                   tooltip={props.showHelper}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}
                   index={i}/>
               )}
           </SubItem>

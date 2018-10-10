@@ -284,6 +284,12 @@ export const ArticleMessages = {
     message: 'Character limit of 32 exceeded.'
   },
 
+  fundingName: {
+    type: 'required',
+    bold: 'Required',
+    message: 'Please provide a funder name.'
+  },
+
   contributorLastName: {
     type: 'required',
     bold: 'Required',

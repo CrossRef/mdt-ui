@@ -12,10 +12,13 @@
         border: 0 !important;
         padding: 0 !important;
         margin: auto !important;
-        max-width: 860px;
+        max-width: 864px;
+        box-shadow: 10px 10px 50px rgba(0,0,0,0.5);
+        border-radius: 3px;
 
         .modal {
             .titlebar {
+
                 background: #4F5858;
                 min-height: 70px;
                 width: 100%;
@@ -27,11 +30,14 @@
                     float: none;
                     height: 100%;
                     margin: 0 auto;
-                    width: 90%;
+                    width: 94%;
                     .title {
                         display: table-cell;
                         vertical-align: middle;
+                        text-align: left;
                         width: 100%;
+                        font-size: 18px;
+                        font-family: Helvetica Neue, Medium;
                     }
                     .titleclose {
                         display: table-cell;
@@ -42,7 +48,7 @@
                             img {
                                 cursor: pointer;
                                 width: 32px;
-                                height: 32px;
+                                height: 31.25px;
                             }
                         }
                     }
@@ -74,6 +80,7 @@
 
     .warningModal {
         position: relative;
+        border-radius: 3px;
         top: 180px;
         left: auto;
         right: auto;
@@ -85,7 +92,7 @@
         padding: 20px;
         .modal {
             .titlebar {
-                background: #ff4f52;
+                background: #F25C66;
             }
         }
     }
