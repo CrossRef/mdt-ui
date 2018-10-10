@@ -5,18 +5,18 @@ import Autosuggest from 'react-autosuggest'
 
 import {routes} from '../../../routing'
 import {articleTooltips as tooltips} from '../../../utilities/lists/tooltipMessages'
-
-
+import ErrorIndicator from '../../Common/errorIndicator'
 
 
 
 export default class Funding extends Component {
   constructor (props) {
     super(props)
-    const {funding} = this.props
+    const {funding, validate} = this.props
     this.state = {
       showSubItem: true,
       suggestions: [],
+      isValidFunder: false,
       funderName: funding.funderName || '',
       funder_identifier: funding.funder_identifier.trim().length ? funding.funder_identifier : '',
       isLoading: false,
@@ -29,7 +29,7 @@ export default class Funding extends Component {
     this.setState({
       showSubItem: nextProps.openSubItems ? true : this.state.showSubItem,
       funder_identifier: nextProps.funding.funder_identifier,
-      grantNumbers: nextProps.funding.grantNumbers
+      grantNumbers: nextProps.funding.grantNumbers,
     })
   }
 
@@ -58,15 +58,16 @@ export default class Funding extends Component {
       this.handleFunding(event)
       this.setState({
         funderName: newValue.name || '',
-        funder_identifier: newValue.uri || ''
+        funder_identifier: newValue.uri || '',
+        isValidFunder: true
       })
     } else {
       this.setState({
-        funderName: newValue
+        funderName: newValue,
+        isValidFunder: false
       })
     }
   }
-
 
   onSuggestionsFetchRequested = ({ value }) => {
     this.setState({
@@ -117,7 +118,7 @@ export default class Funding extends Component {
 
   handleFunding = (e) => {
     const funder = {
-      funderName: this.props.funding.funderName,
+      funderName: this.state.funderName,
       funder_identifier: this.state.funder_identifier,
       grantNumbers: this.state.grantNumbers
     }
@@ -150,6 +151,7 @@ export default class Funding extends Component {
         return (
           <GrantField
             key={i}
+            validate={this.props.validate}
             grantInputNodes={this.grantInputNodes}
             handleFunding={this.handleFunding}
             index={i}
@@ -169,6 +171,9 @@ export default class Funding extends Component {
   render () {
     const focusFunderId = `funderId-${this.props.index}`
     const funderIdFocused = this.props.tooltipUtility.getFocusedInput() === focusFunderId
+    const errors = this.props.funding.errors || {}
+    const fundingName = ['fundingName']
+    const required = !!(this.props.funding.grantNumbers.toString())
 
     return (
         <div>
@@ -184,6 +189,7 @@ export default class Funding extends Component {
                         <a onClick={() => {this.props.remove(this.props.index)}}>Remove</a>
                     </div>
                 }
+              {!this.state.showSubItem}
             </div>
             {this.state.showSubItem &&
                 <div>
@@ -198,9 +204,9 @@ export default class Funding extends Component {
                                     </div>
                                 </div>
                                 <div className='requrefieldholder'>
-                                    <div className='requiredholder norequire'>
-                                        <div className='required height32'>
-                                        </div>
+                                  <div className={`requiredholder ${!required && 'norequire'}`}>
+                                    <div className='required height30'>{required && <span>*</span>}
+                                    </div>
                                     </div>
                                   <div className='field'>
                                     <Autosuggest
@@ -212,17 +218,28 @@ export default class Funding extends Component {
                                       renderInputComponent={(inputProps) =>
                                         <div>
                                           {this.props.tooltip && funderIdFocused && <img className='infoFlag infoFlagInput' src={`${routes.images}/AddArticle/Asset_Icons_GY_HelpFlag.svg`} />}
-                                          <input
-                                            {...inputProps}
-                                            className={`${this.props.tooltip && funderIdFocused ? 'infoFlagBorder' : ''}`}
-                                            onFocus={()=>{
-                                              this.props.tooltipUtility.assignFocus(focusFunderId, tooltips.funderId)
-                                              inputProps.onFocus()
-                                            }}
-                                            onBlur={()=>{
-                                              inputProps.onBlur()
-                                            }}
-                                          />
+                                            <input
+                                              {...inputProps}
+                                              className={`height32 ${this.props.error ? 'fieldError' : ''}${this.props.tooltip && funderIdFocused ? 'infoFlagBorder' : ''}`
+                                              }
+                                              onFocus={()=>{
+                                                inputProps.onFocus()
+                                                if(errors.fundingName && fundingName) {
+                                                  this.props.errorUtility.setErrorMessages(fundingName, errors.fundingName)
+                                                } else if (this.props.tooltip) {
+                                                  this.props.errorUtility.setErrorMessages([])
+                                                }
+                                                this.props.tooltipUtility.assignFocus(focusFunderId, tooltips.funderId)
+                                              }}
+                                              onBlur={this.state.suggestions.length == 0 ? ()=>{
+                                                this.props.validate()
+                                                if (!this.state.isValidFunder){
+                                                  this.setState({
+                                                    funderName: "",
+                                                  })
+                                                }
+                                              }:null}
+                                            />
                                         </div>
                                       }
                                       inputProps={{
@@ -240,7 +257,16 @@ export default class Funding extends Component {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                      <ErrorIndicator
+                        indicatorErrors={fundingName}
+                        errorMessages={this.props.errorMessages}
+                        errorUtility={this.props.errorUtility}
+                        tooltipUtility={this.props.tooltipUtility}
+                        allErrors={errors}
+                        subItem='funding'
+                        subItemIndex={String(this.props.index)}
+                      />
+                        </div>
                     <div className='row'>
                         <div className='fieldHolder'>
                             <div className='fieldinnerholder halflength'>
@@ -286,6 +312,7 @@ class GrantField extends React.Component {
 
   static propTypes = {
     handleFunding: is.func.isRequired,
+    validate: is.func.isRequired,
     index: is.number.isRequired,
     subItemIndex: is.number.isRequired,
     value: is.string.isRequired,
@@ -294,7 +321,6 @@ class GrantField extends React.Component {
     tooltipUtility: is.object.isRequired,
     grantInputNodes: is.object.isRequired
   }
-
 
   render() {
     const focusGrantId = `funderGrantNumber-${this.props.subItemIndex}-${this.props.index}`
@@ -314,6 +340,9 @@ class GrantField extends React.Component {
             name="grantNumber"
             onChange={this.props.handleFunding}
             value={this.props.value}
+            onBlur={()=>{
+              this.props.validate()
+            }}
             onFocus={()=>{
               this.props.tooltipUtility.assignFocus(focusGrantId, tooltips.grantNumber)
             }}
