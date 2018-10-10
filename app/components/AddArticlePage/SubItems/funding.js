@@ -118,7 +118,7 @@ export default class Funding extends Component {
 
   handleFunding = (e) => {
     const funder = {
-      funderName: this.state.funderName,
+      funderName: this.props.funding.funderName,
       funder_identifier: this.state.funder_identifier,
       grantNumbers: this.state.grantNumbers
     }
