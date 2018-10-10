@@ -41,6 +41,8 @@ export default {
     contributorGroupName: false,
     contributorGroupRole: false,
 
+    fundingName: false,
+
     licenseUrl: false,
     licenseUrlInvalid: false,
     licenseDateInvalid: false,
@@ -94,7 +96,10 @@ export default {
     {
       funderName: '',
       funder_identifier: '',
-      grantNumbers: ['']
+      grantNumbers: [''],
+      errors: {
+        fundingName: false
+      }
     }
   ],
   license: [

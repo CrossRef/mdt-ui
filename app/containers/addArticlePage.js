@@ -128,6 +128,7 @@ export class AddArticlePage extends Component {
       warnings,
       licenses,
       contributors,
+      funding,
       relatedItems,
       openSubItems,
       newReduxForm,
@@ -141,6 +142,7 @@ export class AddArticlePage extends Component {
       criticalErrors: criticalErrors,
       license: licenses,
       contributors: contributors,
+      funding: funding,
       relatedItems: relatedItems,
       openItems: {
         Contributors: openSubItems.contributors,
@@ -166,7 +168,7 @@ export class AddArticlePage extends Component {
       }
     }
 
-    validatedPayload.errorMessages = this.errorUtility.onValidate(validatedPayload.errors, validatedPayload.contributors, validatedPayload.license, validatedPayload.relatedItems, newReduxForm)
+    validatedPayload.errorMessages = this.errorUtility.onValidate(validatedPayload.errors, validatedPayload.contributors, validatedPayload.funding, validatedPayload.license, validatedPayload.relatedItems, newReduxForm)
 
     if(newReduxForm && newReduxForm.size) {
       const keyPath = []
@@ -220,7 +222,7 @@ export class AddArticlePage extends Component {
       this.setState({errorMessages: filteredErrorMessage})
     },
 
-    onValidate: (newValidationErrors, contributors, license, relatedItems, newReduxForm) => {
+    onValidate: (newValidationErrors, contributors, funding, license, relatedItems, newReduxForm) => {
       if(!this.state.errorMessages.length) {
         return []
       }
@@ -235,6 +237,7 @@ export class AddArticlePage extends Component {
       if(subItem) {
         const subItemErrors = {
           contributor: contributors,
+          funding: funding,
           license: license,
           relatedItems: relatedItems,
         }

@@ -44,6 +44,8 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     contributorGroupRole: false,
     contributorOrcid: false,
 
+    fundingName: false,
+
     relatedItemIdType: false,
     relatedItemRelType: false,
     relatedItemDoiInvalid: false,
@@ -184,6 +186,26 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   }
 
 
+  //validate Funding subItems
+  const funding = getSubItems(data.funding).map(funder => {
+    const {funderName, grantNumbers} = funder
+    const errors = {
+      fundingName: !!((grantNumbers) && !funderName)
+    }
+    if(errors.fundingName) warnings.fundingName = true
+
+    return {...funder, errors}
+  })
+
+  if(!funding.length) {
+    const defaultData = defaultArticleState.funding[0]
+    openSubItems.funding = false
+    funding[0] = {...defaultData, errors: {...defaultData.errors}}
+  } else {
+    openSubItems.funding = true
+  }
+
+
   //validate relatedItem subItems
   const relatedItems = getSubItems(data.relatedItems).map( item => {
     const errors = {
@@ -256,7 +278,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
 
       for (var i in entries){
         const attributes = entries[i]
-        
+
         const doi = attributes.get('doi')
         const doiInvalid = !!doi && !isDOI(doi)
         const doiNotExist = !!doi && !doiInvalid && !await asyncCheckDupeDoi(doi)
@@ -336,7 +358,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
     })
   }
 
-  return { criticalErrors, warnings, licenses, contributors, relatedItems, openSubItems, newReduxForm }
+  return { criticalErrors, warnings, licenses, contributors, funding, relatedItems, openSubItems, newReduxForm }
 }
 
 
@@ -403,7 +425,8 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     contributorLastName: false,
     contributorSuffixLimit: false,
     contributorRole: false,
-    contributorOrcid: false
+    contributorOrcid: false,
+
   }
 
   warnings.invalidissueurl = issueUrlEntered && !isURL(issueUrl)

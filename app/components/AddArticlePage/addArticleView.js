@@ -317,6 +317,12 @@ export default function AddArticleView (props) {
             openSubItems={props.openSubItems}
             showSection={props.openItems.Funding}
             addHandler={props.addSection.bind(null, 'funding')}>
+            <ErrorIndicator
+              indicatorErrors={['fundingName']}
+              errorUtility={props.errorUtility}
+              tooltipUtility={props.tooltipUtility}
+              allErrors={props.errors}/>
+
               {props.funding.map((data, i)=>
                 <Funding
                   openSubItems={props.openSubItems}
@@ -328,6 +334,9 @@ export default function AddArticleView (props) {
                   data={props.funding}
                   tooltipUtility={props.tooltipUtility}
                   tooltip={props.showHelper}
+                  errorMessages={props.errorMessages}
+                  errorUtility={props.errorUtility}
+                  allErrors={props.errors}
                   index={i}/>
               )}
           </SubItem>
