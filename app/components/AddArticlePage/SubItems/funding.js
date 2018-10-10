@@ -29,7 +29,7 @@ export default class Funding extends Component {
     this.setState({
       showSubItem: nextProps.openSubItems ? true : this.state.showSubItem,
       funder_identifier: nextProps.funding.funder_identifier,
-      grantNumbers: nextProps.funding.grantNumbers,
+      grantNumbers: nextProps.funding.grantNumbers
     })
   }
 
