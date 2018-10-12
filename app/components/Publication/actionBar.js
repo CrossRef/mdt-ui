@@ -13,6 +13,7 @@ export default class ActionBar extends Component {
   static propTypes ={
     newArticle: is.func.isRequired,
     addIssue: is.func.isRequired,
+    bulkUpdate: is.func.isRequired,
     transferTitle: is.func.isRequired,
     handleAddCart: is.func.isRequired,
     deleteSelections: is.func.isRequired,
@@ -70,13 +71,14 @@ export default class ActionBar extends Component {
 
   render () {
     const onlyIssue = this.onlyIssueSelected()
-    const { handleAddCart, deleteSelections, duplicateSelection, moveSelection, addIssue, newArticle, transferTitle, newToCart } = this.props
+    const { handleAddCart, deleteSelections, duplicateSelection, moveSelection, addIssue, newArticle, bulkUpdate, transferTitle, newToCart } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
         Add record
         {this.state.addRecordMenuOpen && <div className='actionBarDropDown'>
           <p onClick={newArticle}>New article</p>
           <p onClick={addIssue}>New volume/issue</p>
+          <p onClick={bulkUpdate}>Bulk update</p>
         </div>}
       </div>
       <div className='pull-right'>

@@ -13,6 +13,7 @@ import TourModal from '../components/Publication/tourModal'
 import DeleteConfirmModal from '../components/Publication/deleteConfirmModal'
 import MoveSelectionModal from '../components/Publication/moveSelectionModal'
 import TransferTitleModal from '../components/Publication/transferTitleModal'
+import BulkUpdateModal from '../components/Publication/bulkUpdateModal'
 import {routes} from  '../routing'
 import {compareDois, errorHandler} from '../utilities/helpers'
 import AddIssueModal from './addIssueModal';
@@ -277,6 +278,19 @@ export default class PublicationPage extends Component {
       }
     })
   }
+  bulkUpdate = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: 'Bulk update (Resource deposit)',
+      style: 'transferTitleModal',
+      Component: BulkUpdateModal,
+      props: {
+        publicationTitle: this.props.publication.message.title.title,
+        pubDoi: this.state.doi,
+        ownerPrefix: this.state.ownerPrefix
+      }
+    })
+  }
 
 
   handleFilter = (type) => {
@@ -314,6 +328,7 @@ export default class PublicationPage extends Component {
                 newArticle={this.newArticle}
                 addIssue={this.addIssue}
                 transferTitle={this.transferTitle}
+                bulkUpdate={this.bulkUpdate}
                 handleAddCart={this.handleAddCart}
                 deleteSelections={this.deleteSelections}
                 duplicateSelection={this.duplicateSelection}
