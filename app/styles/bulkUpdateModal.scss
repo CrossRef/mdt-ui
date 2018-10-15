@@ -3,216 +3,77 @@
 .bulkUpdateModal {
   .bulkUpdateContainer {
     width: 100%;
-    height: 400px;
-    padding: 30px 20px;
+    height: 320px;
+    padding: 10px 20px;
 
     .content {
       width: 100%;
-      height: 300px;
+      height: 230px;
       padding-bottom: 50px;
-      display: flex;
+      font-family: Helvetica Neue, Medium;
       flex-direction: row;
 
       .sectionTitle {
-        font-size: 14px !important;
+        width: 98%;
+
+        font-size: 14px ;
       }
-
-      .fromContainer {
-        width: 370px;
-        background-color: $lighter-grey;
-
-        .titleBar {
-          width: 100%;
-          height: 30px;
-          background-color: $light-grey;
-          color: $dark-grey;
-          padding: 7px 10px;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          font-size: 13px;
-          overflow: hidden;
-          min-width: 0
-        }
-
-        p {
-          margin-left: 50px;
-          font-size: 12px;
-        }
-
-        .fromBar {
-          width: 75%;
-          height: 30px;
-          background-color: $light-grey;
-          border: 1px solid $dark-grey;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          font-size: 12px;
-          overflow: hidden;
-          padding: 6px 10px;
-          margin-left: 30px;
-        }
-      }
-
-      .center {
-        width: 80px;
-        height: 100%;
-        padding-top: 120px;
-      }
-
-      .toContainer {
-        width: 370px;
-        background-color: $lighter-grey;
-        position: relative;
-
-        .helpArea {
-          position: absolute;
-          right: -5px;
-          top: 40px;
-          z-index: 999;
-          width: 50px;
-          height: 50px;
-
-          .helpIcon {
-            width: 20px;
-            cursor: pointer;
-            position: absolute;
-            right: 15px;
-          }
-
-          .helpBubble {
-            width: 250px;
-            height: 80px;
-            background-color: $yellow;
-            position: absolute;
-            right: -35px;
-            top:32px;
-            border-radius: 8px;
-            padding-left: 15px;
-            padding-top: 10px;
-            box-sizing: border-box;
-
-            p {
-              margin: 0 0 8px 0;
-              font-size: 12px;
-              font-weight: bold;
-            }
-
-            a {
-              font-size: 12px;
-            }
-
-            &:after {
-              content: "";
-              position: absolute;
-              width: 0;
-              height: 0;
-              left: 183px;
-              top: -6px;
-              border: .5em solid $yellow;
-              transform: rotate(135deg);
-            }
-          }
-        }
-
-
-
-        .emptyTitle {
-          width: 100%;
-          height: 30px;
-          background-color: white;
-        }
-
-        p {
-          margin-left: 50px;
-          font-size: 12px;
-        }
-
-        .toInput {
-          margin-left: 20px;
-          height: 30px;
-          width: auto;
-          display: flex;
-          flex-direction: row;
-          font-size: 13px;
+      .dropContainer{
+        width:100%;
+        .dropZone{
           position: relative;
-
-          .requiredStar {
-            width: 20px;
-            background-color: $teal;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 14px;
-            color: white;
+          height: 150px;
+          border-width: 2px;
+          border-color: $light-grey;
+          background-color: $lighter-grey;
+          border-style: dashed;
+          display: flex;
+          .uploadIcon{
+            width: 50px;
+            height:80px;            
+            
           }
-
-          .toPublisherSearch {
-            width: 75%;
-            border: 1px solid $dark-grey;
-            background-color: white;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 12px;
-            overflow: hidden;
-            padding: 6px 10px;
-          }
-
-          .toPrefixSelect {
-            width: 75%;
-            border: 1px solid $dark-grey;
-            background-color: white;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            font-size: 12px;
-            overflow: hidden;
-            padding: 6px 10px;
-            position: relative;
-
-            .selectCarrot {
-              width: 20px;
-              position: absolute;
-              right: 10px;
-              top: 4px;
-              transform: rotate(90deg)
+          .dropAreaText{
+            margin-top:10px;
+            padding-left:10px;
+            .text{
+              margin-bottom:0px;
             }
-          }
-
-          .publicationsList {
-            width: calc(90% - 20px);
-          }
-
-          .prefixesList {
-            width: calc(80% - 20px);
-          }
-
-          .list {
-            position: absolute;
-            left: 20px; top: 29px;
-            z-index: 20;
-            background-color: white;
-            border: 1px solid $dark-grey;
-            padding-top: 10px;
-            padding-bottom: 10px;
-            max-height: 200px;
-            overflow: scroll;
-
-            .listItem {
-              height: 30px;
+            .openFile{
+              color: deepskyblue;
               cursor: pointer;
-              width: 100%;
-              text-overflow: ellipsis;
-              white-space: nowrap;
-              font-size: 12px;
-              overflow: hidden;
-              padding: 7px 10px;
-
-              &:hover {
-                background-color: $light-grey;
-                color: $teal
-              }
             }
           }
+        }
+      
+      }
+
+      .helpArea {
+        position: absolute;
+        right: 5px;
+        top: 92px;
+        z-index: 999;
+        width: 50px;
+        height: 50px;
+
+        .helpIcon {
+          width: 20px;
+          cursor: pointer;
+          position: absolute;
+          right: 15px;
+        }
+
+        .helpBubble {
+          width: 300px;
+          height: 100px;
+          background-color: $yellow;
+          position: absolute;
+          right: -35px;
+          top:32px;
+          border-radius: 8px;
+          padding-left: 15px;
+          padding-top: 1px;
+          box-sizing: border-box;
         }
       }
     }
@@ -235,7 +96,7 @@
         margin-right: 30px;
         cursor: pointer;
       }
-      .transfer {
+      .deposit {
         float: right;
         width: $buttonWidth;
         height: 40px;
@@ -248,7 +109,7 @@
         align-items: center;
         cursor: pointer;
       }
-      .transferNotReady {
+      .depositNotReady {
         border: 1px solid $dark-grey;
         background-color: white !important;
         color: $dark-grey !important;

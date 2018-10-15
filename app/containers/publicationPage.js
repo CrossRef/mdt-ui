@@ -47,7 +47,7 @@ export default class PublicationPage extends Component {
 
   static propTypes = {
     search: is.object.isRequired,
-    publication: is.object.isRequired,
+    publication: is.object,
     routeParams: is.shape({
       pubDoi: is.string.isRequired,
       issueId: is.string
@@ -76,7 +76,8 @@ export default class PublicationPage extends Component {
       serverError: null,
       filterBy: 'all',
       selections: [],
-      allNotInCart:false
+      allNotInCart:false,
+      ownerPrefix:''
     }
   }
 
@@ -281,12 +282,11 @@ export default class PublicationPage extends Component {
   bulkUpdate = () => {
     this.props.reduxControlModal({
       showModal: true,
-      title: 'Bulk update (Resource deposit)',
-      style: 'transferTitleModal',
+      title: <fragment>Bulk update  <small> <small>(Resource deposit)</small></small></fragment> ,
+      style: 'bulkUpdateModal',
       Component: BulkUpdateModal,
       props: {
         publicationTitle: this.props.publication.message.title.title,
-        pubDoi: this.state.doi,
         ownerPrefix: this.state.ownerPrefix
       }
     })

@@ -16,11 +16,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
 @connect(mapStateToProps, mapDispatchToProps)
 export default class BulkUpdateModal extends React.Component {
 
-  static propTypes = {
-    publicationTitle: is.string.isRequired,
-    pubDoi: is.string.isRequired,
-    ownerPrefix: is.string.isRequired,
-    reduxDeletePublication: is.func.isRequired
+  static propTypes = {    
+    ownerPrefix: is.string.isRequired
   }
 
 
@@ -43,24 +40,31 @@ export default class BulkUpdateModal extends React.Component {
 
 
   render () {
-    const transferReady = !!this.state.prefixSelection
     const publisherName= this.state.publisherName
 
     const dropzoneRef = React.createRef()
     return (
         <div className="bulkUpdateContainer">
           <div className="content">
-          Metadata Manager accepts the following metadata for bulk updates; funding information, license information, and similarity 
-          check full text URLs. Please upload your CSV file.
-          <div className="dropContainer">          
-  <Dropzone  ref={dropzoneRef}
-     onDrop={(accepted, rejected) => { this.setState({ accepted, rejected }) }}
-     accept="text/csv, text/plain, text/*,">
-      <p>Drop CSV file here.</p>
-      <a onClick={()=>dropzoneRef.open()}>open file</a>
-  </Dropzone>
-  </div>
-  <div className="helpArea"
+            <p className="sectionTitle">Metadata Manager accepts the following metadata for bulk updates; funding information, license information, and similarity 
+            check full text URLs. Please upload your CSV file.</p>
+            <div className="dropContainer">          
+              <Dropzone  ref={dropzoneRef}
+                className="dropZone"
+                disableClick={true}
+                onDrop={(accepted, rejected) => { this.setState({ accepted, rejected }) }}
+                accept="text/csv, text/plain, text/*,">
+                
+                <img className="uploadIcon" 
+                  src={`${routes.images}/App/Asset_Icons_Grey_Check 2.svg`}
+                />
+                <div className="dropAreaText">
+                  <p className="text">Drop CSV file here.</p>
+                  <div><a className="openFile" onClick={()=>dropzoneRef.current.open()}>Browse from folder</a></div>
+                </div>
+              </Dropzone>
+            </div>
+            <div className="helpArea"
                 onMouseLeave={()=>this.setState({showHelp: false})}
               >
                 <img
@@ -69,47 +73,18 @@ export default class BulkUpdateModal extends React.Component {
                   src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`}/>
                 {this.state.showHelp &&
                   <div className="helpBubble">
-                    <p>Transfering title to a new owner</p>
-                    View the <a href="https://support.crossref.org/hc/en-us/articles/213022466-Transferring-titles-and-identifiers-to-a-new-owner" target="_blank" >Support page</a> for more information
+                    <p>Bulk Update</p>
+                    <a href="https://support.crossref.org/hc/en-us/articles/215871703-Depositing-funding-and-license-metadata-using-a-csv-file" target="_blank" >Visit Bulk Update support page for more help.</a>
                   </div>}
-              </div>
-              <p className="sectionTitle">From</p>
-              <p>From publisher</p>
-              <div className="fromBar">{publisherName}</div>
-              <br/>
-              <p>From DOI prefix</p>
-              <div className="fromBar">{this.props.ownerPrefix}</div>
-
-
-            <div className="center">
-              <img src={`${routes.images}/Publications/right_carrot_teal.svg`}/>
+              </div>             
             </div>
-
-            <div className="toContainer">
-              <div className="helpArea"
-                onMouseLeave={()=>this.setState({showHelp: false})}
-              >
-                <img
-                  onMouseEnter={()=>this.setState({showHelp: true})}
-                  className="helpIcon"
-                  src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`}/>
-                {this.state.showHelp &&
-                  <div className="helpBubble">
-                    <p>Transfering title to a new owner</p>
-                    View the <a href="https://support.crossref.org/hc/en-us/articles/213022466-Transferring-titles-and-identifiers-to-a-new-owner" target="_blank" >Support page</a> for more information
-                  </div>}
-              </div>
-
-             
-            </div>
-          </div>
+         
 
           <div className="buttons">
             <div
-              className={`transfer ${!transferReady ? 'transferNotReady' : ''}`}
-              onClick={transferReady ? this.transferConfirmModal : null}
+              className={`deposit depositNotReady`}              
             >
-              Transfer
+              Deposit
             </div>
             <div className="cancel" onClick={this.props.close}>Cancel</div>
           </div>

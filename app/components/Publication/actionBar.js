@@ -19,7 +19,7 @@ export default class ActionBar extends Component {
     deleteSelections: is.func.isRequired,
     duplicateSelection: is.func.isRequired,
     selections: is.array.isRequired,
-    newToCart: is.array.isRequired
+    newToCart: is.bool.isRequired
   }
 
 
