@@ -50,6 +50,8 @@ export default class BulkUpdateModal extends React.Component {
             check full text URLs. Please upload your CSV file.</p>
             <div className="dropContainer">          
               <Dropzone  ref={dropzoneRef}
+              acceptClassName="acceptFile"
+              rejectClassName="rejectFile"
                 className="dropZone"
                 disableClick={true}
                 onDrop={(accepted, rejected) => { this.setState({ accepted, rejected }) }}

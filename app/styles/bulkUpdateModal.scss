@@ -20,6 +20,12 @@
       }
       .dropContainer{
         width:100%;
+        .acceptFile{
+          background-color: #d3f3ff !important;
+        }
+        .rejectFile{
+          background-color: $light-red !important;
+        }
         .dropZone{
           position: relative;
           height: 150px;
