@@ -4,7 +4,7 @@ import is from 'prop-types'
 import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 
-import {errorHandler, compareDois} from '../../utilities/helpers'
+import {errorHandler, compareDois, escapeString} from '../../utilities/helpers'
 import * as api from '../../actions/api'
 import {routes} from '../../routing'
 
@@ -71,6 +71,7 @@ export default class Search extends Component {
         article['mdt-version'] = '1'
         article['owner-prefix'] = ownerPrefix
         article.date = new Date()
+        article.title={title: escapeString(article.title.title)}
         api.submitItem(result).then(()=>{
         browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/addarticle/${encodeURIComponent(item.doi)}`)
       })
@@ -83,6 +84,7 @@ export default class Search extends Component {
         const article = issue.contains[0]
         article['mdt-version'] = '1'
         article['owner-prefix'] = ownerPrefix
+        article.title={title: escapeString(article.title.title)}
         article.date = new Date()
 
         //Check if issue already exists

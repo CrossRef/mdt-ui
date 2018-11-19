@@ -13,6 +13,7 @@ import TourModal from '../components/Publication/tourModal'
 import DeleteConfirmModal from '../components/Publication/deleteConfirmModal'
 import MoveSelectionModal from '../components/Publication/moveSelectionModal'
 import TransferTitleModal from '../components/Publication/transferTitleModal'
+import BulkUpdateModal from '../components/Publication/bulkUpdateModal'
 import {routes} from  '../routing'
 import {compareDois, errorHandler} from '../utilities/helpers'
 import AddIssueModal from './addIssueModal';
@@ -46,7 +47,7 @@ export default class PublicationPage extends Component {
 
   static propTypes = {
     search: is.object.isRequired,
-    publication: is.object.isRequired,
+    publication: is.object,
     routeParams: is.shape({
       pubDoi: is.string.isRequired,
       issueId: is.string
@@ -75,7 +76,8 @@ export default class PublicationPage extends Component {
       serverError: null,
       filterBy: 'all',
       selections: [],
-      allNotInCart:false
+      allNotInCart:false,
+      ownerPrefix:''
     }
   }
 
@@ -277,6 +279,18 @@ export default class PublicationPage extends Component {
       }
     })
   }
+  bulkUpdate = () => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: <fragment>Bulk update  <small> <small>(Resource deposit)</small></small></fragment> ,
+      style: 'bulkUpdateModal',
+      Component: BulkUpdateModal,
+      props: {
+        publicationTitle: this.props.publication.message.title.title,
+        ownerPrefix: this.state.ownerPrefix
+      }
+    })
+  }
 
 
   handleFilter = (type) => {
@@ -314,6 +328,7 @@ export default class PublicationPage extends Component {
                 newArticle={this.newArticle}
                 addIssue={this.addIssue}
                 transferTitle={this.transferTitle}
+                bulkUpdate={this.bulkUpdate}
                 handleAddCart={this.handleAddCart}
                 deleteSelections={this.deleteSelections}
                 duplicateSelection={this.duplicateSelection}
