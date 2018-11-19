@@ -91,7 +91,7 @@ const parseXMLArticle = function (articleXML) {
     const publisherItem = objectSearch(parsedArticle, 'publisher_item')
     var locationId = ''
     if (publisherItem) {
-        locationId = objectSearch(publisherItem, '#text')
+        locationId = objectSearch(publisherItem, '#text')||publisherItem.item_number
     }
 
     var article = {
@@ -399,7 +399,7 @@ export function getContributors (parsedArticle, getOrganization) {
               lastName: person.surname ? person.surname : '',
               suffix: person.suffix ? person.suffix : '',
               affiliation: person.affiliation ? person.affiliation : '',
-              orcid:person_name.ORCID  ? (typeof person_name.ORCID  === 'string'?person_name.ORCID :person_name.ORCID ['#text']):'',
+              orcid:person.ORCID  ? (typeof person.ORCID  === 'string'?person.ORCID :person.ORCID ['#text']):'',
               role: person['-contributor_role'] ? person['-contributor_role'] : '',
               groupAuthorName: '',
               groupAuthorRole: ''
