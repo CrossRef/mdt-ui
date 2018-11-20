@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import { connect } from 'react-redux'
 import { bindActionCreators } from 'redux'
-import validators from 'format-validator'
+import issn from 'issn'
 import { XMLSerializer, DOMParser } from 'xmldom'
 import * as api from '../actions/api'
 import {getPublications} from '../actions/application'
@@ -209,9 +209,9 @@ export default class AddPublicationModal extends Component {
 
     criticalErrors.showTitleEmptyError = !this.state.title.length
 
-    criticalErrors.onlineISSNInvalidError = this.state.electISSN.length ? !validators.isISSN(this.state.electISSN): false
+    criticalErrors.onlineISSNInvalidError = this.state.electISSN.length ? !issn(this.state.electISSN): false
     criticalErrors.onlineDuplicateISSN = false
-    criticalErrors.printISSNInvalidError = this.state.printISSN.length ? !validators.isISSN(this.state.printISSN): false
+    criticalErrors.printISSNInvalidError = this.state.printISSN.length ? !issn(this.state.printISSN): false
     criticalErrors.printDuplicateISSN = false
 
     criticalErrors.showURLEmptyError = !this.state.url.length
