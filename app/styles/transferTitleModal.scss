@@ -3,13 +3,18 @@
 .transferTitleModal {
   .transferTitleContainer {
     width: 100%;
-    height: 400px;
-    padding: 30px 20px;
-
+    height: 460px;
+    padding: 0px 20px 20px;
+    .transferTitleInstruction{
+      width:829px;
+      font-size: 13px;
+      padding-left: 7px;
+      padding-bottom: 10px;
+    }
     .content {
       width: 100%;
       height: 300px;
-      padding-bottom: 50px;
+      padding-bottom: 40px;
       display: flex;
       flex-direction: row;
 
