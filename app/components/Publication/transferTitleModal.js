@@ -133,8 +133,8 @@ export default class TransferTitleModal extends React.Component {
       Component: ({publicationTitle, publisherSelection, close, confirm}) =>
           <div className="transferWarningContainer">
             <div className="warningContent">
-              <p>Are you sure you want to transfer ownership for the journal {publicationTitle}?</p>
-              <p>This action will permanently release the title and DOI ownership from you to the acquiring publisher and cannot be undone.</p>
+              <p>Are you sure you want to transfer ownership for the journal {publicationTitle}? 
+              This action will permanently release the title and DOI ownership from you to the acquiring publisher and cannot be undone.</p>
               <p>It may take up to 24 hours for this title transfer to be reflected in Metadata Manager.</p>
               <p className="toPublisherHeader">Selected title for transfer</p>
               <div className="toPublisher">{publicationTitle}</div>
