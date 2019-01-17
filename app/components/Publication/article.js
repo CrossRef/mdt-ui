@@ -56,7 +56,8 @@ export default class Article extends Component {
       title = title.substring(0, 35) + '...'
     }
    const showUrl=this.state.showUrl
-    const url = showUrl?(doi && doi.length > 22) ? `https://doi.org/${doi.substr(0,22)}...` : (doi ? `https://doi.org/${doi}` : ''):''
+   const targetUrl = `https://doi.org/${doi}` 
+   const url = showUrl?(doi && doi.length > 22) ? `https://doi.org/${doi.substr(0,22)}...` : (doi ? targetUrl : ''):''
 
     
     const checked = !this.props.selections.length ? {checked:false} : {}
@@ -73,7 +74,7 @@ export default class Article extends Component {
       <td className='date'>{date}</td>
       <td className='type'>{type}</td>
       <td className='status'>{status}</td>
-      <td className='url'>{url && <a target='_blank' href={url}>{url}</a>}</td>
+      <td className='url'>{url && <a target='_blank' href={targetUrl}>{url}</a>}</td>
     </tr>)
   }
 }
