@@ -133,8 +133,9 @@ export default class TransferTitleModal extends React.Component {
       Component: ({publicationTitle, publisherSelection, close, confirm}) =>
           <div className="transferWarningContainer">
             <div className="warningContent">
-              <p>Are you sure you want to transfer ownership for the journal {publicationTitle}</p>
-              <p>This action will permanently release the title and DOI ownership from you to the acquiring publisher and cannot be undone.</p>
+              <p>Are you sure you want to transfer ownership for the journal {publicationTitle}? 
+              This action will permanently release the title and DOI ownership from you to the acquiring publisher and cannot be undone.</p>
+              <p>It may take up to 24 hours for this title transfer to be reflected in Metadata Manager.</p>
               <p className="toPublisherHeader">Selected title for transfer</p>
               <div className="toPublisher">{publicationTitle}</div>
             </div>
@@ -162,6 +163,11 @@ export default class TransferTitleModal extends React.Component {
     const publisherName= this.state.publisherName
     return (
         <div className="transferTitleContainer">
+        <div className="transferTitleInstruction">
+        <p>Upon completing this transfer, the title and all existing title DOIs will be transferred from the "from publisher" to the "destination publisher." 
+          If you do not wish to transfer all existing title DOIs, please contact <a href = "mailto:support@crossref.org?subject = Title transfer help">support@crossref.org</a>.</p>
+          <p>A courtesy email will be sent to the "destination publisher's" technical contact when the ownership transfer of the existing title DOIs is complete.</p>
+        </div>
           <div className="content">
             <div className="fromContainer">
 
