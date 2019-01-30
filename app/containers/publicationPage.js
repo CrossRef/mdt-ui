@@ -282,7 +282,7 @@ export default class PublicationPage extends Component {
   bulkUpdate = () => {
     this.props.reduxControlModal({
       showModal: true,
-      title: <fragment>Bulk update  <small> <small>(Resource deposit)</small></small></fragment> ,
+      title: <div>Bulk update  <small> <small>(Resource deposit)</small></small></div> ,
       style: 'bulkUpdateModal',
       Component: BulkUpdateModal,
       props: {
