@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import csv from 'csvtojson'
 import FormSelect from '../Common/formSelect'
+import bulkUploadColumns from './bulkUploadColumns'
 import {routes} from '../../routing'
 import fs, { read } from 'fs'
 import { isObject } from 'util';
@@ -38,7 +39,8 @@ export default class ValidationItem extends Component {
     constructor (props) {
       super(props); 
       this.state={errorMessages : [],
-                  focusedInput : '' }
+                  focusedInput : '',
+                  isValid : true }
     }
   
   
@@ -197,24 +199,102 @@ export default class ValidationItem extends Component {
         })
       }
 
-      componentDidUpdate (nextProps) {
-        if(nextProps.files !=this.props.files) {
-          this.handleReadFiles()
-        }
-      }
+componentDidUpdate (nextProps) {
+  if(nextProps.headers !=this.props.headers) {
+    this.checkHeader()
+  }
+}
+componentDidMount(){
+  this.checkHeader()
+}
+checkHeader =() =>{
+  var columnExp=new RegExp('^\\s*<\\s*([^\\s]+)\\s*(([^\\s]+)="(.+?)")?\\s*(([^\\s]+)="(.+?)")?\\s*>\\s*$','ism' )
+  const index = this.props.index
+  const fileColumnVal=this.props.headers[index]
+  if (!fileColumnVal){
+    this.setState({isValid : true})
+    return
+  }
+  if (index===0){
+    this.setState({isValid:bulkUploadColumns[fileColumnVal.toLowerCase()] })
+    return 
+  }
+  /*
+  var result = fileColumnVal.match(this.columnExp)
+  console.log(result)
+  *//*
+ let match
+  while ( match = columnExp.exec(fileColumnVal) ){
+    console.log("Group:" + match)
+  }
+*/
+  const regex = /^\s*<\s*([^\s]+)\s*(([^\s]+)="(.+?)")?\s*(([^\s]+)="(.+?)")?\s*>\s*$/ism;
 
+  let m;
+
+  if ((m = regex.exec(fileColumnVal)) !== null) {
+    console.log (m)
+    // The result can be accessed through the `m`-variable.
+    var count=0
+    //console.log(`column header has ${m.length} with: ${m}`)
+    m.forEach((match, groupIndex) => {
+      if (match)
+      {
+        count++        
+      } })
+    if (count>0){
+      //console.log(`Found ${count} matches, element: ${m[1]}`)
+      var mainElement=m[1]
+      // <resource content_version="vpr" mime_type="application/html">
+      var validationStruct = bulkUploadColumns[mainElement]      
+      if ( validationStruct ){
+        if (count>2 ){
+          var attributeName=m[3]
+          var attributeValue=m[4]
+
+          var validationItem2=validationStruct[attributeName]
+
+          if (validationItem2){
+            if (validationItem2.indexOf(attributeValue)<0){
+              this.setState({isValid:false})
+              return
+            }
+            if (count>5){
+              attributeName=m[5]
+              attributeValue=m[6]
+              var validationItem3=validationStruct[attributeName]
+              
+              if (!validationItem3 || validationItem3.indexOf(attributeValue)<0){
+                this.setState({isValid:false})
+                return
+              }
+            }
+          }  else{
+            this.setState({isValid:false})
+          }
+        }
+        this.setState({isValid:true})
+      } else{
+        this.setState({isValid:false})
+      }
+    }
+  }else{
+    this.setState({isValid:false})
+  }
+  
+}
 
   render () {
     const index = this.props.index
     const fileColumnVal=this.props.headers[index]
-    const options=[{"value":"vor", "name":"Version of record"}, {"value":fileColumnVal,"name": fileColumnVal}]
-
+    const options=[{"value":"vor", "name":"Version of record"}, {"value":fileColumnVal,"name": fileColumnVal}]  
+    var isError=!this.state.isValid
     return (
       <div className="headerColumn">
         <FormSelect
             label={"Header Column "+String.fromCharCode(65+index)}
             required={true}
-            error={false}
+            error={isError}
             name={fileColumnVal}
             value={fileColumnVal}
             changeHandler={this.handleContributor}
