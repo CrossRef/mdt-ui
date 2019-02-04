@@ -198,14 +198,14 @@ export default class ValidationItemsContainer extends Component {
         })
       }
 
-      componentDidUpdate (nextProps) {
-        if(nextProps.files !=this.props.files) {
-          this.handleReadFiles()
-        }
+    componentDidUpdate (nextProps) {
+      if(nextProps.files !=this.props.files) {
+        this.handleReadFiles()
       }
-      createSelects = (jsonObj)=>{
+    }
+    createSelects = (jsonObj)=>{
 
-      }
+    }
 
     handleReadFiles = ()=> {
       //oFiles = document.getElementById("uploadInput").files,
@@ -230,7 +230,7 @@ export default class ValidationItemsContainer extends Component {
               }
               this.setState({headers:headers})
               console.log(headers)
-              console.log(jsonObj)
+              //console.log(jsonObj)
               if (fieldsHandler){
                 fieldsHandler(headers.length)
               }
@@ -268,7 +268,7 @@ export default class ValidationItemsContainer extends Component {
              </div>            
           </div>
         {items}
-        <div class="vertspacer"/>
+        <div className="vertspacer"/>
         </div>
     //     {this.state.showSection &&
     //        <div className='body'>                     
