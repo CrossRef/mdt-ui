@@ -1,34 +1,9 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import csv from 'csvtojson'
 import FormSelect from '../Common/formSelect'
 import bulkUploadColumns from './bulkUploadColumns'
-import {routes} from '../../routing'
-import fs, { read } from 'fs'
-import { isObject } from 'util';
-/*
-class ValidationField extends Component {
-  static propTypes = {
-    columns: is.array
-  }
 
-  render() {
-    const columns = this.props.columns
-    const rows = []
-    if (columns){     
-        columns.forEach((column) => {
-          rows.push()
 
-        }    
-    }
-  );
-    return (
-      <select>
-        {rows}
-      </select> 
-    )
-  }
-}*/
 export default class ValidationItem extends Component {
 
     static propTypes = {
@@ -207,10 +182,10 @@ componentDidUpdate (nextProps) {
 componentDidMount(){
   this.checkHeader()
 }
-checkHeader =() =>{
-  var columnExp=new RegExp('^\\s*<\\s*([^\\s]+)\\s*(([^\\s]+)="(.+?)")?\\s*(([^\\s]+)="(.+?)")?\\s*>\\s*$','ism' )
+checkHeader =() =>{  
   const index = this.props.index
   const fileColumnVal=this.props.headers[index]
+
   if (!fileColumnVal){
     this.setState({isValid : true})
     return
@@ -219,15 +194,6 @@ checkHeader =() =>{
     this.setState({isValid:bulkUploadColumns[fileColumnVal.toLowerCase()] })
     return 
   }
-  /*
-  var result = fileColumnVal.match(this.columnExp)
-  console.log(result)
-  *//*
- let match
-  while ( match = columnExp.exec(fileColumnVal) ){
-    console.log("Group:" + match)
-  }
-*/
   const regex = /^\s*<\s*([^\s]+)\s*(([^\s]+)="(.+?)")?\s*(([^\s]+)="(.+?)")?\s*>\s*$/ism;
 
   let m;
@@ -289,8 +255,11 @@ checkHeader =() =>{
     const fileColumnVal=this.props.headers[index]
     const options=[{"value":"vor", "name":"Version of record"}, {"value":fileColumnVal,"name": fileColumnVal}]  
     var isError=!this.state.isValid
+    const headerErrorMsg = "Header error. Select correct header from dropdown list"
+    const hideIt = {visibility:isError?'visible':'hidden'}
     return (
-      <div className="headerColumn">
+      <div className="headerColumn " >
+
         <FormSelect
             label={"Header Column "+String.fromCharCode(65+index)}
             required={true}
@@ -301,20 +270,20 @@ checkHeader =() =>{
             options= {options}
             //disabled={this.state.personDisabled}
             errorUtility={this.errorUtility}
-            //indicatorErrors={['contributorRole']}
+            indicatorErrors={['bulkUpload']}
             //allErrors={errors}
             subItemIndex={index.toString(10)}
             tooltip={this.props.tooltip && tooltips.role}
             tooltipUtility={this.tooltipUtility}
-            onSelect={this.props.validate}/>
-            
-           
+            onSelect={this.props.validate}
+        />
+
+        <span className="tooltiptext" style={hideIt}>{headerErrorMsg}</span>
       </div>                    
     //     {this.state.showSection &&
     //        <div className='body'>                     
       //      </div>
         //  }
-
       )
   }
 
