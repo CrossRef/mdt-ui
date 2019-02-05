@@ -91,9 +91,39 @@
           .vertspacer{
             height:20px;
           }
+         
           .headerColumn{
+            width: 50%;
+            display: flow-root;
+            .tooltip {
+              
+              display: inline-block;
+            }
+            position: relative;
+            .tooltiptext  {
+              width: 300px;
+              background-color: red;
+              color: #fff;
+              text-align: center;
+              border-radius: 6px;
+              padding: 5px 0;
+              margin-top: -4px;
+              position: absolute;
+              z-index: 1;              
+              left: 110%;
+            }
             
-            overflow: hidden;
+            .tooltiptext::after  {
+              content: "";
+              position: absolute;
+              top: 50%;
+              right: 100%;
+              margin-top: -5px;
+              border-width: 5px;
+              border-style: solid;
+              border-color: transparent red transparent transparent;
+            }
+
             .requrefieldholder {
               float: left;
               width: 100%;
@@ -126,8 +156,8 @@
             }
           }
         }
-        }
       }
+    }
 
     .buttons {
       width: 100%;
