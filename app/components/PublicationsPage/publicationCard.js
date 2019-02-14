@@ -68,6 +68,7 @@ export default class PublicationCardContainer extends Component {
       props:{
         mode: 'edit',
         doi: this.props.publication.message.doi,        
+        owner:this.props.publication.message['owner-prefix'],
         crossmarkDoi:publication.message.titlemodifiers['crossmark-policy-doi'],
         title: do { try { this.props.publication.message.title.title } catch(e){}} || '',
         ...savedMetaData
