@@ -263,7 +263,10 @@ export default class ValidationItemsContainer extends Component {
     ):null
     return (
         <div className='validationFieldsInner'>          
-          
+          <div className='topbar'>
+             <div className='titleholder'>             
+             </div>            
+          </div>
         {items}
         <div className="vertspacer"/>
         </div>

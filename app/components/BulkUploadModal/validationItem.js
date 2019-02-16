@@ -2,7 +2,50 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import FormSelect from '../Common/formSelect'
 import bulkUploadColumns from './bulkUploadColumns'
+import Select from '../SxSelect/SxSelect'
+import CascadingMenu from './cascadingMenu'
 
+import menus from './bulkUploadMenus'
+
+
+const menuShape= [
+  {
+      id: '0',
+      text: 'DOI'
+  },
+  {
+      id: '1',
+      text: 'SimilarityCheck',
+      options: [{parentid: '1', id: '17', text: 'item crawler="iParadigms"'}, {parentid: '1', id: '8', text: 'test item'}]
+  },
+  {
+      id: '2',
+      text: 'Funding',
+      options: [{parentid: '2', id: '21', text: 'funder_name'}, {parentid: '2', id: '22', text: 'funder_identifier'},{parentid: '2', id: '23', text: 'award_number'}]
+  },
+  {
+      id: '3',
+      text: 'License Free to read',
+      options: [{parentid: '3', id: '9', text: 'sub item 5'}, {parentid: '3', id: '10', text: 'sub item 6'}]
+  },
+  {
+    id:'4',
+    text: 'License Version of record',
+    options:[{parentid: '4', id: '47', text: 'DOI'},
+    {parentid: '4', id: '41', text: 'License URL'},
+    {parentid: '4', id: '42', text: 'License start date'},
+    {parentid: '4', id: '43', text: 'Full text URL'},
+    {parentid: '4', id: '44', text: 'MIME type',options:[{parentid:'44', id:'446', text:'Type \'text/html\''},{parentid:'44', id:'447', text:'Type \'text/plain\''}]}]
+  },
+  {
+      id: '5',
+      text: 'License Accepted manuscript',
+  },
+{ 
+    id: '6',
+    text: 'License TDM'
+}
+]
 
 export default class ValidationItem extends Component {
 
@@ -15,7 +58,8 @@ export default class ValidationItem extends Component {
       super(props); 
       this.state={errorMessages : [],
                   focusedInput : '',
-                  isValid : true }
+                  isValid : true ,
+                 menuOpen:false}
     }
   
   
@@ -249,6 +293,12 @@ checkHeader =() =>{
   }
   
 }
+toggleMenu = () => {
+  this.setState({menuOpen: !this.state.menuOpen})
+}
+closeMenu=()=>{
+  this.setState({menuOpen:false})
+}
 
   render () {
     const index = this.props.index
@@ -257,26 +307,36 @@ checkHeader =() =>{
     var isError=!this.state.isValid
     const headerErrorMsg = "Header error. Select correct header from dropdown list"
     const hideIt = {visibility:isError?'visible':'hidden'}
+    
     return (
       <div className="headerColumn " >
+              <div className='labelholder'>
+          <div className='labelinnerholder'>
+            <div className='label'>{"Header Column "+String.fromCharCode(65+index)}</div>
+          </div>
+        </div>
+        <div className='field' onClick={this.toggleMenu}>
+            <input
+              className={`height32  ${isError ? 'fieldError' : ''} `}
+              type='text'
+              //name={this.props.name}
+             // onChange={this.checkHeader()}
+              value={fileColumnVal}
+   
+              onBlur={this.closeMenu}
+              readOnly
+            />
+                
+{this.state.menuOpen &&
+<CascadingMenu
 
-        <FormSelect
-            label={"Header Column "+String.fromCharCode(65+index)}
-            required={true}
-            error={isError}
-            name={fileColumnVal}
-            value={fileColumnVal}
-            changeHandler={this.handleContributor}
-            options= {options}
-            //disabled={this.state.personDisabled}
-            errorUtility={this.errorUtility}
-            indicatorErrors={['bulkUpload']}
-            //allErrors={errors}
-            subItemIndex={index.toString(10)}
-            tooltip={this.props.tooltip && tooltips.role}
-            tooltipUtility={this.tooltipUtility}
-            onSelect={this.props.validate}
-        />
+options={menuShape}
+
+//onSelectChange={(item)=>console.log('use your custom handler here', item)}
+/>}
+          </div>
+
+
 
         <span className="tooltiptext" style={hideIt}>{headerErrorMsg}</span>
       </div>                    
