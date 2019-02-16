@@ -86,12 +86,12 @@
       }
     }
       .validationFields {
-       
+       background-color:$lighter-grey;
         .validationFieldsInner {
           .vertspacer{
             height:20px;
           }
-         
+         margin-left:80px;
           .headerColumn{
             width: 50%;
             display: flow-root;
@@ -123,7 +123,27 @@
               border-style: solid;
               border-color: transparent red transparent transparent;
             }
+            .field{
+              display:inline-flex;
+              width:100%;    
+              &:before {
+                content: "";
+                background: url('images/AddArticle/DarkTriangle.svg') no-repeat right center;
+                width: 16px;
+                height: 100%;
+                top: 10px;
+                left: 320px;
+                transform: rotate(180deg);
+                -webkit-transform: rotate(180deg);
+                position: absolute;
+                pointer-events: none;
+              }          
+          }
+          input{
+            font-size:14px;
+            width:100%;
 
+          }
             .requrefieldholder {
               float: left;
               width: 100%;
