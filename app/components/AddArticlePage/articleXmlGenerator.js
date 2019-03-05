@@ -285,6 +285,7 @@ export default function (state, reduxForm) {
     }
   }
   function appendCrossmarkXml(rootElem) {
+    const crossmarkPolicyDoi = state.publication.message.titlemodifiers['crossmark-policy-doi']
     const JSform = reduxForm.toJS()
     const crossmarkForm = {}
     if (getSubItems(JSform[pubHist]).length) crossmarkForm[pubHist] = getSubItems(JSform[pubHist])
@@ -306,7 +307,7 @@ export default function (state, reduxForm) {
     var crossmarkElm = rootElem.ownerDocument.createElement("crossmark")
     rootElem.appendChild(crossmarkElm)
     var el = rootElem.ownerDocument.createElement("crossmark_policy")
-    el.textContent = state.ownerPrefix + "/something"
+    el.textContent = crossmarkPolicyDoi?crossmarkPolicyDoi:state.ownerPrefix + "/something"
     crossmarkElm.appendChild(el)
     el = rootElem.ownerDocument.createElement("crossmark_domains")  //TEMPORARY, Crossref team said they will be removing this requirement
     el2 = rootElem.ownerDocument.createElement("crossmark_domain")
