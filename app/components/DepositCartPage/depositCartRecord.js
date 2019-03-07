@@ -38,6 +38,7 @@ export default class DepositCartRecord extends Component {
   validate = async () => {
     const record = this.props.cartItem
     const type = record.type
+    const pubdoiPrefix = this.props.pubDoi.split('/')[0]
 
     const {criticalErrors, warnings} = type === 'issue' ? await getIssueErrors() : await getArticleErrors()
 
@@ -55,7 +56,7 @@ export default class DepositCartRecord extends Component {
       const parsedArticle = parseXMLArticle(record.content)
       const crossmark = (parsedArticle.crossmark || {}).reduxForm
 
-      return asyncValidateArticle(parsedArticle, crossmark, record['owner-prefix'])
+      return asyncValidateArticle(parsedArticle, crossmark, pubdoiPrefix)
     }
 
     const errorMessage = []
