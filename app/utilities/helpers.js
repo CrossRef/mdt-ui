@@ -306,7 +306,7 @@ export function normalize (publications) {  //Redux likes normalized state: stor
           if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
             return console.warn(`Had trouble retrieving data for a Record`, thisRecord || contains)
           }
-          normalizedRecords[thisRecord.doi.toLowerCase() || JSON.stringify(thisRecord.title)] = thisRecord
+          normalizedRecords[thisRecord.doi?thisRecord.doi.toLowerCase():thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
         })
       }
 
