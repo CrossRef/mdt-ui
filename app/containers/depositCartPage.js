@@ -148,7 +148,7 @@ export default class DepositCartPage extends Component {
             mergedCart[i].content = publicationData[i].message.content
             for(let item of mergedCart[i].contains) {
               if (item.type === 'issue') {
-                issuePromises.push(api.getItem(item.doi || {title: item.title, pubDoi: mergedCart[i].doi})
+                issuePromises.push(api.getItem({doi: item.doi, title: item.title, pubDoi: mergedCart[i].doi})
                   .then((data)=>{
                     item.content = data.message.contains[0].content
                 }))

@@ -4,7 +4,7 @@ import { getSubItems } from './getSubItems'
 import {cardNames} from './crossmarkHelpers'
 import {asyncCheckDupeDoi, isDOI, isURL, doiEntered, urlEntered, validDate, validOrcid} from './helpers'
 import defaultArticleState from '../components/AddArticlePage/defaultState'
-
+import * as api from '../actions/api'
 
 
 export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDisabled = false) {
@@ -394,9 +394,23 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
   if(!issueDoiDisabled && issueDoiEntered) {
     criticalErrors.invalidissuedoi = !isDOI(issueDoi)
     criticalErrors.invalidIssueDoiPrefix = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== ownerPrefix
-    criticalErrors.dupeissuedoi = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && await asyncCheckDupeDoi(issueDoi)
+    let result = await api.getItem(issueDoi).catch(e=>{})
+    let dupDoi = false
+    if (result){ // we have a response to the DOI, check contents
+      if (!result.message.contains[0] || result.message.contains[0].type !== 'issue'){ // if no contains, then it's a publication, otherwise check type (issues and volumes are issue type)
+        dupDoi=true
+      } else{
+        // got an issue, check contents
+        const issueContent = result.message.contains[0]        
+        const issueTitle = JSON.stringify(issueContent.title)
+        const storedOwnerPrefix= issueContent['owner-prefix']
+        if (storedOwnerPrefix !== ownerPrefix){
+          criticalErrors.invalidIssueDoiPrefix=true;
+        }
+      }
+    }
+    criticalErrors.dupeissuedoi = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && dupDoi
   }
-
   const hasDate = !!(printDateYear || onlineDateYear)
   let warnings = {
     issueNumberLimit: issue.length > 32,
@@ -441,7 +455,21 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     warnings.volumedoi = !volumeDoiEntered
     warnings.invalidvolumedoi = !warnings.volumedoi && !isDOI(volumeDoi)
     warnings.invalidVolumeDoiPrefix = !warnings.volumedoi && !warnings.invalidvolumedoi && volumeDoi.split('/')[0] !== ownerPrefix
-    warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && await asyncCheckDupeDoi(volumeDoi)
+    let result = await api.getItem(volumeDoi).catch(e=>{})
+    let dupVolDoi = false
+    if (result){ // we have a response to the DOI, check contents
+      if (!result.message.contains[0] || result.message.contains[0].type !== 'issue'){ // if no contains, then it's a publication, otherwise check type (issues and volumes are issue type)
+      dupVolDoi=true
+      } else{
+        // got an volume, check contents
+        const volContent = result.message.contains[0]              
+        const storedOwnerPrefix= volContent['owner-prefix']
+        if (storedOwnerPrefix !== ownerPrefix){
+          criticalErrors.invalidVolumeDoiPrefix=true;
+        }
+      }
+    }
+    warnings.dupevolumedoi = !warnings.volumedoi && !warnings.invalidvolumedoi && !warnings.invalidVolumeDoiPrefix && dupVolDoi
     warnings.volumeUrl = !volumeUrlEntered
     warnings.invalidvolumeurl = !warnings.volumeUrl && !isURL(volumeUrl)
   }
