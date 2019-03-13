@@ -81,6 +81,7 @@ export default async function (addToCart) {
       : false
 
     if(addToCart || inCart) {
+      newRecord.content = {} /* we don't want to save the carts xml content */
       newRecord.doi = newRecord.doi.toLowerCase()
       newRecord.pubDoi = publication.message.doi
       if(this.state.issueDoi || this.state.issueTitle) {
