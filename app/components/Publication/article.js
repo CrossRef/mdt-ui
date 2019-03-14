@@ -60,7 +60,7 @@ export default class Article extends Component {
    const url = showUrl?(doi && doi.length > 22) ? `https://doi.org/${doi.substr(0,22)}...` : (doi ? targetUrl : ''):''
 
     
-    const checked = !this.props.selections.length ? {checked:false} : {}
+    const checked = !this.props.selections.length ? {defaultChecked:false} : {}
 
     return (<tr className={status}>
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox.bind(this)} {...checked} /><span>&nbsp;</span></label></td>
