@@ -41,7 +41,12 @@ exports.plugins = {
     mode: 'native'
   },
   babel: config.babelConfig,
-  autoReload: {enabled: true}
+  autoReload: {enabled: true},
+  digest:{ 
+  precision: 8,
+  environments: ['production','development']
+  },
+  beforeBrunch:['rm -rf metadatamanager' ]
 }
 
 exports.server = {
