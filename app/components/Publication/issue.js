@@ -69,7 +69,7 @@ export default class Issue extends Component {
     const displayTitle = recordTitle(type, title)
     const url = doi && `https://doi.org/${doi}`
 
-    const checked = !this.props.selections.length ? {checked:false} : {};
+    const checked = !this.props.selections.length ? {defaultChecked:false} : {};
 
     return (<tr className='issue'>
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox} {...checked} /><span>&nbsp;</span></label></td>
