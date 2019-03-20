@@ -97,7 +97,7 @@ export default class CascadingMenu extends Component {
     const menuOptions = options.map(option => {
       const hasOptions = (option.options
                             && option.options.length > 0 )
-      const expandCarret=(hasOptions?<span>></span>:'')
+      const expandCarret=(hasOptions?<span className="right"> </span>:'')
       const display   = (option.link
               ? <a href={ option.link }>{ option.text }</a>
               : <span>{ option.text }</span>
@@ -131,7 +131,7 @@ export default class CascadingMenu extends Component {
 
     return (
       <div className={ classNames.apply(null, classes) }>
-        <ul>
+        <ul className={'ul'+depthLevel}>
           { menuOptions }
         </ul>
       </div>

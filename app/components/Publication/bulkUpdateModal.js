@@ -47,13 +47,17 @@ export default class BulkUpdateModal extends React.Component {
 
   render () {
     const publisherName= this.state.publisherName
-    const minHeight=(this.state.fields?20:0) + 320;
-    const height=minHeight+(51*this.state.fields)+'px'
+    const minHeight=(this.state.fields?20:0) + 336;
+    const height=minHeight+(61*this.state.fields)+'px'
     const filesList= this.state.files
     const style={
             height: height,
           }
-        
+          console.log("list is:" + filesList)
+const fileArea=filesList&&filesList.length==1?(  <div className="file">
+    <div className="fileName">{filesList[0].name}</div><div className="removeFile">Remove</div>
+    </div>
+    ):null
     const dropzoneRef = React.createRef()
     return (
         <div className="bulkUpdateContainer" style={style}>
@@ -64,16 +68,19 @@ export default class BulkUpdateModal extends React.Component {
               <Dropzone  ref={dropzoneRef}
               acceptClassName="acceptFile"
               rejectClassName="rejectFile"
+              style="disaply: none;"
                 className="dropZone"
                 disableClick={true}
                 onDrop={(accepted, rejected) => this.acceptFiles(accepted)}
                 accept="text/csv, text/plain, text/*,">
-                
+                <div className="dropArea">
                 <img className="uploadIcon" src={`${routes.images}/App/Asset_Icons_Grey_Check 2.svg`}/>
                 <div className="dropAreaText">
                   <p className="text">Drop CSV file here.</p>
-                  <div><a className="openFile" onClick={()=>dropzoneRef.current.open()}>Browse from folder</a></div>
+                  <div><a className="openFile" onClick={()=>dropzoneRef.current.open()}>Browse from folder</a><p></p></div>
                 </div>
+                </div>
+              {fileArea}
               </Dropzone>
             </div>
             <div className="helpArea" onMouseLeave={()=>this.setState({showHelp: false})}>
@@ -93,7 +100,7 @@ export default class BulkUpdateModal extends React.Component {
                             fieldsHandler={this.setFieldCount}>
             </ValidationItemsContainer>
           </div>
-
+        <div className="height16"></div>
           <div className="buttons">
             <div className={`deposit depositNotReady`} onClick={this.processFile}>Deposit</div>
             <div className="cancel" onClick={this.props.close}>Cancel</div>
