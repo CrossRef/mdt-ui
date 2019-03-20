@@ -23,7 +23,7 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   if(!doiDisabled) {
     criticalErrors.doi = !doiEntered(doi, ownerPrefix)
     criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi)
-    criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== ownerPrefix)
+    //criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== ownerPrefix)
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 

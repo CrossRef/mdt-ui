@@ -261,6 +261,10 @@ export default class ValidationItemsContainer extends Component {
         tooltip={this.showHelper}
         tooltipUtility={this.tooltipUtility} />
     ):null
+    if (items){
+      items.unshift(<div className="headerMessage">Fix header errors to complete CSV upload.</div>)
+      items.push(<div className="vertspacer"/>)
+    }
     return (
         <div className='validationFieldsInner'>          
           <div className='topbar'>
@@ -268,7 +272,7 @@ export default class ValidationItemsContainer extends Component {
              </div>            
           </div>
         {items}
-        <div className="vertspacer"/>
+
         </div>
     //     {this.state.showSection &&
     //        <div className='body'>                     
