@@ -98,16 +98,31 @@
         }
 
         .helpBubble {
-          width: 300px;
-          height: 100px;
+          p{
+            font-weight:bold;
+          }
+          font-size:12px;
+          width: 272px;
+          height: 90px;
           background-color: $yellow;
           position: absolute;
           right: -35px;
           top:32px;
-          border-radius: 8px;
-          padding-left: 15px;
+          border-radius: 5px;
+          padding-left: 18px;
+          padding-right: 18px;
           padding-top: 1px;
           box-sizing: border-box;
+        }
+        .helpBubble::after  {
+          content: "";
+          position: absolute;
+          top: 0%;
+          right: 18%;
+          margin-top: -20px;
+          border-width: 10px;
+          border-style: solid;
+          border-color: transparent transparent  $yellow transparent;
         }
       }
     }
