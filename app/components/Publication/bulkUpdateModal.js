@@ -50,25 +50,27 @@ export default class BulkUpdateModal extends React.Component {
     const minHeight=(this.state.fields?20:0) + 336;
     const height=minHeight+(61*this.state.fields)+'px'
     const filesList= this.state.files
-    const style={
-            height: height,
-          }
-          console.log("list is:" + filesList)
-const fileArea=filesList&&filesList.length==1?(  <div className="file">
-    <div className="fileName">{filesList[0].name}</div><div className="removeFile">Remove</div>
-    </div>
-    ):null
+    const style={ height: height }
+
+    console.log("list is:" + filesList)
+
+    const fileArea=filesList&&filesList.length==1?(  <div className="file">
+        <div className="fileName">{filesList[0].name}</div>
+        <div className="removeFile" onClick={()=>this.setState({files:[]}) }>Remove</div>
+      </div>
+      ):null
+
     const dropzoneRef = React.createRef()
     return (
         <div className="bulkUpdateContainer" style={style}>
           <div className="content">
-            <p className="sectionTitle">Metadata Manager accepts the following metadata for bulk updates; funding information, license information, and similarity 
-            check full text URLs. Please upload your CSV file.</p>
+            <p className="sectionTitle">Metadata Manager accepts the following metadata for bulk updates; funding information, license information, and Similarity 
+            Check full text URLs. Please upload your CSV file.</p>
             <div className="dropContainer">          
               <Dropzone  ref={dropzoneRef}
               acceptClassName="acceptFile"
               rejectClassName="rejectFile"
-              style="disaply: none;"
+              style="display: none;"
                 className="dropZone"
                 disableClick={true}
                 onDrop={(accepted, rejected) => this.acceptFiles(accepted)}
@@ -96,8 +98,9 @@ const fileArea=filesList&&filesList.length==1?(  <div className="file">
               </div>
             </div>
           <div className="validationFields">
-            <ValidationItemsContainer files={filesList}
-                            fieldsHandler={this.setFieldCount}>
+            <ValidationItemsContainer
+              files={filesList}
+              fieldsHandler={this.setFieldCount}>
             </ValidationItemsContainer>
           </div>
         <div className="height16"></div>

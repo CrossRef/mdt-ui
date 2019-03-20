@@ -245,6 +245,12 @@ export default class ValidationItemsContainer extends Component {
           console.log(msg)
         
         }
+        else{
+          if (fieldsHandler){
+            fieldsHandler(0)
+            this.setState({headers:[]})
+          }
+        }
       }
 
     }
@@ -261,7 +267,7 @@ export default class ValidationItemsContainer extends Component {
         tooltip={this.showHelper}
         tooltipUtility={this.tooltipUtility} />
     ):null
-    if (items){
+    if (items && items.length>0){
       items.unshift(<div className="headerMessage">Fix header errors to complete CSV upload.</div>)
       items.push(<div className="vertspacer"/>)
     }
