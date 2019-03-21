@@ -2,10 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import csv from 'csvtojson'
 import ValidationItem from './validationItem'
-import FormSelect from '../Common/formSelect'
-import {routes} from '../../routing'
-import fs, { read } from 'fs'
-import { isObject } from 'util';
+
 /*
 class ValidationField extends Component {
   static propTypes = {
