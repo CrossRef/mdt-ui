@@ -70,13 +70,16 @@ export default class BulkUpdateModal extends React.Component {
               <Dropzone  ref={dropzoneRef}
               acceptClassName="acceptFile"
               rejectClassName="rejectFile"
-              style="display: none;"
+              //style="display: none;"
                 className="dropZone"
                 disableClick={true}
                 onDrop={(accepted, rejected) => this.acceptFiles(accepted)}
                 accept="text/csv, text/plain, text/*,">
+                
                 <div className="dropArea">
-                <img className="uploadIcon" src={`${routes.images}/App/Asset_Icons_Grey_Check 2.svg`}/>
+                {// chrome doesn't behave correct with img tag, needed to use object here. 
+                }
+                <object type="image/svg+xml" className="uploadIcon" data={`${routes.images}/App/Asset_Icons_Grey_Check 2.svg`}/>
                 <div className="dropAreaText">
                   <p className="text">Drop CSV file here.</p>
                   <div><a className="openFile" onClick={()=>dropzoneRef.current.open()}>Browse from folder</a><p></p></div>

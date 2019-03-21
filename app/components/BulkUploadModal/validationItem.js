@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import bulkUploadColumns from './bulkUploadColumns'
 import CascadingMenu from './cascadingMenu'
+import XRegExp  from 'xregexp';
 
 const menuShape= [
   {
@@ -233,11 +234,11 @@ checkHeader =() =>{
     this.setState({isValid:bulkUploadColumns[fileColumnVal.toLowerCase()] })
     return 
   }
-  const regex = /^\s*<\s*([^\s]+)\s*(([^\s]+)="(.+?)")?\s*(([^\s]+)="(.+?)")?\s*>\s*$/ism;
+  const col = XRegExp('^\s*<\s*([^\s]+)\s*(([^\s]+)="(.+?)")?\s*(([^\s]+)="(.+?)")?\s*>\s*$','ism');
 
   let m;
 
-  if ((m = regex.exec(fileColumnVal)) !== null) {
+  if ((m = col.exec(fileColumnVal)) !== null) {
     console.log (m)
     // The result can be accessed through the `m`-variable.
     var count=0
