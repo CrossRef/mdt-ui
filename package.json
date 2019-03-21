@@ -111,7 +111,8 @@
     "with-query": "^1.0.2",
     "x2js": "^3.1.1",
     "xml-entities": "0.0.1",
-    "xml-objtree": "^0.24.2"
+    "xml-objtree": "^0.24.2",
+    "xregexp": "^4.2.4"
   },
   "scripts": {
     "start": "brunch watch --server",
