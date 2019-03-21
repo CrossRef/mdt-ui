@@ -234,7 +234,7 @@ checkHeader =() =>{
     this.setState({isValid:bulkUploadColumns[fileColumnVal.toLowerCase()] })
     return 
   }
-  const col = XRegExp('^\s*<\s*([^\s]+)\s*(([^\s]+)="(.+?)")?\s*(([^\s]+)="(.+?)")?\s*>\s*$','ism');
+  const col = XRegExp('^\\s*<\\s*([^\\s]+)\\s*(([^\\s]+)="(.+?)")?\\s*(([^\\s]+)="(.+?)")?\\s*>\\s*$','ism');
 
   let m;
 
