@@ -1,12 +1,7 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import FormSelect from '../Common/formSelect'
 import bulkUploadColumns from './bulkUploadColumns'
-import Select from '../SxSelect/SxSelect'
 import CascadingMenu from './cascadingMenu'
-
-import menus from './bulkUploadMenus'
-
 
 const menuShape= [
   {
@@ -322,7 +317,6 @@ closeMenu=()=>{
               //name={this.props.name}
              // onChange={this.checkHeader()}
               value={fileColumnVal}
-   
               onBlur={this.closeMenu}
               readOnly
             />
