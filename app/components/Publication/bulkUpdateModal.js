@@ -79,7 +79,7 @@ export default class BulkUpdateModal extends React.Component {
                 <div className="dropArea">
                 {// chrome doesn't behave correct with img tag, needed to use object here. 
                 }
-                <object type="image/svg+xml" className="uploadIcon" data={`${routes.images}/App/Asset_Icons_Grey_Check 2.svg`}/>
+                <object type="image/svg+xml" className="uploadIcon" data={`${routes.images}/BulkUpload/cloud-up-lightgrey.svg`}/>
                 <div className="dropAreaText">
                   <p className="text">Drop CSV file here.</p>
                   <div><a className="openFile" onClick={()=>dropzoneRef.current.open()}>Browse from folder</a><p></p></div>

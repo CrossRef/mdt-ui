@@ -2,49 +2,11 @@ import React, { Component } from 'react'
 import is from 'prop-types'
 import bulkUploadColumns from './bulkUploadColumns'
 import CascadingMenu from './cascadingMenu'
-import XRegExp  from 'xregexp';
-
-const menuShape= [
-  {
-      id: '0',
-      text: 'DOI'
-  },
-  {
-      id: '1',
-      text: 'SimilarityCheck',
-      options: [{parentid: '1', id: '17', text: 'item crawler="iParadigms"'}, {parentid: '1', id: '8', text: 'test item'}]
-  },
-  {
-      id: '2',
-      text: 'Funding',
-      options: [{parentid: '2', id: '21', text: 'funder_name'}, {parentid: '2', id: '22', text: 'funder_identifier'},{parentid: '2', id: '23', text: 'award_number'}]
-  },
-  {
-      id: '3',
-      text: 'License Free to read',
-      options: [{parentid: '3', id: '9', text: 'sub item 5'}, {parentid: '3', id: '10', text: 'sub item 6'}]
-  },
-  {
-    id:'4',
-    text: 'License Version of record',
-    options:[{parentid: '4', id: '47', text: 'DOI'},
-    {parentid: '4', id: '41', text: 'License URL'},
-    {parentid: '4', id: '42', text: 'License start date'},
-    {parentid: '4', id: '43', text: 'Full text URL'},
-    {parentid: '4', id: '44', text: 'MIME type',options:[{parentid:'44', id:'446', text:'Type \'text/html\''},{parentid:'44', id:'447', text:'Type \'text/plain\''}]}]
-  },
-  {
-      id: '5',
-      text: 'License Accepted manuscript',
-  },
-{ 
-    id: '6',
-    text: 'License TDM'
-}
-]
+import XRegExp  from 'xregexp'
+import menuShape from './bulkUploadMenus'
 
 export default class ValidationItem extends Component {
-
+  container=React.createRef()
     static propTypes = {
         index:is.number.isRequired,
         headers:is.array
@@ -55,7 +17,8 @@ export default class ValidationItem extends Component {
       this.state={errorMessages : [],
                   focusedInput : '',
                   isValid : true ,
-                 menuOpen:false}
+                 menuOpen:false,
+                 selected:{value:this.props.headers[props.index]}}
     }
   
   
@@ -289,17 +252,22 @@ checkHeader =() =>{
   }
   
 }
+setSelected =(option) =>{
+  if (option){
+    this.setState({selected:{value:option.value}})
+  }
+}
 toggleMenu = () => {
   this.setState({menuOpen: !this.state.menuOpen})
 }
 closeMenu=()=>{
-  this.setState({menuOpen:false})
+    this.setState({menuOpen:false})   
 }
 
   render () {
     const index = this.props.index
-    const fileColumnVal=this.props.headers[index]
-    const options=[{"value":"vor", "name":"Version of record"}, {"value":fileColumnVal,"name": fileColumnVal}]  
+
+    const click =  {onClick:this.toggleMenu}
     var isError=!this.state.isValid
     const headerErrorMsg = "Header error. Select correct header from dropdown list"
     const hideIt = {visibility:isError?'visible':'hidden'}
@@ -311,34 +279,25 @@ closeMenu=()=>{
             <div className='label'>{"Header Column "+String.fromCharCode(65+index)}</div>
           </div>
         </div>
-        <div className='field' onClick={this.toggleMenu}>
+        <div className='field' onClick={this.toggleMenu} ref={this.container} >
             <input
               className={`height32  ${isError ? 'fieldError' : ''} `}
               type='text'
-              //name={this.props.name}
-             // onChange={this.checkHeader()}
-              value={fileColumnVal}
-              onBlur={this.closeMenu}
+
+              value={this.state.selected.value}
               readOnly
             />
                 
-{this.state.menuOpen &&
-<CascadingMenu
-
-options={menuShape}
-
-//onSelectChange={(item)=>console.log('use your custom handler here', item)}
-/>}
-          </div>
-
-
-
+      {this.state.menuOpen &&
+        <CascadingMenu
+          options={menuShape}
+          closeMenu={this.closeMenu}
+          selectedItem={this.setSelected}
+          container = {this.container}
+      />}
+        </div>
         <span className="tooltiptext" style={hideIt}>{headerErrorMsg}</span>
       </div>                    
-    //     {this.state.showSection &&
-    //        <div className='body'>                     
-      //      </div>
-        //  }
       )
   }
 

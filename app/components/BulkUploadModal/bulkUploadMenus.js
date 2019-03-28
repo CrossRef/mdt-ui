@@ -1,40 +1,75 @@
-var menus=
-    [
-          {
-              val: 0,
-              label: 'DOI'
-          },
-          {
-              val: 1,
-              label: 'SimilarityCheck',
-              items: [{parentVal: 1, val: 17, label: 'item crawler="iParadigms"'}, {parentVal: 1, val: 8, label: 'test item'}]
-          },
-          {
-              val: 2,
-              label: 'Funding',
-              items: [{parentVal: 2, val: 21, label: 'funder_name'}, {parentVal: 2, val: 22, label: 'funder_identifier'},{parentVal: 2, val: 23, label: 'award_number'}]
-          },
-          {
-              val: 3,
-              label: 'License Free to read',
-              items: [{parentVal: 3, val: 9, label: 'sub item 5'}, {parentVal: 3, val: 10, label: 'sub item 6'}]
-          },
-          {
-            val:4, 
-            label: 'License Version of record',
-            items:[{parentVal: 4, val: 47, label: 'DOI'},
-            {parentVal: 4, val: 41, label: 'License URL'},
-            {parentVal: 4, val: 42, label: 'License start date'},
-            {parentVal: 4, val: 43, label: 'Full text URL'},
-            {parentVal: 4, val: 44, label: 'MIME type',items:[{parentVal:44, val:446, label:'Type \'text/html\''},{parentVal:44, val:447, label:'Type \'text/plain\''}]}]
-          },
-          {
-              val: 5,
-              label: 'License Accepted manuscript',
-          },
-        { 
-            val: 6,
-            label: 'License TDM'
-        }
-      ]
-      module.exports=menus
+import bulkUploadColumns from './bulkUploadColumns'
+
+const vor='<resource content_version="vor"'
+const mime='mime_type='
+const menus= [
+    {
+        id: '0',
+        text: 'DOI',
+        value:'DOI'
+    },
+    {
+        id: '1',
+        text: 'SimilarityCheck',
+        options: [{parentid: '1', id: '17', text: 'item crawler="iParadigms"',value:''}, {parentid: '1', id: '8', text: 'test item'}]
+    },
+    {
+        id: '2',
+        text: 'Funding',
+        options: [
+            {parentid: '2', id: '21', text: 'funder_name', value:'<funder_name>'},
+            {parentid: '2', id: '22', text: 'funder_identifier',value:'<funder_identifier>' },
+            {parentid: '2', id: '23', text: 'award_number',value:'<award_number>'}]
+    },
+    {
+        id: '3',
+        text: 'License Free to read',
+        contentVersion:'<resource content_version="tdm"',
+        options: [
+        {parentid: '3', id: '31', text: 'License URL', value:'<license_ref applies_to="tdm">'},
+        {parentid: '3', id: '32', text: 'License start date',value:'<tdm_lic_start_date>'},
+        {parentid: '3', id: '33', text: 'Content URL',value:'<resource content_version="tdm">'},
+        {parentid: '3', id: '34', text: 'Content URL with MIME type',options:[]}]
+    },
+    {
+      id:'4',
+      text: 'License Version of record',
+      contentVersion:'<license_ref applies_to="vor"',
+      options:[
+      {parentid: '4', id: '41', text: 'License URL', value:'<license_ref applies_to="vor">'},
+      {parentid: '4', id: '42', text: 'License start date',value:'<vor_lic_start_date>'},
+      {parentid: '4', id: '43', text: 'Content URL',value:vor+'>'},
+      {parentid: '4', id: '44', text: 'Content URL with MIME type',options:[]}]
+    },
+    {
+        id:'5',
+        text: 'License Accepted manuscript',
+        contentVersion:'<license_ref applies_to="am"',
+        options:[
+        {parentid: '5', id: '51', text: 'License URL', value:'<license_ref applies_to="am">'},
+        {parentid: '5', id: '52', text: 'License start date',value:'<am_lic_start_date>'},
+        {parentid: '5', id: '53', text: 'Content URL',value:'<resource content_version="am">'},
+        {parentid: '5', id: '54', text: 'Content URL with MIME type',options:[]}]
+      },
+
+  ]
+
+  const licenseRefFilter =(item)=>{
+    return item.text.startsWith('License')    
+  }
+  const reducer = (acc,item,idx)=> {
+    acc.filter(licenseRefFilter).forEach(element => {
+      if (element.options){
+        const mimeObj = element.options.find(menuItem=>menuItem.text.indexOf('MIME')>-1)
+        mimeObj.options.push({'text':item,'id':''+mimeObj.id+idx,value:element.contentVersion+' mimetype="'+item+'">' , parentid:mimeObj.id})
+      }
+    });
+   return acc
+}  
+  console.log(menus)
+  
+  
+  
+
+
+  export default (bulkUploadColumns.resource.mime_type.reduce(reducer,menus))

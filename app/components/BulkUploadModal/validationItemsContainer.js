@@ -265,8 +265,8 @@ export default class ValidationItemsContainer extends Component {
         tooltipUtility={this.tooltipUtility} />
     ):null
     if (items && items.length>0){
-      items.unshift(<div className="headerMessage">Fix header errors to complete CSV upload.</div>)
-      items.push(<div className="vertspacer"/>)
+      items.unshift(<div className="headerMessage" key="headmsg">Fix header errors to complete CSV upload.</div>)
+      items.push(<div className="vertspacer" key="spacer"/>)
     }
     return (
         <div className='validationFieldsInner'>          
