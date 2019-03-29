@@ -9,7 +9,8 @@ export default class ValidationItem extends Component {
   container=React.createRef()
     static propTypes = {
         index:is.number.isRequired,
-        headers:is.array
+        headers:is.array,
+        isValid:is.func.isRequired
       }
 
     constructor (props) {
@@ -179,21 +180,22 @@ export default class ValidationItem extends Component {
 
 componentDidUpdate (nextProps) {
   if(nextProps.headers !=this.props.headers) {
-    this.checkHeader()
+    this.setState({isValid:this.checkHeader(option.value)},() => {this.props.isValid(this.state.isValid)})
+    // this.checkHeader()
+    // this.props.isValid(this.state.isValid)
   }
 }
 componentDidMount(){
-  this.checkHeader()
+  this.setState({isValid:this.checkHeader()},() => {this.props.isValid(this.state.isValid)})
+  
 }
-checkHeader =(fileColumnVal=this.state.selected.value) =>{  
+checkHeader (fileColumnVal=this.state.selected.value) {  
   const index = this.props.index
-  if (!fileColumnVal){
-    this.setState({isValid : true})
-    return
+  if (!fileColumnVal){    
+    return true
   }
   if (index===0){
-    this.setState({isValid:bulkUploadColumns[fileColumnVal.toLowerCase()] })
-    return 
+    return bulkUploadColumns[fileColumnVal.toLowerCase()] 
   }
   const col = XRegExp('^\\s*<\\s*([^\\s]+)\\s*(([^\\s]+)="(.+?)")?\\s*(([^\\s]+)="(.+?)")?\\s*>\\s*$','ism');
 
@@ -223,8 +225,8 @@ checkHeader =(fileColumnVal=this.state.selected.value) =>{
 
           if (validationItem2){
             if (validationItem2.indexOf(attributeValue)<0){
-              this.setState({isValid:false})
-              return
+              
+              return false
             }
             if (count>5){
               attributeName=m[6]
@@ -232,28 +234,28 @@ checkHeader =(fileColumnVal=this.state.selected.value) =>{
               var validationItem3=validationStruct[attributeName]
               
               if (!validationItem3 || validationItem3.indexOf(attributeValue)<0){
-                this.setState({isValid:false})
-                return
+                
+                return false
               }
             }
           }  else{
-            this.setState({isValid:false})
+            return false
           }
         }
-        this.setState({isValid:true})
+        return true
       } else{
-        this.setState({isValid:false})
+        return false
       }
     }
   }else{
-    this.setState({isValid:false})
+    return false
   }
   
 }
 setSelected =(option) =>{
   if (option){
-    this.setState({selected:{value:option.value}})
-    this.checkHeader(option.value) // state doesn't actually change until all state operations are done
+    this.setState({selected:{value:option.value}, isValid:this.checkHeader(option.value)},() => {this.props.isValid(this.state.isValid)})
+     // state doesn't actually change until all state operations are done
                                   // so have to pass the value to the checker.
   }
 }
@@ -281,7 +283,7 @@ closeMenu=()=>{
             <input
               className={`height32  ${isError ? 'fieldError' : ''} `}
               type='text'
-
+              
               value={this.state.selected.value}
               readOnly
             />                

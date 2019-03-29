@@ -30,7 +30,8 @@ export default class ValidationItemsContainer extends Component {
 
     static propTypes = {
         files: is.arrayOf(is.object),
-        fieldHandler: is.func
+        fieldHandler: is.func,
+        isValid:is.func.isRequired
       }
 
     constructor (props) {
@@ -221,11 +222,14 @@ export default class ValidationItemsContainer extends Component {
             {
               
               var headers=[]
+              var headerValid=[]
               for (var key in jsonObj[0]) {
                 headers.push(key)
-                
+                headerValid.push(false)
               }
-              this.setState({headers:headers})
+              this.setState({headers:headers,
+                              headerValid:headerValid
+                            })
               console.log(headers)
               //console.log(jsonObj)
               if (fieldsHandler){
@@ -251,6 +255,12 @@ export default class ValidationItemsContainer extends Component {
       }
 
     }
+    isValid =(index)=>{
+      return(valid)=>{
+        this.state.headerValid[index]=valid
+        this.props.isValid(this.state.headerValid.every((item)=>item))
+      }
+    }
   render () {
     const options=[{"value":"vor", "name":"Version of record"}];
     var items = this.state.headers?  this.state.headers.map((data, i)=>
@@ -262,7 +272,8 @@ export default class ValidationItemsContainer extends Component {
         allErrors={this.errors}
         key={i}
         tooltip={this.showHelper}
-        tooltipUtility={this.tooltipUtility} />
+        tooltipUtility={this.tooltipUtility}
+        isValid={this.isValid(i) }/>
     ):null
     if (items && items.length>0){
       items.unshift(<div className="headerMessage" key="headmsg">Fix header errors to complete CSV upload.</div>)

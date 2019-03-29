@@ -27,7 +27,8 @@ export default class BulkUpdateModal extends React.Component {
     files: [] ,
     publisherName: '',
     showHelp: false,
-    fields:0
+    fields:0,
+    valid:false
   }
   setFieldCount = (e) => {
     this.setState({fields:e})
@@ -44,14 +45,16 @@ export default class BulkUpdateModal extends React.Component {
   componentDidMount () {
     
   }
-
+  setValidation =(valid)=>{
+    this.setState({valid:valid})
+  }
   render () {
     const publisherName= this.state.publisherName
-    const minHeight=(this.state.fields?20:0) + 336;
+    const minHeight=(this.state.fields?40:0) + 326;
     const height=minHeight+(61*this.state.fields)+'px'
     const filesList= this.state.files
     const style={ height: height }
-
+    const isValid=this.state.valid
     console.log("list is:" + filesList)
 
     const fileArea=filesList&&filesList.length==1?(  <div className="file">
@@ -103,12 +106,13 @@ export default class BulkUpdateModal extends React.Component {
           <div className="validationFields">
             <ValidationItemsContainer
               files={filesList}
-              fieldsHandler={this.setFieldCount}>
+              fieldsHandler={this.setFieldCount}
+              isValid={this.setValidation}>
             </ValidationItemsContainer>
           </div>
         <div className="height16"></div>
           <div className="buttons">
-            <div className={`deposit depositNotReady`} onClick={this.processFile}>Deposit</div>
+            <div className={'deposit '+ (isValid?'':'depositNotReady')} onClick={this.processFile}>Deposit</div>
             <div className="cancel" onClick={this.props.close}>Cancel</div>
           </div>
 
