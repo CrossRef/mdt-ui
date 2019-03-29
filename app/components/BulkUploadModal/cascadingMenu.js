@@ -34,10 +34,10 @@ export default class CascadingMenu extends Component {
         }
       }
       componentDidMount() {
-        document.addEventListener("mousedown", this.handleBlur);
+        document.addEventListener("click", this.handleBlur);
     }
     componentWillUnmount() {
-      document.removeEventListener("mousedown", this.handleBlur);
+      document.removeEventListener("click", this.handleBlur);
     }
   shouldComponentUpdate(nextProps, nextState) {
     return this.props.options !== nextProps.options
@@ -64,21 +64,18 @@ export default class CascadingMenu extends Component {
   handleClick=(option,depthLevel)=>{
     
     return () => {
-      const hasOptions = (option.options
-        && option.options.length > 0 )
-        if (!hasOptions){
-      this.props.selectedItem(option)
+      const hasOptions = (option.options && option.options.length > 0 )
+        if (!hasOptions){ // only care about a click if it's a leaf node
+          this.props.selectedItem(option)
         }
-    console.log("Select menu id: "+option.id+" level:"+depthLevel+" option:"+option)
+      console.log("Select menu id: "+option.id+" level:"+depthLevel+" option:"+option)
     }
   }
-  handleBlur=() =>{
-
-      console.log ("contaier is equal to target:"+this.props.container.current==event.target )
-      if (this.props.container.current && (!this.props.container.current.contains(event.target)||this.props.container.current!=event.target )) {
+  handleBlur=(event) =>{
+      
+      if (this.props.container.current && (!this.props.container.current.contains(event.target)&&this.props.container.current!=event.target )) {
         this.props.closeMenu()
-      }
-    
+      }    
   }
   handleSelectedId = (selected, depthLevel) => {
     return () => {
@@ -91,7 +88,6 @@ export default class CascadingMenu extends Component {
       })
     }
   }
-
   renderDisplay() {
     const classes = classNames({
             'dropdown__display': true, 
@@ -104,7 +100,7 @@ export default class CascadingMenu extends Component {
                   </svg>
           )
     return (
-      <div className={ classes }>
+      <div className={ classes } >
         { this.props.text }
         { this.props.hasCaret ? caret : null }
       </div>
@@ -147,7 +143,7 @@ export default class CascadingMenu extends Component {
         <li className={classNames.apply(null,liClasses)}
           key={ option.id }
           onMouseEnter={ this.handleSelectedId(option.id, depthLevel) }
-          onClick={this.handleClick(option,depthLevel)}
+          onClick={this.handleClick(option,depthLevel)}          
         >
           { display }{expandCarret}
           { subMenu }

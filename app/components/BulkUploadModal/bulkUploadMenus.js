@@ -34,7 +34,7 @@ const menus= [
     {
       id:'4',
       text: 'License Version of record',
-      contentVersion:'<license_ref applies_to="vor"',
+      contentVersion:'<resource content_version="vor"',
       options:[
       {parentid: '4', id: '41', text: 'License URL', value:'<license_ref applies_to="vor">'},
       {parentid: '4', id: '42', text: 'License start date',value:'<vor_lic_start_date>'},
@@ -44,7 +44,7 @@ const menus= [
     {
         id:'5',
         text: 'License Accepted manuscript',
-        contentVersion:'<license_ref applies_to="am"',
+        contentVersion:'<resource content_version="am"',
         options:[
         {parentid: '5', id: '51', text: 'License URL', value:'<license_ref applies_to="am">'},
         {parentid: '5', id: '52', text: 'License start date',value:'<am_lic_start_date>'},
@@ -61,7 +61,7 @@ const menus= [
     acc.filter(licenseRefFilter).forEach(element => {
       if (element.options){
         const mimeObj = element.options.find(menuItem=>menuItem.text.indexOf('MIME')>-1)
-        mimeObj.options.push({'text':item,'id':''+mimeObj.id+idx,value:element.contentVersion+' mimetype="'+item+'">' , parentid:mimeObj.id})
+        mimeObj.options.push({'text':item,'id':''+mimeObj.id+idx,value:element.contentVersion+' mime_type="'+item+'">' , parentid:mimeObj.id})
       }
     });
    return acc

@@ -187,7 +187,7 @@ componentDidMount(){
 }
 checkHeader =() =>{  
   const index = this.props.index
-  const fileColumnVal=this.props.headers[index]
+  const fileColumnVal=this.state.selected.value
 
   if (!fileColumnVal){
     this.setState({isValid : true})
@@ -229,8 +229,8 @@ checkHeader =() =>{
               return
             }
             if (count>5){
-              attributeName=m[5]
-              attributeValue=m[6]
+              attributeName=m[6]
+              attributeValue=m[7]
               var validationItem3=validationStruct[attributeName]
               
               if (!validationItem3 || validationItem3.indexOf(attributeValue)<0){
@@ -255,6 +255,7 @@ checkHeader =() =>{
 setSelected =(option) =>{
   if (option){
     this.setState({selected:{value:option.value}})
+    this.checkHeader()
   }
 }
 toggleMenu = () => {
@@ -286,15 +287,14 @@ closeMenu=()=>{
 
               value={this.state.selected.value}
               readOnly
-            />
-                
-      {this.state.menuOpen &&
-        <CascadingMenu
-          options={menuShape}
-          closeMenu={this.closeMenu}
-          selectedItem={this.setSelected}
-          container = {this.container}
-      />}
+            />                
+          {this.state.menuOpen &&
+            <CascadingMenu
+              options={menuShape}
+              closeMenu={this.closeMenu}
+              selectedItem={this.setSelected}
+              container = {this.container}
+          />}
         </div>
         <span className="tooltiptext" style={hideIt}>{headerErrorMsg}</span>
       </div>                    
