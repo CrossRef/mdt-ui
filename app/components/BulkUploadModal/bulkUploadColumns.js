@@ -1,6 +1,7 @@
 export default {
     doi:true,
     funder_name:true,
+    item:{crawler:['iParadigms']},
     funder_identifier:true,
     award_number:true,
     license_ref:{

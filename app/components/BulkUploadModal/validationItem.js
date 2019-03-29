@@ -185,10 +185,8 @@ componentDidUpdate (nextProps) {
 componentDidMount(){
   this.checkHeader()
 }
-checkHeader =() =>{  
+checkHeader =(fileColumnVal=this.state.selected.value) =>{  
   const index = this.props.index
-  const fileColumnVal=this.state.selected.value
-
   if (!fileColumnVal){
     this.setState({isValid : true})
     return
@@ -255,7 +253,8 @@ checkHeader =() =>{
 setSelected =(option) =>{
   if (option){
     this.setState({selected:{value:option.value}})
-    this.checkHeader()
+    this.checkHeader(option.value) // state doesn't actually change until all state operations are done
+                                  // so have to pass the value to the checker.
   }
 }
 toggleMenu = () => {
@@ -267,8 +266,6 @@ closeMenu=()=>{
 
   render () {
     const index = this.props.index
-
-    const click =  {onClick:this.toggleMenu}
     var isError=!this.state.isValid
     const headerErrorMsg = "Header error. Select correct header from dropdown list"
     const hideIt = {visibility:isError?'visible':'hidden'}

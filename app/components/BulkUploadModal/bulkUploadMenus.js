@@ -10,8 +10,7 @@ const menus= [
     },
     {
         id: '1',
-        text: 'SimilarityCheck',
-        options: [{parentid: '1', id: '17', text: 'item crawler="iParadigms"',value:''}, {parentid: '1', id: '8', text: 'test item'}]
+        text: 'SimilarityCheck full text URL', value:'<item crawler="iParadigms">'        
     },
     {
         id: '2',
