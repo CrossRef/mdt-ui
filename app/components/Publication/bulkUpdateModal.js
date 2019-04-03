@@ -7,6 +7,7 @@ import * as app from '../../actions/application'
 import {routes} from '../../routing'
 import Dropzone from 'react-dropzone'
 import ValidationItemsContainer from '../BulkUploadModal/validationItemsContainer';
+import convertCsv from '../BulkUploadModal/resourcesXmlGenerator.js';
 
 const KEYS_TO_FILTERS = [ 'name']
 const mapStateToProps = () => ({})
@@ -48,6 +49,9 @@ export default class BulkUpdateModal extends React.Component {
   setValidation =(valid)=>{
     this.setState({valid:valid})
   }
+  processFile=()=>{
+    convertCsv(this.state.he)
+  }
   render () {
     const publisherName= this.state.publisherName
     const minHeight=(this.state.fields?40:0) + 326;
@@ -55,7 +59,7 @@ export default class BulkUpdateModal extends React.Component {
     const filesList= this.state.files
     const style={ height: height }
     const isValid=this.state.valid
-    console.log("list is:" + filesList)
+    console.log("list is:" + filesList?filesList.map(i=>i.name ):'null')
 
     const fileArea=filesList&&filesList.length==1?(  <div className="file">
         <div className="fileName">{filesList[0].name}</div>
