@@ -9,8 +9,9 @@ export default class ValidationItem extends Component {
   container=React.createRef()
     static propTypes = {
         index:is.number.isRequired,
-        headers:is.array,
-        isValid:is.func.isRequired
+        value:is.string.isRequired,
+        isValid:is.func.isRequired,
+        onchange:is.func.isRequired
       }
 
     constructor (props) {
@@ -18,13 +19,14 @@ export default class ValidationItem extends Component {
       this.state={errorMessages : [],
                   focusedInput : '',
                   isValid : true ,
-                 menuOpen:false,
-                 selected:{value:this.props.headers[props.index]}}
+                 menuOpen:false
+                 }
     }
 
-componentDidUpdate (nextProps) {
-  if(nextProps.headers !=this.props.headers) {
-    this.setState({isValid:this.checkHeader(option.value)},() => {this.props.isValid(this.state.isValid)})
+componentDidUpdate (lastProps) {
+  if(lastProps.value !=this.props.value) {
+    const isValid=this.checkHeader(this.props.value)
+    this.setState({isValid:isValid},() => {this.props.isValid(isValid)})
     // this.checkHeader()
     // this.props.isValid(this.state.isValid)
   }
@@ -33,7 +35,7 @@ componentDidMount(){
   this.setState({isValid:this.checkHeader()},() => {this.props.isValid(this.state.isValid)})
   
 }
-checkHeader (fileColumnVal=this.state.selected.value) {  
+checkHeader (fileColumnVal=this.props.value) {  
   const index = this.props.index
   if (!fileColumnVal){    
     return true
@@ -78,8 +80,7 @@ checkHeader (fileColumnVal=this.state.selected.value) {
               attributeValue=m[7]
               var validationItem3=validationStruct[attributeName]
               
-              if (!validationItem3 || validationItem3.indexOf(attributeValue)<0){
-                
+              if (!validationItem3 || validationItem3.indexOf(attributeValue)<0){                
                 return false
               }
             }
@@ -99,7 +100,9 @@ checkHeader (fileColumnVal=this.state.selected.value) {
 }
 setSelected =(option) =>{
   if (option){
-    this.setState({selected:{value:option.value}, isValid:this.checkHeader(option.value)},() => {this.props.isValid(this.state.isValid)})
+    // call parent to set value
+    this.props.onchange(this.props.index, option.value)
+    //this.setState({selected:{value:option.value}, isValid:this.checkHeader(option.value)},() => {this.props.isValid(this.state.isValid)})
      // state doesn't actually change until all state operations are done
                                   // so have to pass the value to the checker.
   }
@@ -129,7 +132,7 @@ closeMenu=()=>{
               className={`height32  ${isError ? 'fieldError' : ''} `}
               type='text'
               
-              value={this.state.selected.value}
+              value={this.props.value}
               readOnly
             />                
           {this.state.menuOpen &&
