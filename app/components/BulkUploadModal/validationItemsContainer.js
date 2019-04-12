@@ -8,15 +8,16 @@ export default class ValidationItemsContainer extends Component {
   static propTypes = {
     files: is.arrayOf(is.object),
     fieldHandler: is.func,
-    isValid:is.func.isRequired
+    isValid:is.func.isRequired,
+    headers: is.arrayOf(is.string),
+  //  generateXml:is.func.isRequired,
+    setHeaders:is.func.isRequired,
+    setParsedCsv:is.func.isRequired
   }
-  state = {
-    headers:[]
-  }
+
   constructor (props) {
     super(props)
     this.setSelected = this.handleFieldChange.bind(this)
-  
   }
 
 
@@ -25,10 +26,6 @@ export default class ValidationItemsContainer extends Component {
       this.handleReadFiles()
     }
   }
-  createSelects = (jsonObj)=>{
-
-  }
-
   handleReadFiles = ()=> {
     //oFiles = document.getElementById("uploadInput").files,
     //nFiles = oFiles.length;
@@ -42,23 +39,18 @@ export default class ValidationItemsContainer extends Component {
         var reader = new FileReader()
         reader.onload = () => {
           console.log("reader onload converting to csv")
-          csv().fromString(reader.result).then((jsonObj)=>
-          {
-            var headers=[]
-            var headerValid=[]
-            for (var key in jsonObj[0]) {
-              headers.push(key)
-              headerValid.push(false)
-            }
-            this.setState({headers:headers,
-                            headerValid:headerValid
-                          })
-            console.log(headers)
-            //console.log(jsonObj)
+          csv({flatKeys:true}).on('header',(header)=>{
+            var headerValid = Array.apply(false, Array(header.length))
+            this.setState({headerValid:headerValid})
+            this.props.setHeaders(header)
             if (fieldsHandler){
-              fieldsHandler(headers.length)
-            }
-          })
+              fieldsHandler(header.length)
+            }                        
+            console.log(header)
+            console.log(headerValid)
+          }) // might want to have the reader limit the length, grab first line to get header
+          // then read entire file when the process is confirmed. 
+            .fromString(reader.result)
         }
         reader.readAsText(files[0])
         //csv.fs.createReadStream(files[0])
@@ -67,24 +59,22 @@ export default class ValidationItemsContainer extends Component {
       else {
         if (fieldsHandler) {
           fieldsHandler(0)
-          this.setState({headers:[]})
+          this.props.setHeaders([])
         }
       }
     }
   }
 
   createModifiedObject(){
-    var modified=this.state.headers.map(row=>{
+    var modified=this.props.headers.map(row=>{
     })
   }
   handleFieldChange(index, value) {
-    if (this.state){
-      const newHeaders = [...this.state.headers];
-      newHeaders[index]=value
-      this.setState({headers:newHeaders
-      })
+    if (this.props.headers){
+      const newHeaders = [...this.props.headers]
+      newHeaders[index]=value      
+      this.props.setHeaders(newHeaders)
     }
-
   }
 
   isValid =(index)=>{
@@ -96,10 +86,10 @@ export default class ValidationItemsContainer extends Component {
   
   render () {
     const options=[{"value":"vor", "name":"Version of record"}];
-    var items = this.state.headers?  this.state.headers.map((data, i)=>
+    var items = this.props.headers?  this.props.headers.map((data, i)=>
       <ValidationItem
         index={i}    
-        value={this.state.headers[i]}
+        value={this.props.headers[i]}
         key={i}
         onchange={this.setSelected}
         isValid={this.isValid(i) }/>

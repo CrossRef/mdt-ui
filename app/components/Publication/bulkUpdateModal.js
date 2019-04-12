@@ -2,13 +2,11 @@ import React from 'react'
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import is from 'prop-types'
-import * as api from '../../actions/api'
 import * as app from '../../actions/application'
 import {routes} from '../../routing'
 import Dropzone from 'react-dropzone'
-import ValidationItemsContainer from '../BulkUploadModal/validationItemsContainer';
-import convertCsv from '../BulkUploadModal/resourcesXmlGenerator.js';
-
+import ValidationItemsContainer from '../BulkUploadModal/validationItemsContainer'
+import f from '../BulkUploadModal/resourcesXmlGenerator'
 const KEYS_TO_FILTERS = [ 'name']
 const mapStateToProps = () => ({})
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -29,7 +27,8 @@ export default class BulkUpdateModal extends React.Component {
     publisherName: '',
     showHelp: false,
     fields:0,
-    valid:false
+    valid:false,
+    headers:[]
   }
   setFieldCount = (e) => {
     this.setState({fields:e})
@@ -43,6 +42,12 @@ export default class BulkUpdateModal extends React.Component {
     this.setState({files: accepted })
   } 
 
+  setHeaders = (headers)=>{
+   this.setState({headers:headers})
+  }
+  setParsedCsv = (jsonObj)=>{
+    this.setState({parsedcsv:jsonObj})
+  }
   componentDidMount () {
     
   }
@@ -50,17 +55,15 @@ export default class BulkUpdateModal extends React.Component {
     this.setState({valid:valid})
   }
   processFile=()=>{
-    convertCsv(this.state.he)
+    f(this.state.headers,this.state.files)
   }
   render () {
-    const publisherName= this.state.publisherName
     const minHeight=(this.state.fields?40:0) + 326;
     const height=minHeight+(61*this.state.fields)+'px'
     const filesList= this.state.files
     const style={ height: height }
-    const isValid=this.state.valid
-    console.log("list is:" + filesList?filesList.map(i=>i.name ):'null')
-
+    const isValid=this.state.parsedcsv && this.state.valid
+    const headers=this.state.headers
     const fileArea=filesList&&filesList.length==1?(  <div className="file">
         <div className="fileName">{filesList[0].name}</div>
         <div className="removeFile" onClick={()=>this.setState({files:[]}) }>Remove</div>
@@ -111,7 +114,10 @@ export default class BulkUpdateModal extends React.Component {
             <ValidationItemsContainer
               files={filesList}
               fieldsHandler={this.setFieldCount}
-              isValid={this.setValidation}>
+              isValid={this.setValidation}
+              headers={headers}
+              setHeaders={this.setHeaders}
+              setParsedCsv={this.setParsedCsv}>
             </ValidationItemsContainer>
           </div>
         <div className="height16"></div>

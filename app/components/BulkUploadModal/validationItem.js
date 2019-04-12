@@ -49,17 +49,14 @@ checkHeader (fileColumnVal=this.props.value) {
   let m;
 
   if ((m = col.exec(fileColumnVal)) !== null) {
-    console.log (m)
     // The result can be accessed through the `m`-variable.
     var count=0
-    //console.log(`column header has ${m.length} with: ${m}`)
     m.forEach((match, groupIndex) => {
       if (match)
       {
         count++        
       } })
-    if (count>0){
-      //console.log(`Found ${count} matches, element: ${m[1]}`)
+    if (count>0){      
       var mainElement=m[1]
       // <resource content_version="vpr" mime_type="application/html">
       var validationStruct = bulkUploadColumns[mainElement]      
