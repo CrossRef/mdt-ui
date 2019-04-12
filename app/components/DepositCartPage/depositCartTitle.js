@@ -40,6 +40,7 @@ export default class DepositCartItem extends Component {
         <DepositCartRecord
           key={record.doi || JSON.stringify(record.title)}
           pubDoi={props.cartItem.doi}
+          pubOwner={props.cartItem.contains[0]['owner-prefix']}
           reduxRemoveFromCart={props.reduxRemoveFromCart}
           cartItem={record}
           closeErrors={this.props.closeErrors}
@@ -65,6 +66,7 @@ export default class DepositCartItem extends Component {
               issueDoi={parentIssue.doi}
               issueTitle={parentIssue.title}
               pubDoi={props.cartItem.doi}
+              pubOwner={props.cartItem.contains[0]['owner-prefix']}
               reduxRemoveFromCart={props.reduxRemoveFromCart}
               cartItem={articleUnderIssue}
               closeErrors={this.props.closeErrors}
