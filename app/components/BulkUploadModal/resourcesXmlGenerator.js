@@ -57,29 +57,17 @@ const f = function (headers, files) {
   handleReadFiles(files, headers)
 
 }
-const cb = function (jsonArrayObj) {
-  console.log(jsonArrayObj)
-  var doc = new DOMParser().parseFromString('<doi_resources></doi_resources>', 'text/xml')
-  // iterate over the entire list of objects
-  getDoiObjects(jsonArrayObj)
-  var results = jsonArrayObj.map((row) => {
-    var xml
-    if (row['<funder_name>']) {
-      xml = getFunderXml(row, doc)
-    }
+const cb = function (jsonArrayObj) {  
+  // iterate over the entire list of objects  
+  var doc = getDoiObjects(jsonArrayObj)
+  var result = header.format("this is the filename.java", "This is the email@.com") +
+    new XMLSerializer().serializeToString(doc).replace(/></g, ">\n<") +
+    "</body>\n</doi_batch>"
 
-    return xml
-  })
-  results.filter((item) => {
-    return !!item
-  }).reduce((doc, item) => {
-    doc.documentElement.append(item)
-    return doc
-  }, doc)
-
+  console.log(result)
   //console.log(doc)
   //console.log(new XMLSerializer().serializeToString(doc).replace(/></g,">\n<"))
-}
+  }
 
 const elemReducer = function (row) {
   return function (funderElm, key) {
@@ -134,7 +122,7 @@ function awardReducer(fundingMap, item) {
   fundingMap.set(item["<award_number>"], data)
   return fundingMap
 }
-function makeAssertionElem(doc,name,val){
+function makeAssertionElem(doc,name,val){  
   var assertion= doc.ownerDocument.createElement("fr:assertion")
   assertion.setAttribute("name", name.replace(/[<>]/g, ""))
   if(val){
@@ -142,6 +130,22 @@ function makeAssertionElem(doc,name,val){
   }
   doc.appendChild(assertion)
   return assertion
+}
+
+function getFundingElem(row,group){
+  var nameElm = makeAssertionElem(group,"<funder_name>",row["<funder_name>"])
+  var idElm = makeAssertionElem(group,"<funder_identifier>",row["<funder_identifier>"])
+  if (idElm.textContent.length<1&&nameElm.textContent.length<1){
+    return 
+  }
+  if (nameElm.textContent.length>0&&idElm.textContent.length>0){
+    nameElm.appendChild(idElm)
+  }else{
+    nameElm=idElm
+  }
+  // name elem will either be or contain the id if it exists. If neither exists, we 
+  // have have returned already.
+  group.appendChild(nameElm)
 }
 const awardCb = function (doc) {
   return function (itemArray, award) {
@@ -152,9 +156,7 @@ const awardCb = function (doc) {
       makeAssertionElem(group,"award_number",award)
     }
     itemArray.map((row) => {
-      group.appendChild(
-        funderElems.filter((item) => Object.keys(row).indexOf(item) > -1) // only process keys for funders
-        .reduce(elemReducer(row), group))
+     getFundingElem(row,group)
     }) // for all key/vals inrow accumulate result in programElm 
     //doc.appendChild(group)
   }
@@ -162,17 +164,7 @@ const awardCb = function (doc) {
 function aggregateByAward(fundingArray,programElm) {
   var awardMap = new Map()
   awardMap = fundingArray.reduce(awardReducer,awardMap)
-
-  awardMap.forEach(awardCb(programElm))
- 
-  
-/*
-  fundingArray.map((entry) => {
-    var f = {}
-    if (fundingMap[entry.doi]) {
-
-    }
-  })*/
+  awardMap.forEach(awardCb(programElm)) 
 }
 /*
   generate funder snippet for each DOI
@@ -185,9 +177,9 @@ const funderAggrCb = function (doc) {
       return null
     }
     var funderElm = doc.createElement('fundref_data')
-    var doiElm = doc.createElement('DOI')
-    doiElm.textContent = doi
-    funderElm.appendChild(doiElm)
+    
+    makeAssertionElem(funderElm,"DOI",doi)
+    
     var programElm = doc.createElementNS("http://www.crossref.org/fundref.xsd", "fr:program")
     programElm.setAttribute("name", "fundref")
     
@@ -213,7 +205,7 @@ function getDoiObjects(jsonObj) {
   doiMap.forEach(funderAggrCb(doc))
   //var doc = getXmlForFunders(doiMap)
 
-  console.log(new XMLSerializer().serializeToString(doc).replace(/></g, ">\n<"))
+  return doc
 }
 /*
  Populate 'doiMap' by key 'DOI' from within 'item' with value array of 'item's
