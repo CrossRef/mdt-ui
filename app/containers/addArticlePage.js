@@ -75,11 +75,11 @@ export class AddArticlePage extends Component {
     const {duplicateFrom, dupIssueDoi, dupIssueTitle} = props.location.state || {}
     const editArticleDoi = props.routeParams.articleDoi || (props.location.state && props.location.state.duplicateFrom)
     const isDuplicate = !!duplicateFrom
-    const issueId = props.routeParams.issueId || dupIssueDoi || dupIssueTitle
-    const issueDoi = issueId && (issueId.split('/')[0] === publicationOwnerPrefix) ? issueId : undefined
-    const issueTitle = issueId && !issueDoi ? JSON.parse(issueId) : undefined
     const publicationOwnerPrefix = props.publication ? props.publication ['message']['owner-prefix'] : props.routeParams.pubDoi.split ('/')[0]
     const publicationDoiPrefix = props.routeParams.pubDoi.split('/')[0]
+    const issueId = props.routeParams.issueId || dupIssueDoi || dupIssueTitle
+    const issueDoi = issueId && (issueId.split('/')[0] === publicationDoiPrefix) ? issueId : undefined
+    const issueTitle = issueId && !issueDoi ? JSON.parse(issueId) : undefined
     this.state = {
       ...defaultState,
       publication: props.publication,
@@ -93,7 +93,7 @@ export class AddArticlePage extends Component {
       isDuplicate,
       publicationOwnerPrefix,
       publicationDoiPrefix,
-      crossmark: props.crossmarkPrefixes.indexOf(publicationOwnerPrefix) !== -1,
+      crossmark: props.crossmarkPrefixes.indexOf(publicationDoiPrefix) !== -1,
       crossmarkCards: {},
       version: '1',
       errorMessages: [],
