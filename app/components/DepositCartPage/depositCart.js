@@ -14,7 +14,8 @@ export default class DepositCart extends Component {
     showDeposit: is.bool.isRequired,
     toggleDeposit: is.func.isRequired,
     fullCart: is.array.isRequired,
-    cart: is.array.isRequired
+    cart: is.array.isRequired,
+    publications: is.object.isRequired
   }
 
   componentWillMount(){
@@ -52,11 +53,13 @@ export default class DepositCart extends Component {
       let asyncErrorReport = new DeferredTask()
       errorReports.push(asyncErrorReport.promise)
 
+      //MM-429: We are passing a list of publications(object) from the depositCartPage in order to get the publication owner prefix. This for use in the depositCartRecord.
       items.push(
         <DepositCartTitle
             cartItem={cartItem}
             cart={this.props.cart}
             key={cartItem.doi}
+            publications = {this.props.publications}
             reduxRemoveFromCart={this.props.reduxRemoveFromCart}
             reportErrors={asyncErrorReport.resolve}
             recordCount={recordCount}

@@ -73,11 +73,12 @@ export class AddArticlePage extends Component {
   constructor (props) {
     super(props)
     const {duplicateFrom, dupIssueDoi, dupIssueTitle} = props.location.state || {}
-    const ownerPrefix = props.routeParams.pubDoi.split('/')[0];
     const editArticleDoi = props.routeParams.articleDoi || (props.location.state && props.location.state.duplicateFrom)
     const isDuplicate = !!duplicateFrom
+    const publicationOwnerPrefix = props.publication ? props.publication ['message']['owner-prefix'] : props.routeParams.pubDoi.split ('/')[0]
+    const publicationDoiPrefix = props.routeParams.pubDoi.split('/')[0]
     const issueId = props.routeParams.issueId || dupIssueDoi || dupIssueTitle
-    const issueDoi = issueId && (issueId.split('/')[0] === ownerPrefix) ? issueId : undefined
+    const issueDoi = issueId && (issueId.split('/')[0] === publicationDoiPrefix) ? issueId : undefined
     const issueTitle = issueId && !issueDoi ? JSON.parse(issueId) : undefined
     this.state = {
       ...defaultState,
@@ -90,8 +91,9 @@ export class AddArticlePage extends Component {
       issueTitle,
       mode: editArticleDoi ? 'edit' : 'add',
       isDuplicate,
-      ownerPrefix,
-      crossmark: props.crossmarkPrefixes.indexOf(ownerPrefix) !== -1,
+      publicationOwnerPrefix,
+      publicationDoiPrefix,
+      crossmark: props.crossmarkPrefixes.indexOf(publicationDoiPrefix) !== -1,
       crossmarkCards: {},
       version: '1',
       errorMessages: [],
@@ -101,7 +103,7 @@ export class AddArticlePage extends Component {
       scrollTimeout: null
     }
 
-    this.state.article.doi = ownerPrefix + '/'
+    this.state.article.doi = publicationOwnerPrefix + '/'
   }
 
 
@@ -116,7 +118,7 @@ export class AddArticlePage extends Component {
   componentWillReceiveProps (nextProps) {
     if (this.props.crossmarkPrefixes !== nextProps.crossmarkPrefixes) {
       this.setState({
-        crossmark: nextProps.crossmarkPrefixes.indexOf(this.state.ownerPrefix) !== -1
+        crossmark: nextProps.crossmarkPrefixes.indexOf(this.state.publicationOwnerPrefix) !== -1
       })
     }
   }
@@ -132,7 +134,7 @@ export class AddArticlePage extends Component {
       relatedItems,
       openSubItems,
       newReduxForm,
-    } = await asyncValidateArticle(data, reduxForm, this.state.ownerPrefix, doiDisabled)
+    } = await asyncValidateArticle(data, reduxForm, this.state.publicationDoiPrefix, doiDisabled, this.state.publicationOwnerPrefix, undefined)
 
     const validatedPayload = {
       validating: true,

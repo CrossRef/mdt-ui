@@ -7,9 +7,16 @@ import defaultArticleState from '../components/AddArticlePage/defaultState'
 import * as api from '../actions/api'
 
 
-export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDisabled = false) {
+export async function asyncValidateArticle (data, crossmark, publicationDOIPrefix, doiDisabled = false, publicationOwnerPrefix, articleOwnerPrefixFromRecord) {
   const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage, freetolicense, locationId } = data.article
   const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames
+  const articleDoiPrefix = doi.split('/')[0]
+  var articleOwnerPrefix = data.article['owner-prefix']
+
+  //The article owner prefix(if there is one) is needed for error checking when we load from an article page or from the deposit cart.
+  if (!articleOwnerPrefix) {
+    articleOwnerPrefix = articleOwnerPrefixFromRecord
+  }
 
   let criticalErrors = {
     title: !title,
@@ -21,9 +28,9 @@ export async function asyncValidateArticle (data, crossmark, ownerPrefix, doiDis
   }
 
   if(!doiDisabled) {
-    criticalErrors.doi = !doiEntered(doi, ownerPrefix)
+    criticalErrors.doi = !doiEntered(doi, publicationDOIPrefix)
     criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi)
-    criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (doi.split('/')[0] !== ownerPrefix)
+    criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (articleDoiPrefix !== publicationDOIPrefix || articleOwnerPrefix ? publicationOwnerPrefix !== articleOwnerPrefix : false)
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 
@@ -401,7 +408,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
         dupDoi=true
       } else{
         // got an issue, check contents
-        const issueContent = result.message.contains[0]        
+        const issueContent = result.message.contains[0]
         const issueTitle = JSON.stringify(issueContent.title)
         const storedOwnerPrefix= issueContent['owner-prefix']
         if (storedOwnerPrefix !== ownerPrefix){
@@ -459,10 +466,10 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     let dupVolDoi = false
     if (result){ // we have a response to the DOI, check contents
       if (!result.message.contains[0] || result.message.contains[0].type !== 'issue'){ // if no contains, then it's a publication, otherwise check type (issues and volumes are issue type)
-      dupVolDoi=true
+        dupVolDoi=true
       } else{
         // got an volume, check contents
-        const volContent = result.message.contains[0]              
+        const volContent = result.message.contains[0]
         const storedOwnerPrefix= volContent['owner-prefix']
         if (storedOwnerPrefix !== ownerPrefix){
           criticalErrors.invalidVolumeDoiPrefix=true;
