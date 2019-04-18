@@ -18,26 +18,29 @@ export default class Modal extends React.Component {
       ]).isRequired,
       style: is.string,
       Component: is.func.isRequired,
-      props: is.object.isRequired,
+      props: is.object.isRequired
     }).isRequired
   }
-
+  state = {
+    customStyles:{}
+  }
   constructor() {
     super();
     ReactModal.setAppElement('#root'); // need to include this so modal know where to append itself
   }
 
   closeModal = () => this.props.reduxControlModal({showModal:false})
-
+  setStyles= (e) => this.setState({customStyles:{content:e}})
   render() {
     const { modalState, reduxControlModal } = this.props;
-    const Component = modalState.Component;
+    const Component = modalState.Component;    
     return (
       <div className='modalContainer'>
         <ReactModal
           isOpen={modalState.showModal}
           contentLabel="Minimal Modal Example"
           className={modalState.style}
+          style={this.state.customStyles}
         >
           <div className='modal'>
             <div className='titlebar'>
@@ -52,7 +55,7 @@ export default class Modal extends React.Component {
             </div>
             <div className='modalbody'>
               <div className='modalboddyinner'>
-                <Component {...modalState.props} reduxControlModal={reduxControlModal} close={this.closeModal}/>
+                <Component {...modalState.props} reduxControlModal={reduxControlModal} close={this.closeModal} setstyles={this.setStyles}/>
               </div>
             </div>
           </div>
