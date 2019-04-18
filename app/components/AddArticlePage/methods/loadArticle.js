@@ -110,7 +110,9 @@ export default async function loadArticle () {
     }
 
     const article = articleUnderPub.message.contains[0]
-    const parsedArticle = parseXMLArticle(article.content)
+    var parsedArticle = parseXMLArticle(article.content)
+    parsedArticle.article['owner-prefix'] = article['owner-prefix']
+
     const savedArticleState = article.state || {}
 
     let reduxForm

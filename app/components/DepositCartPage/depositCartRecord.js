@@ -38,7 +38,10 @@ export default class DepositCartRecord extends Component {
   validate = async () => {
     const record = this.props.cartItem
     const type = record.type
-    const pubdoiPrefix = this.props.pubDoi.split('/')[0]
+    const publicationDoiPrefix = this.props.pubDoi.split('/')[0]
+    const articleOwnerPrefix = record['owner-prefix']
+    //MM-429: We are getting a list of publications (object) from the depositCartTitle. We then use the publication doi(pubDoi) to get the publication owner prefix
+    const publicationOwnerPrefix = this.props.publications[this.props.pubDoi]['message']['owner-prefix']
 
     const {criticalErrors, warnings} = type === 'issue' ? await getIssueErrors() : await getArticleErrors()
 
@@ -56,7 +59,7 @@ export default class DepositCartRecord extends Component {
       const parsedArticle = parseXMLArticle(record.content)
       const crossmark = (parsedArticle.crossmark || {}).reduxForm
 
-      return asyncValidateArticle(parsedArticle, crossmark, pubdoiPrefix)
+      return asyncValidateArticle(parsedArticle, crossmark, publicationDoiPrefix, false, publicationOwnerPrefix, articleOwnerPrefix)
     }
 
     const errorMessage = []

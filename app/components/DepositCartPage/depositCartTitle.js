@@ -15,7 +15,8 @@ export default class DepositCartItem extends Component {
     cart: is.array.isRequired,
     reportErrors: is.func.isRequired,
     recordCount: is.number.isRequired,
-    closeErrors: is.func.isRequired
+    closeErrors: is.func.isRequired,
+    publications: is.object.isRequired
   }
 
   constructor (props) {
@@ -36,10 +37,12 @@ export default class DepositCartItem extends Component {
       const asyncErrorReport = new DeferredTask()
       errorReports.push(asyncErrorReport.promise)
 
+      //MM-429: We are passing a list of publications(object) from the depositCart in order to get the publication owner prefix. This for use in the depositCartRecord.
       records.push(
         <DepositCartRecord
           key={record.doi || JSON.stringify(record.title)}
           pubDoi={props.cartItem.doi}
+          publications={props.publications}
           reduxRemoveFromCart={props.reduxRemoveFromCart}
           cartItem={record}
           closeErrors={this.props.closeErrors}
@@ -65,6 +68,7 @@ export default class DepositCartItem extends Component {
               issueDoi={parentIssue.doi}
               issueTitle={parentIssue.title}
               pubDoi={props.cartItem.doi}
+              publications={props.publications}
               reduxRemoveFromCart={props.reduxRemoveFromCart}
               cartItem={articleUnderIssue}
               closeErrors={this.props.closeErrors}
@@ -119,7 +123,7 @@ export default class DepositCartItem extends Component {
         </table>
         <table className='itemholder'>
           <tbody>
-            {this.renderRecords()}
+          {this.renderRecords()}
           </tbody>
         </table>
       </div>
