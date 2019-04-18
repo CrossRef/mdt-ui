@@ -37,6 +37,7 @@ export default class DepositCartItem extends Component {
       const asyncErrorReport = new DeferredTask()
       errorReports.push(asyncErrorReport.promise)
 
+      //MM-429: We are passing a list of publications(object) from the depositCart in order to get the publication owner prefix. This for use in the depositCartRecord.
       records.push(
         <DepositCartRecord
           key={record.doi || JSON.stringify(record.title)}

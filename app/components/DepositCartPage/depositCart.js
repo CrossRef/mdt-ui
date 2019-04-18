@@ -53,6 +53,7 @@ export default class DepositCart extends Component {
       let asyncErrorReport = new DeferredTask()
       errorReports.push(asyncErrorReport.promise)
 
+      //MM-429: We are passing a list of publications(object) from the depositCartPage in order to get the publication owner prefix. This for use in the depositCartRecord.
       items.push(
         <DepositCartTitle
             cartItem={cartItem}

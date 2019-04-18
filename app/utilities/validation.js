@@ -13,6 +13,7 @@ export async function asyncValidateArticle (data, crossmark, publicationDOIPrefi
   const articleDoiPrefix = doi.split('/')[0]
   var articleOwnerPrefix = data.article['owner-prefix']
 
+  //The article owner prefix(if there is one) is needed for error checking when we load from an article page or from the deposit cart.
   if (!articleOwnerPrefix) {
     articleOwnerPrefix = articleOwnerPrefixFromRecord
   }
