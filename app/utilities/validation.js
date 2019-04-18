@@ -7,9 +7,15 @@ import defaultArticleState from '../components/AddArticlePage/defaultState'
 import * as api from '../actions/api'
 
 
-export async function asyncValidateArticle (data, crossmark, publicationDOIPrefix, doiDisabled = false, articleDOIPrefix, publicationOwner) {
+export async function asyncValidateArticle (data, crossmark, publicationDOIPrefix, doiDisabled = false, publicationOwnerPrefix, articleOwnerPrefixFromRecord) {
   const { title, doi, url, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, firstPage, lastPage, freetolicense, locationId } = data.article
   const {pubHist, peer, copyright, supp, other, clinical, update} = cardNames
+  const articleDoiPrefix = doi.split('/')[0]
+  var articleOwnerPrefix = data.article['owner-prefix']
+
+  if (!articleOwnerPrefix) {
+    articleOwnerPrefix = articleOwnerPrefixFromRecord
+  }
 
   let criticalErrors = {
     title: !title,
@@ -23,7 +29,7 @@ export async function asyncValidateArticle (data, crossmark, publicationDOIPrefi
   if(!doiDisabled) {
     criticalErrors.doi = !doiEntered(doi, publicationDOIPrefix)
     criticalErrors.invaliddoi = criticalErrors.doi ? false : !isDOI(doi)
-    criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (articleDOIPrefix !== publicationDOIPrefix || publicationOwner ? publicationOwner !== articleDOIPrefix : false)
+    criticalErrors.invalidDoiPrefix = criticalErrors.doi || criticalErrors.invaliddoi ? false : (articleDoiPrefix !== publicationDOIPrefix || articleOwnerPrefix ? publicationOwnerPrefix !== articleOwnerPrefix : false)
     criticalErrors.dupedoi = !criticalErrors.doi && !criticalErrors.invaliddoi && !criticalErrors.invalidDoiPrefix && await asyncCheckDupeDoi(doi)
   }
 

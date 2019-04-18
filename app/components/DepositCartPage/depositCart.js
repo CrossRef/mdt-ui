@@ -14,7 +14,8 @@ export default class DepositCart extends Component {
     showDeposit: is.bool.isRequired,
     toggleDeposit: is.func.isRequired,
     fullCart: is.array.isRequired,
-    cart: is.array.isRequired
+    cart: is.array.isRequired,
+    publications: is.object.isRequired
   }
 
   componentWillMount(){
@@ -57,6 +58,7 @@ export default class DepositCart extends Component {
             cartItem={cartItem}
             cart={this.props.cart}
             key={cartItem.doi}
+            publications = {this.props.publications}
             reduxRemoveFromCart={this.props.reduxRemoveFromCart}
             reportErrors={asyncErrorReport.resolve}
             recordCount={recordCount}

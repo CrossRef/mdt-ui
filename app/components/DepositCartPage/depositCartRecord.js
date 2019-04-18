@@ -17,7 +17,6 @@ export default class DepositCartRecord extends Component {
     cartItem: is.object.isRequired,
     reduxRemoveFromCart: is.func.isRequired,
     pubDoi: is.string.isRequired,
-    pubOwner: is.string.isRequired,
     issueDoi: is.string,
     issueTitle: is.object,
     closeErrors: is.func.isRequired,
@@ -39,9 +38,9 @@ export default class DepositCartRecord extends Component {
   validate = async () => {
     const record = this.props.cartItem
     const type = record.type
-    const pubDOIPrefix = this.props.pubDoi.split('/')[0]
-    const articleDOIPrefix = record['owner-prefix']
-    const publicationOwner = this.props.pubOwner
+    const publicationDoiPrefix = this.props.pubDoi.split('/')[0]
+    const articleOwnerPrefix = record['owner-prefix']
+    const publicationOwnerPrefix = this.props.publications[this.props.pubDoi]['message']['owner-prefix']
 
     const {criticalErrors, warnings} = type === 'issue' ? await getIssueErrors() : await getArticleErrors()
 
@@ -59,7 +58,7 @@ export default class DepositCartRecord extends Component {
       const parsedArticle = parseXMLArticle(record.content)
       const crossmark = (parsedArticle.crossmark || {}).reduxForm
 
-      return asyncValidateArticle(parsedArticle, crossmark, pubDOIPrefix, false, articleDOIPrefix, publicationOwner)
+      return asyncValidateArticle(parsedArticle, crossmark, publicationDoiPrefix, false, publicationOwnerPrefix, articleOwnerPrefix)
     }
 
     const errorMessage = []

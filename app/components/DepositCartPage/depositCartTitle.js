@@ -15,7 +15,8 @@ export default class DepositCartItem extends Component {
     cart: is.array.isRequired,
     reportErrors: is.func.isRequired,
     recordCount: is.number.isRequired,
-    closeErrors: is.func.isRequired
+    closeErrors: is.func.isRequired,
+    publications: is.object.isRequired
   }
 
   constructor (props) {
@@ -40,7 +41,7 @@ export default class DepositCartItem extends Component {
         <DepositCartRecord
           key={record.doi || JSON.stringify(record.title)}
           pubDoi={props.cartItem.doi}
-          pubOwner={props.cartItem.contains[0]['owner-prefix']}
+          publications={props.publications}
           reduxRemoveFromCart={props.reduxRemoveFromCart}
           cartItem={record}
           closeErrors={this.props.closeErrors}
@@ -66,7 +67,7 @@ export default class DepositCartItem extends Component {
               issueDoi={parentIssue.doi}
               issueTitle={parentIssue.title}
               pubDoi={props.cartItem.doi}
-              pubOwner={props.cartItem.contains[0]['owner-prefix']}
+              publications={props.publications}
               reduxRemoveFromCart={props.reduxRemoveFromCart}
               cartItem={articleUnderIssue}
               closeErrors={this.props.closeErrors}
@@ -121,7 +122,7 @@ export default class DepositCartItem extends Component {
         </table>
         <table className='itemholder'>
           <tbody>
-            {this.renderRecords()}
+          {this.renderRecords()}
           </tbody>
         </table>
       </div>
