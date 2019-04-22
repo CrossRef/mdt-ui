@@ -46,6 +46,7 @@ export async function asyncValidateArticle (data, crossmark, publicationDOIPrefi
 
     contributorLastName: false,
     contributorSuffixLimit: false,
+    affiliationLimit: false,
     contributorRole: false,
     contributorGroupName: false,
     contributorGroupRole: false,
@@ -169,6 +170,7 @@ export async function asyncValidateArticle (data, crossmark, publicationDOIPrefi
     const errors = {
       contributorLastName: !!((firstName || suffix || affiliation || orcid || role) && !lastName),
       contributorSuffixLimit: suffix.length > 10,
+      affiliationLimit: affiliation.length > 512,
       contributorRole: !!((lastName || firstName || suffix || affiliation || orcid) && !role),
       contributorGroupName: !!(groupAuthorRole && !groupAuthorName),
       contributorGroupRole: !!(groupAuthorName && !groupAuthorRole),
@@ -176,6 +178,7 @@ export async function asyncValidateArticle (data, crossmark, publicationDOIPrefi
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
     if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
+    if(errors.affiliationLimit) warnings.affiliationLimit = true
     if(errors.contributorRole) warnings.contributorRole = true
     if(errors.contributorGroupName) warnings.contributorGroupName = true
     if(errors.contributorGroupRole) warnings.contributorGroupRole = true
@@ -445,6 +448,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
 
     contributorLastName: false,
     contributorSuffixLimit: false,
+    affiliationLimit: false,
     contributorRole: false,
     contributorOrcid: false,
 
@@ -490,11 +494,13 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     const errors = {
       contributorLastName: !!((firstName || suffix || affiliation || orcid || alternativeName || role) && !lastName),
       contributorSuffixLimit: suffix.length > 10,
+      affiliationLimit: affiliation.length > 512,
       contributorRole: (lastName || firstName || suffix || affiliation || alternativeName || orcid) && !role,
       contributorOrcid: orcid ? !validOrcid(orcid) : false
     }
     if(errors.contributorLastName) warnings.contributorLastName = true
     if(errors.contributorSuffixLimit) warnings.contributorSuffixLimit = true
+    if(errors.affiliationLimit) warnings.affiliationLimit = true
     if(errors.contributorRole) warnings.contributorRole = true
     if(errors.contributorOrcid) warnings.contributorOrcid = true
 

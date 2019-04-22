@@ -151,6 +151,8 @@ export default class Contributor extends Component {
                   label="Affiliation"
                   name="affiliation"
                   value={affiliation}
+                  error={errors.affiliationLimit}
+                  indicatorErrors={['affiliationLimit']}
                   changeHandler={this.handleContributor}
                   onBlur={this.props.validate}
                   errorUtility={this.props.errorUtility}
@@ -162,7 +164,7 @@ export default class Contributor extends Component {
               </div>
 
               <ErrorIndicator
-                indicatorErrors={['contributorSuffixLimit']}
+                indicatorErrors={['contributorSuffixLimit', 'affiliationLimit']}
                 errorMessages={this.props.errorMessages}
                 errorUtility={this.props.errorUtility}
                 tooltipUtility={this.props.tooltipUtility}
