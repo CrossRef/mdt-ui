@@ -179,6 +179,11 @@ export const IssueMessages = {
     bold: 'Invalid ORCID id',
     message: 'Please check your contributor ORCID id.'
   },
+  affiliationLimit: {
+    type: 'invalid',
+    bold: 'Invalid Contributor Affiliation',
+    message: 'Character limit of 512 exceeded.'
+  },
 }
 
 
@@ -320,7 +325,11 @@ export const ArticleMessages = {
     bold: 'Required',
     message: 'Please provide contributor group name.'
   },
-
+  affiliationLimit: {
+    type: 'invalid',
+    bold: 'Invalid Contributor Affiliation',
+    message: 'Character limit of 512 exceeded.'
+  },
   freetolicense: {
     type: 'special',
     bold: 'Required',
