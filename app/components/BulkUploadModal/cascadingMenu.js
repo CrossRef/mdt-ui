@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { isObject } from 'util';
 var classNames = require('classnames')
 export const shape = {
     id: is.string.isRequired,

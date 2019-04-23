@@ -1,10 +1,6 @@
 import csv from 'csvtojson'
-import {
-  appendElm,
-  appendAttribute,
-  lowerCaseFirst
-} from '../../utilities/helpers'
 
+var exports = module.exports = {}
 String.prototype.format = function () {
   var a = this;
   for (var k in arguments) {
@@ -53,11 +49,9 @@ const funderElems = ['<funder_name>', '<funder_identifier>']
 //, '<award_number>'
 const f = function (headers, files) {
   console.log(header.format("this is the filename.java", "This is the email@.com"))
-
   handleReadFiles(files, headers)
-
 }
-const cb = function (jsonArrayObj) {  
+exports.f= function (jsonArrayObj) {
   // iterate over the entire list of objects  
   var doc = getDoiObjects(jsonArrayObj)
   var result = header.format("this is the filename.java", "This is the email@.com") +
@@ -67,7 +61,7 @@ const cb = function (jsonArrayObj) {
   console.log(result)
   //console.log(doc)
   //console.log(new XMLSerializer().serializeToString(doc).replace(/></g,">\n<"))
-  }
+}
 
 const elemReducer = function (row) {
   return function (funderElm, key) {
@@ -75,7 +69,7 @@ const elemReducer = function (row) {
       return funderElm
     }
 
-    var assertion = makeAssertionElem(funderElm,key,row[key])
+    var assertion = makeAssertionElem(funderElm, key, row[key])
     /*funderElm.ownerDocument.createElement("fr:assertion")
     assertion.setAttribute("name", key.replace(/[<>]/g, ""))
     assertion.textContent = row[key].trim()
@@ -95,7 +89,7 @@ function getFunderXml(row, doc) {
   programElm.setAttribute("name", "fundref")
 
 
-    funderElems.filter((item) => Object.keys(row).indexOf(item) > -1) // only process keys for funders
+  funderElems.filter((item) => Object.keys(row).indexOf(item) > -1) // only process keys for funders
     .reduce(elemReducer(row), programElm) // for all key/vals inrow accumulate result in programElm 
   return funderElm
 }
@@ -113,6 +107,7 @@ function getXmlForFunders(doiMap) {
   funderElm.appendChild(doiElm)
 
 }
+
 function awardReducer(fundingMap, item) {
   var data = []
   if (fundingMap.get(item["<award_number>"])) {
@@ -122,26 +117,27 @@ function awardReducer(fundingMap, item) {
   fundingMap.set(item["<award_number>"], data)
   return fundingMap
 }
-function makeAssertionElem(doc,name,val){  
-  var assertion= doc.ownerDocument.createElement("fr:assertion")
+
+function makeAssertionElem(doc, name, val) {
+  var assertion = doc.ownerDocument.createElement("fr:assertion")
   assertion.setAttribute("name", name.replace(/[<>]/g, ""))
-  if(val){
-    assertion.textContent=val.trim()
+  if (val) {
+    assertion.textContent = val.trim()
   }
   doc.appendChild(assertion)
   return assertion
 }
 
-function getFundingElem(row,group){
-  var nameElm = makeAssertionElem(group,"<funder_name>",row["<funder_name>"])
-  var idElm = makeAssertionElem(group,"<funder_identifier>",row["<funder_identifier>"])
-  if (idElm.textContent.length<1&&nameElm.textContent.length<1){
-    return 
+function getFundingElem(row, group) {
+  var nameElm = makeAssertionElem(group, "<funder_name>", row["<funder_name>"])
+  var idElm = makeAssertionElem(group, "<funder_identifier>", row["<funder_identifier>"])
+  if (idElm.textContent.length < 1 && nameElm.textContent.length < 1) {
+    return
   }
-  if (nameElm.textContent.length>0&&idElm.textContent.length>0){
+  if (nameElm.textContent.length > 0 && idElm.textContent.length > 0) {
     nameElm.appendChild(idElm)
-  }else{
-    nameElm=idElm
+  } else {
+    nameElm = idElm
   }
   // name elem will either be or contain the id if it exists. If neither exists, we 
   // have have returned already.
@@ -149,22 +145,23 @@ function getFundingElem(row,group){
 }
 const awardCb = function (doc) {
   return function (itemArray, award) {
-    var group =doc
-    
-    if (award.length>0){
-      group = makeAssertionElem(doc,"fundgroup")
-      makeAssertionElem(group,"award_number",award)
+    var group = doc
+
+    if (award.length > 0) {
+      group = makeAssertionElem(doc, "fundgroup")
+      makeAssertionElem(group, "award_number", award)
     }
     itemArray.map((row) => {
-     getFundingElem(row,group)
+      getFundingElem(row, group)
     }) // for all key/vals inrow accumulate result in programElm 
     //doc.appendChild(group)
   }
 }
-function aggregateByAward(fundingArray,programElm) {
+
+function aggregateByAward(fundingArray, programElm) {
   var awardMap = new Map()
-  awardMap = fundingArray.reduce(awardReducer,awardMap)
-  awardMap.forEach(awardCb(programElm)) 
+  awardMap = fundingArray.reduce(awardReducer, awardMap)
+  awardMap.forEach(awardCb(programElm))
 }
 /*
   generate funder snippet for each DOI
@@ -172,35 +169,37 @@ function aggregateByAward(fundingArray,programElm) {
 const funderAggrCb = function (doc) {
   return function (itemArray, doi) {
     // only process items with a funder name or identifier
-    var funderArray = itemArray.filter((item)=>{return (item["<funder_name>"].length>0||item["<funder_identifier>"].length>0)})      
-    if (funderArray.length<1){
+    var funderArray = itemArray.filter((item) => {
+      return (item["<funder_name>"].length > 0 || item["<funder_identifier>"].length > 0)
+    })
+    if (funderArray.length < 1) {
       return null
     }
     var funderElm = doc.createElement('fundref_data')
-    
-    makeAssertionElem(funderElm,"DOI",doi)
-    
+
+    makeAssertionElem(funderElm, "DOI", doi)
+
     var programElm = doc.createElementNS("http://www.crossref.org/fundref.xsd", "fr:program")
     programElm.setAttribute("name", "fundref")
-    
-    aggregateByAward(funderArray,programElm)
+
+    aggregateByAward(funderArray, programElm)
     doc.documentElement.appendChild(programElm)
-/*
-    funderArray.map((row) => {
-      funderElm.appendChild(
-        funderElems.filter((item) => Object.keys(row).indexOf(item) > -1) // only process keys for funders
-        .reduce(elemReducer(row), programElm))
-    }) // for all key/vals inrow accumulate result in programElm 
-    doc.documentElement.appendChild(funderElm)*/
+    /*
+        funderArray.map((row) => {
+          funderElm.appendChild(
+            funderElems.filter((item) => Object.keys(row).indexOf(item) > -1) // only process keys for funders
+            .reduce(elemReducer(row), programElm))
+        }) // for all key/vals inrow accumulate result in programElm 
+        doc.documentElement.appendChild(funderElm)*/
     return funderElm
   }
 }
 /*
   Aggregate the data by DOI (so that all funding info for a DOI is in one node)
 */
-function getDoiObjects(jsonObj) {
+function getDoiObjects(obj) {
   var doiMap = new Map()
-  doiMap = jsonObj.reduce(doiReducer, doiMap)
+  doiMap = obj.reduce(doiReducer, doiMap)
   var doc = new DOMParser().parseFromString('<doi_resources></doi_resources>', 'text/xml')
   doiMap.forEach(funderAggrCb(doc))
   //var doc = getXmlForFunders(doiMap)
@@ -210,7 +209,7 @@ function getDoiObjects(jsonObj) {
 /*
  Populate 'doiMap' by key 'DOI' from within 'item' with value array of 'item's
 */
-function doiReducer(doiMap, item) {
+exports.doiReducer= function (doiMap, item) {
   var data = []
   if (doiMap.get(item.DOI)) {
     data = doiMap.get(item.DOI)
@@ -245,6 +244,3 @@ function handleReadFiles(files, headers) {
 }
 
 
-
-export default f
-module.exports.f = f

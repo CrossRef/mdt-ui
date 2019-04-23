@@ -1,0 +1,164 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`doi reducer for resource XML generation 1`] = `
+Map {
+  "10.5555/science.1232048" => Array [
+    Object {
+      "<award_number>": "U54 GM094611",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1232048",
+    },
+    Object {
+      "<award_number>": "U54 GM094611",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100006151",
+      "<funder_name>": "Office of Basic Energy Sciences",
+      "DOI": "10.5555/science.1232048",
+    },
+    Object {
+      "<award_number>": "W-31-109-Eng-38",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100006132",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1232048",
+    },
+  ],
+  "10.5555/science.1232437" => Array [
+    Object {
+      "<award_number>": "R01NS081707",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000065",
+      "<funder_name>": "National Institute of Neurological Disorders and Stroke",
+      "DOI": "10.5555/science.1232437",
+    },
+    Object {
+      "<award_number>": "R00DA025182",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000026",
+      "<funder_name>": "National Institute on Drug Abuse",
+      "DOI": "10.5555/science.1232437",
+    },
+  ],
+  "10.5555/science.1213495" => Array [
+    Object {
+      "<award_number>": "",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "AI076458",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "T32GM07229",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "T32HD007516",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "3T32GM007170-36S1",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "T32AI055428",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "AI065644",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "W81WWXWH1010185",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000005",
+      "<funder_name>": "U.S. Department of Defense",
+      "DOI": "10.5555/science.1213495",
+    },
+    Object {
+      "<award_number>": "BX000435",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000738",
+      "<funder_name>": "U.S. Department of Veterans Affairs",
+      "DOI": "10.5555/science.1213495",
+    },
+  ],
+  "10.5555/science.1229858" => Array [
+    Object {
+      "<award_number>": "HL088906",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1229858",
+    },
+  ],
+  "10.5555/science.1227622" => Array [
+    Object {
+      "<award_number>": "R01 MH094705",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1227622",
+    },
+  ],
+  "10.5555/science.1226740" => Array [
+    Object {
+      "<award_number>": "NS075177",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000065",
+      "<funder_name>": "National Institute of Neurological Disorders and Stroke",
+      "DOI": "10.5555/science.1226740",
+    },
+    Object {
+      "<award_number>": "NS078304),",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000065",
+      "<funder_name>": "National Institute of Neurological Disorders and Stroke",
+      "DOI": "10.5555/science.1226740",
+    },
+    Object {
+      "<award_number>": "RR00165",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000097",
+      "<funder_name>": "National Center for Research Resources",
+      "DOI": "10.5555/science.1226740",
+    },
+    Object {
+      "<award_number>": "P51RR000165",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000097",
+      "<funder_name>": "National Center for Research Resources",
+      "DOI": "10.5555/science.1226740",
+    },
+    Object {
+      "<award_number>": "OD P51OD011132",
+      "<funder_identifier>": "",
+      "<funder_name>": "Office of Research Infrastructure Programs",
+      "DOI": "10.5555/science.1226740",
+    },
+  ],
+  "10.5555/science.1226603" => Array [
+    Object {
+      "<award_number>": "4R00CA168997-02",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1226603",
+    },
+    Object {
+      "<award_number>": "RC2HL102815",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1226603",
+    },
+    Object {
+      "<award_number>": "U01 HL100001",
+      "<funder_identifier>": "http://dx.doi.org/10.13039/100000002",
+      "<funder_name>": "National Institutes of Health",
+      "DOI": "10.5555/science.1226603",
+    },
+  ],
+}
+`;

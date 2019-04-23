@@ -1,6 +1,5 @@
 import React, { Component } from 'react'
 import is from 'prop-types'
-import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 
 import AddPublicationModal from '../../containers/addPublicationModal'

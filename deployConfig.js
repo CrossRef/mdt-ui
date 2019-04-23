@@ -1,17 +1,21 @@
 var babelCompatibility = {
-  presets: ['env', 'stage-0', "react"],
-  plugins: ['transform-decorators-legacy', 'transform-runtime', 'system-import-transformer']
+  presets: ['@babel/preset-env','@babel/react'],
+  plugins: [['@babel/plugin-proposal-decorators',       {
+    "legacy": true
+  }], '@babel/plugin-transform-runtime']
 }
 
 var babelDev = {
-  presets: ["react"],
+  presets: ['@babel/preset-env','@babel/react'],
   plugins: [
-    'transform-runtime',
-    'transform-decorators-legacy',
-    'transform-do-expressions',
-    'transform-object-rest-spread',
-    'transform-class-properties',
-    'transform-es2015-modules-commonjs'
+    '@babel/plugin-transform-runtime',
+    "@babel/plugin-syntax-dynamic-import",
+    ['@babel/plugin-proposal-decorators',       {
+      "legacy": true
+    }],
+    '@babel/plugin-proposal-do-expressions',
+    '@babel/plugin-syntax-object-rest-spread',
+    ["@babel/plugin-proposal-class-properties", { "loose" : true }]
   ]
 }
 

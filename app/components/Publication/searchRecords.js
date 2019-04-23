@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import {browserHistory} from 'react-router'
 import is from 'prop-types'
-import { connect } from 'redux'
 import Autocomplete from 'react-autocomplete'
 
 import {errorHandler, compareDois, escapeString} from '../../utilities/helpers'

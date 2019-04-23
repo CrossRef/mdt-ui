@@ -1,6 +1,11 @@
 
 module.exports = require('babel-jest').createTransformer({
-  presets: ['env', 'stage-0', "react"],
-  plugins: ['transform-decorators-legacy', 'transform-runtime', 'system-import-transformer'],
+  presets: ['@babel/env','@babel/react'],
+  plugins: [[require('@babel/plugin-proposal-decorators'), { legacy: true }], 
+  '@babel/plugin-transform-runtime', 
+  '@babel/plugin-proposal-do-expressions',
+  '@babel/plugin-syntax-object-rest-spread',
+  '@babel/plugin-proposal-class-properties',
+  'transform-es2015-modules-commonjs'],
   retainLines: true
 });
