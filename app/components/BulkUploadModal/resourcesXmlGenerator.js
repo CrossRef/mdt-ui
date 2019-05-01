@@ -1,5 +1,5 @@
 import csv from 'csvtojson'
-
+import { XMLSerializer, DOMParser } from 'xmldom'
 var exports = module.exports = {}
 String.prototype.format = function () {
   var a = this;
@@ -47,11 +47,11 @@ takes a parsed csv object and generates a deposit standard XML
 */
 const funderElems = ['<funder_name>', '<funder_identifier>']
 //, '<award_number>'
-const f = function (headers, files) {
+exports.default = function (headers, files) {
   console.log(header.format("this is the filename.java", "This is the email@.com"))
   handleReadFiles(files, headers)
 }
-exports.f= function (jsonArrayObj) {
+const mainProcessorCb = function (jsonArrayObj) {
   // iterate over the entire list of objects  
   var doc = getDoiObjects(jsonArrayObj)
   var result = header.format("this is the filename.java", "This is the email@.com") +
@@ -147,7 +147,7 @@ const awardCb = function (doc) {
   return function (itemArray, award) {
     var group = doc
 
-    if (award.length > 0) {
+    if (award && award.length > 0) {
       group = makeAssertionElem(doc, "fundgroup")
       makeAssertionElem(group, "award_number", award)
     }
@@ -166,7 +166,7 @@ function aggregateByAward(fundingArray, programElm) {
 /*
   generate funder snippet for each DOI
 */
-const funderAggrCb = function (doc) {
+const generateFundGroupCB = function (doc) {
   return function (itemArray, doi) {
     // only process items with a funder name or identifier
     var funderArray = itemArray.filter((item) => {
@@ -201,7 +201,7 @@ function getDoiObjects(obj) {
   var doiMap = new Map()
   doiMap = obj.reduce(doiReducer, doiMap)
   var doc = new DOMParser().parseFromString('<doi_resources></doi_resources>', 'text/xml')
-  doiMap.forEach(funderAggrCb(doc))
+  doiMap.forEach(generateFundGroupCB(doc))
   //var doc = getXmlForFunders(doiMap)
 
   return doc
@@ -209,7 +209,7 @@ function getDoiObjects(obj) {
 /*
  Populate 'doiMap' by key 'DOI' from within 'item' with value array of 'item's
 */
-exports.doiReducer= function (doiMap, item) {
+ function doiReducer (doiMap, item) {
   var data = []
   if (doiMap.get(item.DOI)) {
     data = doiMap.get(item.DOI)
@@ -233,7 +233,7 @@ function handleReadFiles(files, headers) {
             headers: headers
           })
           .fromString(reader.result).then((jsonObj) => {
-            cb(jsonObj)
+            mainProcessorCb(jsonObj)
           })
       }
       const res = reader.readAsText(files[0])
@@ -244,3 +244,14 @@ function handleReadFiles(files, headers) {
 }
 
 
+exports.doiReducer=doiReducer
+exports.getDoiObjects=getDoiObjects
+exports.generateFundGroupCB=generateFundGroupCB
+exports.aggregateByAward=aggregateByAward
+exports.awardReducer=awardReducer
+exports.awardCb=awardCb
+exports.getFundingElem=getFundingElem
+exports.makeAssertionElem=makeAssertionElem
+exports.elemReducer=elemReducer
+exports.handleReadFiles=handleReadFiles
+exports.mainProcessorCb=mainProcessorCb
