@@ -7,7 +7,6 @@ import parseXMLArticle from '../../../utilities/parseXMLArticle'
 
 
 
-
 export default async function loadArticle () {
   const { pubDoi } = this.props.routeParams;
   const getItems = []
@@ -16,15 +15,8 @@ export default async function loadArticle () {
   const isNewArticle = this.state.mode === 'add'
   const isDuplicate = this.state.isDuplicate
 
-  //If this is an edit or a duplicate, get Article's content
-  if(isEditOrDuplicate) {
-    getItems.push(api.getItem(this.state.editArticleDoi))
-  }
-
-  //If this is a new article or a duplicate, get most updated publication data from draft works
-  if(isNewArticle || isDuplicate) {
-    getItems.push(api.getItem(pubDoi))
-  }
+  //We need to get the articles content
+  getItems.push(api.getItem(this.state.editArticleDoi))
 
   //Data returns as 1 or 2 publications (2 publications in case of duplicate)
   const publications = await Promise.all(getItems)
@@ -37,23 +29,18 @@ export default async function loadArticle () {
 
 
   //Build publication metadata and xml
-  let publicationXml
-  if(isNewArticle || isDuplicate) {
-    publicationXml = publicationData.message.content.substring(
-      publicationData.message.content.indexOf('<journal_metadata'),
-      publicationData.message.content.indexOf('</journal_metadata>') + 19
-    )
-
-  } else {
+    let publicationXml
     let article = fullHierarchy.message.contains[0].type === 'article' ?
       fullHierarchy.message.contains[0]
       : fullHierarchy.message.contains[0].contains[0]
 
-    publicationXml = article.content.substring(
-      article.content.indexOf('<journal_metadata'),
-      article.content.indexOf('</journal_metadata>') + 19
-    )
-  }
+  //if there is a timestamp, then we want to use the journal found in the article (deposited).
+    if (!article['deposit-timestamp'] === "") {
+      publicationXml = article.content.substring(
+        article.content.indexOf('<journal_metadata'),
+        article.content.indexOf('</journal_metadata>') + 19
+      )
+    }
 
   const publicationMetaData = xmldoc(publicationXml)
 
