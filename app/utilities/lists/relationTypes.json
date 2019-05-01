@@ -1,6 +1,5 @@
 [
     {"value":"isDerivedFrom", "name":"isDerivedFrom", "type": "inter"},
-    //{"value":"hasDerivation", "name":"hasDerivation", "type": "inter"},
     {"value":"isReviewOf", "name":"isReviewOf", "type": "inter"},
     {"value":"hasReview", "name":"hasReview", "type": "inter"},
     {"value":"isCommentOn", "name":"isCommentOn", "type": "inter"},
@@ -8,9 +7,7 @@
     {"value":"isReplyTo", "name":"isReplyTo", "type": "inter"},
     {"value":"hasReply", "name":"hasReply", "type": "inter"},
     {"value":"basedOnData", "name":"basedOnData", "type": "inter"},
-    //{"value":"isDataBasisFor", "name":"isDataBasisFor", "type": "inter"},
     {"value":"hasRelatedMaterial", "name":"hasRelatedMaterial", "type": "inter"},
-    //{"value":"isRelatedMaterial", "name":"isRelatedMaterial", "type": "inter"},
     {"value":"isCompiledBy", "name":"isCompiledBy", "type": "inter"},
     {"value":"compiles", "name":"compiles", "type": "inter"},
     {"value":"isDocumentedBy", "name":"isDocumentedBy", "type": "inter"},
