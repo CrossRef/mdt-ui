@@ -47,7 +47,7 @@ takes a parsed csv object and generates a deposit standard XML
 */
 const funderElems = ['<funder_name>', '<funder_identifier>']
 //, '<award_number>'
-exports.default = function (headers, files) {
+function f(headers, files) {
   console.log(header.format("this is the filename.java", "This is the email@.com"))
   handleReadFiles(files, headers)
 }

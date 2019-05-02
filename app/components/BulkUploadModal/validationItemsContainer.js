@@ -11,8 +11,7 @@ export default class ValidationItemsContainer extends Component {
     isValid:is.func.isRequired,
     headers: is.arrayOf(is.string),
   //  generateXml:is.func.isRequired,
-    setHeaders:is.func.isRequired,
-    setParsedCsv:is.func.isRequired
+    setHeaders:is.func.isRequired
   }
 
   constructor (props) {

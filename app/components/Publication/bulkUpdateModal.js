@@ -6,7 +6,7 @@ import * as app from '../../actions/application'
 import {routes} from '../../routing'
 import Dropzone from 'react-dropzone'
 import ValidationItemsContainer from '../BulkUploadModal/validationItemsContainer'
-import f from '../BulkUploadModal/resourcesXmlGenerator'
+import {handleReadFiles} from '../BulkUploadModal/resourcesXmlGenerator'
 const KEYS_TO_FILTERS = [ 'name']
 const mapStateToProps = () => ({})
 const mapDispatchToProps = dispatch => bindActionCreators({
@@ -45,9 +45,7 @@ export default class BulkUpdateModal extends React.Component {
   setHeaders = (headers)=>{
    this.setState({headers:headers})
   }
-  setParsedCsv = (jsonObj)=>{
-    this.setState({parsedcsv:jsonObj})
-  }
+
   componentDidMount () {
     
   }
@@ -55,14 +53,13 @@ export default class BulkUpdateModal extends React.Component {
     this.setState({valid:valid})
   }
   processFile=()=>{
-    f(this.state.headers,this.state.files)
+    handleReadFiles(this.state.files,this.state.headers)
   }
   render () {
     const minHeight=(this.state.fields?40:0) + 326;
     const height=minHeight+(61*this.state.fields)+'px'
     const filesList= this.state.files
     const style={ height: height }
-    const isValid=this.state.parsedcsv && this.state.valid
     const headers=this.state.headers
     const fileArea=filesList&&filesList.length==1?(  <div className="file">
         <div className="fileName">{filesList[0].name}</div>
@@ -116,13 +113,12 @@ export default class BulkUpdateModal extends React.Component {
               fieldsHandler={this.setFieldCount}
               isValid={this.setValidation}
               headers={headers}
-              setHeaders={this.setHeaders}
-              setParsedCsv={this.setParsedCsv}>
+              setHeaders={this.setHeaders}>
             </ValidationItemsContainer>
           </div>
         <div className="height16"></div>
           <div className="buttons">
-            <div className={'deposit '+ (isValid?'':'depositNotReady')} onClick={this.processFile}>Deposit</div>
+            <div className={'deposit '+ (this.state.valid?'':'depositNotReady')} onClick={this.state.valid?this.processFile:undefined}>Deposit</div>
             <div className="cancel" onClick={this.props.close}>Cancel</div>
           </div>
 
