@@ -41,7 +41,7 @@ export default class DepositCartRecord extends Component {
     const publicationDoiPrefix = this.props.pubDoi.split('/')[0]
     const articleOwnerPrefix = record['owner-prefix']
     //MM-429: We are getting a list of publications (object) from the depositCartTitle. We then use the publication doi(pubDoi) to get the publication owner prefix
-    const publicationOwnerPrefix = this.props.publications[this.props.pubDoi]['message']['owner-prefix']
+    const publicationOwnerPrefix = this.props.publications[this.props.pubDoi.toLowerCase()]['message']['owner-prefix']
 
     const {criticalErrors, warnings} = type === 'issue' ? await getIssueErrors() : await getArticleErrors()
 
