@@ -64,8 +64,8 @@ export function getItem (id, forced) {
   } else if(typeof id === 'string') {
     doi = id
   }
-
-  const queryParams = `doi=${doi}&pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
+// doi from issues with no DOI comes through as "undefined" API wants it blank. 
+  const queryParams = `doi=${doi||''}&pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
 
   return authorizedFetch(`${apiBaseUrl}/work?${queryParams}${forced ? `&forced=true` : ''}`, {
     method: 'get',
