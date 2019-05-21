@@ -15,8 +15,12 @@ export default async function loadArticle () {
   const isNewArticle = this.state.mode === 'add'
   const isDuplicate = this.state.isDuplicate
 
-  //We need to get the articles content
-  getItems.push(api.getItem(this.state.editArticleDoi))
+  //We need to get the articles content if it isn't new
+  if(isEditOrDuplicate) {
+    getItems.push(api.getItem(this.state.editArticleDoi))
+  }
+  // always get the publication directly
+  getItems.push(api.getItem(pubDoi))
 
   //Data returns as 1 or 2 publications (2 publications in case of duplicate)
   const publications = await Promise.all(getItems)
@@ -29,7 +33,11 @@ export default async function loadArticle () {
 
 
   //Build publication metadata and xml
-    let publicationXml
+  // since we always get the publication, just set that
+  let publicationXml = publicationData.message.content.substring(	
+    publicationData.message.content.indexOf('<journal_metadata'),	
+    publicationData.message.content.indexOf('</journal_metadata>') + 19	
+  )
     let article = fullHierarchy.message.contains[0].type === 'article' ?
       fullHierarchy.message.contains[0]
       : fullHierarchy.message.contains[0].contains[0]
