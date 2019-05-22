@@ -43,11 +43,13 @@ export default async function loadArticle () {
       : fullHierarchy.message.contains[0].contains[0]
 
   //if there is a timestamp, then we want to use the journal found in the article (deposited).
-    if (!article['deposit-timestamp'] === "") {
-      publicationXml = article.content.substring(
-        article.content.indexOf('<journal_metadata'),
-        article.content.indexOf('</journal_metadata>') + 19
-      )
+    if (article){
+      if (article['deposit-timestamp'] !== "") {
+        publicationXml = article.content.substring(
+          article.content.indexOf('<journal_metadata'),
+          article.content.indexOf('</journal_metadata>') + 19
+        )
+      }
     }
 
   const publicationMetaData = xmldoc(publicationXml)
