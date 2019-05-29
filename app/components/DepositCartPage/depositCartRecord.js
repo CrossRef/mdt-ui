@@ -44,13 +44,14 @@ export default class DepositCartRecord extends Component {
     const publicationOwnerPrefix = this.props.publications[this.props.pubDoi]['message']['owner-prefix']
 
     const {criticalErrors, warnings} = type === 'issue' ? await getIssueErrors() : await getArticleErrors()
-
+    const pubDoi=this.props.pubDoi
     function getIssueErrors () {
       const parsedIssue = parseXMLIssue(record.content)
       return asyncValidateIssue({
         issueData: parsedIssue.issue,
         optionalIssueInfo: parsedIssue.optionalIssueInfo,
-        ownerPrefix: record['owner-prefix']
+        ownerPrefix: record['owner-prefix'],
+        pubDoi: pubDoi
       })
     }
 
