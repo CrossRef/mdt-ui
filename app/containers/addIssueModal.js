@@ -111,7 +111,7 @@ export class AddIssueModal extends Component {
     optionalIssueInfo = this.state.optionalIssueInfo,
     issueDoiDisabled = this.state.issueDoiDisabled
   ) {
-
+    const pubDoi = this.props.pubDoi
     const { criticalErrors, warnings, contributors, enableVolumeDoi, issueDoiEntered } =
       await asyncValidateIssue({
         issueData,
@@ -119,7 +119,8 @@ export class AddIssueModal extends Component {
         ownerPrefix: this.state.ownerPrefix,
         publicationRecords: this.props.publication.normalizedRecords,
         issueDoiDisabled,
-        checkDuplicateId
+        checkDuplicateId,
+        pubDoi
       })
 
     const validatedPayload = {
