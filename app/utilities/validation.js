@@ -375,7 +375,7 @@ export async function asyncValidateArticle (data, crossmark, publicationDOIPrefi
 
 
 
-export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPrefix, publicationRecords, issueDoiDisabled, checkDuplicateId}) {
+export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPrefix, publicationRecords, issueDoiDisabled, checkDuplicateId, pubDoi}) {
   const { issueDoi, issue, issueTitle, issueUrl, printDateYear, printDateMonth, printDateDay, onlineDateYear, onlineDateMonth, onlineDateDay, volume, volumeDoi, volumeUrl, specialIssueNumber } = issueData
 
   const issueDoiEntered = doiEntered(issueDoi, ownerPrefix)
@@ -394,16 +394,40 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
     dupeissuedoi: false,
 
     volume: false
-  }
-
+  } 
+  // only checked if the issue/vol/title already exist in the current publication in the workspace, not back end.   
+  // MM-443 added check for issue by id against the back end
   if(checkDuplicateId) {
     criticalErrors.dupTitleIdIssue = !!publicationRecords[JSON.stringify({issue, volume, title: issueTitle})]
+    // WHAT DO WE DO HERE?
+
+// if an issue is being given a DOI, do we create a new issue? (That was the case before)
+// we should probably update the previous issue by id with the new DOI
+// but that leaves us with the inverse, what do we do if an id changes to one that has a DOI? Fetch the DOI version and use that? 
+// we will throw a duplication id error now (which is safe)
+// also, what to do when an issue id is changed without DOIs involved? Currently we create a clone because 
+// the backend doesn't know we're changing data since the data is the ID
+
+// we probably should not check for duplicate ID if we're assigning a DOI. 
+    if (!criticalErrors.dupTitleIdIssue && !(issueDoiEntered && !issueDoiDisabled) ){
+      let id = {
+        doi: issueDoiEntered?issueDoi:'',
+        title: JSON.stringify({issue, volume, title: issueTitle}),
+        pubDoi: pubDoi
+      }
+      let result = await api.getItem(id).catch(e=>{})
+      if (result){ // we have a response
+        criticalErrors.dupTitleIdIssue=true
+      }
+    }
     criticalErrors.dupTitleIdVolume = criticalErrors.dupTitleIdIssue
   }
+// if the doi field is disabled, the backend should still be checked using the title/publication
 
+  //only checks the DOI if it is newly entered (retrieved DOIs have disabled DOI field)
   if(!issueDoiDisabled && issueDoiEntered) {
     criticalErrors.invalidissuedoi = !isDOI(issueDoi)
-    criticalErrors.invalidIssueDoiPrefix = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== ownerPrefix
+    criticalErrors.invalidIssueDoiPrefix =!criticalErrors.invalidissuedoi && issueDoi.split('/')[0] !== ownerPrefix
     let result = await api.getItem(issueDoi).catch(e=>{})
     let dupDoi = false
     if (result){ // we have a response to the DOI, check contents
@@ -419,7 +443,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
         }
       }
     }
-    criticalErrors.dupeissuedoi = !criticalErrors.issuedoi && !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && dupDoi
+    criticalErrors.dupeissuedoi = !criticalErrors.invalidissuedoi && !criticalErrors.invalidIssueDoiPrefix && dupDoi
   }
   const hasDate = !!(printDateYear || onlineDateYear)
   let warnings = {
