@@ -70,7 +70,7 @@ export default class DepositCartPage extends Component {
     const _this = this
     if(cart.length > 0) {
       _.each(cart, (item) => {
-        promises.push(api.getItem(item.doi).then( data => data,(reason)=>{
+        promises.push(api.getItem(item.doi,false,true).then( data => data,(reason)=>{
           const title = recordTitle(item.type, item.title)
           this.props.reduxRemoveFromCart(item.doi, title, item.type)
           console.log("Error getting item for cart:" +reason)}))
@@ -138,7 +138,7 @@ export default class DepositCartPage extends Component {
         const promises = []
 
         for(let i in mergedCart) {
-          promises.push(api.getItem(mergedCart[i].doi).then((data)=>{ // this gets publication content
+          promises.push(api.getItem(mergedCart[i].doi,false,true).then((data)=>{ // this gets publication content
             return data
           }))
         }
