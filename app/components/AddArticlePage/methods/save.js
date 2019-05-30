@@ -35,7 +35,7 @@ export default async function (addToCart) {
       'date': new Date(),
       'deposit-timestamp': this.state.depositTimestamp || null,
       'doi': this.state.article.doi,
-      'owner-prefix': this.state.ownerPrefix,
+      'owner-prefix': this.state.publicationOwnerPrefix,
       'type': 'article',
       'mdt-version': this.state.version,
       'status': 'draft',

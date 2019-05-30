@@ -20,7 +20,7 @@ export default async function loadArticle () {
     getItems.push(api.getItem(this.state.editArticleDoi))
   }
   // always get the publication directly
-  getItems.push(api.getItem(pubDoi))
+  getItems.push(api.getItem(pubDoi,false,true))
 
   //Data returns as 1 or 2 publications (2 publications in case of duplicate)
   const publications = await Promise.all(getItems)
@@ -44,7 +44,7 @@ export default async function loadArticle () {
 
   //if there is a timestamp, then we want to use the journal found in the article (deposited).
     if (article){
-      if (article['deposit-timestamp'] !== "") {
+      if (article['deposit-timestamp'] !== "" && article.content.indexOf('<journal_metadata')>0) {
         publicationXml = article.content.substring(
           article.content.indexOf('<journal_metadata'),
           article.content.indexOf('</journal_metadata>') + 19
@@ -59,7 +59,7 @@ export default async function loadArticle () {
     delete fullHierarchy.message.content
     fullHierarchy.message.date = publicationData.message.date
     fullHierarchy.message.doi = publicationData.message.doi || pubDoi
-    fullHierarchy.message['owner-prefix'] = publicationData.message['owner-prefix'] || this.state.ownerPrefix
+    fullHierarchy.message['owner-prefix'] = publicationData.message['owner-prefix'] || this.state.publicationOwnerPrefix
     fullHierarchy.message['mdt-version'] = publicationData.message['mdt-version'] || '0'
   }
 
@@ -92,7 +92,7 @@ export default async function loadArticle () {
     issue = fullHierarchy.message.contains[0]
     delete issue.content
     issue['mdt-version'] = issue['mdt-version'] || '1'
-    issue['owner-prefix'] = issue['owner-prefix'] || this.state.ownerPrefix
+    issue['owner-prefix'] = issue['owner-prefix'] || this.state.publicationOwnerPrefix
     issue.date = issue.date || new Date()
   }
 
@@ -121,7 +121,7 @@ export default async function loadArticle () {
     const isDuplicate = this.props.location.state ? !!this.props.location.state.duplicateFrom : false
     let doiDisabled = !isDuplicate
     if(isDuplicate) {
-      parsedArticle.article.doi = this.state.ownerPrefix
+      parsedArticle.article.doi = this.state.publicationOwnerPrefix
     }
 
     const {validatedPayload} = await this.validation(parsedArticle, reduxForm, doiDisabled)
@@ -131,7 +131,7 @@ export default async function loadArticle () {
     setStatePayload = {
       ...setStatePayload,
       publication: articleUnderPub,
-      depositTimestamp: article['deposit-timestamp'],
+      depositTimestamp: (isDuplicate||isNewArticle)?'':article['deposit-timestamp'],
       issue,
       issueDoi: issue ? issue.doi : undefined,
       issueTitle: issue ? issue.title : undefined,

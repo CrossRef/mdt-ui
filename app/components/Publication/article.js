@@ -38,10 +38,10 @@ export default class Article extends Component {
 
   componentDidMount = async()=>{
     let {  status,doi } = this.props.record
-    var showUrl = !(status==='Failed')
-    if (showUrl) {   
-    await api.getItem(doi, true).catch(e => {showUrl=false})     
-    }
+    // if there's a deposit timestamp, that means it was successfully deposited,
+    // so show the DOI url
+    let ts=this.props.record["deposit-timestamp"]
+    var showUrl = !(status==='Failed') && ts    
     this.setState({showUrl: showUrl})
   }
 

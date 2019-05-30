@@ -55,7 +55,7 @@ export function searchRecords (query, pubTitle, type) {
 
 
 
-export function getItem (id, forced) {
+export function getItem (id, forced, alone) {
   let doi, pubDoi, title
   if(typeof id === 'object') {
     doi = id.doi
@@ -67,7 +67,7 @@ export function getItem (id, forced) {
 // doi from issues with no DOI comes through as "undefined" API wants it blank. 
   const queryParams = `doi=${doi||''}&pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
 
-  return authorizedFetch(`${apiBaseUrl}/work?${queryParams}${forced ? `&forced=true` : ''}`, {
+  return authorizedFetch(`${apiBaseUrl}/work?${queryParams}${forced ? `&forced=true` : ''}${alone?`&alone=true`:''} `, {
     method: 'get',
     headers: {Authorization: localStorage.getItem('auth')}
   })
