@@ -8,7 +8,7 @@ import parseXMLArticle from '../../../utilities/parseXMLArticle'
 
 
 export default async function loadArticle () {
-  const { pubDoi } = this.props.routeParams;
+  const { pubDoi, issueId } = this.props.routeParams;
   const getItems = []
 
   const isEditOrDuplicate = this.state.mode === 'edit'
@@ -18,6 +18,8 @@ export default async function loadArticle () {
   //We need to get the articles content if it isn't new
   if(isEditOrDuplicate) {
     getItems.push(api.getItem(this.state.editArticleDoi))
+  }else if(issueId){ // if we're adding an article under an issue, we need the issue info
+    getItems.push(api.getItem({doi:this.state.issueDoi , title: issueId, pubDoi:pubDoi}))
   }
   // always get the publication directly
   getItems.push(api.getItem(pubDoi,false,true))
@@ -38,10 +40,11 @@ export default async function loadArticle () {
     publicationData.message.content.indexOf('<journal_metadata'),	
     publicationData.message.content.indexOf('</journal_metadata>') + 19	
   )
+  if (!isNewArticle){ // don't try to look inside new articles
     let article = fullHierarchy.message.contains[0].type === 'article' ?
       fullHierarchy.message.contains[0]
       : fullHierarchy.message.contains[0].contains[0]
-
+  
   //if there is a timestamp, then we want to use the journal found in the article (deposited).
     if (article){
       if (article['deposit-timestamp'] !== "" && article.content.indexOf('<journal_metadata')>0) {
@@ -51,7 +54,7 @@ export default async function loadArticle () {
         )
       }
     }
-
+  }
   const publicationMetaData = xmldoc(publicationXml)
 
   //In case of duplicate, copy updated publicationData info into the fullHierarchy object which will be used to submit

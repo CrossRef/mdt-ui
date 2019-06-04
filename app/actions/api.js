@@ -56,11 +56,11 @@ export function searchRecords (query, pubTitle, type) {
 
 
 export function getItem (id, forced, alone) {
-  let doi, pubDoi, title
+  let doi='', pubDoi='', title=''  // api looks for empty or missing fields, not "undefined"
   if(typeof id === 'object') {
-    doi = id.doi
-    title = id.title
-    pubDoi = id.pubDoi
+    doi = id.doi?id.doi:''
+    title = id.title?id.title:''
+    pubDoi = id.pubDoi?id.pubDoi:''
   } else if(typeof id === 'string') {
     doi = id
   }

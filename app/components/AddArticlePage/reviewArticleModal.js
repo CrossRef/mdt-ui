@@ -24,8 +24,8 @@ export default class ArticleReview extends Component {
   }
 
   componentWillMount () {
-    if (this.props.issue) {
-      api.getItem(this.props.issue.doi || {title: this.props.issue.title, pubDoi: this.props.publication.message.doi}).then((issueData) => {
+    if (this.props.issue) { // always use the full issue ID to be compatible with doi reuse
+      api.getItem({doi:this.props.issue.doi, title: this.props.issue.title, pubDoi: this.props.publication.message.doi}).then((issueData) => {
 
         this.setState({
           loaded: true,
