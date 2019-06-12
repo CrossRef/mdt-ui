@@ -91,7 +91,7 @@ export default class Search extends Component {
         for (let record of publicationContains) {
           if(record.type === 'issue' && (issueDoi ? record.doi === issueDoi : JSON.stringify(record.title) === issueTitle)) { 
             api.submitItem(result).then(()=>{
-            browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/${encodeURIComponent(issueDoi || issueTitle)}/addarticle/${encodeURIComponent(item.doi)}`)
+            browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/${encodeURIComponent(JSON.stringify({...issueTitle,doi:issueDoi}))}/addarticle/${encodeURIComponent(item.doi)}`)
           })
             return
           }
@@ -104,7 +104,7 @@ export default class Search extends Component {
         api.submitItem(result).then(()=>{
         issue.contains=[article]
         api.submitItem(result).then(()=>{
-          browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/${encodeURIComponent(issueDoi || issueTitle)}/addarticle/${encodeURIComponent(item.doi)}`)
+          browserHistory.push(`${routes.publications}/${encodeURIComponent(pubDoi)}/${encodeURIComponent(JSON.stringify({...issueTitle,doi:issueDoi}))}/addarticle/${encodeURIComponent(item.doi)}`)
         })}
       )}
     })

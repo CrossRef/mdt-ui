@@ -44,7 +44,7 @@ export default class DepositCartItemsReview extends Component {
       if (parentIssue) {
         const issueDoi = parentIssue.doi
         const issueTitle = JSON.stringify(parentIssue.title)
-        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/${encodeURIComponent(issueDoi?issueDoi:issueTitle)}/addarticle/${encodeURIComponent(item.doi)}`)
+        browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/${encodeURIComponent(JSON.stringify({...issueTitle,doi:issueDoi}))}/addarticle/${encodeURIComponent(item.doi)}`)
       } else {
         browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}/addarticle/${encodeURIComponent(item.doi)}`)
       }
@@ -55,7 +55,7 @@ export default class DepositCartItemsReview extends Component {
       //Change this to open modal with correct issue DOI
       const issueDoi = item.doi
       const issueTitle = JSON.stringify(item.title)
-      browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}?modal=${encodeURIComponent(issueDoi?issueDoi:issueTitle)}`)
+      browserHistory.push(`${routes.publications}/${encodeURIComponent(publication.doi)}?modal=${encodeURIComponent(JSON.stringify({...issueTitle,doi:issueDoi}))}`)
     }
   }
 

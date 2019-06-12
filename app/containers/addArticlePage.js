@@ -77,9 +77,12 @@ export class AddArticlePage extends Component {
     const isDuplicate = !!duplicateFrom
     const publicationOwnerPrefix = props.publication ? props.publication ['message']['owner-prefix'] : props.routeParams.pubDoi.split ('/')[0]
     const publicationDoiPrefix = props.routeParams.pubDoi.split('/')[0]
-    const issueId = props.routeParams.issueId || dupIssueDoi || dupIssueTitle
-    const issueDoi = issueId && (issueId.split('/')[0] === publicationDoiPrefix) ? issueId : undefined
-    const issueTitle = issueId && !issueDoi ? JSON.parse(issueId) : undefined
+    const {issue,volume,title,doi}=props.routeParams.issueId?JSON.parse(props.routeParams.issueId):{doi:dupIssueDoi}
+    const issueId =  dupIssueTitle||JSON.stringify({issue: issue, volume: volume, title: title})
+
+    const issueDoi = doi 
+    //issueId && (issueId.split('/')[0] === publicationDoiPrefix) ? issueId : undefined
+    const issueTitle = issueId ? JSON.parse(issueId) : undefined
     this.state = {
       ...defaultState,
       publication: props.publication,

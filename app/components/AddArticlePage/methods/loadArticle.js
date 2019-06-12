@@ -14,12 +14,13 @@ export default async function loadArticle () {
   const isEditOrDuplicate = this.state.mode === 'edit'
   const isNewArticle = this.state.mode === 'add'
   const isDuplicate = this.state.isDuplicate
-
+  const idObj = issueId?JSON.parse(issueId):{}
+  const issueTitleId = JSON.stringify({issue: idObj.issue, volume: idObj.volume, title: idObj.title})
   //We need to get the articles content if it isn't new
   if(isEditOrDuplicate) {
     getItems.push(api.getItem(this.state.editArticleDoi))
   }else if(issueId){ // if we're adding an article under an issue, we need the issue info
-    getItems.push(api.getItem({doi:this.state.issueDoi , title: issueId, pubDoi:pubDoi}))
+    getItems.push(api.getItem({doi:this.state.issueDoi , title: issueTitleId, pubDoi:pubDoi}))
   }
   // always get the publication directly
   getItems.push(api.getItem(pubDoi,false,true))
