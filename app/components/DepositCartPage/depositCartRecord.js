@@ -110,9 +110,9 @@ export default class DepositCartRecord extends Component {
 
   getLink = () => {
     if(this.props.cartItem.type === 'issue') {
-      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(this.props.cartItem.doi || JSON.stringify(this.props.cartItem.title))}`
+      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}?modal=${encodeURIComponent(JSON.stringify({...this.props.cartItem.title,doi:this.props.cartItem.doi}))}`
     } else if (this.props.issueDoi || this.props.issueTitle) {
-      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(this.props.issueDoi || JSON.stringify(this.props.issueTitle))}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
+      return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(JSON.stringify({...this.props.issueTitle,doi:this.props.issueDoi}))}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
     } else {
       return `${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(this.props.cartItem.doi)}`
     }

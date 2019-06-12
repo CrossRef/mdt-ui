@@ -66,7 +66,7 @@ export default class Article extends Component {
       <td className='checkbox'><label><input type='checkbox' onClick={this.toggleCheckBox.bind(this)} {...checked} /><span>&nbsp;</span></label></td>
       <td className='title'>
         {issueDoi || issueTitle ?
-          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(issueDoi || JSON.stringify(issueTitle))}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
+          <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/${encodeURIComponent(JSON.stringify({...issueTitle,doi:issueDoi}))}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
           :
           <Link className='pull-left add-record' to={`${routes.publications}/${encodeURIComponent(this.props.pubDoi)}/addarticle/${encodeURIComponent(doi)}`}>{title}</Link>
         }
