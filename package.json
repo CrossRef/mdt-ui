@@ -61,7 +61,6 @@
     "csvtojson": "^2.0.8",
     "digest-brunch": "^1.6.0",
     "events": "^1.1.1",
-    "format-validator": "^0.8.3",
     "immutability-helper": "^2.1.2",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
