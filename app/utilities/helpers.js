@@ -175,7 +175,21 @@ export function cleanObj(obj) {
 
 
 
-
+export function isISSN(input) {
+  var checksum = 0;
+  input = input.replace("-", "");
+  if (input.length === 7) {
+    input = "0" + input;
+  }
+  if (!/^\d{4}\-?\d{3}[\dX]$/.test(input)) {
+    return false;
+  }
+  for (var i = 0; i < input.length; i++) {
+    var digit = input[i];
+    checksum += (digit === 'X' ? 10 : +digit) * (8 - i);
+  }
+  return checksum % 11 === 0;
+}
 
 
 

@@ -24,7 +24,7 @@ AddIssueView.propTypes = {
   errorUtility: is.object.isRequired,
   boundSetState: is.func.isRequired,
   tooltipUtility: is.object.isRequired,
-  calendarHandler: is.object.isRequired
+  calendarHandler: is.func.isRequired
 }
 
 
