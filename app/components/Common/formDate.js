@@ -31,6 +31,7 @@ export default class FormDate extends React.Component {
     calendarHandler: is.func.isRequired,
     calendarIconStyle: is.object,
     tooltipInfoFlagStyle: is.object,
+    futureDate:is.number,
     fields: is.shape({
       year: is.shape({
         value: is.string.isRequired,
@@ -143,7 +144,8 @@ export default class FormDate extends React.Component {
                     value={this.props.fields.year.value}
                     validation={this.props.error || this.props.fields.year.error}
                     nodeRef={this.nodeRef}
-                    style={`${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}/>
+                    style={`${isFocus && this.props.tooltip ? 'infoFlagBorder' : ''}`}
+                    futureDate={this.props.futureDate}/>
                 </div>
               </div>
               <div className='dateselectholder'>

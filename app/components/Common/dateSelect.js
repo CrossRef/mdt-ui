@@ -12,7 +12,8 @@ DateSelect.propTypes = {
   validation: is.bool,
   style: is.string,
   nodeRef: is.object,
-  startYear: is.oneOfType([is.string, is.number])
+  startYear: is.oneOfType([is.string, is.number]),
+  futureDate: is.number
 }
 
 export default function DateSelect ({
@@ -23,10 +24,11 @@ export default function DateSelect ({
   validation,
   style,
   nodeRef,
-  startYear
+  startYear,
+  futureDate
 }) {
 
-  const currentYear = (new Date).getFullYear()
+  const currentYear = (new Date).getFullYear()+(futureDate||0)
 
   let s = [<option key='-1' />], start = 0, end = 0
   if (type === 'y' || type === 'year') {
