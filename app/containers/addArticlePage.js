@@ -82,7 +82,7 @@ export class AddArticlePage extends Component {
 
     const issueDoi = doi 
     //issueId && (issueId.split('/')[0] === publicationDoiPrefix) ? issueId : undefined
-    const issueTitle = issueId ? JSON.parse(issueId) : undefined
+    const issueTitle = issueId.length>5 ? JSON.parse(issueId) : undefined
     this.state = {
       ...defaultState,
       publication: props.publication,
