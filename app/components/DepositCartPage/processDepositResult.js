@@ -281,7 +281,7 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
     //BUILD UNDEPOSITED PARENTS FOR ARTICLE
     //If result is an article, the parents didn't get deposited, so have to create a representation of the undeposited parents in resultData
     if (resultType === 'article') {
-      const issueId = parentIssue ? (parentIssue.doi || JSON.stringify(parentIssue.title)) : undefined
+      const issueId = parentIssue ? JSON.stringify({...parentIssue.title,doi:parentIssue.doi}) : undefined
 
       let newContains = parentIssue ? {
         [issueId]: {
