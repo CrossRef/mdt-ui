@@ -22,7 +22,7 @@ export default class MoveSelectionModal extends React.Component {
 
           {this.props.issues.map((issue)=>{
             const name = recordTitle('issue', issue.title)
-            const issueId = issue.doi || JSON.stringify(issue.title)
+            const issueId = JSON.stringify({...issue.title,doi:issue.doi}) 
             return (
               <div
                 key={issueId}

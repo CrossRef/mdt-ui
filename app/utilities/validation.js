@@ -398,7 +398,7 @@ export async function asyncValidateIssue ({issueData, optionalIssueInfo, ownerPr
   // only checked if the issue/vol/title already exist in the current publication in the workspace, not back end.   
   // MM-443 added check for issue by id against the back end
   if(checkDuplicateId) {
-    criticalErrors.dupTitleIdIssue = !!publicationRecords[JSON.stringify({issue, volume, title: issueTitle})]
+    criticalErrors.dupTitleIdIssue = !!publicationRecords[JSON.stringify({issue, volume, title: issueTitle,doi:issueDoi||''})]
     // WHAT DO WE DO HERE?
 
 // if an issue is being given a DOI, do we create a new issue? (That was the case before)

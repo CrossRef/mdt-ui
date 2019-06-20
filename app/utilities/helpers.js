@@ -320,7 +320,9 @@ export function normalize (publications) {  //Redux likes normalized state: stor
           if (!thisRecord || (!thisRecord.doi && !thisRecord.title)) {
             return console.warn(`Had trouble retrieving data for a Record`, thisRecord || contains)
           }
-          normalizedRecords[thisRecord.doi?thisRecord.doi.toLowerCase():thisRecord.doi || JSON.stringify(thisRecord.title)] = thisRecord
+          let key = thisRecord.type==="issue"?JSON.stringify({...thisRecord.title,doi:thisRecord.doi}):thisRecord.doi.toLowerCase()
+
+          normalizedRecords[key] = thisRecord
         })
       }
 

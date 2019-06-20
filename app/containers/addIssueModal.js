@@ -225,12 +225,12 @@ export class AddIssueModal extends Component {
 
       //check if new titleId or doi, if so, do rename
       if(
-        (!issueDoiEntered && oldTitleId && titleIdChanged) ||
+        (issueDoiDisabled && oldTitleId && titleIdChanged) ||
         (oldTitleId && !issueDoiDisabled && issueDoiEntered)
       ) {
         const issueInfo = mode === 'edit' ?
           publication.normalizedRecords.find( record =>
-            JSON.stringify(record.title) === oldTitleId
+            JSON.stringify(record.title) === oldTitleId && record.doi===issueDoi
           )
         : undefined
 

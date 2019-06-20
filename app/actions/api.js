@@ -119,9 +119,8 @@ export function deleteItem (id) {
     pubDoi = id.pubDoi
   } else if(typeof id === 'string') {
     doi = id
-  }
-
-  const queryParams = doi ? `doi=${doi}` : `pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
+  }                      
+  const queryParams = `doi=${doi||''}&pubdoi=${pubDoi}&title=${typeof title === 'object' ? JSON.stringify(title) : title}`
 
   return authorizedFetch(`${apiBaseUrl}/work?${queryParams}`, {
     method: 'delete',
