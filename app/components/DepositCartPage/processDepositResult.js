@@ -139,7 +139,7 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
           recordInfo = cart.find( cartItem => compareDois(cartItem.doi, recordDoi) )
 
           if(!issueId && recordInfo.issueTitle) {
-            issueId = JSON.stringify(recordInfo.issueTitle)
+            issueId = JSON.stringify({...recordInfo.issueTitle,doi:recordInfo.issueDoi})
             const normalizedRecords = publications[pubDoi].normalizedRecords ?
               publications[pubDoi].normalizedRecords
               : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
