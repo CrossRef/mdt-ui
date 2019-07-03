@@ -38,7 +38,6 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
 
   //START ITERATING OVER RESULT ARRAY
   await Promise.all(resultArray.map(async (result) => {
-
     //START PROCESSING RESULT
     let pubDoi, pubTitle, resultTitle, resultStatus, resultType, resultInfo, parentIssue, resultInCart
     let resultError = {}
@@ -155,89 +154,87 @@ export default async (rawResult, publications, cart, asyncGetPublications) => {
             publications[pubDoi].normalizedRecords
             : (await asyncGetPublications(pubDoi))[pubDoi].normalizedRecords
 
-          recordInfo = normalizedRecords[recordDoi.toLowerCase()]
-        }
+            //Check record for contains, if found, must be articlesUnderIssue, assign data to vars
+            if(record.contains && record.contains.length) {
+              const issueDoi = recordDoi
+              // find the issue title for the first article:
+              
+              let articleRecordInfo = cart.find( cartItem => compareDois(cartItem.doi, record.contains[0]["DOI:"]) )
+              recordInfo = normalizedRecords[ JSON.stringify({...articleRecordInfo.issueTitle,doi:articleRecordInfo.issueDoi})]
+               //Assign data to vars
+               recordTitle = helpers.recordTitle(recordType, recordInfo.title)
 
-
-        //Assign data to vars
-        recordTitle = helpers.recordTitle(recordType, recordInfo.title)
-
-        if(typeof record.result === 'string') {
-          recordStatus = 'Failure'
-          recordError.errorMessage = record.result
-        } else if (typeof record.result === 'object' && record.result.record_diagnostic) {
-          const recordDiagnostic = record.result.record_diagnostic
-          recordStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
-          if(recordStatus === 'Failure') {
-            recordError.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
-          }
-        } else {
-          recordStatus = 'Failure'
-          recordError.errorMessage = 'Unknown Error'
-        }
-
-        if(recordStatus === 'Failure') {
-          recordStatus = 'Failed'
-        }
-
-        if (recordInCart && !used[recordInfo.doi]) {
-          resultCount[recordStatus]++
-          used[recordInfo.doi] = true
-        }
-
-
-
-        //START PROCESSING ARTICLEUNDERISSUE
-        //Check record for contains, if found, must be articlesUnderIssue, assign data to vars
-        if(record.contains && record.contains.length) {
-          const issueDoi = recordDoi
-          record.contains.forEach((article, index)=>{
-            let articleTitle, articleStatus, articleInfo
-            let articleError = {}
-            const articleDoi = article['DOI:']
-            articleInfo = cart.find( cartItem => compareDois(cartItem.doi, articleDoi) )
-
-            articleTitle = articleInfo.title.title
-
-            if(typeof article.result === 'string') {
-              articleStatus = 'Failure'
-              articleError.errorMessage = result.result
-            } else if (typeof article.result === 'object' && article.result.record_diagnostic) {
-              const recordDiagnostic = article.result.record_diagnostic
-              articleStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
-              if(articleStatus === 'Failure') {
-                articleError.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+               if(typeof record.result === 'string') {
+                recordStatus = 'Failure'
+                recordError.errorMessage = record.result
+              } else if (typeof record.result === 'object' && record.result.record_diagnostic) {
+                const recordDiagnostic = record.result.record_diagnostic
+                recordStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
+                if(recordStatus === 'Failure') {
+                  recordError.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+                }
+              } else {
+                recordStatus = 'Failure'
+                recordError.errorMessage = 'Unknown Error'
               }
-            } else {
-              articleStatus = 'Failure'
-              articleError.errorMessage = 'Unknown Error'
+      
+              if(recordStatus === 'Failure') {
+                recordStatus = 'Failed'
+              }
+      
+              if (recordInCart && !used[recordInfo.doi]) {
+                resultCount[recordStatus]++
+                used[recordInfo.doi] = true
+              }
+
+              //START PROCESSING ARTICLEUNDERISSUE
+              record.contains.forEach((article, index)=>{
+                let articleTitle, articleStatus, articleInfo
+                let articleError = {}
+                const articleDoi = article['DOI:']
+                articleInfo = cart.find( cartItem => compareDois(cartItem.doi, articleDoi) )
+
+                articleTitle = articleInfo.title.title
+
+                if(typeof article.result === 'string') {
+                  articleStatus = 'Failure'
+                  articleError.errorMessage = result.result
+                } else if (typeof article.result === 'object' && article.result.record_diagnostic) {
+                  const recordDiagnostic = article.result.record_diagnostic
+                  articleStatus = (recordDiagnostic[1] || recordDiagnostic)['-status']
+                  if(articleStatus === 'Failure') {
+                    articleError.errorMessage = (recordDiagnostic[1] || recordDiagnostic).msg
+                  }
+                } else {
+                  articleStatus = 'Failure'
+                  articleError.errorMessage = 'Unknown Error'
+                }
+
+                if(articleStatus === 'Failure') {
+                  articleStatus = 'Failed'
+                }
+
+                resultCount[articleStatus]++
+
+                depositId.add(article.submissionid)
+
+                const articleResult = {
+                  title: articleTitle,
+                  status:articleStatus,
+                  type: 'article',
+                  doi: articleDoi,
+                  issueDoi: issueDoi,
+                  pubDoi: pubDoi,
+                  submissionId: article.submissionid,
+                  ...articleError
+                }
+
+                contains2[articleDoi] = articleResult
+
+              })
             }
-
-            if(articleStatus === 'Failure') {
-              articleStatus = 'Failed'
-            }
-
-            resultCount[articleStatus]++
-
-            depositId.add(article.submissionid)
-
-            const articleResult = {
-              title: articleTitle,
-              status:articleStatus,
-              type: 'article',
-              doi: articleDoi,
-              issueDoi: issueDoi,
-              pubDoi: pubDoi,
-              submissionId: article.submissionid,
-              ...articleError
-            }
-
-            contains2[articleDoi] = articleResult
-
-          })
+            //FINISHED PROCESSING ARTICLEUNDERISSUE
         }
-        //FINISHED PROCESSING ARTICLEUNDERISSUE
-
 
         //Continue processing record
         depositId.add(record.submissionid)
