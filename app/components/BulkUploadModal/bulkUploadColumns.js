@@ -1,3 +1,9 @@
+/*
+* structure of acceptible fields in bulk upload. 
+* object structure relates to field breakdown. 
+* root nodes are valid tags,
+* any sub objects contain the tag attribute name as key and a list of valid values
+*/
 export default {
     doi:true,
     funder_name:true,
@@ -28,9 +34,12 @@ export default {
         "chemical/x-gaussian-checkpoint", "chemical/x-gaussian-cube", "chemical/x-gcg8-sequence", "chemical/x-genbank", "chemical/x-isostar", "chemical/x-jcamp-dx", "chemical/x-kinemage", "chemical/x-macmolecule",
         "chemical/x-macromodel-input", "chemical/x-mdl-molfile", "chemical/x-mdl-rdfile", "chemical/x-mdl-rxnfile", "chemical/x-mdl-sdfile", "chemical/x-mdl-tgf", "chemical/x-mif", "chemical/x-mol2", "chemical/x-molconn-Z",
         "chemical/x-mopac-input", "chemical/x-mopac-graph", "chemical/x-ncbi-asn1", "chemical/x-ncbi-asn1-binary", "chemical/x-pdb", "chemical/x-swissprot", "chemical/x-vamas-iso14976", "chemical/x-vmd", "chemical/x-xtel",
-        "chemical/x-xyz", "model/vrml", "audio/x-wav", "video/x-flv"]
+        "chemical/x-xyz", "model/vrml", "audio/x-wav", "video/x-flv"].sort(function (a, b) {            
+            if(a.toLowerCase() < b.toLowerCase()) return -1
+            if(a.toLowerCase() > b.toLowerCase()) return 1
+            return 0
+          })
 
-    },
-    item:true
+    }
     
 }
