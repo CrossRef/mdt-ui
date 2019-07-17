@@ -26,9 +26,9 @@ export default class ValidationItem extends Component {
 
 componentDidUpdate (lastProps) {
   if(lastProps.value !=this.props.value) {
-    const isValid=this.checkHeader(this.props.value) &&  this.props.validateAll( this.props.index)
-    
-    this.setState({isValid:isValid},() => {this.props.isValid(isValid)})
+    const amIValid=this.checkHeader(this.props.value) &&  this.props.validateAll( this.props.index)
+    // call the passed in isValid once the state is set
+    this.setState({isValid:amIValid},() => {this.props.isValid(amIValid)})
     // this.checkHeader()
     // this.props.isValid(this.state.isValid)
   }

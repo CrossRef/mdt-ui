@@ -34,7 +34,7 @@ export default class CascadingMenu extends Component {
       }
       scrollRef = React.createRef() 
       componentDidMount() {
-        document.addEventListener("click", this.handleBlur);
+        document.addEventListener("click", this.handleBlur);        
     }
     componentWillUnmount() {
       document.removeEventListener("click", this.handleBlur);
@@ -73,7 +73,7 @@ export default class CascadingMenu extends Component {
   }
   handleBlur=(event) =>{
       
-      if (this.props.container.current && (!this.props.container.current.contains(event.target)&&this.props.container.current!=event.target )) {
+      if (this.props.container.current && (!this.props.container.current.contains(event.target)&&this.props.container.current!==event.target )) {
         this.props.closeMenu()
       }    
   }
@@ -196,7 +196,7 @@ export default class CascadingMenu extends Component {
        
        <div className={scrollUp && "menuOuter"}>
        {scrollUp}
-        <div className={'ul ' + 'ul'+depthLevel}
+        <div className={'ul ul'+depthLevel}
         ref={ref}>
         {menuOptions }
         </div>

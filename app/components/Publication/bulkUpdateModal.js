@@ -13,8 +13,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   reduxDeletePublication: app.deletePublication
 }, dispatch)
 
-@connect(mapStateToProps, mapDispatchToProps)
-export default class BulkUpdateModal extends React.Component {
+
+ class BulkUpdateModal extends React.Component {
 
   static propTypes = {    
     ownerPrefix: is.string.isRequired
@@ -61,7 +61,7 @@ export default class BulkUpdateModal extends React.Component {
     const filesList= this.state.files
     const style={ height: height }
     const headers=this.state.headers
-    const fileArea=filesList&&filesList.length==1?(  <div className="file">
+    const fileArea=filesList&&filesList.length===1?(  <div className="file">
         <div className="fileName">{filesList[0].name}</div>
         <div className="removeFile" onClick={()=>this.setState({files:[]}) }>Remove</div>
       </div>
@@ -86,7 +86,7 @@ export default class BulkUpdateModal extends React.Component {
                 <div className="dropArea">
                 {// chrome doesn't behave correct with img tag, needed to use object here. 
                 }
-                <object type="image/svg+xml" className="uploadIcon" data={`${routes.images}/BulkUpload/cloud-up-lightgrey.svg`}/>
+                <object type="image/svg+xml" aria-label="drop file here" className="uploadIcon" data={`${routes.images}/BulkUpload/cloud-up-lightgrey.svg`}/>
                 <div className="dropAreaText">
                   <p className="text">Drop CSV file here.</p>
                   <div><a className="openFile" onClick={()=>dropzoneRef.current.open()}>Browse from folder</a><p></p></div>
@@ -96,7 +96,7 @@ export default class BulkUpdateModal extends React.Component {
               </Dropzone>
             </div>
             <div className="helpArea" onMouseLeave={()=>this.setState({showHelp: false})}>
-                <img
+                <img alt="help"
                   onMouseEnter={()=>this.setState({showHelp: true})}
                   className="helpIcon"
                   src={`${routes.images}/AddArticle/Asset_Icons_Grey_Help.svg`}/>
@@ -126,3 +126,4 @@ export default class BulkUpdateModal extends React.Component {
     )
   }
 }
+export default  connect(mapStateToProps, mapDispatchToProps)(BulkUpdateModal)
