@@ -74,7 +74,7 @@ export default class ActionBar extends Component {
     const { handleAddCart, deleteSelections, duplicateSelection, moveSelection, addIssue, newArticle, bulkUpdate, transferTitle, newToCart } = this.props
     return (<div className='publication-actions'>
       <div className="pull-left add-record tooltips" onClick={() => this.setState({ addRecordMenuOpen: !this.state.addRecordMenuOpen, actionMenuOpen: false })}>
-        Add record
+        New record
         {this.state.addRecordMenuOpen && <div className='actionBarDropDown'>
           <p onClick={newArticle}>New article</p>
           <p onClick={addIssue}>New volume/issue</p>

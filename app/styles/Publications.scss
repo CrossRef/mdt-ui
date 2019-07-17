@@ -2,7 +2,7 @@
   .management-bar {
     width: 968px;
     margin: 0 auto;
-    padding: 32px 24px 0 16px;
+    padding: 80px 24px 0 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -11,8 +11,8 @@
       position: relative;
 
       input {
-        height: 32px;
-        width: 464px;
+        height: 40px;
+        width: 608px;
         padding-left: 28px;
         position: relative;
       }
@@ -23,6 +23,7 @@
 
       .publication-search-results {
         position: absolute;
+        line-height: 200%;
         top: 31px;
         left: 0;
         width: 464px;
