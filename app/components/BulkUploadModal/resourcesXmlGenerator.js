@@ -1,10 +1,9 @@
 import csv from 'csvtojson'
 import { XMLSerializer, DOMParser } from 'xmldom'
 var exports = module.exports = {}
-String.prototype.format = function () {
-  var a = this;
-  for (var k in arguments) {
-    a = a.replace(new RegExp("\\{" + k + "\\}", 'g'), arguments[k]);
+function format (a,...args) { 
+  for (var k in args) {
+    a = a.replace(new RegExp("\\{" + k + "\\}", 'g'), args[k]);
   }
   return a
 }
@@ -48,13 +47,13 @@ takes a parsed csv object and generates a deposit standard XML
 const funderElems = ['<funder_name>', '<funder_identifier>']
 //, '<award_number>'
 function f(headers, files) {
-  console.log(header.format("this is the filename.java", "This is the email@.com"))
+  console.log(format(header,"this is the filename.java", "This is the email@.com"))
   handleReadFiles(files, headers)
 }
 const mainProcessorCb = function (jsonArrayObj) {
   // iterate over the entire list of objects  
   var doc = getDoiObjects(jsonArrayObj)
-  var result = header.format("this is the filename.java", "This is the email@.com") +
+  var result = format(header,"this is the filename.java", "This is the email@.com") +
     new XMLSerializer().serializeToString(doc).replace(/></g, ">\n<") +
     "</body>\n</doi_batch>"
 
@@ -151,8 +150,8 @@ const awardCb = function (doc) {
       group = makeAssertionElem(doc, "fundgroup")
       makeAssertionElem(group, "award_number", award)
     }
-    itemArray.map((row) => {
-      getFundingElem(row, group)
+    itemArray.map(row => {
+      return getFundingElem(row, group)
     }) // for all key/vals inrow accumulate result in programElm 
     //doc.appendChild(group)
   }

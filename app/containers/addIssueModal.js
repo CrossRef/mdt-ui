@@ -483,8 +483,9 @@ export class AddIssueModal extends Component {
     }
 
     this.tooltipUtility.refresh()
-
-    this.state.validating = false
+    if (this.state.validating){
+      this.setstate({validating : false})
+    }
   }
 
 

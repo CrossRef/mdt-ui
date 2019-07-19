@@ -22,12 +22,14 @@ export default class ValidationItemsContainer extends Component {
   }
 
 
-  componentDidUpdate (nextProps) {
-    if(nextProps.files !==this.props.files) {
+  componentDidUpdate (prevProps,prevState) {
+    if(prevProps.files !==this.props.files) {
       this.handleReadFiles()
     }
-    if(nextProps.headers!==this.props.headers){
-      this.props.isValid(this.validateInterHeader() && this.state.headerValid.every((item)=>item) )
+    if(prevProps.headers!==this.props.headers ||prevState.headerValid!==this.state.headerValid ){
+      var validinter=this.validateInterHeader()      
+      var validevery= this.state.headerValid.every((item)=>item)
+      this.props.isValid(validinter && validevery)
     }
   }
   handleReadFiles = ()=> {
@@ -36,7 +38,7 @@ export default class ValidationItemsContainer extends Component {
     const {fieldsHandler,files}=this.props
 
     if (files){
-      var msg="Recieved " + files.length ;
+      var msg="Received " + files.length ;
       if (files.length>0){
         msg+=" first file size:" + files[0].size + " name: "+files[0].name
 
@@ -44,7 +46,8 @@ export default class ValidationItemsContainer extends Component {
         reader.onload = () => {
           console.log("reader onload converting to csv")
           csv({flatKeys:true}).on('header',(header)=>{
-            var headerValid = Array.apply(false, Array(header.length))
+            var headerValid = Array.apply(null, Array(header.length))
+            
             this.setState({headerValid:headerValid})
             this.props.setHeaders(header)
             if (fieldsHandler){
@@ -68,11 +71,6 @@ export default class ValidationItemsContainer extends Component {
       }
     }
   }
-
-  createModifiedObject(){
-    var modified=this.props.headers.map(row=>{
-    })
-  }
   handleFieldChange(index, value) {
     if (this.props.headers){
       const newHeaders = [...this.props.headers]
@@ -81,7 +79,8 @@ export default class ValidationItemsContainer extends Component {
 
     }    
   }
-  validateInterHeader = ()=>{return (index)=>{
+  
+  validateInterHeader = (index)=>{
     // make sure headers include required items, no duplicates,
     // no orphan items (award with no funder, start date with no license of that type )
     // if index is provided, return is validation on indexed item
@@ -127,25 +126,25 @@ export default class ValidationItemsContainer extends Component {
       return index ? curValid : !hasDupes && awardValid && vorValid && amValid
     }
     return true
-    }
   }
 
   isValid = (index) => {
     return (valid) => {
-      
-      this.setState((state) => {
-        if (state.headerValid && state.headerValid.size<=index) {
-          ({        
-            headerValid : state.headerValid[index] = valid
+      this.setState((state) => {  //setState takes a function with (state,props) 
+        // we're updating one of the items in the array of the state's
+        // headerValid item
+        if (state.headerValid && state.headerValid.length >= index) {
+          var newstate = [...state.headerValid]
+          newstate[index] = valid
+          return ({
+            headerValid : newstate
           })  
-      }
-      }
-      )
+        }
+      })
     }
   }
   
   render () {
-    const options=[{"value":"vor", "name":"Version of record"}];
     var items = this.props.headers?  this.props.headers.map((data, i)=>
       <ValidationItem
         index={i}    
@@ -153,7 +152,7 @@ export default class ValidationItemsContainer extends Component {
         key={i}
         onchange={this.setSelected}
         isValid={this.isValid(i)}
-        validateAll={this.validateInterHeader()} />
+        validateAll={this.validateInterHeader} />
     ):null
     if (items && items.length>0){
       items.unshift(<div className="headerMessage" key="headmsg">Fix header errors to complete CSV upload.</div>)
