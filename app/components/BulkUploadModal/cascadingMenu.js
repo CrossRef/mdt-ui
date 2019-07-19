@@ -32,6 +32,7 @@ export default class CascadingMenu extends Component {
           selectedIds: []
         }
       }
+      scrollRef = React.createRef() 
       componentDidMount() {
         document.addEventListener("click", this.handleBlur);
     }
@@ -106,6 +107,24 @@ export default class CascadingMenu extends Component {
     )
   }
 
+   doScroll(amount){return ()=>{
+    if (this.scrollRef.current) {
+      this.scrollRef.current.scrollBy(0,amount)}
+   }
+  }
+   hover(amount) {return ()=>{
+    if (this.state.interval){
+      this.unhover()
+    }
+    this.setState({interval:setInterval(this.doScroll(amount),150)})
+   }
+  }
+   unhover() {return ()=>{
+     clearInterval(this.state.interval)
+     this.setState({interval:null})
+   }
+  }
+
   renderSubMenu(options, depthLevel = 0) {
     if (this.state.showDropdown !== true) {
       return null
@@ -125,7 +144,7 @@ export default class CascadingMenu extends Component {
               : <span >{ option.text }</span>
             )
       let subMenu
-      const liClasses=[]
+      const liClasses=['li']
 
       if (this.state.selectedIds[depthLevel] === option.id)
       {
@@ -137,35 +156,61 @@ export default class CascadingMenu extends Component {
         }
       }
 
-
       return (
-        <li className={classNames.apply(null,liClasses)}
+        //individual list items
+        <div className={classNames.apply(null,liClasses)}
           key={ option.id }
           onMouseEnter={ this.handleSelectedId(option.id, depthLevel) }
           onClick={this.handleClick(option,depthLevel)}          
         >
           { display }{expandCarret}
           { subMenu }
-        </li>
+        </div>
       )
     })
-
+    var ref
+    var scrollUp
+    
+    var scrollDown
+    var isTop = true
+    var isBottom = false
+    if (this.scrollRef.current){
+      isTop=this.scrollRef.current.scrollTop===0
+      isBottom=(this.scrollRef.current.scrollHeing-349)===this.scrollRef.current.scrollTop
+    }
+    
+    if (options && options.length>8){
+      ref=this.scrollRef
+      scrollUp= <div 
+        className={"scroll up " + (isTop?'disabled':'')}
+        onMouseEnter={this.hover(-40)}
+        onMouseLeave={this.unhover()} ></div>
+      scrollDown=<div 
+        className={"scroll down " + (isBottom?'disabled':'')}
+        onMouseEnter={this.hover(40)}
+        onMouseLeave={this.unhover()}></div>
+    }
+    
     return (
       <div className={ classNames.apply(null, classes)} >
-        <ul className={'ul'+depthLevel}>
-          { menuOptions }
-        </ul>
+       
+       <div className={scrollUp && "menuOuter"}>
+       {scrollUp}
+        <div className={'ul ' + 'ul'+depthLevel}
+        ref={ref}>
+        {menuOptions }
+        </div>
+        {scrollDown}
+        </div>
       </div>
     )
   }
 
   render () {
     return(
-        <div className="cascadingMenu"
-        >          
+        <div className="cascadingMenu">          
             { this.renderDisplay() }
             { this.renderSubMenu(this.props.options) }
-          
         </div>
       )
   }

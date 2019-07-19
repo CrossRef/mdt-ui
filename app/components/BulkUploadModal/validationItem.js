@@ -11,7 +11,8 @@ export default class ValidationItem extends Component {
         index:is.number.isRequired,
         value:is.string.isRequired,
         isValid:is.func.isRequired,
-        onchange:is.func.isRequired
+        onchange:is.func.isRequired,
+        validateAll:is.func.isRequired
       }
 
     constructor (props) {
@@ -25,7 +26,8 @@ export default class ValidationItem extends Component {
 
 componentDidUpdate (lastProps) {
   if(lastProps.value !=this.props.value) {
-    const isValid=this.checkHeader(this.props.value)
+    const isValid=this.checkHeader(this.props.value) &&  this.props.validateAll( this.props.index)
+    
     this.setState({isValid:isValid},() => {this.props.isValid(isValid)})
     // this.checkHeader()
     // this.props.isValid(this.state.isValid)
@@ -41,6 +43,8 @@ checkHeader (fileColumnVal=this.props.value) {
     return true
   }
   //bulkUploadColumns contains the valid structure of column values
+  // in csv upload first column is supposed to be DOI. 
+  // Here we only check that it's a root level item.
   if (index===0){
     return bulkUploadColumns[fileColumnVal.toLowerCase()] 
   }
@@ -58,7 +62,7 @@ checkHeader (fileColumnVal=this.props.value) {
       } })
     if (count>0){      
       var mainElement=m[1]
-      // <resource content_version="vpr" mime_type="application/html">
+      // <resource content_version="vor" mime_type="application/html">
       var validationStruct = bulkUploadColumns[mainElement]      
       if ( validationStruct ){
         if (count>2 ){
@@ -66,12 +70,9 @@ checkHeader (fileColumnVal=this.props.value) {
           var attributeValue=m[4]
 
           var validationItem2=validationStruct[attributeName]
-
-          if (validationItem2){
-            if (validationItem2.indexOf(attributeValue)<0){
-              
-              return false
-            }
+          // attribute name and value are valid
+          if (validationItem2 && validationItem2.indexOf(attributeValue)>=0){
+            // more at
             if (count>5){
               attributeName=m[6]
               attributeValue=m[7]
@@ -86,14 +87,10 @@ checkHeader (fileColumnVal=this.props.value) {
           }
         }
         return true
-      } else{
-        return false
       }
     }
-  }else{
-    return false
   }
-  
+  return false
 }
 setSelected =(option) =>{
   if (option){

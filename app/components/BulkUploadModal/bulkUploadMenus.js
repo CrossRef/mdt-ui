@@ -1,7 +1,15 @@
 import bulkUploadColumns from './bulkUploadColumns'
-
-const vor='<resource content_version="vor"'
-const mime='mime_type='
+/*
+* functional structure for the cascading menus in bulkupload column selections. 
+* *NOTE* code is recursive and will show many levels, but there are parts that expect only 3 levels deep. (such as the mime type options generation)
+* Ids are manually assigned with a scheme of sub items using a double digit with the 10s place being the parent id
+* except for mime types, they're loaded from the valid list in bulkUploadColumns
+* 'contentVersion' field is used to populate the mimetypes and isn't referenced by the menuing code
+* 'options' denotes a submenu and contains a list of menu maps with  parentId,id, text and value
+* kept the values the same as the csv upload for clarity, but since we use and XML generator
+* the leading and trailing '<>' are stripped in code.
+* 
+*/
 const menus= [
     {
         id: '0',
@@ -22,13 +30,15 @@ const menus= [
     },
     {
         id: '3',
-        text: 'License Free to read',
+        text: 'License TDM',
         contentVersion:'<resource content_version="tdm"',
         options: [
         {parentid: '3', id: '31', text: 'License URL', value:'<license_ref applies_to="tdm">'},
-        {parentid: '3', id: '32', text: 'License start date',value:'<tdm_lic_start_date>'},
-        {parentid: '3', id: '33', text: 'Content URL',value:'<resource content_version="tdm">'},
-        {parentid: '3', id: '34', text: 'Content URL with MIME type',options:[]}]
+        {parentid: '3', id: '32', text: 'License start date',value:'<tdm_lic_start_date>'}//,
+        //{parentid: '3', id: '33', text: 'Content URL',value:'<resource content_version="tdm">'},
+        //{parentid: '3', id: '34', text: 'Content URL with MIME type',options:[]}]
+        // TDM doesn't have resource or 
+        ] 
     },
     {
       id:'4',
@@ -37,7 +47,7 @@ const menus= [
       options:[
       {parentid: '4', id: '41', text: 'License URL', value:'<license_ref applies_to="vor">'},
       {parentid: '4', id: '42', text: 'License start date',value:'<vor_lic_start_date>'},
-      {parentid: '4', id: '43', text: 'Content URL',value:vor+'>'},
+      {parentid: '4', id: '43', text: 'Content URL',value:'<resource content_version="vor">'},
       {parentid: '4', id: '44', text: 'Content URL with MIME type',options:[]}]
     },
     {
@@ -56,11 +66,16 @@ const menus= [
   const licenseRefFilter =(item)=>{
     return item.text.startsWith('License')    
   }
+  // generate mimetype menu options only for 'License' type menus. 
+  // looks for sub item (options) that contains within the text field 'MIME' 
+  // appends all mimetypes as menu options
   const reducer = (acc,item,idx)=> {
     acc.filter(licenseRefFilter).forEach(element => {
       if (element.options){
         const mimeObj = element.options.find(menuItem=>menuItem.text.indexOf('MIME')>-1)
-        mimeObj.options.push({'text':item,'id':''+mimeObj.id+idx,value:element.contentVersion+' mime_type="'+item+'">' , parentid:mimeObj.id})
+        if (mimeObj){
+          mimeObj.options.push({'text':item,'id':''+mimeObj.id+idx,value:element.contentVersion+' mime_type="'+item+'">' , parentid:mimeObj.id})
+        }
       }
     });
    return acc
