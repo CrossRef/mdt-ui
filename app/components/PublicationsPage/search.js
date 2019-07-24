@@ -163,7 +163,7 @@ export default class Search extends Component {
         <Autocomplete
           { ...(forceClose ? {open:false} : {}) }
           value={this.state.searchingFor}
-          inputProps={{ placeholder: '+ Add existing journal' }}
+          inputProps={{ placeholder: 'Add existing journal' }}
           items={results}
           getItemValue={(item) => item.title}
           onSelect={this.onSelect}

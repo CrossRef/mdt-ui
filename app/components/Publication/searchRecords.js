@@ -151,7 +151,7 @@ export default class Search extends Component {
 
           <Autocomplete
             { ...(forceClose ? {open:false} : {}) } //This adds the prop open with value false to the component if forceClose, otherwise, does not add any prop
-            inputProps={{ placeholder: '+ Add existing article' }}
+            inputProps={{ placeholder: 'Add existing article' }}
             value={this.state.searchingFor}
             items={results}
 
