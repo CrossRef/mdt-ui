@@ -1,5 +1,6 @@
 import csv from 'csvtojson'
 import { XMLSerializer, DOMParser } from 'xmldom'
+import {appendElm} from '../../utilities/helpers'
 var exports = module.exports = {}
 function format (a,...args) { 
   for (var k in args) {
@@ -16,9 +17,9 @@ const header = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
   "xmlns:ai=\"http://www.crossref.org/AccessIndicators.xsd\" " +
   "xmlns:fr=\"http://www.crossref.org/fundref.xsd\">\n<head>\n  <doi_batch_id>{0}</doi_batch_id>\n" +
   "  <depositor>\n" +
-  "    <depositor_name>webDeposit</depositor_name>\n" +
+  "    <depositor_name>mdtDeposit</depositor_name>\n" +
   "    <email_address>{1}</email_address>\n" +
-  "  </depositor>\n</head>\n<body>\n"
+  "  </depositor>\n</head>\n"
 
 /*
 <am_lic_start_date>: "2011-11-21"
@@ -47,16 +48,18 @@ takes a parsed csv object and generates a deposit standard XML
 const funderElems = ['<funder_name>', '<funder_identifier>']
 //, '<award_number>'
 function f(headers, files) {
-  console.log(format(header,"this is the filename.java", "This is the email@.com"))
+  console.log(format(header,"this is the filename.java", "creftest@crossref.org"))
   handleReadFiles(files, headers)
 }
-const mainProcessorCb = function (jsonArrayObj) {
+  function mainProcessorCb(jsonArrayObj , onComplete) {
   // iterate over the entire list of objects  
   var doc = getDoiObjects(jsonArrayObj)
-  var result = format(header,"this is the filename.java", "This is the email@.com") +
+  var result = format(header,"this is the filename.java", "creftest@crossref.org") +
     new XMLSerializer().serializeToString(doc).replace(/></g, ">\n<") +
-    "</body>\n</doi_batch>"
-
+    "</doi_batch>"
+  if (onComplete){
+    onComplete(result)
+  }
   console.log(result)
   //console.log(doc)
   //console.log(new XMLSerializer().serializeToString(doc).replace(/></g,">\n<"))
@@ -175,14 +178,14 @@ const generateFundGroupCB = function (doc) {
       return null
     }
     var funderElm = doc.createElement('fundref_data')
-
-    makeAssertionElem(funderElm, "DOI", doi)
+    appendElm("doi",doi,funderElm)
 
     var programElm = doc.createElementNS("http://www.crossref.org/fundref.xsd", "fr:program")
     programElm.setAttribute("name", "fundref")
 
     aggregateByAward(funderArray, programElm)
-    doc.documentElement.appendChild(programElm)
+    funderElm.appendChild(programElm)
+    doc.documentElement.appendChild(funderElm)
     /*
         funderArray.map((row) => {
           funderElm.appendChild(
@@ -199,7 +202,7 @@ const generateFundGroupCB = function (doc) {
 function getDoiObjects(obj) {
   var doiMap = new Map()
   doiMap = obj.reduce(doiReducer, doiMap)
-  var doc = new DOMParser().parseFromString('<doi_resources></doi_resources>', 'text/xml')
+  var doc = new DOMParser().parseFromString('<body></body>', 'text/xml')
   doiMap.forEach(generateFundGroupCB(doc))
   //var doc = getXmlForFunders(doiMap)
 
@@ -218,7 +221,7 @@ function getDoiObjects(obj) {
   return doiMap
 }
 
-function handleReadFiles(files, headers) {
+function handleReadFiles(files, headers, onComplete) {
   //oFiles = document.getElementById("uploadInput").files,
   //nFiles = oFiles.length;    
   if (files) {
@@ -232,7 +235,7 @@ function handleReadFiles(files, headers) {
             headers: headers
           })
           .fromString(reader.result).then((jsonObj) => {
-            mainProcessorCb(jsonObj)
+            mainProcessorCb(jsonObj,onComplete)
           })
       }
       const res = reader.readAsText(files[0])

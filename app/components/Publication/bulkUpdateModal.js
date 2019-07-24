@@ -3,6 +3,7 @@ import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
 import is from 'prop-types'
 import * as app from '../../actions/application'
+import * as api from '../../actions/api'
 import {routes} from '../../routing'
 import Dropzone from 'react-dropzone'
 import ValidationItemsContainer from '../BulkUploadModal/validationItemsContainer'
@@ -53,7 +54,7 @@ const mapDispatchToProps = dispatch => bindActionCreators({
     this.setState({valid:valid})
   }
   processFile=()=>{
-    handleReadFiles(this.state.files,this.state.headers)
+    handleReadFiles(this.state.files,this.state.headers,api.depositResource)
   }
   render () {
     const minHeight=(this.state.fields?40:0) + 326;

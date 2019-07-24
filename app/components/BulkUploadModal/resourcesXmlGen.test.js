@@ -165,9 +165,10 @@ describe('awardCallback',()=>{
   })
   //exports.mainProcessorCb = mainProcessorCb
   test('main processor callback', () => {
-
-    var doc = f.mainProcessorCb(fundingObj)
-    expect(doc).toMatchSnapshot()
+    f.mainProcessorCb(fundingObj,(doc) => {
+      expect(doc).toMatchSnapshot()}
+      )
+    
 
   })
 })
