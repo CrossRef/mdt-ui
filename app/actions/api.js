@@ -128,7 +128,20 @@ export function deleteItem (id) {
   })
 }
 
-
+export function depositResource (message) {
+  return authorizedFetch(`${apiBaseUrl}/deposit`, {
+    method:'post',
+    headers: {Authorization: localStorage.getItem('auth'),'Content-Type':'bulk'},
+    body: JSON.stringify({
+      type:'bulk',
+      message: message
+    })
+  })
+    .then(result => {
+      if(result.status > 202) throw `Server Error ${result.status}: ${result.statusText}`
+      return result.json()
+    })
+}
 
 export function deposit (cartArray) {
   return authorizedFetch(`${apiBaseUrl}/deposit`, {
