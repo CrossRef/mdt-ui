@@ -469,8 +469,7 @@ export default class AddPublicationModal extends Component {
     const isEdit = this.state.mode === 'edit'
     const disabledInput = isEdit ? {disabled: true, className: 'disabledDoi'} : {}
     const toggleHidden = this.state.mode === 'add' || this.props.doi == undefined ? { visibility: 'hidden' } : {visibility: 'visible'}
-
-    const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
+    const crossmark = this.props.crossmarkPrefixes ? this.state.mode === 'add' ? true : this.props.crossmarkPrefixes.indexOf(this.state.DOI.substring(0,7)) !== -1 : false
     const errors = this.state.errors
 
     return (
