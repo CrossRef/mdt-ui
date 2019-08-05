@@ -48,19 +48,19 @@ takes a parsed csv object and generates a deposit standard XML
 const funderElems = ['<funder_name>', '<funder_identifier>']
 //, '<award_number>'
 function f(headers, files) {
-  console.log(format(header,"this is the filename.java", "creftest@crossref.org"))
+  
   handleReadFiles(files, headers)
 }
-  function mainProcessorCb(jsonArrayObj , onComplete) {
+function mainProcessorCb(jsonArrayObj, onComplete) {
   // iterate over the entire list of objects  
   var doc = getDoiObjects(jsonArrayObj)
-  var result = format(header,"this is the filename.java", "creftest@crossref.org") +
+  var result = format(header, "this is the filename.java", "creftest@crossref.org") +
     new XMLSerializer().serializeToString(doc).replace(/></g, ">\n<") +
     "</doi_batch>"
-  if (onComplete){
-    onComplete(result)
-  }
-  console.log(result)
+  if (onComplete) {
+    onComplete( new XMLSerializer().serializeToString(doc).replace(/></g, ">\n<") )
+  }  
+  console.log(new XMLSerializer().serializeToString(doc).replace(/></g, ">\n<"))
   //console.log(doc)
   //console.log(new XMLSerializer().serializeToString(doc).replace(/></g,">\n<"))
 }
@@ -199,10 +199,16 @@ const generateFundGroupCB = function (doc) {
 /*
   Aggregate the data by DOI (so that all funding info for a DOI is in one node)
 */
+const bodyElm = "<body version=\"4.4.2\" xmlns=\"http://www.crossref.org/doi_resources_schema/4.4.2\" " +
+"xmlns:ai=\"http://www.crossref.org/AccessIndicators.xsd\" " +
+"xmlns:fr=\"http://www.crossref.org/fundref.xsd\">"+
+"</body>"
+// even though we add the namespace to all the fr:program elements, the dom serializer ommits all but the first
+// which is invalid XML.
 function getDoiObjects(obj) {
   var doiMap = new Map()
   doiMap = obj.reduce(doiReducer, doiMap)
-  var doc = new DOMParser().parseFromString('<body></body>', 'text/xml')
+  var doc = new DOMParser().parseFromString(bodyElm, 'text/xml')
   doiMap.forEach(generateFundGroupCB(doc))
   //var doc = getXmlForFunders(doiMap)
 

@@ -207,9 +207,14 @@ Document {
 
 exports[`generate resource XML from csv get DOI Objects 1`] = `
 Document {
-  "_inc": 384,
+  "_inc": 388,
   "childNodes": Object {
-    "0": <body>
+    "0": <body
+      version="4.4.2"
+      xmlns="http://www.crossref.org/doi_resources_schema/4.4.2"
+      xmlns:ai="http://www.crossref.org/AccessIndicators.xsd"
+      xmlns:fr="http://www.crossref.org/fundref.xsd"
+    >
       <fundref_data>
         <doi>
           10.5555/science.1232048
@@ -713,7 +718,12 @@ Document {
     "length": 1,
   },
   "doctype": null,
-  "documentElement": <body>
+  "documentElement": <body
+    version="4.4.2"
+    xmlns="http://www.crossref.org/doi_resources_schema/4.4.2"
+    xmlns:ai="http://www.crossref.org/AccessIndicators.xsd"
+    xmlns:fr="http://www.crossref.org/fundref.xsd"
+  >
     <fundref_data>
       <doi>
         10.5555/science.1232048
@@ -1215,7 +1225,12 @@ Document {
     </fundref_data>
   </body>,
   "documentURI": undefined,
-  "firstChild": <body>
+  "firstChild": <body
+    version="4.4.2"
+    xmlns="http://www.crossref.org/doi_resources_schema/4.4.2"
+    xmlns:ai="http://www.crossref.org/AccessIndicators.xsd"
+    xmlns:fr="http://www.crossref.org/fundref.xsd"
+  >
     <fundref_data>
       <doi>
         10.5555/science.1232048
@@ -1719,7 +1734,12 @@ Document {
   "implementation": Object {
     "_features": Object {},
   },
-  "lastChild": <body>
+  "lastChild": <body
+    version="4.4.2"
+    xmlns="http://www.crossref.org/doi_resources_schema/4.4.2"
+    xmlns:ai="http://www.crossref.org/AccessIndicators.xsd"
+    xmlns:fr="http://www.crossref.org/fundref.xsd"
+  >
     <fundref_data>
       <doi>
         10.5555/science.1232048
@@ -2230,19 +2250,10 @@ exports[`generate resource XML from csv getFundingElem should work for a row wit
 exports[`generate resource XML from csv getFundingElem should work for a row without an identifier 1`] = `undefined`;
 
 exports[`generate resource XML from csv main processor callback 1`] = `
-"<?xml version=\\"1.0\\" encoding=\\"UTF-8\\"?>
-<doi_batch version=\\"4.3.5\\" xmlns=\\"http://www.crossref.org/doi_resources_schema/4.3.5\\" xmlns:xsi=\\"http://www.w3.org/2001/XMLSchema-instance\\" xsi:schemaLocation=\\"http://www.crossref.org/doi_resources_schema/4.3.5  http://doi.crossref.org/schemas/doi_resources4.3.5.xsd\\" xmlns:ai=\\"http://www.crossref.org/AccessIndicators.xsd\\" xmlns:fr=\\"http://www.crossref.org/fundref.xsd\\">
-<head>
-  <doi_batch_id>this is the filename.java</doi_batch_id>
-  <depositor>
-    <depositor_name>mdtDeposit</depositor_name>
-    <email_address>creftest@crossref.org</email_address>
-  </depositor>
-</head>
-<body>
+"<body version=\\"4.4.2\\" xmlns=\\"http://www.crossref.org/doi_resources_schema/4.4.2\\" xmlns:ai=\\"http://www.crossref.org/AccessIndicators.xsd\\" xmlns:fr=\\"http://www.crossref.org/fundref.xsd\\">
 <fundref_data>
 <doi>10.5555/science.1232048</doi>
-<fr:program name=\\"fundref\\" xmlns:fr=\\"http://www.crossref.org/fundref.xsd\\">
+<fr:program name=\\"fundref\\">
 <fr:assertion name=\\"fundgroup\\">
 <fr:assertion name=\\"award_number\\">U54 GM094611</fr:assertion>
 <fr:assertion name=\\"funder_name\\">National Institutes of Health<fr:assertion name=\\"funder_identifier\\">http://dx.doi.org/10.13039/100000002</fr:assertion>
@@ -2389,7 +2400,7 @@ exports[`generate resource XML from csv main processor callback 1`] = `
 </fr:assertion>
 </fr:program>
 </fundref_data>
-</body></doi_batch>"
+</body>"
 `;
 
 exports[`generate resource XML from csv makeAssertionElem should create a "fr:assertion" element with given name and value 1`] = `

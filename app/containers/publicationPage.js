@@ -17,6 +17,7 @@ import BulkUpdateModal from '../components/Publication/bulkUpdateModal'
 import {routes} from  '../routing'
 import {compareDois, errorHandler} from '../utilities/helpers'
 import AddIssueModal from './addIssueModal';
+import BulkUpdateResultModal from '../components/Publication/bulkUpdateResultModal';
 
 
 
@@ -287,11 +288,23 @@ export default class PublicationPage extends Component {
       Component: BulkUpdateModal,
       props: {
         publicationTitle: this.props.publication.message.title.title,
-        ownerPrefix: this.state.ownerPrefix
+        ownerPrefix: this.state.ownerPrefix,
+        resultModal: this.bulkUpdateResult
       }
     })
   }
-
+  bulkUpdateResult = (msg,filename) => {
+    this.props.reduxControlModal({
+      showModal: true,
+      title: <div>Bulk update successful</div> ,
+      style: 'bulkUpdateModal',
+      Component: BulkUpdateResultModal,
+      props: {        
+        result: msg,
+        uploadedFile:filename
+      }
+    })
+  }
 
   handleFilter = (type) => {
     this.setState({

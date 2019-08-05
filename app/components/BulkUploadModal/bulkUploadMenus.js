@@ -80,7 +80,6 @@ const menus= [
     });
    return acc
 }  
-  console.log(menus)
   
   
   

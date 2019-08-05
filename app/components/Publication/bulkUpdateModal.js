@@ -18,7 +18,8 @@ const mapDispatchToProps = dispatch => bindActionCreators({
  class BulkUpdateModal extends React.Component {
 
   static propTypes = {    
-    ownerPrefix: is.string.isRequired
+    ownerPrefix: is.string.isRequired,
+    resultModal:is.func.isRequired
   }
 
 
@@ -53,8 +54,36 @@ const mapDispatchToProps = dispatch => bindActionCreators({
   setValidation =(valid)=>{
     this.setState({valid:valid})
   }
+  onComplete = (content)=>{
+    var result= api.depositResource(content)
+    this.setState({depositResult:result})
+
+  }
+  componentWillUpdate(nextProps, nextState){
+    // depositResult is filled in by the onComplete callback
+    if (nextState.depositResult){
+      // start result dialog:
+      this.props.close()
+      nextState.depositResult.then((resolved)=>{this.props.resultModal(this.processDepositResult(resolved) ,this.state.files[0].name )})
+    
+
+
+    }
+  }
+  // result from deposit, only midware, not actual processing result.
+  // really only sucess or fail at this point, but we could include info like 
+  // the number of DOIs of each type and how many files/deposits were created, 
+  // along with filenames or submission ids?
+  processDepositResult(result){
+    var msg = result.message
+    console.log(msg)
+    if (result.status!=="ok"){
+      // put up warning?
+    }
+    return msg
+  }
   processFile=()=>{
-    handleReadFiles(this.state.files,this.state.headers,api.depositResource)
+    handleReadFiles(this.state.files,this.state.headers,this.onComplete)
   }
   render () {
     const minHeight=(this.state.fields?40:0) + 326;
