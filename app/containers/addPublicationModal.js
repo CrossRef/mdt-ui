@@ -469,9 +469,10 @@ export default class AddPublicationModal extends Component {
     const isEdit = this.state.mode === 'edit'
     const disabledInput = isEdit ? {disabled: true, className: 'disabledDoi'} : {}
     const toggleHidden = this.state.mode === 'add' || this.props.doi == undefined ? { visibility: 'hidden' } : {visibility: 'visible'}
-    const doiPrefix = this.state.DOI.substring(0,this.state.DOI.indexOf('/'))
+
+    const doiPrefix = this.props.owner || this.state.DOI.substring(0,this.state.DOI.indexOf('/'))
     // Owner will only appear when doing a search. Might want to bring owner along for use here.
-    const crossmark = this.props.owner || this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(doiPrefix) !== -1 : false
+    const crossmark = this.props.crossmarkPrefixes ? this.props.crossmarkPrefixes.indexOf(doiPrefix) !== -1 : false
     const errors = this.state.errors
 
     return (
