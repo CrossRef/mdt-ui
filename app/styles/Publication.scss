@@ -66,6 +66,8 @@
       .record-search-container {
         position: relative;
         float:right;
+        width: 608px;
+        height: 40px;
 
         &:before {
           content: "";
@@ -73,15 +75,17 @@
           width: 16px;
           height: 100%;
           top: 0;
-          left: 70px;
+          left: 80px;
           transform: rotate(180deg);
           -webkit-transform: rotate(180deg);
           position: absolute;
           pointer-events: none;
         }
         .searchType {
-          height: 32px;
-          width: 96px;
+          float:left;
+          height: 40px;
+          width: 104px;
+          padding-left: 30px;
           -moz-appearance: none;
            -webkit-appearance: none;
            -webkit-border-radius: 0px;
@@ -90,18 +94,24 @@
         }
 
         input {
-          height: 32px;
-          width: 400px;
-          padding-left: 28px;
+          height: 40px;
+          width: 496px;
+          padding-left: 9.24px;
           position: relative;
+        }
+
+        input::placeholder {
+          color: #4F5858;
+          padding-left: 18px;
+          background: url('images/Search/Add.svg') no-repeat left center;
         }
 
         .record-search-results {
           position: absolute;
-          line-height: 200%;
-          top: 31px;
-          left: 96px;
-          width: 400px;
+          font-size: 12px;
+          top: 39px;
+          left: 108px;
+          width: 496px;
           height: 370px;
           text-align: left;
           background: white;
@@ -121,13 +131,11 @@
             }
             .record-search-result {
               display:inline-block;
-              height: 32px;
-              line-height: 32px;
-              padding: 0 20px 0 28px;
+              height: 50%;
+              line-height: 16px;
+              padding: 10px 20px 10px 28px;
               width: 88%;
               overflow: hidden;
-              text-overflow: ellipsis;
-              white-space: nowrap;
           }
 
 
@@ -140,7 +148,7 @@
     }
   }
   .publication-actions {
-    padding: 24.5px 0 32px 0;
+    padding: 48px 0 32px 0;
     width: 960px;
     margin: 0 auto;
 
