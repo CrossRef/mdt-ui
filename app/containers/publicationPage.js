@@ -297,7 +297,7 @@ export default class PublicationPage extends Component {
     this.props.reduxControlModal({
       showModal: true,
       title: <div>Bulk update successful</div> ,
-      style: 'bulkUpdateModal',
+      style: 'bulkUpdateResultModal',
       Component: BulkUpdateResultModal,
       props: {        
         result: msg,
