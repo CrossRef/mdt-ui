@@ -10,7 +10,6 @@
     .publication-search-container {
       position: relative;
       padding-bottom: 5px;
-      background-image: url("Add.svg");
       background-repeat: no-repeat;
 
       input {
@@ -23,7 +22,7 @@
       input::placeholder {
         color: #4F5858;
         padding-left: 18px;
-        background: url('images/Search/Add.svg') no-repeat left center;
+        background: url('images/Publications/Add.svg') no-repeat left center;
       }
 
       .publication-search-results {
