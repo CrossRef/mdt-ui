@@ -66,7 +66,7 @@ export default class PublicationsPage extends Component {
           <button
             className='addPublication'
             onClick={this.openAddPublicationModal}
-            >New publication
+            >New journal
           </button>
         </div>
 
