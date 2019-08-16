@@ -230,7 +230,7 @@ const  generateResourcesCB = function (doc) {
       //var itr = item.keys()
       for (const col of Object.keys(item))
       {
-        if (col.startsWith('<resource')){
+        if (col.startsWith('<resource') && item[col].length>0){
           hasItem=true
           break
         }
@@ -247,17 +247,25 @@ const  generateResourcesCB = function (doc) {
     resourcesArray.forEach((item) => {
       for (const col of Object.keys(item)){
         if (col.startsWith('<resource')){
+          if(!item[col] || item[col].length<1)
+          {
+            continue
+          }
           var itemElm = doc.createElement("item")
+          
           var resourceElm=appendElm("resource",item[col],itemElm)
           setAttributesFromColumn(resourceElm,col)
           collectionElm.appendChild(itemElm)
         }
       }
     })
+    doiResourcesElm.appendChild(collectionElm)
+    doc.documentElement.appendChild(doiResourcesElm)
 
   }
 }
-function setAttributesFromColumn(elm,col){
+function setAttributesFromColumn(elm,column){
+  const col=column.replace(/[<>"]/g, "")
   var splitCol=col.split(' ')
   if (splitCol.length>1){
     splitCol.shift()
@@ -290,25 +298,27 @@ const generateLicenseCB = function (doc) {
       var licRefElm = doc.createElement('lic_ref_data')
       appendElm("doi", doi, licRefElm)
       var programElm = doc.createElementNS("http://www.crossref.org/AccessIndicators.xsd", "ai:program")
-
+      doc.documentElement.appendChild(licRefElm)
       programElm.setAttribute("name", "AccessIndicators")
       licensesArray.forEach((item) => {
         makeLicenseRef(item,programElm,"vor")
         makeLicenseRef(item,programElm,"am")
         makeLicenseRef(item,programElm,"tdm")
       })
-      doc.documentElement.appendChild(programElm)
+      licRefElm.appendChild(programElm)
       return programElm
     }
   }
   function makeLicenseRef(item,programElm,type){
-    var itemElm = programElm.ownerDocument.createElement("ai:license_ref")
-    var refElm = appendElm("ai:license_ref", item['<license_ref applies_to="'+type+'">'], itemElm)
+   // var itemElm = programElm.ownerDocument.createElement("ai:license_ref")
+   if (item['<license_ref applies_to="'+type+'">'] &&  item['<license_ref applies_to="'+type+'">'].length>1){
+    var refElm = appendElm("ai:license_ref", item['<license_ref applies_to="'+type+'">'], programElm)
     appendAttribute("applies_to", type, refElm)
     if (item[type+'_lic_start_date'] && item[type+'_lic_start_date'].length > 0) {
       appendAttribute("start_date", item[type+'_lic_start_date'], refElm)
     }
-    programElm.appendChild(itemElm)
+    programElm.appendChild(refElm)
+  }
   }
 /*
   Aggregate the data by DOI (so that all funding info for a DOI is in one node)
