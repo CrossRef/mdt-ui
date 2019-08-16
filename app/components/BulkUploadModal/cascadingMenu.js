@@ -68,7 +68,7 @@ export default class CascadingMenu extends Component {
         if (!hasOptions){ // only care about a click if it's a leaf node
           this.props.selectedItem(option)
         }
-      console.log("Select menu id: "+option.id+" level:"+depthLevel+" option:"+option)
+      //console.log("Select menu id: "+option.id+" level:"+depthLevel+" option:"+option)
     }
   }
   handleBlur=(event) =>{

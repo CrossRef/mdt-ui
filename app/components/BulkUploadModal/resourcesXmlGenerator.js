@@ -1,6 +1,7 @@
 import csv from 'csvtojson'
 import { XMLSerializer, DOMParser } from 'xmldom'
-import {appendElm} from '../../utilities/helpers'
+import {appendElm, appendAttribute} from '../../utilities/helpers'
+import typesMap from './licenseTypes'
 var exports = module.exports = {}
 function format (a,...args) { 
   for (var k in args) {
@@ -196,6 +197,119 @@ const generateFundGroupCB = function (doc) {
     return funderElm
   }
 }
+const generateSimCheckCB = function (doc) {
+  return function (itemArray, doi) {
+    // only process items with a iParadigms
+    var simCheckArray = itemArray.filter((item) => {
+      return (item['<item crawler="iParadigms">'] && item['<item crawler="iParadigms">'].length > 0 )
+    })
+    if (simCheckArray.length < 1) {
+      return null
+    }
+    var simCheckElm = doc.createElement('doi_resources')
+
+    appendElm("doi", doi, simCheckElm)
+    var collectionElm = doc.createElement("collection")
+    collectionElm.setAttribute("property", "crawler-based")
+    var itemElm = doc.createElement("item")
+    appendAttribute("crawler", "iParadigms", itemElm)
+    appendElm("resource", itemArray['<item crawler="iParadigms">'], itemElm)
+    collectionElm.appendChild(itemElm)
+
+    simCheckElm.appendChild(collectionElm)
+
+    doc.documentElement.appendChild(simCheckElm)
+    return simCheckElm
+  }
+}
+const  generateResourcesCB = function (doc) {
+  return function (itemArray, doi) {
+
+    var resourcesArray = itemArray.filter((item)=>{
+      var hasItem=false
+      //var itr = item.keys()
+      for (const col of Object.keys(item))
+      {
+        if (col.startsWith('<resource')){
+          hasItem=true
+          break
+        }
+      }
+      return hasItem
+    })
+    if (resourcesArray.length < 1) {
+      return null
+    }
+    var doiResourcesElm = doc.createElement('doi_resources')
+    appendElm("doi", doi, doiResourcesElm)
+    var collectionElm=doc.createElement("collections")
+    collectionElm.setAttribute("property","text-mining")
+    resourcesArray.forEach((item) => {
+      for (const col of Object.keys(item)){
+        if (col.startsWith('<resource')){
+          var itemElm = doc.createElement("item")
+          var resourceElm=appendElm("resource",item[col],itemElm)
+          setAttributesFromColumn(resourceElm,col)
+          collectionElm.appendChild(itemElm)
+        }
+      }
+    })
+
+  }
+}
+function setAttributesFromColumn(elm,col){
+  var splitCol=col.split(' ')
+  if (splitCol.length>1){
+    splitCol.shift()
+    splitCol.forEach((item)=>{
+      var splitAttr=item.split('=')
+      elm.setAttribute(splitAttr[0],splitAttr[1])
+    })
+  }
+}
+const generateLicenseCB = function (doc) {
+    return function (itemArray, doi) {
+      // only process items with a license_ref
+    
+      var licensesArray = itemArray.filter((item)=>{
+        var hasItem=false
+        //var itr = item.keys()
+        for (const col of Object.keys(item))
+        {
+          if (col.startsWith('<license_ref ')){
+            hasItem=true
+            break
+          }
+        }
+        return hasItem
+      })
+      
+      if (licensesArray.length < 1) {
+        return null
+      }
+      var licRefElm = doc.createElement('lic_ref_data')
+      appendElm("doi", doi, licRefElm)
+      var programElm = doc.createElementNS("http://www.crossref.org/AccessIndicators.xsd", "ai:program")
+
+      programElm.setAttribute("name", "AccessIndicators")
+      licensesArray.forEach((item) => {
+        makeLicenseRef(item,programElm,"vor")
+        makeLicenseRef(item,programElm,"am")
+        makeLicenseRef(item,programElm,"tdm")
+      })
+      doc.documentElement.appendChild(programElm)
+      return programElm
+    }
+  }
+  function makeLicenseRef(item,programElm,type){
+    var itemElm = programElm.ownerDocument.createElement("ai:license_ref")
+    var refElm = appendElm("ai:license_ref", item['<license_ref applies_to="'+type+'">'], itemElm)
+    appendAttribute("applies_to", type, refElm)
+    if (item[type+'_lic_start_date'] && item[type+'_lic_start_date'].length > 0) {
+      appendAttribute("start_date", item[type+'_lic_start_date'], refElm)
+    }
+    programElm.appendChild(itemElm)
+  }
 /*
   Aggregate the data by DOI (so that all funding info for a DOI is in one node)
 */
@@ -209,7 +323,10 @@ function getDoiObjects(obj) {
   var doiMap = new Map()
   doiMap = obj.reduce(doiReducer, doiMap)
   var doc = new DOMParser().parseFromString(bodyElm, 'text/xml')
+  doiMap.forEach(generateResourcesCB(doc))
   doiMap.forEach(generateFundGroupCB(doc))
+  doiMap.forEach(generateSimCheckCB(doc))
+  doiMap.forEach(generateLicenseCB(doc))
   //var doc = getXmlForFunders(doiMap)
 
   return doc
