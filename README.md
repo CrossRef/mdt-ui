@@ -1,4 +1,4 @@
-# Project Title
+# Metadata Manager
 
 Metadata Manager is an web application to manually register and update metadata with Crossref for the scholarly works they publish including journal articles, books, working papers, theses, datasets, etc. This metadata might include a host of information on the publication's contributor(s) (name, affiliation, etc.), funding, license, etc. 
 
